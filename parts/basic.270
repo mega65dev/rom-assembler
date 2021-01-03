@@ -1,0 +1,73 @@
+c65.copy 
+c65.cut 
+c65.paste 
+ jmp bad_command 
+ 
+ .page 
+ .subttl  GENLOCK 
+ 
+;***************************************************************** 
+;* GENLOCK  set/reset genlock mode & color registers 
+;* 
+;*  Syntax: GENLOCK <ON[,color#[,...]] | OFF[,color#,R,G,B]> 
+;***************************************************************** 
+ 
+genlock sta GKI__parm1  ;save token as flag for set palette   [910107] 
+ cmp #on_token 
+ beq 20$ 
+ jsr chkesc 
+ cmp #off_token 
+ bne snerr 
+    ;TURN GENLOCK OFF 
+ lda vic+49  ;any interlaced bitplanes on? 
+ and #%00011001 
+ cmp #%00011001 
+ beq 10$   ; yes, leave interlace mode on 
+ 
+ lda #%00000001 
+ trb vic+49  ; no, turn interlace off 
+10$ lda #%00000010 
+ trb vic+48  ;  reset external sync mode 
+; beq 12$   ;       [910114] 
+; lda vic+63  ;       [910111] 
+; inc a   ;  adjust vert. position (chip bug ????) 
+; inc a   ;  (to be handled by a custom C65 genlock board) 
+; inc a 
+; sta vic+63 
+ 
+12$ jsr chrget  ;eat token 
+ jsr optbyt  ;get (optional) color reg# in .X 
+ stx GKI__parm2  ; save it 
+ bcs set_palette  ;  if present, go do it & exit 
+15$ rts   ;  if not present (eol), exit 
+ 
+ 
+20$ lda #%00000001  ;TURN GENLOCK ON 
+ tsb vic+49  ;  set interlace mode 
+ asl a 
+ tsb vic+48  ;  set external sync mode 
+; bne 22$   ;       [910114] 
+; lda vic+63  ;       [910111] 
+; dec a   ;  adjust vert. position (chip bug ????) 
+; dec a   ;  (to be handled by a custom C65 genlock board) 
+; dec a 
+; sta vic+63 
+ 
+22$ jsr chrget  ;eat token 
+25$ jsr optbyt  ;get (optional) color reg# in .X 
+ bcc 15$   ; if not present (eol), exit 
+ lda #%00010000  ; if present, set FGBG bit in red palette 
+ sta _red,x 
+ bra 25$   ; loop 
+ 
+ .page 
+ .subttl  COLOR Control 
+ 
+;***************************************************************** 
+;* COLOR       <ON | OFF> Enable|Disable SW & HW color 
+;* FOREGROUND  color# Set Foreground color (text) 
+;* HIGHLIGHT   color# Set Highlight color (text) 
+;* BACKGROUND  color# Set VIC Background color 
+;* BORDER      color# Set VIC Border color 
+;***************************************************************** 
+ 

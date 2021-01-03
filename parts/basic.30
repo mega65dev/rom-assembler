@@ -1,0 +1,18 @@
+getstk eor #$ff ;make value 2's comp. 
+ sec 
+ adc tos 
+ sta tos 
+ ldy tos+1 
+ bcs 10$ 
+ dey 
+10$ sty tos+1 
+ cpy #>stktop 
+ bcc omerr 
+ bne 20$ 
+ cmp tos 
+ bcc omerr 
+20$ rts 
+ 
+ .page 
+; (a,y) is a certain address.  REASON makes sure it is less than (fretop). 
+ 

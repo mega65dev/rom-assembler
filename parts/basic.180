@@ -1,0 +1,56 @@
+cos lda #<pi2 ;pointer to pi/2 
+ ldy #>pi2 
+ jsr romadd ;add it in.  fall into sine 
+ 
+ 
+ 
+; Sine function 
+; 
+; Use identities to get FAC in quadrants I or IV.  The FAC is divided by 2*pi 
+; and the integer part is ignored because sin(x+2*pi)=sin(x).  Then the 
+; argument can be compared with pi/2 by comparing the result of the division 
+; with pi/2(2*pi)=1/4.  Identities are then used to get the result in quadrants 
+; I or IV.  An approximation polynomial is then used to compute sin(x). 
+ 
+ 
+sin jsr movaf 
+ lda #<twopi ;get pointer to divisor 
+ ldy #>twopi 
+ ldx argsgn ;get sign of result 
+ jsr fdivf 
+ jsr movaf ;get result into ARG 
+ jsr int  ;integerize FAC 
+ lda #0 
+ sta arisgn ;always have the same sign 
+ jsr fsubt ;keep only the fractional part 
+ lda #<fr4 ;get pointer to 1/4 
+ ldy #>fr4 
+ jsr romsub 
+ lda facsgn ;save sign for later 
+ pha 
+ bpl sin1 ;first quadrant 
+ jsr faddh ;add 1/2 to FAC 
+ lda facsgn ;sign is negative? 
+ bmi sin2 
+ lda tansgn ;quads II and III come here 
+ eor #$ff 
+ sta tansgn 
+ 
+sin1 jsr negop ;if positive, negate it 
+ 
+sin2 lda #<fr4 ;pointer to 1/4 
+ ldy #>fr4 
+ jsr romadd ;add it in 
+ pla  ;get original quadrant 
+ bpl 10$ 
+ jsr negop ;if negative, negate result 
+ 
+10$ lda #<sincon 
+ ldy #>sincon 
+ bra polyx ;do approximation polyomial 
+ 
+ 
+ 
+; Tangent function 
+ 
+ 

@@ -1,0 +1,180 @@
+clear_play_flags 
+ lda #0 
+ sta sharp  ;clear flags 
+ sta dnote 
+ cli 
+ rts 
+ 
+ 
+tempo jsr getbyt  ;duration of whole note 4/4 time = 24/rate 
+ txa 
+ beq fcerr  ;can't be zero- illegal quantity error 
+ stx tempo_rate 
+ rts 
+ 
+ .page 
+times2 .byte 0,2,4,6,8,10  ;     [910612] stereo 
+ 
+notes  .byte 'WHQIS'   ;sixteenth,eigth,quarter,half,and whole notes 
+ 
+mutabl .byte 'VOTXUM'   ;voice,octave,envelope,filter,volume,& measure 
+ 
+scalen .byte 9,11,0,2,4,5,7  ;a,b,c,d,e,f,g 
+ 
+scalel .byte $0f,$0c,$46,$bf,$7d,$83 ;c,c#,d,d#,e,f,f#,g,g#,a,a#,b (NTSC, octave 6) 
+ .byte $d6,$7a,$73,$c8,$7c,$97 ;     [910729] 
+ 
+scaleh .byte $43,$47,$4b,$4f,$54,$59 ;c,c#,d,d#,e,f,f#,g,g#,a,a#,b (NTSC, octave 6) 
+ .byte $5e,$64,$6a,$70,$77,$7e ;     [910729] 
+ 
+scalelp .byte $87,$8b,$cc,$4e,$14,$24 ;c,c#,d,d#,e,f,f#,g,g#,a,a#,b (PAL,  octave 6) 
+ .byte $80,$2d,$32,$91,$52,$7a ;     [910729] 
+ 
+scalehp .byte $43,$47,$4b,$50,$55,$5a ;c,c#,d,d#,e,f,f#,g,g#,a,a#,b (PAL,  octave 6) 
+ .byte $5f,$65,$6b,$71,$78,$7f ;     [910729] 
+ 
+;  Music envelope tables, default values downloaded to RAM: 
+; 
+; 0: piano   1: accordion    2: calliope  3: drum     4: flute 
+; 5: guitar  6: harpsichord  7: organ     8: trumpet  9: xylophone 
+ 
+;  Attack/decay rates 
+ 
+atkmus .byte $09,$c0,$00,$05,$94,$09,$09,$09,$89,$09 
+ 
+;  Sustain/release rates 
+ 
+susmus .byte $00,$c0,$f0,$50,$40,$21,$00,$90,$41,$00 
+ 
+;  Waveform table 
+ 
+wavmus .byte $41,$21,$11,$81,$11,$21,$41,$41,$41,$11 
+ 
+;  Pulse width hi table 
+ 
+pwhmus .byte $06,$00,$00,$00,$00,$00,$02,$08,$02,$00 
+ 
+;  Offset tables 
+ 
+SID_offset 
+ .byte $00,$07,$0e,$20,$27,$2e     ; [910612] stereo 
+filter_offset 
+ .byte 0,0,0,4,4,4 
+ 
+;  Volume levels 
+ 
+voltab .byte 0,1,3,5,7,8,10,12,14,15 
+ 
+;.end 
+ .page 
+ .subttl  FILTER 
+ 
+;****************************************************************** 
+; 
+;  FILTER  sid, freq, lp, bp, hp, res   --  set values for filter 
+; 
+;     sid =  right (1), left (2) 
+;          freq =  filter frequency (0-1023) 
+;            lp =  low pass filter on (1) or off (0) 
+;            bp =  band pass filter on (1) or off (0) 
+;            hp =  high pass filter on (1) or off (0) 
+;           res =  resonance (0-15) 
+; 
+;****************************************************************** 
+ 
+filter jsr getbyt  ;get left/right SID    [910612] 
+ dex 
+ cpx #2 
+ bcs fcerr 
+ lda filter_offset+2,x ;get filter offset for specified SID 
+ sta z_p_temp_1 
+ tax 
+ 
+ ldy #0 
+10$ lda filters1,x  ;save current voice's filter params 
+ sta fltsav,y 
+ inx 
+ iny 
+ cpy #4 
+ bcc 10$ 
+ 
+ jsr optwrd  ;get filter frequency 
+ bcc 20$   ; skip if no value given 
+ cmp #8   ;test m.s. byte 
+ bcs fcerr  ; error if > 2047 
+ sty fltsav  ;save lower byte 
+ 
+; Idea: shift lower 3 bits of upper byte into lower byte, forming bits 10-3 
+ 
+ sty fltsav+1 
+ lsr a 
+ ror fltsav+1 
+ lsr a 
+ ror fltsav+1  ;save upper 7 bits (10-3) 
+ lsr a 
+ ror fltsav+1 
+ 
+20$ lda #$10  ;start at type=LP 
+ sta fltflg 
+ lda fltsav 
+ 
+30$ jsr optbyt  ;get filter types (LP,BP,HP) 
+ bcc 50$   ;skip if no value input 
+ cpx #1   ; (set .c: 0=0, 1=1) 
+ bcc 35$ 
+ beq 35$ 
+ bra fcerr  ;error if >1 
+ 
+35$ lda fltsav+3  ;get filter flags byte 
+ ora fltflg  ;set filter on 
+ bcs 40$   ;skip if it should be on 
+ eor fltflg  ;turn filter off 
+40$ sta fltsav+3  ;save value 
+ 
+50$ asl fltflg  ;shift for next filter 
+ bpl 30$   ;loop 3 times 
+ 
+ jsr optbyt  ;get resonance value 
+ bcc 70$   ;skip if no value given 
+; cpx #16 
+; bcs fcerr  ;error if >15 
+ jsr chknyb  ;     [910930] 
+ txa 
+ asl a   ;shift to upper nibble 
+ asl a 
+ asl a 
+ asl a 
+ sta nibble 
+ lda fltsav+2  ;get current value 
+ and #$0f  ;mask it out 
+ ora nibble  ;add new value 
+ sta fltsav+2  ;save it 
+ 
+70$ ldx z_p_temp_1  ;hardware offset for this voice's filter [910612] 
+ ldy #0 
+80$ lda fltsav,y  ;copy new filter params to hardware 
+ sta filters1,x 
+ inx 
+ iny 
+ cpy #4 
+ bcc 80$ 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl  ENVELOPE 
+ 
+;**************************************************************** 
+; 
+;  ENVELOPE n, attack, decay, sustain, release, waveform, pulse width 
+;        set music envelope 
+;                n = envelope number (0-9) 
+;            wave  =   0 : triangle waveform 
+;                      1 : sawtooth waveform 
+;                      2 : pulse waveform 
+;                      3 : noise waveform 
+;                      4 : ring modulation 
+;            pulse = pulse width if pulse waveform is selected (0-4095) 
+; 
+;****************************************************************** 
+ 

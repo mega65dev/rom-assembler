@@ -1,0 +1,67 @@
+link_error   ;     [910103] 
+ jsr highlight_text ;     [911119] 
+ jsr _primm 
+   .byte cr,'?PROGRAM MANGLED',cr,0 
+ jsr highlight_done ;     [911119] 
+ 
+ 
+lnkrts rts 
+ 
+ .page 
+; Function to get a line one character at a time from the input 
+; channel and build it in the input buffer. 
+; 
+ 
+PromptedInput   ;qinlin. 
+ lda channl  ;entry for things line INPUT, wanting a prompt 
+ bne InputLine  ; prompt only if terminal 
+ jsr outqst  ;  yes- print '? ' 
+ jsr realsp 
+ 
+ 
+InputLine   ;inlin. 
+ ldx #0   ;read & buffer data until 'return' or buffer full 
+10$ jsr inchr  ; get a character 
+ cmp #0 
+ beq 20$ 
+ cmp #cr   ; a carriage return? 
+ beq 20$   ;  yes...done build 
+ 
+ sta buf,x  ;  no...buffer it 
+ inx 
+ cpx #buflen  ; buffer full? 
+ bcc 10$   ;  no...continue 
+ bra errlen  ;  yes...string too long error 
+ 
+ 
+20$ lda #0   ;fininl.  terminate input with a null 
+ sta buf,x 
+ ldx #<buf_txtptr ;set up pointer to start of buffer-1 (for chrget) 
+ ldy #>buf_txtptr 
+ lda channl  ;print 'return' only if terminal 
+ beq crdo 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl Runtime Stack Routines 
+ 
+; Find a specific token in the run-time stack. token to be found is in srchtk. 
+; 
+; If called by 'for' or 'next', scan entries in stack, looking for a specific 
+; 'for-variable' (in (forpnt)).  If found, (fndpnt) will point to it, and z is 
+; set.  Otherwise, (fndpnt) will point to either: 
+;  1) the non-for token 
+;  2) bottom-of-stack 
+; 
+; Special case: 'next' with no argument will match first 'for' entry on stack 
+; found, if any.  This case is signaled by a (forpnt) with a msb of $ff (an 
+; impossible value). 
+; 
+; All other calls to search will result in either: 
+;  1) (success) z = 1, (fndpnt) = address 
+;  2) (failure) z = 0 
+ 
+ 
+; Set up temporary pointer with current top of stack 
+ 

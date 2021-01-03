@@ -1,0 +1,36 @@
+xeqdir jsr xeqcm3 
+ 
+newstt jsr is_stop_key_down 
+ bbr7 runmod,10$  ;branch if direct mode 
+ 
+ ; In run mode...save txtptr for CONTinue command 
+ 
+ jsr tto   ;transfer txtptr to oldtxt 
+ tsx 
+ stx oldstk 
+ 
+10$ ldy #0 
+ jsr indtxt  ;end of the line? 
+ bne morsts  ; no...out of statement 
+ 
+20$ bit runmod  ;in direct mode? 
+ bpl ready  ; yes, go to ready 
+ ldy #2 
+ jsr indtxt  ;end of text? 
+ beq ready  ;yes...finished 
+ iny   ;y=3 
+ jsr indtxt  ;extract line# lo byte 
+ sta curlin 
+ iny 
+ jsr indtxt  ;extract line # hi byte 
+ sta curlin+1 
+ tya   ;y=4 
+ clc 
+ adc txtptr  ;point @ character before line start 
+ sta txtptr 
+ bcc 30$ 
+ inc txtptr+1 
+30$ bra xeqcm  ;execute new line 
+ 
+ 
+ 

@@ -1,0 +1,56 @@
+strini 
+ ldx facmo ;get facmo to store in dscpnt 
+ ldy facmo+1 
+ stx dscpnt ;retain the descriptor pointer 
+ sty dscpnt+1 
+ 
+strspa jsr getspa ;get string space 
+ stx dsctmp+1 ;save location 
+ sty dsctmp+2 
+ sta dsctmp ;save length 
+ rts  ;done 
+ 
+ .page 
+; STRLT2 takes the string literal whose first character is pointed to by 
+; (xreg)+1 and builds a descriptor for it.  The descriptor is initially 
+; built in DSCTMP, but PUTNEW transfers it into a temporary and leaves a 
+; pointer to the temporary in FACMO & FACLO.  The characters other than the 
+; zero that terminates the string should be set up in CHARAC and ENDCHR. 
+; If the terminator is a quote, the quote is skipped over.  Leading quotes 
+; should be skipped before call.  On return, the character after the string 
+; literal is pointed to by (strng2). 
+ 
+ 
+strlit ldx #'"' ;assume string ends on quote 
+ stx charac 
+ stx endchr 
+ 
+strlt2 sta strng1 ;save pointer to string 
+ sty strng1+1 
+ sta dsctmp+1 ;in case no strcpy 
+ sty dsctmp+2 
+ 
+ ldy #255 ;initialize character count 
+strget iny 
+ jsr indst1 ;get character 
+ beq 20$  ;if zero 
+ cmp charac ;this terminator? 
+ beq 10$  ;yes 
+ cmp endchr 
+ bne strget ;look further 
+ 
+10$ cmp #'"' ;strfin.  quote? 
+ beq 30$ 
+ 
+20$ clc 
+30$ sty dsctmp ;no, back up. retain count 
+ tya 
+ adc strng1 ;wishing to set (txtptr) 
+ sta strng2 
+ ldx strng1+1 
+ bcc 40$ 
+ inx 
+40$ stx strng2+1 
+ tya 
+ 
+ .page 

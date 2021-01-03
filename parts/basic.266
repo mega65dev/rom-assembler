@@ -1,0 +1,49 @@
+c65.paint   ;      new [910228] FAB 
+ jsr CheckGraphicMode 
+ jsr sadwrd  ; get x 
+ sty GKI__parm1 
+ sta GKI__parm2 
+ 
+ jsr comsad  ; get y 
+ sty GKI__parm3 
+ sta GKI__parm4 
+ 
+ ldx #0   ;      [910916] 
+ jsr optbyt  ;mode, default = 0 (fill region pointed to) 
+ cpx #3 
+ bcs fcerr  ; (range 0-2) 
+ stx GKI__parm5 
+ ldx #0 
+ jsr optbyt  ;boundary color, default = 0 
+ stx GKI__parm6 
+ 
+10$ jsr garba2  ;create space in var bank for paint stack [910716] 
+ lda strend 
+ sta GKI__parm7  ;pass pointer to bottom of bank-1 free space 
+ lda strend+1  ; (top of stack) 
+ sta GKI__parm8 
+ sec 
+ lda fretop  ;pass pointer to top of free space 
+ sbc #3   ; (bottom of stack) 
+ sta GKI__parm9 
+ lda fretop+1 
+ sbc #0 
+ sta GKI__parm10 
+ 
+ jsr ($802e)  ;bra paint 
+ bcs 20$   ; error- stack overflow or stop key 
+ rts 
+ 
+20$ cpx #errom 
+ beq error  ;  stack overflow, say 'out of memory' 
+ bra break_exit  ;  user hit stop key 
+ 
+ .page 
+ .subttl   LOAD/SAVE IFF 
+ 
+;***************************************************************** 
+;*   LOADIFF "filename" [,U#] [,D#] 
+;* 
+;* ???? requires SCREEN already opened   910402 FAB 
+;***************************************************************** 
+ 

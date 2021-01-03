@@ -1,0 +1,118 @@
+foreign_esc_fn 
+ sec   ;flag 'up for grabs' 
+ jsr go_foreign_esc_fn 
+n_esc_fn_vec 
+ bcs snerr  ;it's unwanted. off to the refuse pile 
+ bra chknum 
+ 
+go_foreign_esc_fn 
+ jmp (esc_fn_vec) 
+ 
+ .page 
+orop ldy #255 ;must always complement 
+   .byte $2c 
+ 
+andop ldy #0 
+ sty count ;operator 
+ jsr ayint ;(facmo&lo)=int value and check size 
+ lda facmo ;use Demorgan's Law on high 
+ eor count 
+ sta integr 
+ lda faclo ;and low 
+ eor count 
+ sta integr+1 
+ jsr movfa 
+ jsr ayint ;(facmo&lo)=int of arg 
+ lda faclo 
+ eor count 
+ and integr+1 
+ eor count ;finish out Demorgan 
+ tay  ;save high 
+ lda facmo 
+ eor count 
+ and integr 
+ eor count 
+ bra givayf ;float (a,y) and return to user 
+ 
+ 
+ 
+; Time to perform a relational operator. 
+; (domask) contains the bits as to which relational operator it was. 
+; Carry bit on = string compare. 
+ 
+ 
+dorel jsr chkval ;check for match 
+ bcs strcmp ;is it a string? 
+ lda argsgn ;pack argument for fcomp 
+ ora #$7f 
+ and argho 
+ sta argho 
+ lda #<argexp 
+ ldy #>argexp 
+ jsr fcomp 
+ tax 
+ bra qcomp 
+ 
+ .page 
+strcmp lda #0 
+ sta valtyp 
+ dec opmask 
+ jsr frefac ;free the faclo string 
+ sta dsctmp ;save it for later 
+ stx dsctmp+1 
+ sty dsctmp+2 
+ lda argmo ;get pointer to other string 
+ ldy argmo+1 
+ jsr fretmp ;frees first desc pointer 
+ stx argmo 
+ sty argmo+1 
+ tax  ;copy count into x 
+ sec 
+ sbc dsctmp ;which is greater. if 0, all set up 
+ beq stasgn ;just put sign of difference away 
+ lda #1 
+ bcc stasgn ;sign is positive 
+ ldx dsctmp ;length of fac is shorter 
+ lda #$ff ;get a minus one for negatives 
+stasgn sta facsgn ;keep for later 
+ ldy #255 ;set pointer to first string. (arg) 
+ inx  ;to loop properly 
+nxtcmp iny 
+ dex  ;any characters left to compare? 
+ bne getcmp ;not done yet 
+ ldx facsgn ;use sign of length difference 
+   ;since all characters are the same 
+qcomp bmi docmp ;c is always set then 
+ clc 
+ bra docmp ;always branch 
+ 
+ .page 
+getcmp lda #argmo 
+ jsr lda_far_ram1 ;lda (argmo),y from RAM1 
+ pha 
+ lda #dsctmp+1 
+ jsr lda_far_ram1 ;lda (dsctmp+1),y from RAM1 
+ sta syntmp 
+ pla 
+ cmp syntmp 
+ beq nxtcmp 
+ ldx #$ff 
+ bcs docmp 
+ ldx #1 
+ 
+ 
+ 
+docmp 
+ inx  ;-1 to 1, 0 to 2, 1 to 4 
+ txa 
+ rol a 
+ and domask 
+ beq 10$ 
+ lda #$ff ;map 0 to 0, map all others to -1 
+10$ bra float ;float the one-byte result into FAC 
+ 
+ 
+;.end 
+ .page 
+ .subttl  Ready, Error, Main (CODE 0) 
+ 

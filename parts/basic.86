@@ -1,0 +1,32 @@
+find_loop 
+ ldy #0   ;move to next line (copy link bytes to lowtr) 
+ jsr indlow 
+ tax 
+ iny 
+ jsr indlow 
+ stx lowtr 
+ sta lowtr+1 
+ 
+find_loop_1 
+ ldy #1 
+ jsr indlow  ;check link 
+ bne 10$   ; not null- continue 
+ dey 
+ jsr indlow 
+ beq find_exit  ; null- exit 
+ 
+10$ ldy #2 
+ jsr indlow  ;check line number 
+ tax 
+ iny 
+ jsr indlow 
+ cmp linnum+1 
+ bne 20$ 
+ cpx linnum 
+ beq 30$   ; line is <= last line requested, continue 
+20$ bcs find_exit  ; line is >  last line requested, exit 
+ 
+30$ ldx #3   ;set initial position - 1 (past link & line#) 
+ stx fndpnt 
+ 
+ .page 

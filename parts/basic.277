@@ -1,0 +1,52 @@
+movspr_normal   ;      [910122] 
+ sty xdest+2  ;save second coordinate (y,a) 
+ sta xdest+3 
+; ldx #xdest-vwork 
+; jsr scalxy  ;scale the coordinates 
+ 
+ 
+movspr_position 
+ sei   ;      [910123] 
+ lda z_p_temp_1  ;get sprite number 
+ tax   ;use as an index 
+ asl a 
+ tay   ;get sprite-number * 2 as another index 
+ 
+ bbr7 op,10$ 
+ rts   ;>>>exit here if movspr_to call   [910808] 
+ 
+10$ lda xdest+2  ;get y-coordinate 
+ asl numcnt  ;test if relative 
+ bcc 80$   ;skip if absolute 
+ clc 
+ bpl 75$   ;skip if normal coordinates 
+ eor #$ff 
+ sec   ;invert to subtract if angular 
+75$ adc vic+1,y  ;add to current sprite y-value  ???vic_save 
+ 
+80$ sta vic+1,y  ;save new sprite y-position  ???vic_save 
+ lda xdest  ;get low byte of x-coordinate 
+ asl numcnt  ;test if relative 
+ bpl 95$   ;skip if absolute 
+ clc 
+ adc vic,y  ;add current sprite x-position  ???vic_save 
+ sta vic,y  ;save sprite x-position   ???vic_save 
+ bcs 90$   ;skip if carry 
+ inc xdest+1  ;invert lsb 
+ 
+90$ lda vic+16  ;get x-position msb bits  ???vic_save 
+ bra 98$   ;test if need to invert msb bit 
+ 
+95$ sta vic,y  ;save new sprite x-position  ???vic_save 
+ lda vic+16  ;     ???vic_save 
+ ora sbits,x  ;set x-position msb bit 
+ 
+98$ lsr xdest+1  ;match to lsb of x-coordinate high byte 
+ bcs 100$  ;skip if should be set 
+ eor sbits,x  ;reset bit 
+ 
+100$ sta vic+16  ;save position msb bits   ???vic_save 
+; cli 
+;110$ rts   ; mouse or movspr_to 
+ 
+ .page 

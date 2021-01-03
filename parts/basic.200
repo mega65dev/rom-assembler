@@ -1,0 +1,18 @@
+ini jsr frefac ;free temp descriptor 
+ sta hulp ;length string 
+ ldx #$0a ;printed in hulp 
+ lda #0 
+ 
+10$ sta swe,x ;init working registers 
+ dex 
+ bpl 10$ 
+ stx flag ;comma flag =ff 
+ stx point ;point pointer=ff 
+ stx dolr ;dollar flag=ff 
+ tax  ;x=y=0 
+ tay 
+ rts 
+ 
+ .page 
+; Using- round number 
+ 

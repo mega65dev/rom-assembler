@@ -1,0 +1,8 @@
+movaf jsr round 
+ 
+movef ldx #6 
+1$ lda facexp-1,x 
+ sta argexp-1,x 
+ dex 
+ bne 1$ 
+ stx facov ;zero it since rounded 

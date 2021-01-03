@@ -1,0 +1,83 @@
+val jsr len1  ;get length 
+ beq zerofc  ;return 0 if len=0 
+ 
+; Use text to fp number code by faking a new text poiner 
+ 
+val_1 clc   ;///jump table entry.  convert PETSCII to floating point 
+ adc index1 
+ sta strng2  ;add length to index1 and put in strng2 
+ lda index1+1 
+ adc #0 
+ sta strng2+1 
+ 
+ ldy #0 
+ lda #strng2 
+ jsr lda_far_ram1 ;replace character after string with $00 (fake EOL) 
+ pha   ;save old character 
+ tya   ; (.A=0) 
+ ldx #strng2 
+ jsr sta_far_ram1 ;sta (strng2),y ;..and put in null 
+ jsr fin_chrget_2 ;get character pointed to and set flags.(sorta like chrgot) 
+ ldx #1   ;flag 'bank 1' 
+ jsr fin   ;go do evaluation 
+ pla   ;get saved character 
+ phx 
+ ldx #strng2 
+ ldy #0 
+ jsr sta_far_ram1 ;sta (strng2),y ;restore zeroed-out character 
+ plx 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl  DEC 
+ 
+; DEC convert a hex string representing a 2-byte integer into decimal. 
+ 
+dcml jsr len1  ;find length of string 
+ sta index2  ;len ret. in a 
+ ldy #0 
+ sty index2+1  ;zero char counter 
+ sty strng2+1  ;zero out value 
+ sty strng2 
+ 
+10$ cpy index2  ;evaluated all characters? 
+ beq 50$   ;branch if so 
+ jsr indin1_ram1  ;get next character from string 
+ iny 
+ cmp #' '  ;ignore spaces 
+ beq 10$ 
+ inc index2+1 
+ ldx index2+1 
+ cpx #5 
+ bcs decbad  ;can't have more than 4 characters 
+ 
+ cmp #'0' 
+ bcc decbad  ;bad if < 0 
+ cmp #':'  ;'9'+1 
+ bcc 30$   ;ok if  = 0-9 
+ cmp #'A' 
+ bcc decbad  ;bad if > 9  and < A 
+ cmp #'G' 
+ bcs decbad  ;bad if > F 
+ 
+ sbc #7   ;adjust if A-F  (.c is clr) 
+30$ sbc #$2f  ;adjust to $00..$0f (.c is set) 
+ asl a   ;shift low nibble to high 
+ asl a 
+ asl a 
+ asl a 
+ 
+ ldx #4   ;mult. old val. by 16, add new 
+40$ asl a 
+ rol strng2 
+ rol strng2+1 
+ dex 
+ bne 40$ 
+ bra 10$ 
+ 
+50$ ldy strng2  ;get lsb of value, 
+ lda strng2+1  ;& msb, 
+ bra nosflt  ;go float 2 byte unsigned integer 
+ 
+ 

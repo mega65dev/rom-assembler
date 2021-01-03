@@ -1,0 +1,9 @@
+p1line bbr4 runmod,10$  ;      [910620] 
+ bra edit_p1line  ;handle things differently for plain text 
+ 
+10$ ldy #3 
+ sty lstpnt 
+ sty dores  ;reset quote-switch 
+ jsr linprt  ;print line number 
+ lda #' '  ;print a space 
+ 

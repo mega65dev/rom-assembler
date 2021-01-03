@@ -1,0 +1,75 @@
+aryva2 lda arypnt 
+ ldx arypnt+1 
+ 
+aryva3 cpx strend+1  ;end of arrays? 
+ bne aryvgo 
+ cmp strend 
+ beq arydon  ;...finished 
+ 
+ 
+aryvgo sta index1 
+ stx index1+1 
+ ldy #0 
+ jsr indin1_ram1  ;look at array name 
+ tax 
+ iny 
+ jsr indin1_ram1  ;name 2nd char 
+ php   ;save status reg 
+ iny 
+ jsr indin1_ram1  ;point to offset to next array 
+ adc arypnt 
+ sta arypnt  ;save start of next array in arypnt 
+ iny 
+ jsr indin1_ram1 
+ adc arypnt+1 
+ sta arypnt+1 
+ plp   ;restore status 
+ bpl aryva2  ;not a string type 
+ txa 
+ bmi aryva2  ;not a string array 
+ iny   ;ok we have a string array 
+ jsr indin1_ram1  ;get number of dimensions 
+ ldy #0 
+ asl a   ;move index to ptr to 1st string (add 2*number of dims + 5) 
+ adc #5 
+ adc index1 
+ sta index1 
+ bcc aryget 
+ inc index1+1 
+ 
+aryget ldx index1+1 
+ cpx arypnt+1  ;done with this array? 
+ bne 10$ 
+ cmp arypnt 
+ beq aryva3  ;yes 
+ 
+10$ ldy #0   ;process string pointer 
+ jsr indin1_ram1  ;get length of string 
+ beq dvarts  ;skip if null string 
+ sta syntmp 
+ iny 
+ jsr indin1_ram1  ;get lo byte of string ptr 
+ clc 
+ adc syntmp  ;and add string length 
+ sta hightr 
+ iny 
+ jsr indin1_ram1  ;get hi byte of string ptr 
+ adc #0   ;adjust high byte 
+ sta hightr+1 
+ 
+; Fix backwards pointer by adding move length to it. 
+ 
+ phx 
+ ldx #hightr 
+ ldy #0 
+ jsr indhtr_ram1  ;lda (hightr),y 
+ adc #7   ;carry clear (careful!) 
+ jsr sta_far_ram1 ;sta (hightr),y 
+ iny 
+ jsr indhtr_ram1  ;lda (hightr),y 
+ adc #0 
+ jsr sta_far_ram1 ;sta (hightr),y 
+ plx   ;done with this string 
+ 
+; Fix the next string in the array 
+ 

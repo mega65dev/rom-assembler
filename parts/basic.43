@@ -1,0 +1,10 @@
+if jsr frmevl ;evaluate the conditional expression 
+ jsr chrgot ;re-get current character 
+ cmp #goto_token ;is terminating character a GOTO? 
+ beq 10$  ; yes 
+ lda #then_token ; no, it must be THEN 
+ jsr synchr 
+ 
+10$ lda facexp ;test truth value of argument 
+ bne if_true ; branch if true 
+ 

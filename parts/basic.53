@@ -1,0 +1,18 @@
+printn jsr cmd   ;docmd 
+ bra release_channels ;restore terminal 
+ 
+ 
+cmd jsr getbyt 
+ beq 10$ 
+ lda #','  ;comma? 
+ jsr synchr 
+ 
+10$ php   ;save stat (beq=eof) 
+ pha   ;save char 
+ stx channl  ;channel to output on 
+ jsr coout 
+ pla   ;get char back 
+ plp   ;get stat back 
+ bra print 
+ 
+ 

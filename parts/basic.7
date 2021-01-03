@@ -1,0 +1,17 @@
+sta_far_ram1 
+ php  ;save registers 
+ phz 
+ pha 
+ ldz var_bank ;RAM1 
+ lda 1,x  ;check to see if pointer points to "common" 
+ cmp #$20 
+ bcs 10$  ; branch if not 
+ ldz text_bank ; else select RAM0 
+ 
+10$ pla 
+ jsr _sta_far ;STA (.x),Y to bank .z 
+ plz 
+ plp 
+ rts 
+ 
+ 

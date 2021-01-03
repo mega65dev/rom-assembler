@@ -1,0 +1,37 @@
+autobootCSG   ;Run ROMed diagnostic if PB0 low   [911105] 
+ lda $dd01 
+ lsr a 
+ bcs autoboot  ; no, try to boot from disk 
+ 
+ sei   ;prevent IRQ from wacking code DL'd to $1xxx  [911106] 
+ ldx #12-1 
+10$ lda 20$,x  ;prep DMA list 
+ sta dma1_cmd,x 
+ dex 
+ bpl 10$ 
+ 
+ lda #0 
+ ldx #>dma1_cmd  ;copy program from ROM to RAM 
+ ldy #<dma1_cmd 
+ sta dma_ctlr+2  ; dma_list bank 
+ stx dma_ctlr+1  ; dma_list hi 
+ sty dma_ctlr  ; dma_list lo & trigger 
+ 
+; jmp run_a_program ;if 'program' was BASIC 
+; lda #0   ;else set up arg's for call to 'long jmp'  [911105] 
+ sta _bank 
+ sta _pclo 
+ lda #$10 
+ sta _pchi 
+ jmp _jmp_far  ;jump to code, no return.  NOTE: this *MAPs* RAM-0 into context! 
+ 
+; move from $024001 to $002001, $3FFF bytes  BASIC program 
+;20$ .byte $00,$ff,$3f,$01,$40,$02,$01,$20,$00,$00,$00,$00 
+ 
+; move from $024000 to $1000, $4000 bytes   Diagnostic  [911105] 
+20$ .byte $00,$00,$40,$00,$40,$02,$00,$10,$00,0,0,0 
+ 
+ .page 
+; AUTOBOOT Attempts to RUN a disk program after cold startup.  The 
+;  program must be a BASIC program called "AUTOBOOT.C65*" 
+ 

@@ -1,0 +1,42 @@
+wait jsr getnum  ;get required mask1 
+ stx andmsk 
+ ldx #0 
+ jsr chrgot 
+ beq 10$ 
+ jsr combyt  ;get optional mask2 
+10$ stx eormsk 
+ 
+ phz 
+ ldz current_bank ;set up bank number for fetch 
+ ldx #poker  ;..and address 
+ ldy #0   ;..and index 
+ 
+15$ bit current_bank 
+ bmi 20$   ;NOMAP? 
+ jsr _lda_far  ;lda (poker),y 
+   .byte $2c 
+ 
+20$ lda (poker),y 
+ eor eormsk 
+ and andmsk 
+ beq 15$ 
+ plz 
+ rts   ;got a nonzero 
+ 
+;.end 
+ .page 
+ .subttl  FRE 
+ 
+;***************************************************************************** 
+; FRE(n) Function 
+; 
+; Where: n=0 returns amount of free RAM in bank 0. This is the area 
+;  between top of text (TEXT_TOP) and top of RAM (MAX_MEM_0). 
+; 
+;  n=1 returns amount of free ram in bank 1. This is the area 
+;  between top of arrays (STREND) and bottom of strings (FRETOP). 
+; 
+;  n=2 returns the amount (???? presence) of expansion RAM. 
+; 
+;***************************************************************************** 
+ 

@@ -1,0 +1,20 @@
+lstky1 inx   ;get key number = 1-16 
+ lda _pky_lengths-1,x ;get key size 
+ beq lstest  ;skip if key not defined 
+ sta keysiz  ;save size 
+ stx z_p_temp_1  ;save key number 
+ 
+ phy 
+ ldx #3 
+20$ lda preamb,x  ;print key preamble: 
+ jsr _bsout 
+ dex   ; 'KEY ' 
+ bpl 20$ 
+ ldx z_p_temp_1  ; key number 
+ lda #0 
+ jsr linprt 
+ lda #',' 
+ jsr _bsout  ; comma 
+ 
+ ply 
+ ldx #7   ;(length of 'keydat' string) 

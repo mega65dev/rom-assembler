@@ -1,0 +1,20 @@
+fix_links   ;<<<<<<<<<<<<<<<<<<<<<<<<<<< entry from renumber 
+ 
+ jsr link_program ;relink program 
+ lda index1 
+ ldx index1+1 
+ clc 
+ adc #2 
+ bcc 10$ 
+ inx 
+10$ sta text_top  ;set eot pointer 
+ stx text_top+1 
+ rts   ;C128-04 fix: was 'jmp ready' (FAB) 
+ 
+ .page 
+;******************************** 
+;* 
+;*    Input Range Parameters 
+;* 
+;******************************** 
+ 

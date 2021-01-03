@@ -1,0 +1,47 @@
+incord 
+ stx vtemp4  ;save offset to destination 
+ jsr cordsb  ;get 2-byte x-parameter 
+ jsr chrgot 
+ cmp #',' 
+ beq docord  ;skip ahead if have comma 
+ 
+ cmp #';'  ;check for semi-colon 
+ bne snerr  ; missing angle param- show syntax message 
+ jsr chrget       ;skip over ' ;' 
+ jsr getwrd       ;get 2-byte angle in a,y 
+ sta z_p_temp_1  ;swap a,y 
+ tya 
+ ldy z_p_temp_1 
+ jsr gtang1       ;get sine & cosine values for the angle 
+ ldx vtemp4 
+ lda vwork,x 
+ sta vwork+2,x    ;move length to y-parameter 
+ lda vwork+1,x 
+ sta vwork+3,x 
+; jsr scalxy       ;scale the values 
+ lda #$0e 
+ sta vtemp5 
+ clc 
+ ldx vtemp4 
+ 
+10$ jsr angmlt       ;multiply length * angle 
+ sta vwork,x      ;save angle result 
+ tya 
+ sta vwork+1,x 
+ ldy #xpos-vwork 
+ lsr vtemp5 
+ bcc 20$ 
+ ldy #ypos-vwork 
+ 
+20$ jsr dotwo  ;add/subtract value to current position 
+ sta vwork,x 
+ tya   ;save result in destination 
+ sta vwork+1,x 
+ inx 
+ inx 
+ lsr vtemp5 
+ bne 10$   ;do y-coordinate 
+ clc 
+ rts 
+ 
+ .page 

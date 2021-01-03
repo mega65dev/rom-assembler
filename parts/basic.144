@@ -1,0 +1,60 @@
+rnd jsr sign  ;get sign into .a 
+ 
+rnd_0 bmi 20$   ;/// entry from jump table 
+ bne 10$ 
+ 
+ 
+; Get value from hardware 
+ 
+ jsr go_slow  ;Use CIA#1 timer B & SID#2 pot X & Y for seeds  [910314] 
+ lda sid2+25  ; go slow to read POT-X 
+ asl a 
+ asl a 
+ asl a 
+ asl a 
+ ora sid2+26  ; and POT-Y 
+ eor vic+18  ;   ???? should be okay- we're in Slow mode 
+ sta facmoh 
+ jsr go_fast  ; restore speed 
+ lda d1pra+6  ; timer B is free-running 
+ sta facmo 
+ lda d1pra+7 
+ sta faclo 
+ eor facho 
+ adc facmoh 
+ eor facmo 
+ adc faclo 
+ sta facho 
+ bra 30$ 
+ 
+ .page 
+10$ lda #<rndx  ;get last one into FAC 
+ ldy #>rndx 
+ jsr movfm 
+ lda #<rmulc 
+ ldy #>rmulc  ;FAC was zero.  restore last one 
+ jsr rommlt  ;multiply by random constant 
+ lda #<raddc 
+ ldy #>raddc 
+ jsr romadd  ;add random constant 
+ 
+20$ ldx faclo 
+ lda facho 
+ sta faclo 
+ stx facho  ;reverse hi and lo 
+ ldx facmoh 
+ lda facmo 
+ sta facmoh 
+ stx facmo 
+ 
+30$ lda #0   ;strnex.  make number positive 
+ sta facsgn 
+ lda facexp  ;put exp where it will 
+ sta facov  ;be shifted in by normal 
+ lda #$80 
+ sta facexp  ;make result between 0 and 1 
+ jsr normal  ;normalize 
+ ldx #<rndx 
+ ldy #>rndx 
+ bra movmf  ;put new one into memory 
+ 

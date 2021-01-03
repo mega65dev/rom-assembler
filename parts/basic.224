@@ -1,0 +1,26 @@
+dclear jsr dospar  ;parse the line 
+ ldy #finit  ;set code 
+ lda #2 
+ jsr trans  ;send command 
+ jsr print_dos_error ;if any 
+ bra dclall 
+ 
+ 
+ 
+ 
+; COLLECT v<drive#> 
+ 
+collect jsr dospar  ;parse the line 
+ jsr chk3  ;check optional parameters 
+ jsr _clall  ;close all files 
+ ldy #fcoll  ;tabld offset 
+ lda #1   ;length 
+ bbr4 parsts,10$ 
+ inc a   ;include drive 
+10$ jsr trans  ;send command 
+ bra print_dos_error ;if any 
+ 
+ 
+ .page 
+; COPY cdddfn=sdsfn 
+ 

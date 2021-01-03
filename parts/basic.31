@@ -1,0 +1,37 @@
+reason cpy fretop+1 
+ bcc 4$ 
+ bne 1$  ;go garbage collect 
+ cmp fretop 
+ bcc 4$ 
+ 
+1$ pha 
+ ldx #9  ;if tempf2 has zero in between 
+ tya 
+ 
+2$ pha 
+ lda highds-1,x ;save highds on stack 
+ dex 
+ bpl 2$  ;put 8 of them on stack 
+ jsr garba2 ;go garbage collect 
+ ldx #$f7 
+ 
+3$ pla 
+ sta highds+9,x ;restore after garbage collect 
+ inx 
+ bmi 3$ 
+ ply 
+ pla  ;restore .a and .y 
+ cpy fretop+1 ;compare highs 
+ bcc 4$ 
+ bne omerr ;higher is bad 
+ cmp fretop ;compare the lows 
+ bcs omerr 
+4$ rts 
+ 
+ .page 
+ 
+;  Utilities involved in the operation of the BASIC run-time stack. 
+ 
+ 
+; Move top-of-stack pointer to (fndpnt) 
+ 

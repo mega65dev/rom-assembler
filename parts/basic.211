@@ -1,0 +1,29 @@
+dir ldx #doslfn 
+ jsr _chkin 
+ bcs dcat11  ; if problem?? 
+ jsr _readst  ; check status 
+ bne dcat11  ; exit if bad status 
+ jsr crdo  ;output new line 
+ ldy #3   ;loop counter 
+ 
+dcat3 sty t3   ;save counter 
+ 
+10$ jsr _basin  ;get char 
+ sta t4 
+ jsr _basin  ;get char 
+ sta t4+1 
+ jsr _readst  ; check status 
+ bne dcat11  ; exit if eof or bad status 
+ dec t3 
+ bne 10$   ;if not done 
+ 
+; Output blocks number 
+ 
+ ldx t4 
+ lda t4+1 
+ jsr linprt  ;output number 
+ lda #' ' 
+ jsr _bsout  ;output a space 
+ 
+; Get name & output it 
+ 

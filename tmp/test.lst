@@ -1,0 +1,931 @@
+
+; ******** Source: convert/basic.header
+     1                          ; .nam C65 Development BASIC 10.0 (C)1991 CBM
+     2                          ; .subttl *** Copyright (C) 1991  by  Commodore Business Machines, Inc. ***
+     3                          
+     4                          ;  ***************************************************************************
+     5                          ;  *                               //                                        *
+     6                          ;  *              CCCCCCC         //    6666666     555555555                *
+     7                          ;  *             CCC   CCC       //    666   666    555                      *
+     8                          ;  *            CCC             //    666           555                      *
+     9                          ;  *            CCC            //     666 6666      55555555                 *
+    10                          ;  *            CCC           //      6666   666          555                *
+    11                          ;  *            CCC          //       666     666          555               *
+    12                          ;  *             CCC   CCC  //         666   666    555   555                *
+    13                          ;  *              CCCCCCC  //           6666666      5555555                 *
+    14                          ;  *                      //                                                 *
+    15                          ;  *                                                                         *
+    16                          ;  *          BBBBBBBBB      AAAA      SSSSSSSS   III    CCCCCCC             *
+    17                          ;  *          BBB    BBB   AAA  AAA   SSS    SSS  III   CCC   CCC            *
+    18                          ;  *          BBB    BBB  AAA    AAA  SSS         III  CCC                   *
+    19                          ;  *          BBBBBBBBB   AAAAAAAAAA   SSSSSSSS   III  CCC                   *
+    20                          ;  *          BBB    BBB  AAA    AAA         SSS  III  CCC                   *
+    21                          ;  *          BBB    BBB  AAA    AAA  SSS    SSS  III   CCC   CCC            *
+    22                          ;  *          BBBBBBBBB   AAA    AAA   SSSSSSSS   III    CCCCCCC             *
+    23                          ;  *                                                                         *
+    24                          ;  *                       V E R S I O N   1 0 . 0                           *
+    25                          ;  *              *
+    26                          ;  *        Copyright (C)1991  by   Commodore Business Machines, Inc.        *
+    27                          ;  *              *
+    28                          ;  *       All  Rights  Reserved        *
+    29                          ;  *              *
+    30                          ;  ***************************************************************************
+    31                          
+    32                          ;   ROM VERSION  911115  (ver 0.9B)
+    33                          
+    34                          ; ******************************************************************
+    35                          ; *                                                                *
+    36                          ; * This listing contains confidential and proprietary information *
+    37                          ; * of CBM, Inc.  The reproduction, dissemination or disclosure to *
+    38                          ; * others without express written permission is prohibited.  This *
+    39                          ; * software is for use in prototype Commodore C/65 systems only.  *
+    40                          ; *                                                                *
+    41                          ; *  The information in this document will change without notice.  *
+    42                          ; *                                                                *
+    43                          ; *  No  responsibility  is  assumed  for the reliability of this  *
+    44                          ; *                          software.                             *
+    45                          ; *                                                                *
+    46                          ; ******************************************************************
+    47                          
+    48                          ; .STORE $2000,$a000,"b65.rom"
+    49                          
+    50                          ; This version written and assembled by Fred Bowen using BSO format.
+    51                          ; .page
+    52                          ; Adapted from the following C128 files, ROM part numbers 318018-04, 3180194-04:
+    53                          ;
+    54                          ; disclaim  resume   hexfunc
+    55                          ; declare   doloop   rgr
+    56                          ; entries   key   rclr
+    57                          ; header   paint   joy
+    58                          ; init   box   penpot
+    59                          ; indjumps  sshape   pointer
+    60                          ; crunch   gshape   rsprite
+    61                          ; tokens1   circle   rspcolor
+    62                          ; tokens2   draw   bump
+    63                          ; disptable  char   rsppos
+    64                          ; errmsgs   locate   xor
+    65                          ; errprint  scale   rwindow
+    66                          ; execute   color   rnd
+    67                          ; functions  scnclr   code12
+    68                          ; code0   graphic   stringfns
+    69                          ; rtstack   bank   code17
+    70                          ; findline  sleep   code18
+    71                          ; lineget   wait   code19
+    72                          ; list   sprite   code21
+    73                          ; newclr   movspr   code22
+    74                          ; return   play   code23
+    75                          ; remdata   filter   code24
+    76                          ; if   envelope  code26
+    77                          ; ongoto   collision  grbcol
+    78                          ; let   sprcolor  trig
+    79                          ; print   width   using
+    80                          ; input   volume   instring
+    81                          ; next   sound   graphic3
+    82                          ; dim   window   rdot
+    83                          ; sys   boot   graphic7
+    84                          ; trontroff  sprdef   graphic8
+    85                          ; rreg   sprsav   graphic9
+    86                          ; midequal  fast   graphic10
+    87                          ; auto   slow   graphic11
+    88                          ; help   checkval  sethires
+    89                          ; gosubgoto  formeval  clrhires
+    90                          ; go   variables  dos1
+    91                          ; continue  getpointr  dos2
+    92                          ; run   array   dos3
+    93                          ; restore   patcheslo  dos4
+    94                          ; renumber  fre   overflow
+    95                          ; for   val   irq
+    96                          ; delete   dec   stash
+    97                          ; pudef   peekpoke  fetch
+    98                          ; trap   errfunc   swap
+    99                          ; patcheshi  jumptable  def
+   100                          ; strings
+   101                          ; .page
+   102                          ; .subttl C65 BASIC 10.0 Macro Definitions
+   103                          
+   104                          ; .blist
+   105                          
+   106                          ; .page
+   107                          ; .subttl C65 BASIC 10.0 Declarations
+   108                          
+   109                          ; General assignments and equates
+   110                          
+   111                          doslfn           = 0                                      ; DOS' private logical file number
+   112                          dosffn           = 8                                      ; DOS' default drive number
+   113                          
+   114                          strsiz           = 3                                      ; string descriptor size in temps. and arrays
+   115                          lengos           = 5                                      ; length of a GOSUB entry on the runtime stack
+   116                          lenfor           = 18                                     ; length of a FOR entry in the runtime stack
+   117                          
+   118                          ; maxchr = 80  ;misc. command equates
+   119                          ; llen  = 40
+   120                          ; nlines = 25
+   121                          column_width     = 10                                     ; print comma spacing
+   122                          
+   123                          beats_pal        = 1200                                   ; whole note (4/4 time = 2sec.)    [910724]
+   124                          beats_ntsc       = 1440                                   ;
+   125                          
+   126                          lf               = $0a                                    ; line feed
+   127                          cr               = $0d                                    ; carriage return
+   128                          esc              = $1b                                    ; escape
+   129                          pi               = $ff
+   130                          
+   131                          basbgn           = $2000                                  ; bottom of BASIC text bank
+   132                          baswrk           = basbgn+1                               ; where BASIC text starts
+   133                          varbgn           = $2000                                  ; bottom of BASIC data bank (C65: DOS RAM below $12000)
+   134                          bank_0_top       = $8000                                  ; top of BASIC text bank ($FF00)    [910528]
+   135                          bank_1_top       = $8000                                  ; top of BASIC data bank ($f800, VIC attributes)  [910528]
+   136                          
+   137                          ; graphic_base = $2000
+   138                          ; color_ram_lo = $1c00
+   139                          ; color_ram_hi = $d800
+   140                          
+   141                          vic              = $d000                                  ; Video controller
+   142                          
+   143                          fdc              = $d080                                  ; Built-in floppy disk controller
+   144                          
+   145                          sid1             = $d400                                  ; Audio processors (right)
+   146                          sid2             = $d420                                  ; (left)
+   147                          
+   148                          d1_6526          = $dc00                                  ; Ports, peripheral control
+   149                          d1pra            = d1_6526
+   150                          d2_6526          = $dd00
+   151                          d2pra            = d2_6526
+   152                          
+   153                          dma_ctlr         = $d700                                  ; DMA Controller
+   154                          
+   155                          ; .page
+   156                          ;  BASIC base page storage
+   157                          
+   158                          * = $0000
+   159                          
+   160  0000 0000               !fill 2                                  ; '4510' registers (not used in C65 mode)
+   161  0002 00                 srchtk           !fill 1                                  ; token 'search' looks for (run-time stack) / SYS 'bank#'
+   162                          
+   163                          * = $000a                                ; skip over SYS address, status, a/x/y/z registers
+   164                          
+   165                          integr                                                    ; used by math routines (this & following location)
+   166  000a 00                 charac           !fill 1
+   167  000b 00                 endchr           !fill 1
+   168  000c 00                 verck            !fill 1                                  ; LOAD/VERIFY flag
+   169  000d 00                 count            !fill 1                                  ; temp used all over
+   170  000e 00                 dimflg           !fill 1                                  ; DIM flag used by variable search
+   171  000f 00                 valtyp           !fill 1                                  ; 0=numeric, $FF=string
+   172  0010 00                 intflg           !fill 1                                  ; b7: (0=float,1=integer), b6: (1=get flag)
+   173                          garbfl                                                    ; garbage collection temporary
+   174  0011 00                 dores            !fill 1                                  ; b7: P1LINE quote flag
+   175  0012 00                 subflg           !fill 1                                  ; b7: subscript flag (set to disallow subscripts() & integers%)
+   176  0013 00                 input_flag       !fill 1                                  ; READ($98), GET($40), or INPUT($00)
+   177                          domask
+   178  0014 00                 tansgn           !fill 1
+   179  0015 00                 channl           !fill 1                                  ; active I/O channel
+   180                          poker                                                     ; temp used all over
+   181  0016 0000               linnum           !fill 2                                  ; line number
+   182                          
+   183  0018 00                 temppt           !fill 1                                  ; pointer to next temporary descriptor in tempst
+   184  0019 0000               lastpt           !fill 2                                  ; pointer to last used temporary string
+   185  001b 0000000000000000...tempst           !fill 9                                  ; temporary descriptor pointers (3 at 3 bytes each)
+   186                          
+   187                          index
+   188  0024 0000               index1           !fill 2
+   189  0026 0000               index2           !fill 2
+   190                          
+   191                          multiplicand                                              ; 2 bytes wide, for unsigned integer multiply
+   192  0028 00                 resho            !fill 1
+   193  0029 00                 resmoh           !fill 1
+   194                          product                                                   ; 3 bytes wide, for unsigned integer multiply
+   195                          addend
+   196  002a 00                 resmo            !fill 1
+   197  002b 00                 reslo            !fill 1
+   198  002c 00                 !fill 1
+   199  002d 0000               txttab           !fill 2                                  ; where BASIC program begins   (text_bank)
+   200  002f 0000               vartab           !fill 2                                  ; where variable descriptors begin  (var_bank)
+   201  0031 0000               arytab           !fill 2                                  ; where array table begins   (var_bank)
+   202  0033 0000               strend           !fill 2                                  ; where arrays table ends   (var_bank)
+   203  0035 0000               fretop           !fill 2                                  ; bottom of string storage   (var_bank)
+   204  0037 0000               frespc           !fill 2                                  ; where temporary strings begin   (var_bank)
+   205  0039 0000               max_mem_1        !fill 2                                  ; highest address available to BASIC in RAM 1 (var_bank)
+   206  003b 0000               curlin           !fill 2
+   207  003d 0000               txtptr           !fill 2                                  ; pointer to BASIC text used by CHRGET, etc.
+   208                          form                                                      ; used by print using
+   209  003f 0000               fndpnt           !fill 2                                  ; pointer to item found by search
+   210  0041 0000               datlin           !fill 2
+   211  0043 0000               datptr           !fill 2
+   212  0045 0000               inpptr           !fill 2
+   213  0047 0000               varnam           !fill 2
+   214                          fdecpt
+   215  0049 0000               varpnt           !fill 2
+   216                          lstpnt
+   217                          andmsk
+   218  004b 0000               forpnt           !fill 2
+   219                          eormsk           =forpnt+1
+   220                          vartxt
+   221  004d 0000               opptr            !fill 2
+   222  004f 00                 opmask           !fill 1
+   223                          grbpnt
+   224                          tempf3
+   225  0050 0000               defpnt           !fill 2
+   226  0052 0000               dscpnt           !fill 2
+   227                          token_saver                                               ; temp used by P1LINE/HELPSB (was spare????) [910628]
+   228  0054 00                 trmpos           !fill 1                                  ; temp used by SPC(), TAB()   [910628]
+   229                          
+   230  0055 00                 helper           !fill 1                                  ; P1LINE flag b7: HELP vs. LIST
+   231                          ;  b6: memory vs. file
+   232                          ;  b5: FIND/CHANGE
+   233                          ;  b4: highlight tokens
+   234                          ;  b3: highlight REM
+   235                          ;  b1: LINGET flag for AUTOSCROLL
+   236                          ;  b0: token in progress
+   237                          
+   238  0056 00                 jmper            !fill 1                                  ; 3 locations used by Function handler
+   239  0057 00                 !fill 1                                  ;
+   240  0058 00                 oldov            !fill 1                                  ;
+   241                          
+   242  0059 00                 tempf1           !fill 1                                  ; used by math routines
+   243                          ptarg1           =tempf1                                  ; multiply defined for INSTR thru FACexp
+   244                          ptarg2           =tempf1+2                                ; (also used by Monitor Utility, thru lowtr)
+   245                          str1             =tempf1+4
+   246                          str2             =tempf1+7
+   247                          positn           =tempf1+10
+   248                          match            =tempf1+11
+   249                          
+   250                          arypnt
+   251  005a 0000               highds           !fill 2
+   252  005c 0000               hightr           !fill 2
+   253                          
+   254  005e 00                 tempf2           !fill 1                                  ; used by math routines
+   255  005f 0000               deccnt           !fill 2
+   256                          tenexp           = deccnt+1
+   257                          grbtop
+   258                          dptflg
+   259  0061 00                 lowtr            !fill 1
+   260  0062 00                 expsgn           !fill 1
+   261                          
+   262                          fac                                                       ; Floating point accumulator (primary) FAC1
+   263                          dsctmp
+   264  0063 00                 facexp           !fill 1
+   265  0064 00                 facho            !fill 1
+   266  0065 00                 facmoh           !fill 1
+   267                          indice
+   268  0066 00                 facmo            !fill 1
+   269  0067 00                 faclo            !fill 1
+   270  0068 00                 facsgn           !fill 1
+   271                          degree
+   272  0069 00                 sgnflg           !fill 1
+   273                          
+   274  006a 00                 argexp           !fill 1                                  ; Floating point accumulator (secondary) FAC2
+   275  006b 00                 argho            !fill 1
+   276  006c 00                 argmoh           !fill 1
+   277  006d 00                 argmo            !fill 1
+   278  006e 00                 arglo            !fill 1
+   279  006f 00                 argsgn           !fill 1
+   280                          
+   281                          strng1
+   282  0070 00                 arisgn           !fill 1
+   283  0071 00                 facov            !fill 1
+   284                          
+   285                          strng2
+   286                          polypt
+   287                          curtol
+   288  0072 0000               fbufpt           !fill 2
+   289                          
+   290  0074 0000               autinc           !fill 2                                  ; incremental value for AUTO (0=off)
+   291                          
+   292  0076 00                 z_p_temp_1       !fill 1                                  ; USING's leading zero counter
+   293                          ;GET, RENUMBER, KEY temporary
+   294                          ;MOVSPR, SPRITE, PLAY, VOL temporary
+   295                          ;MID$= temporary
+   296                          
+   297                          hulp                                                      ; counter
+   298  0077 00                 keysiz           !fill 1
+   299                          
+   300  0078 00                 syntmp           !fill 1                                  ; used as temp all over the place
+   301  0079 000000             dsdesc           !fill 3                                  ; descriptor for DS$
+   302  007c 0000               tos              !fill 2                                  ; top of run time stack
+   303  007e 00                 runmod           !fill 1                                  ; flags run/direct(b7), load(b6), trace(b5), edit(b4) modes
+   304                          ; autoboot wedge (b0)
+   305                          point                                                     ; USING's pointer to decimal point, 2 bytes used by AutoScroll
+   306  007f 00                 parsts           !fill 1                                  ; DOS parser status word
+   307  0080 00                 parstx           !fill 1                                  ; DOS parser status extensions
+   308                          
+   309  0081 00                 oldstk           !fill 1                                  ; BASIC saves uP stack pointer here
+   310                          
+   311  0082 0000               text_top         !fill 2                                  ; top of BASIC text pointer  (in text_bank)
+   312  0084 00                 text_bank        !fill 1                                  ; where BASIC text lives   (RAM0 default)
+   313  0085 00                 var_bank         !fill 1                                  ; where BASIC vars live   (RAM1 default)
+   314                          sys_bank         = 0                                      ; where system space is  ???? (RAM0, make this a var?)
+   315                          
+   316  0086 00                 sid_speed_flag   !fill 1                                  ; saves system speed during SID ops (used during IRQ)
+   317                          
+   318                          time                                                      ; temporaries for TI, TI$, SLEEP (4 bytes)
+   319                          grapnt                                                    ; used by SPRSAV, RMOUSE, RCOLOR
+   320                          op
+   321  0087 00                 column           !fill 1                                  ; temporaries for FIND/CHANGE, [L]INPUT, [L]READ, CURSOR
+   322                          srow
+   323  0088 000000             fstr1            !fill 3                                  ;
+   324  008b 000000             fstr2            !fill 3                                  ;
+   325                          
+   326                          ; .page
+   327                          * = $00ff
+   328                          
+   329  00ff 00                 lofbuf           !fill 1
+   330  0100 0000000000000000...fbuffr           !fill 16                                 ; MathPack builds numbers here, USING, RENUMBER
+   331                          
+   332                          ;  Kernel MAP configurations & DMA lists
+   333                          
+   334  0110 0000000000000000...!fill 16+36                              ; (4 configs + 3 DMA lists)
+   335                          
+   336                          ;  BASIC DMA lists  (2 @ 12bytes each = 24 bytes)
+   337                          
+   338  0144 00                 dma1_cmd         !fill 1                                  ; This list is used by BASIC OS
+   339  0145 00                 dma1_cnt_lo      !fill 1
+   340  0146 00                 dma1_cnt_hi      !fill 1
+   341  0147 00                 dma1_src_lo      !fill 1
+   342  0148 00                 dma1_src_hi      !fill 1
+   343  0149 00                 dma1_src_bank    !fill 1
+   344  014a 00                 dma1_dest_lo     !fill 1
+   345  014b 00                 dma1_dest_hi     !fill 1
+   346  014c 00                 dma1_dest_bank   !fill 1
+   347  014d 00                 dma1_subcmd      !fill 1                                  ; (from here on not supported until F018A) [910520] F018A
+   348  014e 00                 dma1_mod_lo      !fill 1
+   349  014f 00                 dma1_mod_hi      !fill 1
+   350                          
+   351  0150 00                 dma2_cmd         !fill 1                                  ; This list is used by DMA command & Graphics
+   352  0151 00                 dma2_cnt_lo      !fill 1
+   353  0152 00                 dma2_cnt_hi      !fill 1
+   354  0153 00                 dma2_src_lo      !fill 1
+   355  0154 00                 dma2_src_hi      !fill 1
+   356  0155 00                 dma2_src_bank    !fill 1
+   357  0156 00                 dma2_dest_lo     !fill 1
+   358  0157 00                 dma2_dest_hi     !fill 1
+   359  0158 00                 dma2_dest_bank   !fill 1
+   360  0159 00                 dma2_subcmd      !fill 1                                  ; (from here on not supported until F018A) [910520] F018A
+   361  015a 00                 dma2_mod_lo      !fill 1
+   362  015b 00                 dma2_mod_hi      !fill 1
+   363                          
+   364  015c 00                 !fill 1                                  ; Kernel's dma_byte
+   365                          
+   366                          sysstk                                                    ; bottom of system stack
+   367                          stkend           = $1fb                                   ; top of system stack
+   368                          
+   369                          ; .page
+   370                          * = $0200
+   371                          
+   372                          buflen           = 161                                    ; input buffer size (2 80-column lines + 1)
+   373  0200 0000000000000000...buf              !fill buflen                             ; BASIC/Monitor line input buffer
+   374                          buf_txtptr       = buf-1
+   375                          
+   376                          ; .page
+   377                          * = $02c0
+   378                          ; BASIC RAM code  (RAM code not needed- following moved to ROM)
+   379                          ;
+   380                          ; chrget *=*+42  ;get byte from text bank after incrementing TXTPTR
+   381                          ; chrgot = chrget+2 ;get byte from text bank at TXTPTR
+   382                          ; qnum  = chrget+27 ;evaluate byte as a number & set flags accordingly
+   383                          
+   384  02c0 0000               adray1           !fill 2                                  ; ptr to routine:  convert float -> integer ???? why keep
+   385  02c2 0000               adray2           !fill 2                                  ; ptr to routine:  convert integer -> float ???? why keep
+   386  02c4 000000             zero             !fill 3                                  ; numeric constant for BASIC, downloaded from ROM
+   387                          
+   388  02c7 00                 errnum           !fill 1                                  ; used by error trapping routine-last error number
+   389  02c8 0000               errlin           !fill 2                                  ; line # of last error ($FFFF if no error)
+   390  02ca 0000               trapno           !fill 2                                  ; line to go to on error ($FFxx if none set)
+   391  02cc 00                 tmptrp           !fill 1                                  ; hold trap # temporary
+   392  02cd 0000               errtxt           !fill 2                                  ; pointer to statement causing last error
+   393  02cf 0000               max_mem_0        !fill 2                                  ; highest address available to BASIC in RAM 0 (text bank)
+   394                          
+   395  02d1 00                 current_bank     !fill 1                                  ; context for PEEK,POKE,BOOT,SYS,WAIT,BLOAD/SAVE set by BANK.
+   396  02d2 00                 fin_bank         !fill 1                                  ; bank pointer for string->number conversion routine FIN
+   397  02d3 00000000           tmpdes           !fill 4                                  ; pointers to temporary descriptors for INSTR
+   398  02d7 00                 bits             !fill 1                                  ; flag for math bit/byte shifter
+   399  02d8 00                 highlight_color  !fill 1                                  ; color for highlighting text
+   400  02d9 00                 highlight_save   !fill 1                                  ; saves normal color during highlighting, msb=flag
+   401  02da 00                 find_count       !fill 1                                  ; count for LIST to highlight FIND text
+   402                          
+   403                          ; Interrupt stuff
+   404                          
+   405  02db 00                 irq_wrap_flag    !fill 1                                  ; used by BASIC_IRQ to block all but one IRQ call
+   406  02dc 00                 intval           !fill 1                                  ; BASIC interrupts enabled (via collision command)
+   407  02dd 000000             int_trip_flag    !fill 3                                  ; flags which interrupts occurred
+   408  02e0 000000             int_adr_lo       !fill 3                                  ; where to go for each type of collision (line number)
+   409  02e3 000000             int_adr_hi       !fill 3                                  ;
+   410  02e6 0000               collisions       !fill 2                                  ; sprite collisions, s/s and s/bgnd, recorded during IRQ
+   411  02e8 00                 lightpen_xpos    !fill 1                                  ; lightpen position recorded during IRQ
+   412  02e9 00                 lightpen_ypos    !fill 1
+   413                          
+   414                          ; dejavu *=*+1  ;'cold' or 'warm' reset status (must be in page 5!)????
+   415                          
+   416                          ; nmi_wrap_flag *=*+1  ;used by BASIC_NMI to block all but one NMI call [910523]
+   417                          ;    ; (removed)      [910826]
+   418                          ;(leaving 12 bytes)
+   419                          ; .page
+   420                          ; BASIC indirect vectors
+   421                          
+   422                          * = $02f7
+   423                          
+   424  02f7 000000             usrpok           !fill 3                                  ; USR vector (must be set by application)
+   425                          
+   426                          vectors_begin
+   427  02fa 0000               iAutoScroll      !fill 2                                  ; AutoScroll vector
+   428  02fc 0000               esc_fn_vec       !fill 2                                  ; Escape Function vector
+   429  02fe 0000               graphic_vector   !fill 2                                  ; Graphic Kernel vector (was 'bnkvec')
+   430  0300 0000               ierror           !fill 2                                  ; indirect error (output error in .x)
+   431  0302 0000               imain            !fill 2                                  ; indirect main (system direct loop)
+   432  0304 0000               icrnch           !fill 2                                  ; indirect crunch (tokenization routine)
+   433  0306 0000               iqplop           !fill 2                                  ; indirect list (char list)
+   434  0308 0000               igone            !fill 2                                  ; indirect gone (char dispatch)
+   435  030a 0000               ieval            !fill 2                                  ; indirect eval (symbol evaluation)
+   436  030c 0000               iesclk           !fill 2                                  ; escape token crunch
+   437  030e 0000               iescpr           !fill 2                                  ; escape token list
+   438  0310 0000               iescex           !fill 2                                  ; escape token execute
+   439  0312 0000               itime            !fill 2                                  ; 60Hz interrupt vector (before jiffy)
+   440  0314 0000               cinv             !fill 2                                  ; IRQ RAM vector
+   441  0316 0000               cbinv            !fill 2                                  ; BRK RAM vector
+   442                          
+   443                          ; Remainder of this area reserved for Kernel indirects & Kernel RAM code
+   444                          
+   445                          ; .page
+   446                          * = $0400                                ; BASIC's run-time stack (2 pages)
+   447                          stktop                                                    ; (also used by BOOT SYS and Monitor)
+   448                          stkbot           = $05ff
+   449                          
+   450                          
+   451                          * = $0600                                ; Sprite definitions (2 pages, must be below $1000)
+   452                          sprite_base
+   453                          
+   454                          
+   455                          * = $0800
+   456                          screen_start                                              ; Text display screen
+   457                          * = *+2000
+   458                          
+   459                          sprite_ptrs_40   = screen_start+$3f8
+   460                          sprite_ptrs_80   = screen_start+$7f8
+   461                          
+   462                          ; .page
+   463                          * = $1170                                ; previous to this used by Kernel
+   464                          
+   465  1170 0000               oldlin           !fill 2                                  ; BASIC storage
+   466  1172 0000               oldtxt           !fill 2                                  ; BASIC storage
+   467  1174 0000000000         rndx             !fill 5                                  ; Floating Point representation of last random #
+   468                          
+   469                          
+   470                          ; Yet more temporaries shared by various routines
+   471                          
+   472                          window_temp                                               ; window  (4 bytes)
+   473                          t3                                                        ; dcat  (1 byte)
+   474                          renum_tmp_1                                               ; renumber (2 bytes)
+   475  1179 0000               tmptxt           !fill 2                                  ; do/loop (2 bytes)
+   476                          
+   477                          t4                                                        ; dcat  (2 bytes)
+   478                          renum_tmp_2                                               ; renumber (2 bytes)
+   479  117b 0000               tmplin           !fill 2                                  ; do/loop (2 bytes)
+   480                          
+   481                          
+   482                          ;  BASIC/DOS interface vars  (20 bytes)
+   483                          
+   484  117d 0000               dosofl           !fill 2                                  ; BLOAD/BSAVE starting addr
+   485  117f 0000               dosofh           !fill 2                                  ; BSAVE ending addr
+   486  1181 00                 dosla            !fill 1                                  ; DOS logical addr
+   487  1182 00                 dosfa            !fill 1                                  ; DOS physical addr
+   488  1183 00                 dossa            !fill 1                                  ; DOS secondary addr
+   489                          
+   490  1184 00                 xcnt             !fill 1                                  ; DOS loop counter------ this area zeroed-out each DOS call -----
+   491  1185 00                 dosf1l           !fill 1                                  ; DOS filename 1 len
+   492  1186 00                 dosds1           !fill 1                                  ; DOS disk drive 1
+   493  1187 00                 dosf2l           !fill 1                                  ; DOS filename 2 len
+   494  1188 00                 dosds2           !fill 1                                  ; DOS disk drive 2
+   495  1189 0000               dosf2a           !fill 2                                  ; DOS filename 2 addr
+   496  118b 00                 dosrcl           !fill 1                                  ; DOS record length
+   497  118c 00                 dosbnk           !fill 1                                  ; DOS load/save bank
+   498  118d 0000               dosdid           !fill 2                                  ; DOS ID identifier
+   499  118f 00                 dosflags         !fill 1                                  ; DOS flags  7:ID,  6:recover
+   500  1190 00                 dossa_temp       !fill 1                                  ; temp storage for file's sa during RECORD command
+   501                          dosspc           = *-xcnt                                 ; space used by DOS routines-------------------------------------
+   502                          
+   503  1191 0000000000000000...savram           !fill 67                                 ; buffer used by MOVSPR, SPRDEF, SAVSPR, and DOS parser
+   504                          
+   505                          xabs             = savram                                 ; movspr_line calculations   [910809]
+   506                          yabs             = savram+2
+   507                          xsgn             = savram+4
+   508                          ysgn             = savram+6
+   509                          fct              = savram+8
+   510                          errval           = savram+12
+   511                          
+   512                          ; .page
+   513                          ; PRINT USING definitions & storage  (24 bytes)
+   514                          
+   515                          puchrs                                                    ; Declarations for PRINT USING...
+   516  11d4 00                 pufill           !fill 1                                  ; print using fill symbol
+   517  11d5 00                 pucoma           !fill 1                                  ; print using comma symbol
+   518  11d6 00                 pudot            !fill 1                                  ; print using decimal point symbol
+   519  11d7 00                 pumony           !fill 1                                  ; print using monetary symbol
+   520                          
+   521  11d8 00                 bnr              !fill 1                                  ; pointer to begin #
+   522  11d9 00                 enr              !fill 1                                  ; pointer to end #
+   523  11da 00                 dolr             !fill 1                                  ; dollar flag
+   524  11db 00                 flag             !fill 1                                  ; comma flag (also used by PLAY)????
+   525  11dc 00                 swe              !fill 1                                  ; counter
+   526  11dd 00                 usgn             !fill 1                                  ; sign exponent
+   527  11de 00                 uexp             !fill 1                                  ; pointer to exponent
+   528  11df 00                 vn               !fill 1                                  ; # of digits before decimal point
+   529  11e0 00                 chsn             !fill 1                                  ; justify flag
+   530  11e1 00                 vf               !fill 1                                  ; # of positions before decimal point (field)
+   531  11e2 00                 nf               !fill 1                                  ; # of positions after decimal point (field)
+   532  11e3 00                 posp             !fill 1                                  ; +/- flag (field)
+   533  11e4 00                 fesp             !fill 1                                  ; exponent flag (field)
+   534  11e5 00                 etof             !fill 1                                  ; switch
+   535  11e6 00                 cform            !fill 1                                  ; char counter (field)
+   536  11e7 00                 sno              !fill 1                                  ; sign no
+   537  11e8 00                 blfd             !fill 1                                  ; blank/star flag
+   538  11e9 00                 begfd            !fill 1                                  ; pointer to begin of field
+   539  11ea 00                 lfor             !fill 1                                  ; length of format
+   540  11eb 00                 endfd            !fill 1                                  ; pointer to end of field
+   541                          
+   542                          ; .page
+   543                          ;  * = $1200 ;BASIC Graphic, Sprite, Music, & Sound storage
+   544                          
+   545                          ;  The following 24 bytes are multiply defined...
+   546                          ;
+   547                          ; params = *
+   548                          
+   549                          ;  Circle drawing variables  (multiply defined).
+   550                          ;
+   551                          ; xcircl *=*+2  ;circle center, x coordinate
+   552                          ; ycircl *=*+2  ;circle center, y coordinate
+   553                          ; xradus *=*+2  ;x radius
+   554                          ; yradus *=*+2  ;y radius
+   555                          ; rotang *=*+4  ;rotation angle
+   556                          ; angbeg *=*+2  ;arc angle start
+   557                          ; angend *=*+2  ;arc angle end
+   558                          ; xrcos  *=*+2  ;x radius * cos(rotation angle)
+   559                          ; yrsin  *=*+2  ;y radius * sin(rotation angle)
+   560                          ; xrsin  *=*+2  ;x radius * sin(rotation angle)
+   561                          ; yrcos  *=*+2  ;y radius * cos(rotation angle)
+   562                          
+   563                          ; parend = *
+   564                          
+   565                          ;  Box drawing variables  (multiply defined).
+   566                          ;
+   567                          ;  *=params
+   568                          ; xcord1 *=*+2  ;point 1 x-coord.
+   569                          ; ycord1 *=*+2  ;point 1 y-coord.
+   570                          ; boxang *=*+2  ;rotation angle
+   571                          ; xcount *=*+2
+   572                          ; ycount *=*+2
+   573                          ; bxleng *=*+2  ;length of a side
+   574                          ; xcord2 *=*+2
+   575                          ; ycord2 *=*+2
+   576                          
+   577                          ; .page
+   578                          ;  Shape variables  (multiply defined).
+   579                          ;
+   580                          ;  *=params
+   581                          ;  *=*+1  ;placeholder
+   582                          ; keylen *=*+1
+   583                          ; keynxt *=*+1
+   584                          ; strsz  *=*+1  ;string len
+   585                          ; gettyp *=*+1  ;replace shape mode
+   586                          ; strptr *=*+1  ;string pos'n counter
+   587                          ; oldbyt *=*+1  ;old bit map byte
+   588                          ; newbyt *=*+1  ;new string or bit map byte
+   589                          ;  *=*+1  ;placeholder
+   590                          ; xsize  *=*+2  ;shape column length
+   591                          ; ysize  *=*+2  ;shape row length
+   592                          ; xsave  *=*+2  ;temp for column length
+   593                          ; stradr *=*+2  ;save shape string descriptor
+   594                          ; bitidx *=*+1  ;bit index into byte
+   595                          
+   596                          ;  General use parameters  (multiply defined).
+   597                          ;
+   598                          ;  *=params
+   599                          ; xcentr *=*+2
+   600                          ; ycentr *=*+2
+   601                          ; xdist1 *=*+2
+   602                          ; ydist1 *=*+2
+   603                          ; xdist2 *=*+2
+   604                          ; ydist2 *=*+2
+   605                          ; disend
+   606                          ;  *=*+2  ;placeholder
+   607                          ; colcnt *=*+1  ;char's col. counter
+   608                          ; rowcnt *=*+1
+   609                          ; strcnt *=*+1
+   610                          
+   611                          ; .page
+   612                          ;  General  graphic & sound  buffers & assignments
+   613                          ;
+   614                          ;  * = parend
+   615                          
+   616                          ;  General graphic storage (used by C128-type sprite routines in C65)
+   617                          
+   618                          vwork                                                     ; graphics & sprite vars
+   619  11ec 0000               xpos             !fill 2                                  ; current x position
+   620  11ee 0000               ypos             !fill 2                                  ; current y position
+   621  11f0 0000               xdest            !fill 2                                  ; x-coordinate destination
+   622  11f2 0000               ydest            !fill 2                                  ; y-coordinate destination
+   623                          
+   624  11f4 00                 numcnt           !fill 1                                  ; temp, usually coordinate type
+   625  11f5 00                 vtemp1           !fill 1                                  ; used by sprite math stuff ????was base page
+   626  11f6 00                 vtemp2           !fill 1                                  ; ????was base page
+   627  11f7 00                 vtemp3           !fill 1                                  ; misc. graphic temp storage
+   628  11f8 00                 vtemp4           !fill 1
+   629  11f9 00                 vtemp5           !fill 1
+   630                          
+   631                          ; mvdflg *=*+1  ;flag if 10k hires allocated ???? this stuff was base page
+   632                          ; colsel *=*+1  ;current color selected
+   633                          ; multicolor_1 *=*+1
+   634                          ; multicolor_2 *=*+1
+   635                          ; foreground *=*+1
+   636                          ; scalem *=*+1  ;scale mode flag
+   637                          ; scale_x *=*+2  ;scale factor in x
+   638                          ; scale_y *=*+2  ;scale factor in y
+   639                          ; stopnb *=*+1  ;stop paint if not background/not same color
+   640                          ; fg_bg  *=*+1  ;packed foreground/background color nybbles
+   641                          ; fg_mc1 *=*+1  ;packed foreground/multicolor 1 color nybbles
+   642                          
+   643                          ; bitcnt *=*+1  ;temp for gshape
+   644                          ; width  *=*+1  ;double width flag
+   645                          ; filflg *=*+1  ;box fill flag
+   646                          ; circle_segment *=*+1  ;degrees per circle segment
+   647                          ; bitmsk *=*+1  ;temp for bit mask
+   648                          
+   649                          ; character_rom *=*+1  ;high byte of address of char rom for 'char' command
+   650                          ; upper_lower *=*+1  ;pointer to upper/lower case for char command
+   651                          ; upper_graphic *=*+1  ;   "       upper/graphic
+   652                          
+   653                          ;  DrawLine stuff
+   654                          ;
+   655                          ; xabs  *=*+2  ;16 bytes
+   656                          ; yabs  *=*+2
+   657                          ; xsgn  *=*+2
+   658                          ; ysgn  *=*+2
+   659                          ; fct  *=*+4
+   660                          ; errval *=*+2
+   661                          ; lesser *=*+1
+   662                          ; greatr *=*+1
+   663                          ; .page
+   664                          ;  Angle stuff (used by sprites)
+   665                          
+   666  11fa 00                 angsgn           !fill 1                                  ; sign of angle
+   667  11fb 0000               sinval           !fill 2                                  ; sine of value of angle
+   668  11fd 0000               cosval           !fill 2                                  ; cosine of value of angle
+   669                          ; angcnt *=*+2  ;temps for angle distance routines
+   670                          
+   671                          
+   672                          ; Sprite stuff
+   673                          
+   674  11ff 00000000           savsiz           !fill 4                                  ; temp work locations for SSHAPE, SPRSAV, MOVSPR_TO
+   675                          lesser
+   676  1203 00                 sprtmp_1         !fill 1                                  ; temp for SPRSAV
+   677                          greatr
+   678  1204 00                 sprtmp_2         !fill 1
+   679                          
+   680  1205 0000000000000000...sprite_data      !fill 88                                 ; speed/direction tables for 8 sprites, 11 bytes each
+   681                          ;   move ang/dist move line
+   682                          ; offset= 0 b7=0+speed b7=1+speed
+   683                          ;  1 counter  counter lo
+   684                          ;  2 angle sign         hi
+   685                          ;  3,4 delta-X  dir+min/max
+   686                          ;  5,6 delta-Y  fct1
+   687                          ;  7,8 total-X  fct2
+   688                          ;  9,10 total-Y  error
+   689                          
+   690                          init_as_0        = *-sprite_data-1
+   691                          
+   692                          ; vic_save *=*+21  ;copy of VIC reg's, used to update chip during retrace
+   693                          
+   694                          ; defmod *=*+1  ;for SPRDEF
+   695                          ; lincnt *=*+1  ; "
+   696                          ; sprite_number *=*+1  ; "
+   697                          
+   698                          ; .page
+   699                          ; Music stuff driving stereo SIDs, 3 voices each
+   700                          
+   701  125d 0000000000000000...voices           !fill 12                                 ; Voice counters (activity flags)  [910612] stereo
+   702  1269 000000000000       waveform         !fill 6                                  ; Waveforms for each voice   [910612] stereo
+   703                          
+   704  126f 00                 voice            !fill 1                                  ; Play note parameters
+   705  1270 00                 octave           !fill 1
+   706  1271 00                 sharp            !fill 1
+   707  1272 00                 dnote            !fill 1
+   708  1273 00                 tempo_rate       !fill 1                                  ; duration of whole note 4/4 time = 24/rate
+   709  1274 0000               pitch            !fill 2
+   710  1276 0000               ntime            !fill 2
+   711                          
+   712  1278 00000000           filters1         !fill 4                                  ; Volume & Filter parameters   [910612] was 5
+   713  127c 00000000           filters2         !fill 4                                  ; [910612] stereo
+   714  1280 00000000           fltsav           !fill 4                                  ; temps
+   715  1284 00                 fltflg           !fill 1                                  ; temp
+   716                          
+   717  1285 00                 tonnum           !fill 1                                  ; Tune Envelope stuff
+   718  1286 000000             tonval           !fill 3
+   719                          
+   720  1289 0000000000000000...atktab           !fill 10                                 ; Tune Envelopes
+   721  1293 0000000000000000...sustab           !fill 10
+   722  129d 0000000000000000...wavtab           !fill 10
+   723  12a7 0000000000000000...pulslw           !fill 10
+   724  12b1 0000000000000000...pulshi           !fill 10
+   725                          
+   726  12bb 00                 parcnt           !fill 1                                  ; temp: envelope
+   727  12bc 00                 nibble           !fill 1                                  ; temp: envelope, filter
+   728                          
+   729                          ; .page
+   730                          ; SOUND command stuff
+   731                          
+   732  12bd 00                 sound_voice      !fill 1
+   733  12be 000000000000       sound_time_lo    !fill 3+3                                ; [910612] stereo
+   734  12c4 000000000000       sound_time_hi    !fill 3+3                                ; [910612] stereo
+   735  12ca 000000000000       sound_max_lo     !fill 3+3                                ; [910612] stereo
+   736  12d0 000000000000       sound_max_hi     !fill 3+3                                ; [910612] stereo
+   737  12d6 000000000000       sound_min_lo     !fill 3+3                                ; [910612] stereo
+   738  12dc 000000000000       sound_min_hi     !fill 3+3                                ; [910612] stereo
+   739  12e2 000000000000       sound_direction  !fill 3+3                                ; [910612] stereo
+   740  12e8 000000000000       sound_step_lo    !fill 3+3                                ; [910612] stereo
+   741  12ee 000000000000       sound_step_hi    !fill 3+3                                ; [910612] stereo
+   742  12f4 000000000000       sound_freq_lo    !fill 3+3                                ; [910612] stereo
+   743  12fa 000000000000       sound_freq_hi    !fill 3+3                                ; [910612] stereo
+   744                          
+   745                          ;above must end before $1300
+   746                          * = $1160
+   747                          ;below must end before $1170
+   748                          
+   749  1160 00                 temp_time_lo     !fill 1
+   750  1161 00                 temp_time_hi     !fill 1
+   751  1162 00                 temp_max_lo      !fill 1
+   752  1163 00                 temp_max_hi      !fill 1
+   753  1164 00                 temp_min_lo      !fill 1
+   754  1165 00                 temp_min_hi      !fill 1
+   755  1166 00                 temp_direction   !fill 1
+   756  1167 00                 temp_step_lo     !fill 1
+   757  1168 00                 temp_step_hi     !fill 1
+   758  1169 00                 temp_freq_lo     !fill 1
+   759  116a 00                 temp_freq_hi     !fill 1
+   760  116b 00                 temp_pulse_lo    !fill 1
+   761  116c 00                 temp_pulse_hi    !fill 1
+   762  116d 00                 temp_waveform    !fill 1
+   763                          
+   764  116e 00                 pot_temp_1       !fill 1                                  ; temporaries for 'POT' function
+   765  116f 00                 pot_temp_2       !fill 1
+   766                          
+   767                          ; .page
+   768                          * = $1300
+   769                          
+   770  1300 0000000000000000...dosstr           !fill 256                                ; DOS input/output string buffer
+   771                          
+   772                          ; .page
+   773                          * = $1f00                                ; Graphics Kernel Interface
+   774                          
+   775  1f00 00                 GKI__parm1       !fill 1                                  ; ml interface parm values
+   776  1f01 00                 GKI__parm2       !fill 1
+   777  1f02 00                 GKI__parm3       !fill 1
+   778  1f03 00                 GKI__parm4       !fill 1
+   779  1f04 00                 GKI__parm5       !fill 1
+   780  1f05 00                 GKI__parm6       !fill 1
+   781  1f06 00                 GKI__parm7       !fill 1
+   782  1f07 00                 GKI__parm8       !fill 1
+   783  1f08 00                 GKI__parm9       !fill 1
+   784  1f09 00                 GKI__parm10      !fill 1
+   785  1f0a 00                 GKI__parm11      !fill 1
+   786  1f0b 00                 GKI__parm12      !fill 1
+   787  1f0c 00                 GKI__parm13      !fill 1
+   788  1f0d 00                 GKI__parm14      !fill 1
+   789  1f0e 00                 GKI__parm15      !fill 1
+   790  1f0f 00                 GKI__parm16      !fill 1
+   791  1f10 00                 GKI__parm17      !fill 1
+   792                          
+   793  1f11 00                 GKI__subparm1    !fill 1                                  ; subroutine parm values
+   794  1f12 00                 GKI__subparm2    !fill 1
+   795  1f13 00                 GKI__subparm3    !fill 1
+   796  1f14 00                 GKI__subparm4    !fill 1
+   797  1f15 00                 GKI__subparm5    !fill 1
+   798                          
+   799  1f16 00                 GKI__temp1       !fill 1                                  ; local variables within subroutines
+   800  1f17 00                 GKI__temp2       !fill 1
+   801  1f18 00                 GKI__temp3       !fill 1
+   802  1f19 00                 GKI__temp4       !fill 1
+   803  1f1a 00                 GKI__temp5       !fill 1
+   804  1f1b 00                 GKI__temp6       !fill 1
+   805  1f1c 00                 GKI__temp7       !fill 1
+   806  1f1d 00                 GKI__temp8       !fill 1
+   807  1f1e 00                 GKI__temp9       !fill 1
+   808  1f1f 00                 GKI__temp10      !fill 1
+   809  1f20 00                 GKI__temp11      !fill 1
+   810  1f21 00                 GKI__temp12      !fill 1
+   811  1f22 00                 GKI__temp13      !fill 1
+   812  1f23 00                 GKI__temp14      !fill 1
+   813  1f24 00                 GKI__temp15      !fill 1
+   814  1f25 00                 GKI__temp16      !fill 1
+   815  1f26 00                 GKI__temp17      !fill 1
+   816                          
+   817                          ;.end
+   818                          ; .page
+   819                          ; .subttl C65 Kernal Entry Points
+   820                          
+   821                          ; Addresses of OS parameters referenced by BASIC:
+   822                          
+   823                          _6510_data_reg   = $01
+   824                          _bank            = $02                                    ; reg's for Kernel xxx_FAR routines (used by SYS)
+   825                          _pchi            = $03
+   826                          _pclo            = $04
+   827                          _s_reg           = $05
+   828                          _a_reg           = $06
+   829                          _x_reg           = $07
+   830                          _y_reg           = $08
+   831                          _z_reg           = $09
+   832                          
+   833                          _vicIRQ          = $a0                                    ; VIC IRQ flag register at time of IRQ
+   834                          _starting_addr   = $ac                                    ; address BLOAD loaded to
+   835                          _sa              = $b9                                    ; I/O channel secondary address
+   836                          _fa              = $ba                                    ; I/O channel device number
+   837                          _ndx             = $d0                                    ; number of characters in keyboard buffer
+   838                          _kyndx           = $d1                                    ; fkey active flag
+   839                          _mode            = $d7                                    ; 40/80 mode
+   840                          _graphm          = $d8                                    ; graphic mode switch (multi/hires/split)
+   841                          _pnt             = $e0                                    ; Editor screen address at cursor
+   842                          
+   843                          _screen_bottom   = $e4                                    ; these describe the current window
+   844                          _screen_top      = $e5
+   845                          _screen_left     = $e6
+   846                          _screen_right    = $e7
+   847                          
+   848                          _color           = $f1                                    ; text color      [910722]
+   849                          _autoinsert      = $f6                                    ; enable/disable auto insert mode
+   850                          _locks           = $f7                                    ; Editor keyboard locks     [910722]
+   851                          
+   852                          _keyd            = $02b0                                  ; keyboard buffer     [910710]
+   853                          ;_split = $0a34  ;line to start split at
+   854                          
+   855                          number_fkeys     = 16                                     ; max of 14 prog. fn. keys
+   856                          _pky_lengths     = $1000                                  ; table of prog. fn. key sizes
+   857                          _pky_buffer      = _pky_lengths+number_fkeys              ; actual buffer
+   858                          
+   859                          _restart_vector  = $1100                                  ; Kernel restart vector
+   860                          _pal_ntsc        = $1103                                  ; PAL=$ff, NTSC=$00 indicator    [910107]
+   861                          _init_status     = $1104                                  ; msb set tells Kernel to let BASIC have IRQs
+   862                          _default_drive   = $1106                                  ; system default disk drive
+   863                          _expansion       = $1107                                  ; expansion RAM (# banks????)    [910107]
+   864                          _sleep_counter   = $110c                                  ; binary frame counter maintained by Kernel  [910730]
+   865                          _mouse_enable    = $1135                                  ; port# used by mouse (b7=port2, b6=port1, or both) [910107]
+   866                          _mouse_pointer   = $1136                                  ; sprite pointer (sprite*2) by Kernel mouse driver "
+   867                          _mouse_top       = $113b                                  ; margins for mouse pointer    "
+   868                          _mouse_bottom    = $113c                                  ; "
+   869                          _mouse_left      = $113d                                  ; "
+   870                          _mouse_right     = $113e                                  ; "
+   871                          
+   872                          ; Addresses of I/O areas referenced by BASIC:
+   873                          
+   874                          _red             = $d100                                  ; VIC palette (I/O block)
+   875                          _green           = $d200
+   876                          _blue            = $d300
+   877                          
+   878                          ; Addresses of Kernel entry points referenced by BASIC:
+   879                          
+   880                          _print           = $e00c
+   881                          _mouse           = $e01b                                  ; [910122]
+   882                          _set_window      = $e02d
+   883                          _palette_init    = $e027
+   884                          _cursor          = $e030                                  ; [910228]
+   885                          ;_ldtb2 = $e033
+   886                          ;_ldtb1 = $e04c
+   887                          
+   888                          _close_all       = $ff50                                  ; close all channels assigned to device .a
+   889                          _go_64           = $ff53                                  ; C64 mode
+   890                          _monitor         = $ff56                                  ; ML Monitor
+   891                          _bootsys         = $ff59                                  ; Boot alternate OS     [910110]
+   892                          _phoenix         = $ff5c                                  ; jump to 'post-BASIC initialize' routine
+   893                          _lkupla          = $ff5f                                  ; find an available Logical Address
+   894                          _lkupsa          = $ff62                                  ; find an available Secondary Address
+   895                          _swapper         = $ff65                                  ; switch 80/40 column
+   896                          _doakey          = $ff68                                  ; add/remove a definition from the p.f. key table
+   897                          _setbank         = $ff6b                                  ; set bank for load/save/verify/open
+   898                          _jsr_far         = $ff6e                                  ; call a subroutine in any bank
+   899                          _jmp_far         = $ff71                                  ; jump to code in any bank
+   900                          _lda_far         = $ff74                                  ; write a byte to any bank
+   901                          _sta_far         = $ff77                                  ; read a byte from any bank
+   902                          _cmp_far         = $ff7a                                  ; compare a byte to any bank
+   903                          _primm           = $ff7d                                  ; print immediate
+   904                          
+   905                          _setmsg          = $ff90
+   906                          _readst          = $ffb7
+   907                          _setlfs          = $ffba
+   908                          _setnam          = $ffbd
+   909                          _open            = $ffc0
+   910                          _close           = $ffc3
+   911                          _chkin           = $ffc6
+   912                          _chkout          = $ffc9
+   913                          _clrch           = $ffcc
+   914                          _basin           = $ffcf
+   915                          _bsout           = $ffd2
+   916                          _loadsp          = $ffd5
+   917                          _savesp          = $ffd8
+   918                          _SetTime         = $ffdb
+   919                          _ReadTime        = $ffde
+   920                          _stop            = $ffe1
+   921                          _getin           = $ffe4
+   922                          _clall           = $ffe7
+   923                          _screen_org      = $ffed
+   924                          _plot            = $fff0
+   925                          
+   926                          ;.end
+   927                          ; .page
+   928                          ; .subttl C65 BASIC 10.0 Initilaization
+   929                          

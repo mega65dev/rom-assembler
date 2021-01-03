@@ -1,0 +1,21 @@
+rid lda dosdid ;include id 
+ sta dosstr,x 
+ inx 
+ lda dosdid+1 
+ bra sdp5 ;always 
+ 
+ 
+rwrt lda dosrcl ;check for L or W 
+ beq 10$  ;zero then write 
+ lda #'L' 
+ bra sdp5 ;always 
+ 
+10$ lda #'S' ;send W,S 
+ sta dosrcl 
+ lda #'W' 
+ bra sdp5 ;always 
+ 
+ 
+ 
+; Move record number 
+ 

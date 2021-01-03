@@ -1,0 +1,76 @@
+verify_check 
+ ldx #ervfy  ;assume error 
+; jsr _readst  ;read status 
+ bbs4 parsts,cld55 ; branch if 'verify' error 
+ bbs7 runmod,cld20 ; branch if not direct mode 
+verify_ok 
+ jsr _primm 
+   .byte cr, 'OK', cr, 0 
+cld20 rts 
+ 
+ 
+ 
+; Finish load 
+ 
+cld50 
+; jsr _readst  ;check I/O status 
+ lda parsts 
+ and #%10111111  ; EOI is okay, so mask it 
+ beq cld60  ; good- finish load operation 
+ 
+load_error 
+ ldx #erload 
+cld55 bra error 
+ 
+ 
+cld60 stx text_top 
+ sty text_top+1  ;end load address 
+ 
+ bbs7 runmod,cld70 ;branch if not direct mode 
+ bbs6 runmod,cld20 ;special "RUN file_name" flag...get out here (rts) 
+ 
+ jsr link_program ;relink 
+ jsr runc  ;clear vars 
+ bra ready_2  ;print 'ready' & return to main 
+ 
+ 
+; Program load 
+ 
+cld70 jsr reset_txtptr 
+ jsr link_program 
+ bra fload 
+ 
+ .page 
+open jsr paoc  ;parse statement 
+ jsr _open  ;open it 
+ bra close_out_1 
+ 
+ 
+ 
+close jsr paoc  ;parse statement 
+; jsr put_io_in_map 
+ lda andmsk  ;get la 
+ 
+ 
+close_out   ;enter with .a=LA   [900725] 
+ clc   ;flag a real close 
+ jsr _close  ;close it 
+ 
+close_out_1 
+ php 
+ pha 
+ lda _fa   ;special error checking if disk op 
+ cmp #8 
+ bcc 10$ 
+ pla 
+ plp 
+ bra exit_disk_operation ; disk 
+ 
+10$ pla   ; something else 
+ plp 
+ bcs erexit 
+ rts 
+ 
+ .page 
+; Parse LOAD, SAVE, & VERIFY commands 
+ 

@@ -1,0 +1,18 @@
+dverify lda #1   ;flag 'verify' 
+   .byte $2c 
+ 
+ 
+ 
+; DLOAD dfn 
+ 
+dload lda #0 
+ sta verck  ;set load flag (for verify check later) 
+ 
+ bbr4 runmod,10$  ;PROGRAM or EDIT mode?    [910620] 
+ bra edit_load  ; edit 
+ 
+10$ lda #$e6  ;set error flags 
+ jsr dosprs  ;parse the line 
+ jsr chk2  ;check required parameters 
+ 
+ 

@@ -1,0 +1,14 @@
+resswp lda errtxt ;backup one so chrget will work 
+ bne 10$ 
+ dec errtxt+1 
+10$ dec errtxt 
+ 
+ ldx #1 
+20$ lda errlin,x ;restore line# 
+ sta curlin,x 
+ lda errtxt,x ;restore text pointer to statement 
+ sta txtptr,x 
+ dex 
+ bpl 20$ 
+ 
+ 

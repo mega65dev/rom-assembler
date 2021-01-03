@@ -1,0 +1,17 @@
+ldir_end 
+ lda sid_speed_flag ;serial bus kludge for open4,4:cmd4:dir ???? 
+ tsb $d609  ; restore fast serial bus enables 
+ bra dcat11 
+ 
+ 
+ 
+dcato jsr _clrch 
+ ldx channl  ;restore output channel 
+ beq 10$   ; branch if screen (default output) 
+ jmp _chkout  ; else get output channel 
+ 
+10$ rts 
+ 
+ .page 
+; DOPEN dfn(,t(,r)) 
+ 

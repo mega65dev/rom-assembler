@@ -1,0 +1,74 @@
+envelope 
+ jsr getbyt  ;get envelope number 
+ cpx #10 
+ bcs fcerr  ;exit - invalid tone number 
+ stx tonnum  ;save number 
+ lda atktab,x  ;get attack/decay rates 
+ sta tonval 
+ lda sustab,x  ;get sustain/release rates 
+ sta tonval+1 
+ lda wavtab,x  ;get waveform and filter 
+ sta tonval+2 
+ 
+ ldx #0 
+20$ stx parcnt 
+ jsr optbyt  ;get parameter - attack or sustain 
+ bcc 30$   ;skip if no input 
+ txa 
+ asl a 
+ asl a   ;shift to upper nibble 
+ asl a 
+ asl a 
+ sta nibble  ;save it 
+ ldx parcnt 
+ lda tonval,x  ;get current value 
+ and #$0f  ;mask it out 
+ ora nibble  ;add new value 
+ sta tonval,x  ;save it 
+ 
+30$ jsr optbyt  ;get decay or release rate 
+ bcc 40$   ;skip if no input 
+ txa 
+ and #$0f  ;use only lower nibble 
+ sta nibble  ;save it 
+ ldx parcnt 
+ lda tonval,x  ;get current value 
+ and #$f0  ;mask it out 
+ ora nibble  ;add new value 
+ sta tonval,x  ;save it 
+ 
+40$ ldx parcnt 
+ inx 
+ cpx #1 
+ beq 20$   ;loop to do sustain/release rates 
+ jsr optbyt  ;get waveform 
+ bcc 90$   ;skip if no value 
+ lda #$15  ;assume ring modulation 
+ cpx #4 
+ beq 80$   ;skip if correct 
+ bcs fcerr  ;error if >4 
+ lda sbits+4,x  ;get waveform bit 
+ ora #1   ;set gate bit 
+ 
+80$ sta tonval+2  ;save waveform 
+ 
+90$ jsr optwrd  ;is there a pulse width arg? 
+ bcc 110$  ;nope, done 
+ 
+ tax   ;save msb 
+ lda tonval+2  ;get waveform 
+ and #$40 
+ beq 110$  ;skip if not pulse waveform 
+ txa 
+ ldx tonnum  ;get envelope number 
+ sta pulshi,x  ;save high byte of pulse width 
+ tya 
+ sta pulslw,x  ;save low byte 
+ 
+110$ ldx tonnum 
+ lda tonval  ;set inputted values 
+ sta atktab,x 
+ lda tonval+1 
+ sta sustab,x 
+ lda tonval+2 
+ sta wavtab,x 

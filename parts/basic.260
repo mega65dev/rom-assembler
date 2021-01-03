@@ -1,0 +1,47 @@
+set_palette 
+ jsr combyt  ;get red & fgbg 
+ cpx #32   ;      [910520] 
+ bcs fcerr 
+ stx GKI__parm3 
+ 
+ jsr getcomnyb  ;get green 
+; cpx #16 
+; bcs 10$ 
+ stx GKI__parm4 
+ 
+ jsr getcomnyb  ;get blue 
+; cpx #16 
+; bcs fcerr  ; illegal quantity error 
+ stx GKI__parm5 
+ 
+ lda GKI__parm1  ;logical or physical color register? 
+ bpl 40$   ; logical 
+ ldx GKI__parm2 
+ lda GKI__parm3  ; physical 
+ sta _red,x 
+ lda GKI__parm4 
+ sta _green,x 
+ lda GKI__parm5 
+ sta _blue,x 
+ bra 50$ 
+ 
+40$ jsr ($8012)  ;go set screen palette 
+ bcs NoGraphicArea ; illegal screen# or color#  [910917] 
+ 
+50$ jsr optbyt  ;get another color reg # ? 
+ stx GKI__parm2 
+ bcs set_palette  ; yes- loop 
+ rts 
+ 
+ .page 
+;***************************************************************** 
+;* LINE  draw a dot, a line or a stick shape 
+;* 
+;*  Syntax : LINE  x0, y0 [,[x1] [,y1]]... 
+;* 
+;* parm1,2 = x0 (lo/hi) 
+;* parm3,4 = y0 
+;* parm5,6 = x1 (x1,y1)=(x0,y0) if not specified 
+;* parm7,8 = y1 
+;***************************************************************** 
+ 

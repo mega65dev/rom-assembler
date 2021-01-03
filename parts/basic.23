@@ -1,0 +1,7 @@
+errfin ldy curlin+1  ;direct mode? 
+ iny 
+ beq 10$   ;yes...no line # 
+ jsr inprt 
+10$ jsr highlight_done ;restore normal text color????    [910624] 
+ 
+ .page 

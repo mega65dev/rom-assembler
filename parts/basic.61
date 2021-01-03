@@ -1,0 +1,102 @@
+next bne 10$  ;hop if 'next' variable given 
+ ldy #$ff ;flag no specific 'for' variable 
+ bra 20$  ;always 
+ 
+5$ ldy #lenfor ;done, clean up stack 
+ jsr rlsstk ;release (y) items from stack 
+ jsr chrgot 
+ cmp #',' ;ie., NEXT j,k 
+ bne 45$ 
+ jsr chrget 
+ 
+10$ jsr ptrget ;get pointer to variable in (a,y) 
+ sta forpnt 
+ 
+20$ sty forpnt+1 
+ lda #for_token 
+ jsr search ;look for FOR entry in run-time stack 
+ beq 30$  ;branch if found 
+ ldx #errnf ;otherwise 'error, not found' 
+ bra error 
+ 
+ 
+; Set up to move STEP value to FAC 
+ 
+30$ jsr movfnd ;(fndpnt) => (tos) 
+ lda fndpnt 
+ clc 
+ adc #3  ;offset to step value 
+ ldy fndpnt+1 
+ bcc 35$ 
+ iny 
+ 
+35$ jsr movfm ;actually "move from ROM", but sys stack is in "common" 
+ ldy #8  ;MOVFM doesn't move sign.  Get it 
+ lda (fndpnt),y 
+ sta facsgn 
+ 
+; Get pointer to FOR variable 
+ 
+ ldy #1 
+ lda (fndpnt),y ;get lsb 
+ pha 
+ tax 
+ iny 
+ lda (fndpnt),y ;get msb 
+ pha 
+ tay  ;msb in y 
+ txa  ;lsb in a 
+ jsr fadd ;add STEP value to FOR variable (fadd gets from bank 1) 
+ ply  ;msb in y 
+ plx  ;lsb in x 
+ jsr movmf_ram1 ;put result back into FOR variable in var bank 
+ 
+; Make (a,y) point at TO value in stack 
+ 
+ lda fndpnt 
+ clc 
+ adc #9 
+ ldy fndpnt+1 
+ bcc 40$ 
+ iny 
+ 
+; Test if loop done 
+ 
+40$ 
+; sta sw_rom_ram0 ;???? 
+ jsr fcomp ;compare FAC to value pointed to by (a,y) 
+ ldy #8 
+ sec 
+ sbc (fndpnt),y ;(common area????) 
+ beq 5$  ;branch taken if done 
+ 
+ ldy #17  ;not done, set pointers to re-execute loop 
+ lda (fndpnt),y ;(common area????) 
+ sta txtptr 
+ dey 
+ lda (fndpnt),y 
+ sta txtptr+1 
+ dey 
+ lda (fndpnt),y 
+ sta curlin+1 
+ dey 
+ lda (fndpnt),y 
+ sta curlin 
+45$ rts 
+ 
+;.end 
+ .page 
+ .subttl DIM 
+ 
+; The DIMension code sets DIMFLG and then falls into the variable search 
+; routine, which looks at DIMFLG at 3 different points: 
+; 
+; 1) If an entry is found, DIMFLG being on indicates a 
+;    doubly-defined variable. 
+; 2) When a new entry is being built, DIMFLG being on indicates 
+;    the indices should be used for the size of each index. 
+;    Otherwise the default of ten is used. 
+; 3) When the build entry code finishes, indexing will be done 
+;    only if DIMFLG is off. 
+ 
+ 

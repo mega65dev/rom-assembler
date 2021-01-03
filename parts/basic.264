@@ -1,0 +1,73 @@
+disk_renum_cmd .byte 'M-W',119,0,2  ;Renumber Drive command 
+ 
+ .page 
+ 
+;  GetDiskNum - Get a (required) disk number and check it 
+ 
+getdisknum_1 
+ jsr chrget  ;skip current character 
+getdisknum 
+ jsr getbyt  ;get number in .x 
+ cpx #8   ;check range (8-30) 
+ bcc fcerr 
+ cpx #31 
+ bcs fcerr 
+ rts   ;returns only if okay 
+ 
+ 
+ 
+;  SendDiskCmd - Send command in SAVRAM to disk, length in .A 
+ 
+SendDiskCmd 
+; lda #   ; command string length 
+ ldx #<savram  ;   address 
+ ldy #>savram 
+ jsr _setnam 
+ ldx #sys_bank  ;???? sysbank ???? 
+ jsr _setbank 
+ jsr _clrch  ;Restore normal channels, establish our's 
+ ldx dosfa  ; fa 
+ lda #doslfn  ; la (reserved la) 
+ ldy #$6f  ; sa (command channel) 
+ jsr _setlfs 
+ jsr _open  ; open channel & send command 
+ lda #doslfn  ; close it already 
+ sec   ;  not a real close 
+ jsr _close 
+ bra Clear_DS  ;Exit 
+ 
+ .page 
+;  SET VERIFY <ON | OFF> Set DOS verify-after-write mode for 3.5" drives 
+ 
+verify_mode 
+ jsr chrget  ;eat 'verify' token, get next  new [910429] 
+ cmp #on_token 
+ sec 
+ beq 10$   ;turn verify on (.c=1) 
+ jsr chkesc 
+ cmp #off_token  ;turn cursor off (.c=0) 
+ bne snerr 
+ clc 
+ 
+;  Open disk command channel & pass it 'verify' command 
+ 
+10$ php   ;Save mode 
+ jsr chkeos  ;eat 'on/off' token, error if not eos 
+ 
+ ldx #4-1 
+20$ lda verify_cmd,x ; move command to RAM, setup for open 
+ sta savram,x 
+ dex 
+ bpl 20$ 
+ 
+ lda #0   ; form on/off flag 
+ plp 
+ rol a 
+ ora #$30 
+ sta savram+4 
+ 
+ lda #5   ; command string length 
+ jsr SendDiskCmd  ;Send command 
+ bra close_out_1  ; common error check & exit path ???? 
+ 
+ 

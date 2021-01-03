@@ -1,0 +1,33 @@
+helpsb    ;logic to highlight error or find string 
+ bbs4 helper,highlight_done ;branch if highlighting tokens 
+ bbs5 helper,10$   ;branch if FIND 
+ 
+ ldx lowtr+1  ;has P1LINE reached code in error? 
+ tya 
+ clc 
+ adc lowtr  ;add character pointer to line pointer... 
+ bcc 1$ 
+ inx 
+1$ cpx errtxt+1  ;and compare to error pointer 
+ bne 3$   ; not there 
+ cmp errtxt 
+ bcs highlight_text ; we're there- begin highlighting 
+3$ rts 
+ 
+ 
+10$ cpy fndpnt  ;at first character of find string? 
+ bcc 30$   ; before it 
+ lda find_count 
+ beq 30$   ; past it 
+ bmi 40$   ; at last character 
+ cmp fstr1+2 
+ bcc 20$   ; in middle of string 
+ jsr highlight_text ; at first char- start highlight 
+20$ dec find_count  ;one less character to highlight 
+ beq 20$   ;special case- 
+    ;make it negative for next time around 
+30$ rts 
+ 
+40$ inc find_count  ;make it zero 
+ 
+ 

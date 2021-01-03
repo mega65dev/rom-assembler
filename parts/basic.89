@@ -1,0 +1,46 @@
+find_exit 
+ jsr crdo  ;normal exit 
+ pla 
+ sta helper  ;restore token highlight status 
+ rmb5 helper  ;remove 'find' flag 
+ bra direct_mode_exit ;done 
+ 
+ 
+ 
+find_omerr   ;out of memory 
+ ldx #errom 
+   .byte $2c 
+find_errlen   ;string too long 
+ ldx #errls 
+ sec 
+   .byte $89 
+find_break   ;stop key break 
+ clc 
+ pla 
+ sta helper  ;restore token highlight status 
+ rmb5 helper  ;remove 'find' flag 
+ bcc break_exit  ;      [910925] 
+ bra error 
+ 
+ 
+delimit_string   ;command is in buffer, .x = ptr to strptr 
+ sta match  ;delimiter character 
+ lda txtptr  ;point to first character in string 
+ inc a   ; (never wraps- string in input buffer) 
+ sta fstr1,x  ;set pointer to string data 
+ lda txtptr+1 
+ sta fstr1+1,x 
+ lda #$ff  ;set string length 
+ sta fstr1+2,x 
+ 
+10$ inc fstr1+2,x 
+ jsr chargt  ;build string 
+ beq snerr  ; error if eol encountered inside string 
+ cmp match 
+ bne 10$   ; continue until matching delimiter found 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl  PUDEF 
+ 

@@ -1,0 +1,36 @@
+music_irq 
+ ldx #0 
+100$ ldy voices+1,x 
+ bmi 110$  ;skip if not active 
+ 
+ lda voices,x 
+ sec 
+ sbc tempo_rate  ;decrement current value by current tempo 
+ sta voices,x 
+ bcs 110$ 
+ tya   ;lda voices+1,x 
+ sbc #0 
+ sta voices+1,x 
+ bcs 110$  ;ok, no underflow 
+ 
+ txa 
+ lsr a   ;get offset to waveform 
+ tay 
+ lda waveform,y  ;get waveform 
+ and #$fe  ;mask out gate bit 
+ pha 
+ lda SID_offset,y ;get offset to correct oscillator 
+ tay 
+ pla 
+; jsr go_slow  ;      [910716] 4567R7A 
+ sta sid1+4,y  ;turn off sound 
+; jsr go_fast  ;      [910716] 4567R7A 
+ 
+110$ inx 
+ inx 
+ cpx #6+6  ;      [910612] 
+ bcc 100$  ;loop for 6 voices 
+    ;then continue with next IRQ task 
+ .page 
+; Test if SOUND command wants anything 
+ 

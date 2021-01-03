@@ -1,0 +1,61 @@
+dma    ;params are not longer optional-  [910520] F018A 
+ jsr getbyt  ;get command 
+1$ bcc 10$ 
+ txa   ;      [910102] 
+ and #%00000100  ; 
+ bne fcerr  ; (disallow chained DMA lists) 
+ stx dma2_cmd 
+ 
+10$ jsr comwrd  ;get length 
+; bcc 20$ 
+ sty dma2_cnt_lo 
+ sta dma2_cnt_hi 
+ 
+20$ jsr comwrd  ;get source address & bank 
+; bcc 30$ 
+ sty dma2_src_lo 
+ sta dma2_src_hi 
+30$ jsr combyt 
+; bcc 40$ 
+ stx dma2_src_bank 
+ 
+40$ jsr comwrd  ;get destination address & bank 
+; bcc 50$ 
+ sty dma2_dest_lo 
+ sta dma2_dest_hi 
+50$ jsr combyt 
+; bcc 60$ 
+ stx dma2_dest_bank 
+ 
+60$ jsr optzer  ;get subcmd, default=0    [910520] F018A 
+; bcc 65$ 
+ stx dma2_subcmd 
+ 
+65$ jsr optzer  ;get mod lo/hi, default=0   [910102] 
+; bcc 70$ 
+ stx dma2_mod_lo 
+70$ jsr optzer 
+; bcc 80$ 
+ stx dma2_mod_hi 
+ 
+80$ ldy #0   ;dma_list (bank 0) 
+ ldx #>dma2_cmd 
+ lda #<dma2_cmd 
+ sty dma_ctlr+2  ;dma_list bank 
+ stx dma_ctlr+1  ;dma_list hi 
+ sta dma_ctlr  ;dma_list lo & trigger 
+85$ bit dma_ctlr+3  ;check status (in case IRQ enabled)  [910103] 
+ bmi 85$   ; busy 
+ 
+ jsr chrgot  ;eol? 
+ beq 90$   ;   yes 
+ jsr optbyt  ;   no- continue after getting comma & next cmd byte 
+ bra 1$ 
+ 
+90$ rts 
+ 
+;.end 
+ .page 
+ .subttl  TRON  TROFF 
+ 
+ 

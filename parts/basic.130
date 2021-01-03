@@ -1,0 +1,88 @@
+sleep jsr getwrd ;get argument in (y,a) 
+ 
+; Multiply # of seconds to sleep by 60.  This will be the number of 'jiffies' 
+; to hibernate.  Store this value in 3 consecutive locations the kernel will 
+; decrement as a 24-bit binary value, and wait for an underflow. 
+; 
+; ldx #0   ;THIS CODE REPLACED    [910730] 
+; php 
+; sei   ;silence, please! 
+; sty _sleep_counter 
+; sta _sleep_counter+1 
+; stx _sleep_counter+2 ;sleep_counter = n 
+; 
+; jsr sleep_times_2 ;sleep_counter = 2n 
+; jsr add_xay_to_sleep ;sleep_counter = 3n 
+; jsr sleep_times_4 ;sleep_counter = 12n 
+; 
+; ldy _sleep_counter 
+; lda _sleep_counter+1 
+; ldx _sleep_counter+2 ;(xay) = 12n 
+; 
+; jsr sleep_times_4 ;sleep_counter = 48n 
+; jsr add_xay_to_sleep ;sleep_counter = 60n !!!!! 
+; 
+; plp 
+; 
+;1$ jsr is_stop_key_down 
+; ldx _sleep_counter+2 
+; inx   ;underflow? 
+; bne 1$   ;no, loop 
+; rts 
+; 
+; 
+;sleep_times_4 
+; jsr sleep_times_2 
+;sleep_times_2 
+; asl _sleep_counter 
+; rol _sleep_counter+1 
+; rol _sleep_counter+2 
+; rts 
+; 
+;add_xay_to_sleep 
+; pha 
+; tya 
+; adc _sleep_counter 
+; sta _sleep_counter 
+; pla 
+; adc _sleep_counter+1 
+; sta _sleep_counter+1 
+; txa 
+; adc _sleep_counter+2 
+; sta _sleep_counter+2 
+; rts 
+ 
+ .page 
+; SLEEP is now based upon the system hardware TOD clock (same one used by TI$).  This 
+; makes it accurate, something it was not when it was based upon the frame rate. 
+ 
+ sty time  ;Number of seconds to "sleep"   [910730] new 
+ sta time+1 
+ 
+10$ jsr _ReadTime  ;Get current time 
+ stz time+2  ; tenths 
+ sta time+3  ; seconds 
+ 
+20$ jsr is_stop_key_down ;Allow user to abort 
+ jsr _ReadTime  ;Wait for seconds to increment 
+ cmp time+3 
+ beq 20$ 
+ sta time+3 
+ 
+30$ jsr _ReadTime  ;Wait for tenths to increment 
+ cpz time+2 
+ bne 30$ 
+ 
+ dew time  ;Decrement sleep period 1 second 
+ bne 20$   ;Loop until sleep period over 
+ 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl  WAIT 
+ 
+; WAIT<location>,<mask1>[,<mask2>] statement waits until the contents of 
+; <location> is nonzero when XORed with mask2 and then ANDed with mask1. 
+; If mask2 is not present, it is assumed to be zero. 
+ 

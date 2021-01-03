@@ -1,0 +1,18 @@
+sprcor jsr chkcom_1  ;check for a comma 
+sprcor_1 
+ ror numcnt  ;reset msb if comma else set msb 
+ bpl 10$   ;skip if got a comma 
+ cmp #';'  ;test if angular data 
+ beq 30$   ;skip if yes - 2 msb's = 1 1 
+ cmp #'#'  ;test if speed type 
+ beq 20$   ;skip if yes - 2 msb's = 0 1 
+ bra snerr  ;syntax error if none of above 
+ 
+10$ jsr chrgot  ;test for relative coordinate 
+ cmp #plus_token  ;test if plus sign 
+ beq 30$   ;skip if yes - show relative 
+ cmp #minus_token ;test if minus sign 
+ beq 30$   ;skip if yes - show relative 
+20$ clc   ;reset to show absolute 
+30$ ror numcnt  ;shift in second flag bit 
+ 

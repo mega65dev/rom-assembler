@@ -1,0 +1,51 @@
+chkgrb cpy fretop+1  ;end of strings? 
+ bcc 50$ 
+ bne 10$   ;if not equal 
+ cmp fretop 
+ beq 50$ 
+ bcc 50$ 
+ 
+10$ bit highds  ;check flag 
+ bmi 20$   ;if empty string found 
+ lda #2   ;skip pointers past 
+ jsr movtop  ;move top pointer 
+ 
+20$ lda #2   ;skip pointers past 
+ jsr movpnt  ;move pointers 
+ ldy #1 
+ jsr indgrb  ;garbage? 
+ cmp #$ff 
+ beq 40$   ;yes 
+ 
+30$ jsr indgrb  ;to link bytes 
+ sta index1,y 
+ dey 
+ bpl 30$   ;if two bytes not moved 
+40$ rts 
+ 
+ 
+50$ ldx temppt  ;ptr to temp. strings 
+ 
+60$ cpx #tempst  ;any out there? 
+ beq 70$   ;no 
+ jsr slr1  ;setup ptr (tempf2) to temp. string's bkptr. 
+ beq 60$   ; (skip if null string!) 
+ phx 
+ ldx #tempf2 
+ ldy #0   ;.a = string length 
+ jsr sta_far_ram1 ;sta (tempf2),y ;remove backpointer built at garba2 
+ iny 
+ lda #$ff 
+ jsr sta_far_ram1 ;sta (tempf2),y ;and mark as garbage 
+ plx 
+ bra 60$   ;always 
+ 
+70$ pla   ;throw away return address 
+ pla 
+ lda frespc  ;fix fretop and frespc 
+ ldy frespc+1 
+ sta fretop 
+ sty fretop+1 
+ rts 
+ 
+ .page 

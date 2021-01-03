@@ -1,0 +1,18 @@
+pndd lda swe  ;# of blanks 
+ beq zerot 
+ dec swe  ;count ! 
+ 
+5$ bne bout ;out blank or * 
+ lda posp ;+ or - in field? 
+ bmi 5$  ;yes...out blank or * 
+ 
+10$ jsr indfrm 
+ cmp #',' ;comma? 
+ bne ispl1 ;no...out sign 
+ lda blfd ;yes... 
+ jsr cdout ;out blank or * 
+ iny 
+ bra 10$ 
+ 
+ 
+ 

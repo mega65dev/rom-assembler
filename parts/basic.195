@@ -1,0 +1,57 @@
+reay jsr chrgot ;get old character 
+ cmp #',' ;comma? 
+ beq eex2 ;continue print use if yes 
+ sec 
+ ror z_p_temp_1 ;set flag for anaf 
+ jsr anaf ;print rest of format 
+ ply  ;restore descriptor 
+ pla 
+ jsr fretmp 
+ jsr chrgot 
+ cmp #';' ;semi-colon? 
+ bne crdo ;end of print using 
+ jmp chrget ;branch if yes 
+ 
+ .page 
+;  FFORM - output a number to format 
+; 
+;  Number is in fbuffr,  format checked by anaf 
+ 
+fform 
+; sta sw_rom_ram0 ;???? 
+ lda pufill 
+ sta blfd ;set working fill char 
+ lda #$ff 
+ana sta sno  ;save blank or '-' in sno 
+ bra insy 
+ 
+ 
+stp stx point ;set point pointer 
+insy cpy hulp ;end of no reached? 
+ beq eoa  ;branch if yes 
+ lda fbuffr,y ;get character of no 
+ iny 
+ cmp #' ' ;blank? 
+ beq insy ;yes...span 
+ cmp #'-' ;sign no negative 
+ beq ana  ;yes... 
+ cmp #'.' ;decimal point? 
+ beq stp  ;yes... 
+ cmp #'E' ;is char 'e'? 
+ beq lsg  ;yes... 
+ sta fbuffr,x ;move number 
+ stx enr  ;update end-no pointer 
+ inx 
+ bit point ;point pointer set? 
+ bpl insy ;yes... 
+ inc vn  ;count digits before point 
+ bra insy 
+ 
+ 
+lsg lda fbuffr,y 
+ cmp #'-' ;sign of exponent negative 
+ bne 10$  ;no... 
+ ror usgn ;make sign negative 
+10$ iny 
+ sty uexp ;set exponent pointer 
+ 

@@ -1,0 +1,65 @@
+list_exit 
+ jsr dcato  ;flush last line with a <cr> 
+ jsr crdo  ;flush current line 
+ clc   ;no errors    [910404] 
+list_err 
+ php   ;save error status   [910404] 
+ pha 
+ jsr release_channels ;release cmd channel, restore terminal 
+ lda dosla 
+; bra close_out  ;    removed [900725] 
+ clc   ;a real close   new [910404] 
+ jsr _close 
+ pla   ;pop error status, if any 
+ plp 
+ bra exit_disk_op 
+ 
+ .page 
+; LIST command is of the form  LIST [range] 
+ 
+list_memory 
+ jsr range  ;set up line range 
+ 
+10$ ldy #1 
+ jsr indlow  ;get ms byte of line to list's pointer 
+ bne 20$   ;ok if not zero, but.. 
+ dey 
+ jsr indlow 
+ beq crdo  ;..if ls byte is also zero, we're done 
+ 
+20$ jsr is_stop_key_down 
+ jsr crdo  ;new line 
+ ldy #2 
+ jsr indlow  ;get ms byte of line number 
+ tax 
+ iny 
+ jsr indlow  ;get ls byte 
+ 
+ cmp linnum+1  ;test if we are past the last line requested 
+ bne 30$ 
+ cpx linnum 
+ beq 40$ 
+30$ bcs crdo  ;next line is > last line requested, exit 
+40$ jsr p1line  ;print line #, space, and the line of code 
+ ldy #0   ;move 'pointer to next line' into (lowtr) 
+ jsr indlow 
+ tax 
+ iny 
+ jsr indlow 
+ stx lowtr 
+ sta lowtr+1 
+ bra 10$ 
+ 
+ .page 
+;****************************************************** 
+; P1LINE Print 1 line of BASIC text 
+; 
+; Entry: (a,x) contains line number low,high 
+;  (lowtr) points to beginning of line 
+; 
+; next-line   line-num  BASIC text......  null 
+; lo    hi    lo    hi  byte byte...byte   00 
+;        ^           ^     ^ 
+;    (lowtr)        .A    .X 
+;****************************************************** 
+ 

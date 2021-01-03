@@ -1,0 +1,21 @@
+slr1 dex   ;.x = ptr to temp. string descriptor 
+ lda 0,x   ;msb of ptr to string 
+ sta tempf2+1 
+ dex 
+ lda 0,x   ;lsb of ptr to string 
+ sta tempf2 
+ dex 
+ lda 0,x   ;string length 
+ pha   ;save for later test 
+ clc 
+ adc tempf2  ;want ptr to string's backpointer 
+ sta tempf2 
+ bcc 1$ 
+ inc tempf2+1 
+1$ pla   ;.a=len & set z flag; .x=next desc. ptr 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl  Floating Point Math Package (CODE17) 
+ 

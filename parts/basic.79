@@ -1,0 +1,50 @@
+form_line 
+ jsr n1_reset 
+find_it 
+ jsr chargt_x2  ;new line, skip over link 
+ bne 70$   ;if we get to end-of-text without finding the 
+ ldx #err_ref  ;line # then 'unresolved reference' error 
+ lda forpnt 
+ sta curlin  ;fake error routine into saying 'in line xxxxx' 
+ lda forpnt+1 
+ sta curlin+1 
+ bra error 
+ 
+70$ jsr chargt  ;get line number low 
+ sta highds  ;highds = current line# in loop 
+ cmp linnum 
+ bne 100$ 
+ jsr chargt  ;get line number high 
+ sta highds+1 
+ cmp linnum+1 
+ bne 110$ 
+ sec   ;if linnum < start#, no remapping 
+ sbc hightr+1 
+ bcc 80$ 
+ bne 90$ 
+ lda linnum 
+ sbc hightr 
+ bcs 90$ 
+ 
+80$ lda linnum  ;use same line# 
+ sta facho+1 
+ lda linnum+1 
+ sta facho 
+ 
+90$ ldx #$90  ;make replacement string 
+ sec 
+ jsr floatc 
+ bra fout 
+ 
+ 
+100$ jsr chargt 
+ sta highds+1  ;(** 01/27/84 fix) 
+ 
+110$ jsr line_add  ;scan to end of line 
+ bra find_it  ;always 
+ 
+ .page 
+;*************************** N1_RESET ********************************** 
+ 
+; Copies n1 (new renumber origin) into facho & sets (txtptr) = (txttab)-1 
+ 

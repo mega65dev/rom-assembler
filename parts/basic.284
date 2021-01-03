@@ -1,0 +1,31 @@
+savs50 lda sprtmp_1   ;restore basic text pointer 
+ sta txtptr 
+ lda sprtmp_2 
+ sta txtptr+1 
+ jsr ptrget        ;get symbol table descriptor for string dest. 
+ sta forpnt 
+ sty forpnt+1      ;save symbol table address 
+ lda #<savsiz 
+ sta facmo         ;save descriptor address of source 
+ lda #>savsiz 
+ sta facmo+1 
+ bra inpcom        ;move source to dest, do rts (snerr if not eol) 
+ 
+ .page 
+savinp jsr frmevl        ;evaluate expression 
+ bbs7 valtyp,desc_free  ; exit if a string 
+ jsr conint   ;get one byte integer in .X 
+; dex    ;adjust sprite 1..8 to 0..7  [910220] 
+ cpx #8 
+ bcs fcerr   ; bad value 
+ txa    ;move sprite number to .A 
+ lsr a 
+ ror a 
+ ror a             ;get sprite address 
+ ldy #>sprite_base 
+ bcc 5$ 
+ iny 
+5$ clc               ;flag 'sprite' (as opposed to 'string') 
+ rts 
+ 
+ 

@@ -1,0 +1,11 @@
+highlight_done   ;nasty kludge to colorize error or found text 
+ lda highlight_save 
+ bmi 10$   ; (unless it's already normal) 
+ sta _color  ;restore normal color 
+ ora #$80 
+ sta highlight_save ;mark highlight_save invalid 
+ rmb7 helper  ;remove HELP flag 
+ rmb1 helper  ;remove token flag 
+10$ rts 
+ 
+ 

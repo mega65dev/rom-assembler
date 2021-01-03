@@ -1,0 +1,49 @@
+afrm jsr indfrm 
+ iny 
+ cmp #',' ;comma? 
+ bne punt ;no... 
+ bit flag ;comma flag on? 
+ bmi bout ;yes, do a fill char 
+; sta sw_rom_ram0 ;???? 
+ lda pucoma 
+ bra out  ;no,...output a comma char 
+ 
+ 
+bout lda blfd 
+ bra out 
+ 
+ 
+punt cmp #'.' ;decimal point? 
+ bne afplus 
+; sta sw_rom_ram0 ;???? 
+ lda pudot ;yes... 
+ bra out 
+ 
+ 
+afplus cmp #'+' ;plus? 
+ beq ispl ;yes... 
+ cmp #'-' ;minus? 
+ beq ispl1 ;yes... 
+ cmp #'^' ;up arrow? 
+ bne pndd ;no... 
+ lda #'E' 
+ jsr cdout 
+ ldy uexp 
+ jsr cmo  ;first dig of exp zero? 
+ bne 10$  ;no... 
+ iny 
+ jsr cmo  ;second digit? 
+ beq 20$  ;yes 
+ 
+10$ lda #'-' 
+ bit usgn 
+ bmi 30$ 
+ 
+20$ lda #'+' 
+30$ jsr cdout ;output sign exp 
+ ldx uexp 
+ lda fbuffr,x 
+ jsr cdout ;output first dig exp 
+ ldy endfd 
+ bra telx 
+ 

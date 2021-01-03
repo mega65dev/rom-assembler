@@ -1,0 +1,84 @@
+ren_pass_3 
+ dec z_p_temp_1  ;z_p_temp_1 = 0 (for pass 3) 
+ jsr imbed_lines  ;search for and update imbedded line #'s 
+ 
+ .page 
+;*********************************************************************** 
+;*************  R E N U M B E R    P A S S    F O U R  ***************** 
+;*********************************************************************** 
+ 
+; Pass 4 actually renumbers the program line numbers & exits 
+ 
+ren_pass_4 
+ jsr chargt_x2  ;skip link 
+ beq renumber_exit ; null link=> end-of-text, exit (assumes txttab > 0) 
+ jsr chargt  ;not null... 
+ sta linnum  ;if line# >= start#, replace with facho 
+ iny 
+ jsr indtxt 
+ sec 
+ sbc hightr+1 
+ bcc r_pass4_20  ;no, let alone 
+ bne r_pass4_10  ;yes, replace 
+ lda linnum 
+ sbc hightr 
+ bcc r_pass4_20  ;no, let alone 
+ 
+r_pass4_10 
+ lda facho 
+; phx 
+ jsr sta_far_txt  ;sta (txtptr),y  hi  (bleed-thru) 
+ dey 
+ lda facho+1 
+ jsr sta_far_txt  ;sta (txtptr),y  lo (bleed-thru) 
+; plx 
+ jsr chargt  ;skip past 2nd byte of line# 
+ jsr line_inc  ;incr line# and scan to eol 
+ bra ren_pass_4  ;always... 
+ 
+r_pass4_20 
+ jsr chargt  ;skip past line# 
+ jsr scan_thru  ;scan to eol 
+ bra ren_pass_4  ;always... 
+ 
+ 
+renumber_exit 
+ jsr fix_links  ;patch things up: relink & set eot 
+ 
+direct_mode_exit 
+ jsr ott   ;restore txtptr for next command in buffer 
+ lda #0   ;but disallow continuing 
+ sta oldtxt+1 
+ rts 
+ 
+ .page 
+;*********************************************************************** 
+;*************  R E N U M B E R   S U B R O U T I N E S  *************** 
+;*********************************************************************** 
+ 
+; Look for imbedded line #'s (after GOTO, GOSUB, etc.) 
+; but only change them in pass 3 (ie. z_p_temp_1 = 0) 
+ 
+imbed_lines 
+ jsr reset_txtptr ;start at first line: load (txtptr) with (txttab)-1 
+ 
+next_line 
+ jsr chargt_x2  ;skip link (assumes txttab > 0) 
+ beq n1_reset  ;null link: put current line # in fac, reset txtptr, exit 
+ jsr chargt  ;line number 
+ sta forpnt  ;save in case there is an error 
+ jsr chargt 
+ sta forpnt+1 
+ 
+next_char 
+ jsr chargt  ;first character in the line 
+ 
+chk_quote 
+ cmp #'"'  ;opening double quote? 
+ bne not_quote  ;no... 
+20$ jsr chargt  ;scan line 
+ beq next_line  ;end... 
+ cmp #'"'  ;close double quote 
+ bne 20$   ;no... continue 
+ bra next_char  ;yes... resume renumber 
+ 

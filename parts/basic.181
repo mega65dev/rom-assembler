@@ -1,0 +1,31 @@
+tan jsr mov1f ;move FAC into temporary 
+ lda #0 
+ sta tansgn ;remember whether to negate 
+ jsr sin  ;compute the sin 
+ ldx #<tempf3 
+ ldy #>tempf3 
+ jsr movmf ;put sign into other temp 
+ lda #<tempf1 
+ ldy #>tempf1 
+ jsr movfm ;put this memory location into FAC 
+ lda #0 
+ sta facsgn ;start off positive 
+ lda tansgn 
+ jsr 10$  ;compute cosine 
+ lda #<tempf3 
+ ldy #>tempf3 ;address of sine value 
+; bra fdiv ;divide sine by cosine and return 
+ jsr conupk ;unpack constant    [910226] FAB 
+ beq overr ;overflow error     " 
+ bra fdivt ;      " 
+ 
+10$ pha  ;cosc. 
+ bra sin1 
+ 
+ 
+; Arctangent function 
+; 
+; Use identities to get arg between 0 and 1 and then use an approximation 
+; polynomial to compute arctan(x). 
+ 
+ 

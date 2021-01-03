@@ -1,0 +1,76 @@
+ldzr lda #<zero ;set up pointer to simulated zero 
+ ldy #>zero 
+ rts  ;for strings or numeric 
+ 
+ 
+qst001 cpy #'I'+$80 ;we know first is T, is second <shift>I (TI$)? 
+ beq ldzr 
+ cpy #'I' ;or I (TI)? 
+ bne varok 
+ beq gobadv 
+ 
+ 
+qst004 cpy #'S'+$80 ;check for DS$ 
+ beq gobadv 
+ cpy #'S' ;check for DS 
+ bne varok 
+ beq gobadv 
+ 
+ 
+qst002 cpy #'T' ;check for ST 
+ bne varok 
+ beq gobadv 
+ 
+ 
+qst003 cpy #'R' ;check for ER 
+ beq gobadv 
+ cpy #'L' ;check for EL 
+ bne varok 
+ 
+ 
+gobadv bra snerr 
+ 
+ 
+ 
+notevl lda varnam 
+ ldy varnam+1 
+ cmp #'T' ;screen out TI 
+ beq qst001 
+ cmp #'S' ;...and ST 
+ beq qst002 
+ cmp #'E' ;...and ER and EL 
+ beq qst003 
+ cmp #'D' ;...and DS 
+ beq qst004 
+ 
+ 
+varok lda arytab 
+ ldy arytab+1 
+ sta lowtr 
+ sty lowtr+1 
+ lda strend 
+ ldy strend+1 
+ sta hightr 
+ sty hightr+1 
+ clc 
+ adc #7 
+ bcc 10$  ;not even 
+ iny 
+ 
+10$ sta highds 
+ sty highds+1 
+ jsr bltu 
+ lda highds 
+ ldy highds+1 
+ iny 
+ sta arytab 
+ sty arytab+1 
+ 
+ 
+; Scan thru array entries for string arrays.  If any are found it will be 
+; necessary to adjust the back-links of the strings in that array, since 
+; the array descriptor block itself was moved. 
+ 
+ sta arypnt  ;set pointer to arrays 
+ sty arypnt+1 
+ 

@@ -1,0 +1,72 @@
+qplus cmp #'+'  ;plus sign? 
+ bne fin1  ;yes, skip it 
+ 
+finc jsr fin_chrget 
+ 
+findgq bcc findig 
+ 
+fin1 cmp #'.'  ;the dp? 
+ beq findp  ;no kidding 
+ cmp #'E'  ;exponent follows 
+ bne fine  ;no 
+ 
+ jsr fin_chrget  ;yes, get another, to check sign of exponent 
+ bcc fnedg1  ;is it a digit. (easier than backing up pointer) 
+ cmp #minus_token ;minus? 
+ beq finec1  ;negate 
+ cmp #'-'  ;minus sign? 
+ beq finec1 
+ cmp #plus_token  ;plus? 
+ beq finec 
+ cmp #'+'  ;plus sign? 
+ beq finec 
+ bra finec2 
+ 
+finec1 ror expsgn  ;turn it on 
+ 
+finec jsr fin_chrget  ;get another 
+ 
+fnedg1 bcc finedg  ;it is a digit 
+finec2 bbr7 expsgn,fine 
+ lda #0 
+ sec 
+ sbc tenexp 
+ bra fine1 
+ 
+findp ror dptflg 
+ bbr6 dptflg,finc 
+ 
+fine lda tenexp 
+fine1 sec 
+ sbc deccnt  ;get number of places to shift 
+ sta tenexp 
+ beq finqng  ;negate? 
+ bpl finmul  ;positive, so multiply 
+ 
+findiv jsr div10 
+ inc tenexp  ;done? 
+ bne findiv  ;no 
+ bra finqng  ;yes 
+ 
+ 
+finmul jsr mul10 
+ dec tenexp  ;done? 
+ bne finmul  ;no 
+finqng lda sgnflg 
+ bmi negop  ;if negative, negate and return 
+ rts   ;if positive, return 
+ 
+ 
+ 
+findig pha 
+ bbr7 dptflg,10$ 
+ inc deccnt 
+10$ jsr mul10 
+ pla   ;get it back 
+ sec 
+ sbc #'0' 
+ jsr finlog  ;add it in 
+ bra finc 
+ 
+ 
+ 

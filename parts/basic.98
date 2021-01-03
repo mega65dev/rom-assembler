@@ -1,0 +1,23 @@
+lsloop lda _pky_buffer,y ;print key definition 
+ iny 
+ pha   ;save character 
+ phx   ;save position in output string 
+ 
+ ldx #4   ;check for special (non-printable) characters 
+50$ cmp keychr-1,x 
+ beq list_special ; yes, display it as 'CHR$(...)' 
+ dex 
+ bne 50$ 
+ 
+ plx   ;restore position 
+ cpx #8 
+ bcc 60$   ;1st time thru- display leading quote 
+ bne 70$   ;previous was a character- no additions needed 
+ lda #'+'  ;add since previous was quote or return 
+ jsr _bsout 
+60$ lda #'"' 
+ jsr _bsout  ;add leading quote 
+70$ pla   ;restore character 
+ jsr _bsout  ;display it 
+ ldx #9   ;mark normal character 
+ 

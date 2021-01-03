@@ -1,0 +1,189 @@
+nodel jsr init_stack  ;'clearc' removed since text changes don't require trashing variables 
+ jsr link_program ;fix links 
+ jsr error_clear  ;clear HELP/error flag, assuming he fixed whatever caused current error, if any 
+ 
+ ldy #0 
+ lda (txtptr),y  ;delete line? ("common") 
+ beq main  ; yes 
+ 
+5$ clc   ; no...something to insert 
+ ldy text_top+1 
+ lda text_top 
+ sty hightr+1  ;top of block to move (old text_top) 
+ sta hightr 
+ adc count  ;number of characters in line to be inserted 
+ bcc 1$ 
+ iny 
+1$ clc 
+ adc #4   ;plus link and line # 
+ bcc 2$   ;gives us destination of move (new text_top) 
+ iny 
+ 
+2$ sta highds  ;destination of top 
+ sty highds+1 
+ cpy max_mem_0+1  ;make sure new top doesn't crash into top of available ram 
+ bcc 4$   ; ok 
+ bne omerr  ; out of memory, don't insert 
+ cmp max_mem_0 
+ bcs omerr  ; out of memory, don't insert 
+ 
+4$ sta text_top  ;set new top of text 
+ sty text_top+1 
+ sec   ;compute number of things to move up 
+ lda hightr 
+ sbc lowtr  ; (old top) - (adr where new line goes) 
+ tay   ; lowtr was setup previously by FindLine call 
+ lda hightr+1 
+ sbc lowtr+1 
+ tax 
+ 
+; Using DMA device to copy data upwards... 
+; 
+; (hightr)   = source  (old top) 
+; (highds)   = destination (new top) 
+; .y, .x     = number of bytes to move 
+; (lowtr)    = where to insert new line (starting with link bytes) 
+ 
+ dew hightr  ;(text_top-1) points to actual last byte 
+ dew highds 
+ 
+; lda dma_ctlr+3  ;dma controller version    [910520] F018A 
+; and #1 
+; beq 10$   ; F018    removed [910808] F018B 
+ lda #%00110000  ; F018A, B 
+10$ sta dma1_cmd  ;command=copy, source=endpt   [910102] 
+ sty dma1_cnt_lo  ;count 
+ stx dma1_cnt_hi 
+ tya 
+ ora dma1_cnt_hi 
+ beq 70$   ;special case= nothing to move???? should not happen 
+ 
+ lda hightr 
+ ldy hightr+1 
+ sta dma1_src_lo  ;source 
+ sty dma1_src_hi 
+ lda highds 
+ ldy highds+1 
+ sta dma1_dest_lo ;destination 
+ sty dma1_dest_hi 
+ lda text_bank  ;      [910520] F018A 
+; ldx dma1_cmd  ;version?    removed [910808] F018B 
+; bne 20$   ; F018A 
+; and #%00001111  ;      [910102] 
+; ora #%01000000  ;(copy source=endpoint)    [910102] 
+20$ sta dma1_src_bank ;banks 
+ sta dma1_dest_bank 
+ lda #0 
+ sta dma1_subcmd  ;      [910520] F018A 
+ sta dma_ctlr+2  ;dma_list bank 
+ ldx #>dma1_cmd  ;dma_list 
+ lda #<dma1_cmd 
+ stx dma_ctlr+1  ;dma_list hi 
+ sta dma_ctlr  ;dma_list lo & trigger 
+ 
+; Make links non-null to fool 'chead' 
+ 
+70$ ldy #0 
+ lda #1 
+ ldx #lowtr 
+ jsr sta_far_ram0 ;sta (lowtr),y  y=0 (bleed-thru) 
+ iny 
+ jsr sta_far_ram0 ;sta (lowtr),y  y=1 (bleed-thru) 
+ 
+; Put line number in text 
+ 
+ iny 
+ lda linnum 
+ jsr sta_far_ram0 ;sta (lowtr),y  y=2 (bleed-thru) 
+ iny 
+ lda linnum+1 
+ jsr sta_far_ram0 ;sta (lowtr),y  y=3 (bleed-thru) 
+ 
+; Advance 'lowtr' to start of line (past link bytes & line #) 
+ 
+ clc 
+ lda lowtr 
+ adc #4 
+ sta lowtr 
+ bcc 80$ 
+ inc lowtr+1 
+ 
+ 
+; Block move line to text 
+ 
+80$ ldy count  ;    use dma ???? [910925] 
+ dey 
+ 
+90$ lda (txtptr),y  ;(from common area) 
+ jsr sta_far_ram0 ;sta (lowtr),y   (bleed-thru) 
+ dey 
+ cpy #$ff 
+ bne 90$ 
+ 
+; beq 90$   ;special case= nothing to move???? should not happen 
+; lda #0   ; F018A, B 
+; sta dma1_cmd  ;command=copy, source=start 
+; sty dma1_cnt_lo  ;count 
+; sta dma1_cnt_hi 
+; 
+; lda txtptr 
+; ldy txtptr+1 
+; sta dma1_src_lo  ;source 
+; sty dma1_src_hi 
+; lda lowtr 
+; ldy lowtr+1 
+; sta dma1_dest_lo ;destination 
+; sty dma1_dest_hi 
+; lda text_bank  ;banks 
+; sta dma1_dest_bank 
+; lda #sys_bank  ;???? 
+; sta dma1_src_bank 
+; sta dma1_subcmd  ;      [910520] F018A 
+; sta dma_ctlr+2  ;dma_list bank 
+; ldx #>dma1_cmd  ;dma_list 
+; lda #<dma1_cmd 
+; stx dma_ctlr+1  ;dma_list hi 
+; sta dma_ctlr  ;dma_list lo & trigger 
+;90$ 
+ jsr link_program 
+ jsr reset_txtptr ;set up txtptr (was jsr runc) 
+ 
+; Test if AUTO in effect 
+ 
+ lda autinc  ;if in auto mode, increment val <> 0 
+ ora autinc+1 
+ beq 120$  ;not in 
+ 
+ lda linnum  ;yes, construct new line number 
+ clc 
+ adc autinc 
+ sta facho+1 
+ lda linnum+1 
+ adc autinc+1 
+ bcs 120$  ;no auto if wrapped 
+ cmp #$fa  ;test if # >= 64000 
+ bcs 120$  ;no auto if so. 
+ sta facho 
+ ldx #$90 
+ sec 
+ jsr floatc  ;float it 
+ jsr fout  ;make it into a string 
+ 
+ sei   ;     [910710] 
+ ldx #0   ;move string into kbd buffer 
+100$ lda fbuffr+1,x  ;copy number formed into buffer, ignoring leading space 
+ beq 110$  ;a null marks end 
+ sta _keyd,x 
+ inx 
+ bne 100$  ;always 
+ 
+110$ lda #29   ;cursor right 
+ sta _keyd,x 
+ inx 
+ stx _ndx 
+ cli   ;     [910710] 
+ 
+120$ bra main 
+ 
+ 
+ .page 

@@ -1,0 +1,48 @@
+sswe jsr shpn ;shift decimal point 
+ jsr uround ;round number 
+ jsr shpn ;shift again if necessary 
+ 
+hup bra chout ;output number 
+ 
+ 
+ 
+cff ldy uexp ;exponent in no? 
+ beq 20$  ;no... 
+ sta hulp ;delete exponent 
+ sec  ;adjust decimal point 
+ ror etof ;set e-to-f flag 
+ ldy point 
+ lda usgn ;exec nos3 or nos4 
+ bpl 10$  ;depends on sign of exp 
+ jsr nos3 
+ bra 30$ 
+ 
+10$ jsr nos4 
+ 
+20$ ldy point ;at start of no? 
+ beq 30$  ;yes... 
+ jsr cho  ;no = 0 ? 
+ beq 40$  ;yes...no round 
+ 
+30$ jsr uround 
+ bra 50$ 
+ 
+40$ dec vn  ;adjust...no was 0 
+50$ sec 
+ lda vf 
+ sbc vn 
+ bcc errf ;no fit...error 
+ sta swe  ;save difference 
+ ldy posp ;+ or -? 
+ bne ahp  ;yes... 
+ ldy sno  ;get sign 
+ bmi ahp  ;positive... 
+ tay 
+ beq errf ;no room for sign 
+ dey 
+ bne ldvn ;swe<>1 
+ lda nf 
+ ora vn  ;both zero? 
+ bne hup  ;no... 
+ 
+ 

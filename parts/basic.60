@@ -1,0 +1,45 @@
+datlop jsr datan ;skip some text 
+ iny 
+ tax  ;end of line? 
+ bne 10$  ; no 
+ ldx #errod ; yes, "no data" error 
+ iny 
+ jsr indtxt 
+ beq error 
+ 
+ iny 
+ jsr indtxt ;get high byte of line number 
+ sta datlin 
+ iny 
+ jsr indtxt ;get low byte 
+ iny 
+ sta datlin+1 
+ 
+10$ jsr addon ;nowlin.  txtptr+.y 
+ jsr chrgot ;span blanks 
+ tax  ;used later 
+ cpx #data_token ;is it a DATA statement? 
+ bne datlop ;not quite right, keep looking 
+ bra datbk1 ;this is the one 
+ 
+ 
+;.end 
+ .page 
+ .subttl NEXT 
+ 
+; Next routine 
+; 
+; 'FOR' entry on the stack has the following format: 
+; 
+; Low address 
+;  token (for_token) 1 byte 
+;  a pointer to the loop variable 2 bytes 
+;  the step 5 bytes 
+;  a byte reflecting the sign of the incr. 2 bytes 
+;  the upper value (packed) 5 bytes 
+;  the line number of the FOR statement 2 bytes 
+;  a text pointer into the FOR statement 2 bytes 
+; High address 
+; 
+; (total 16 bytes) 
+ 

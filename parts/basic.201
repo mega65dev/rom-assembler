@@ -1,0 +1,34 @@
+uround clc 
+ lda point 
+ adc nf  ;overflow? 
+ bcs rrts ;yes... 
+ sec 
+ sbc z_p_temp_1 ;underflow? 
+ bcc rrts ;yes... 
+ cmp enr  ;anything to round? 
+ beq 10$  ;yes... 
+ bcs rrts ;no... 
+ 
+10$ cmp bnr  ;again... 
+ bcc rrts ;no... 
+ tax 
+ lda fbuffr,x ;get digit 
+ cmp #'5' ;<5 ? 
+ bcc rrts ;yes...no round 
+ 
+20$ cpx bnr  ;begin of no reached? 
+ beq 30$  ;yes..add 1 
+ dex 
+ jsr tag3 ;increment digit 
+ stx enr  ;new end of no pointer 
+ beq 20$  ;branch on overflow 
+ rts 
+ 
+30$ lda #'1' 
+ sta fbuffr,x 
+ inx 
+ stx point 
+ dec z_p_temp_1 ;# of 0's before '.' 
+ bpl rrts ;no underflow 
+ inc z_p_temp_1 ;underflow...back to 0 
+ inc vn 

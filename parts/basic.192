@@ -1,0 +1,34 @@
+pudefs .byte ' ,.$' ;default:  fill, comma, dec pnt, money symbol 
+ 
+using ldx #$ff 
+ stx endfd 
+ jsr chrget 
+ jsr frmevl ;evaluate format string 
+ jsr chkstr ;must be string type... 
+ 
+ lda facmo ;save temp descriptor 
+ pha 
+ lda facmo+1 
+ pha 
+ 
+ ldy #2  ;move (facmo),1&2 to form,form+1 
+10$ jsr indfmo 
+ dey 
+ sta form,y 
+ bne 10$ 
+ 
+ jsr indfmo ;get length 
+ sta lfor 
+ tay 
+ beq 99$  ;syntax error if length is zero 
+ 
+20$ dey 
+ jsr indfrm 
+ cmp #'#' ;at least one # in format? 
+ beq 30$  ;yes... 
+ tya  ;no...end of format 
+ bne 20$  ;no... 
+99$ bra snerr ;yes...syntax error 
+ 
+ 
+30$ lda #';' 

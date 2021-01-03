@@ -1,0 +1,58 @@
+reser sta index1+1 
+ sty index1 
+ ldy #0 
+ sty count 
+ dey 
+10$ iny 
+20$ lda (txtptr),y ;assumes common memory 
+ bmi 70$  ; abrieviation    [900510] 
+ sec 
+ sbc (index1),y ;does letter match? (ind.ok) 
+ beq 10$  ; yes...continue 
+ cmp #$80 ;end of word? 
+ beq 60$  ; yes...c set...done 
+ 
+ 
+;  find next word 
+ 
+30$ lda (index1),y ;ind.ok 
+ bmi 40$  ;found end of current 
+ iny 
+ bne 30$ 
+40$ iny  ;start of next 
+ inc count ;value of token 
+ clc 
+ tya 
+ adc index1 
+ sta index1 
+ bcc 50$ 
+ inc index1+1 
+50$ clc 
+ ldy #0 
+ lda (index1),y ; end of list? ind.ok 
+ bne 20$  ; no 
+ 
+ 
+;  yes...carry clear...fail 
+ 
+60$ ora count ;.a=$80 if match 
+ sta count ;token is formed 
+ rts 
+ 
+ 
+; special case- last character is shifted (necessary for 'diR' compatibility) 
+ 
+70$ sec  ;allow last chr to be shifted   [900510] 
+ sbc (index1),y ;does letter match? (ind.ok) 
+ beq 80$  ; yes- end of word 
+ cmp #$80 ;end of word? 
+ beq 60$  ; yes 
+ bne 30$  ; no- next word 
+ 
+80$ lda #$80 ;last chr is shifted & so is end of current word 
+ bra 60$ 
+ 
+;.end 
+ .page 
+ .subttl Non-Escape Keyword List 
+ 

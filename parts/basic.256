@@ -1,0 +1,37 @@
+c65.screendef 
+ jsr getbyt  ;get screen number 
+ cpx #4   ; range 0-3   [910711] 
+ bcs 10$ 
+ stx GKI__parm1  ; screen# 
+ 
+ jsr combyt  ;get width 
+ cpx #3   ; range 0-2 ???? 1280 mode ???? 
+ bcs 10$ 
+ stx GKI__parm2  ; width 
+ 
+ jsr combyt  ;get height 
+ cpx #2   ; range 0-1 
+ bcs 10$ 
+ stx GKI__parm3  ; height 
+ 
+ jsr combyt  ;get depth (# bitplanes) 
+ dex   ; convert 1-8 to 0-7 
+ cpx #8   ; range 0-7 
+10$ bcs fcerr  ;illegal quantity error 
+ stx GKI__parm4  ; depth 
+ 
+ jmp ($8006)  ;bra screendef 
+ 
+ .page 
+;***************************************************************** 
+;* SCREEN OPEN  open a graphic screen for viewing or drawing 
+;* 
+;*  Syntax : SCREEN OPEN screen# 
+;* 
+;*           parm1 = screen#      0-3    [910711] 
+;***************************************************************** 
+ 
+ 
+ScreenOpen 
+ jsr chrget  ;advance past Open token 
+ 

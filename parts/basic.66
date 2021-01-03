@@ -1,0 +1,36 @@
+auto 
+ jsr errind 
+ jsr linget 
+ lda linnum 
+ sta autinc 
+ lda linnum+1 
+ sta autinc+1 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl  HELP 
+ 
+help ldx errnum ;check for error status 
+ inx 
+ beq 1$  ; exit if there is no current error 
+ lda errlin 
+ ldy errlin+1 
+ sta linnum 
+ sty linnum+1 
+ jsr FindLine ;find the beginning of line with error 
+ bcc 1$  ; exit if line not found? 
+ 
+ jsr crdo ;begin a new line 
+ ldx linnum 
+ lda linnum+1 
+ ldz helper 
+ rmb4 helper ;temporarily disable token highlighting 
+ smb7 helper ;set 'help' flag for P1LINE 
+ jsr p1line ;display line & highlight error 
+ stz helper 
+1$ rmb7 helper ;reset 'help' flag 
+ bra crdo ;and return to caller 
+ 
+ 
+ 

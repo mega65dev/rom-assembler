@@ -1,0 +1,9 @@
+verify lda #1   ;verify flag 
+   .byte $2c  ;skip two bytes 
+ 
+load lda #0   ;load flag 
+ sta verck 
+1$ bbr4 runmod,2$  ;Error if in Edit mode     [910620] 
+ bra edit_err 
+2$ jsr plsv  ;parse parameters, dschk 
+ 

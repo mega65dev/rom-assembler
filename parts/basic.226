@@ -1,0 +1,45 @@
+concat jsr dospar  ;parse the line 
+ jsr chk4 
+ ldy #fconc  ;offset 
+ lda #12   ;length 
+ jsr trans  ;send command 
+ bra print_dos_error ;if any 
+ 
+ 
+ 
+ 
+; RENAME rdddfn=sdsfn 
+ 
+rename lda #$e4  ;set error flags 
+ jsr dosprs  ;parse the line 
+ jsr chk5 
+ ldy #fren  ;offset 
+ lda #8   ;length 
+ jsr trans  ;send command 
+ bra print_dos_error ;if any 
+ 
+ 
+ .page 
+; BACKUP D<destination_drive>=D<source_drive> 
+; 
+; where destination|source_drive is [0...9] 
+ 
+backup lda #$c7  ;set error flags 
+ jsr dosprs  ;parse the line 
+ and #$30  ;required parameters 
+ cmp #$30 
+ bne snerr 
+ jsr are_you_sure 
+ beq 10$   ;if run mode or not 'yes' 
+ rts 
+ 
+10$ jsr dclall  ;close disk 
+ ldy #fbak 
+ lda #4   ;length 
+ jsr trans  ;send command 
+ bra print_dos_error ;if any 
+ 
+ 
+ .page 
+; Trans subroutine 
+ 

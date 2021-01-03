@@ -1,0 +1,99 @@
+paoc15 jsr frmstr  ;do frmevl, frestr. return with len in a, index =~string 
+ jsr getspa  ;????fixes old PET bug- load"string",val(chr$(56)) [910917] 
+; ldx index1 
+; ldy index1+1 
+ jsr _setnam  ;bank always set at plsv 
+    ;fall into dschk     [900801] 
+ 
+ 
+ 
+dschk php   ;check if current device >=8, and clear DS if so 
+ pha 
+ lda _fa 
+ cmp #1 
+ bne 10$ 
+ lda _default_drive 
+ sta _fa 
+10$ cmp #8   ;????     [900807] 
+ bcc 20$ 
+ sta dosfa  ;also make last DOS device = current device 
+ jsr Clear_DS 
+20$ pla 
+ plp 
+ rts 
+ 
+ .page 
+;k_readst 
+; jsr put_io_in_map 
+; jmp _readst 
+ 
+ 
+ 
+;k_setlfs 
+; jsr put_io_in_map 
+; jmp _setlfs 
+ 
+ 
+ 
+;k_setnam 
+; jsr put_io_in_map 
+; jmp _setnam 
+ 
+ 
+ 
+;k_basin 
+; jsr put_io_in_map 
+; jmp _basin 
+ 
+ 
+;k_bsout 
+; jsr put_io_in_map 
+; jmp _bsout 
+ 
+ 
+;k_clrch 
+; jsr put_io_in_map 
+; jmp _clrch 
+ 
+ 
+ 
+;k_close 
+; jsr put_io_in_map 
+; jmp _close 
+ 
+ 
+ 
+;k_clall 
+; jsr put_io_in_map 
+; jmp _clall 
+ 
+ 
+ 
+;k_primm 
+; jsr put_io_in_map 
+; jmp _primm 
+ 
+ 
+;k_setbank 
+; jsr put_io_in_map 
+; jmp _setbank 
+; rts 
+ 
+ 
+;k_plot 
+; sta sw_rom_ram0  ;???? 
+; jmp _plot 
+ 
+ 
+;k_stop 
+; jsr put_io_in_map 
+; jmp _stop 
+ 
+;.end 
+ .page 
+ .subttl  PRINT USING 
+; Print Using - Formatted print routine 
+; 
+; Entered by cmd, print, or print# 
+; Syntax:  PRINT USING"****";a;b;c 
+ 

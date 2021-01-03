@@ -1,0 +1,34 @@
+eoa lda point ;decimal found? 
+ bpl 20$  ;yes... 
+ stx point ;no...add point 
+ 
+20$ jsr anaf ;analyze format 
+ lda vf 
+ cmp #$ff 
+ beq 40$  ;field overflow 
+ lda fesp ;exponent in field 
+ beq cff  ;convert to f format if not 
+ lda uexp ;exponent in number? 
+ bne 30$  ;yes... 
+ ldx enr 
+ jsr et2  ;add exponent to number 
+ dec fbuffr+2,x 
+ inx 
+ stx uexp 
+ jsr alg  ;delete leading zeros 
+ beq hup  ;all zero 
+ 
+30$ ldy posp ;+ or - in format? 
+ bne sswe ;yes... 
+ ldy sno  ;+? 
+ bmi sswe ;yes... 
+ lda vf 
+ 
+40$ beq errf ;no room for sign 
+ dec vf  ;reserve room 
+ bne 50$ 
+ lda nf  ;one #? 
+ beq errf ;yes...error 
+ 
+50$ inc swe 
+ 

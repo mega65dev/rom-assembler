@@ -1,0 +1,73 @@
+let jsr ptrget  ;get pntr to variable into "varpnt" 
+ sta forpnt  ;preserve pointer 
+ sty forpnt+1 
+ lda #equal_token 
+ jsr synchr  ;"=" is necessary 
+ 
+ lda intflg  ;save type for later 
+ pha 
+ lda valtyp  ;retain the variable's value type too 
+ pha 
+ 
+ jsr frmevl  ;get value of formula into FAC 
+ pla 
+ rol a   ;carry set for string, off for numeric 
+ jsr chkval  ;make sure VALTYP matches carry 
+    ;and set zero flag for numeric 
+ bne copstr  ;if numeric, copy it 
+ pla   ;get number type 
+ 
+qintgr bpl copflt  ;store a floating point number 
+ jsr round  ;round integer 
+ jsr ayint  ;make two-byte number 
+ ldy #0 
+ lda facmo  ;get high 
+ phx 
+ ldx #forpnt 
+ jsr sta_far_ram1 ;sta (forpnt),y ;store it 
+ iny 
+ lda faclo  ;get low 
+ jsr sta_far_ram1 ;sta (forpnt),y 
+ plx 
+ rts 
+ 
+ 
+ 
+copflt ldx forpnt 
+ ldy forpnt+1 
+ bra movmf_ram1  ;put number @forpnt in var bank 
+ 
+ 
+ 
+copstr pla   ;if string, no INTFLG 
+ 
+inpcom ldy forpnt+1  ;TI$? 
+ cpy #>zero  ; (only TI$ can be this on assign) 
+ beq Set_TI_String ; yes 
+ bra getspt  ; no 
+ 
+ .page 
+dskx1 pla 
+ iny 
+ 
+dskx2 cmp fretop+1 
+ bcc 20$ 
+ bne 10$ 
+ dey 
+ jsr indfmo 
+ cmp fretop 
+ bcc 20$ 
+ 
+10$ ldy faclo ;qvaria 
+ cpy vartab+1 ;if (vartab) > (facmo), don't copy 
+ bcc 20$ 
+ bne copy ;it is less 
+ lda facmo 
+ cmp vartab ;compare low orders 
+ bcs copy 
+ 
+20$ lda facmo ;dntcpy 
+ ldy facmo+1 
+ bra copyc 
+ 
+ .page 

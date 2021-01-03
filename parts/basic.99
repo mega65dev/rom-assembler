@@ -1,0 +1,11 @@
+lstnd dec keysiz 
+ bne lsloop  ;loop to end of definition 
+ cpx #9 
+ bcc 10$   ;skip if previous not normal character 
+ lda #'"' 
+ jsr _bsout  ;add ending quote 
+ 
+10$ lda #$8d 
+ jsr _bsout  ;add ending return (shifted) 
+ 
+ ldx z_p_temp_1  ;key number 

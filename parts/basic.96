@@ -1,0 +1,109 @@
+loop beq popngo ;no conditionals, just do it 
+ cmp #while_token 
+ beq loop10 
+ cmp #until_token 
+ bne snrjmp 
+ 
+;  Here for UNTIL 
+ 
+ jsr frmjmp 
+ lda facexp 
+ beq popngo ;false, do it again! 
+ 
+popdgo lda #do_token ;pop, but don't go 
+ jsr search 
+ bne poperr ;branch if not found 
+ jsr movfnd 
+ ldy #5 
+ bra rlsstk 
+ 
+ 
+fnderr 
+ lda tmplin ;loop not found error: must make curlin match oldtxt 
+ ldx tmplin+1 
+ sta curlin 
+ stx curlin+1 
+ 
+ ldx #errlnf 
+   .byte $2c 
+poperr 
+ ldx #errlwd ;loop without do 
+ bra error 
+ 
+ 
+ 
+;  Here for WHILE 
+ 
+loop10 
+ jsr frmjmp 
+ beq popdgo ;false, exit 
+popngo 
+ bsr popdgo 
+; dey 
+; lda (fndpnt),y ;restore pointers 
+; sta txtptr+1 
+; dey 
+; lda (fndpnt),y 
+; sta txtptr 
+; dey 
+; lda (fndpnt),y 
+ jsr retpat ;(** 01/18/84 fixes 'loop' to a direct mode 'do') 
+; lda (fndpnt),y 
+; sta curlin 
+ bra do 
+ 
+frmjmp 
+ jsr chrget 
+ bra frmevl 
+ 
+;.end 
+ .page 
+ .subttl  KEY 
+ 
+;************************************************************** 
+; 
+;   KEY  Programmable Key Functions    [900725] 
+; 
+;************************************************************** 
+ 
+key beq Key_List  ;KEY ? yes- no args 
+ 
+1$ ldx _kyndx  ;is function key buffered? 
+ bne 1$   ; yes- hang until IRQ finishes processing it ???? 
+ 
+ cmp #on_token  ;KEY ON ? 
+ bne 10$ 
+ rmb5 _locks  ; yes- reset Editor's lock bit 
+ bra 30$   ; exit 
+ 
+10$ cmp #load_token  ;KEY LOAD <filename>[,D#,U#] 
+ beq Key_load 
+ 
+ cmp #save_token  ;KEY SAVE <filename>[,D#,U#] 
+ beq Key_Save 
+ 
+ cmp #restore_token ;KEY RESTORE ?      [910925] 
+ bne 20$   ; no 
+ rmb5 _locks  ; yes- reset Editor's lock bit (enable keys) 
+ jsr key_restore  ;      init key definitions 
+ bra 30$   ;      exit 
+ 
+20$ cmp #esc_command_token ;KEY OFF ? 
+ bne Key_Change  ; no- must be new key definition 
+ jsr chrget 
+ cmp #off_token 
+ bne snerr  ; no- bad syntax 
+ smb5 _locks  ; yes- set Editor's lock bit 
+30$ bra chrget  ; exit 
+ 
+ .page 
+;************************************************************** 
+; 
+;   Key_List  List all function key definitions 
+; 
+;************************************************************** 
+ 
+Key_List 
+ ldx #0   ;display all key definitions 
+ ldy #0 
+ 

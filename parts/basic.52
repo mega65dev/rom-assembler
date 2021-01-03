@@ -1,0 +1,52 @@
+stradj ldy #0 
+ jsr indin1_ram1 ;push length on stack 
+ pha 
+ beq 50$  ; if length=0 do nothing 
+ iny 
+ jsr indin1_ram1 ;get low byte (into .x) 
+ tax 
+ iny 
+ jsr indin1_ram1 ;get high byte 
+ cmp max_mem_1+1 
+ bcc 10$  ;ok 
+ bne 50$  ;if above top of memory 
+ cpx max_mem_1 ;msb the same, test lsb 
+ bcs 50$  ;if above top of memory 
+ 
+10$ cmp fretop+1 
+ bcc 50$  ;if below fretop 
+ bne 20$ 
+ cpx fretop 
+ bcc 50$  ;if below fretop 
+ 
+20$ cmp dsdesc+2 
+ bne 30$  ;fix 
+ cpx dsdesc+1 
+ beq 50$ 
+ 
+30$ stx index ;ok set pointer 
+ sta index+1 
+ pla  ;get back length 
+ tax  ;into x also 
+ clc 
+ adc index 
+ sta index 
+ bcc 40$ 
+ inc index+1 
+40$ sec  ;carry set 
+ rts 
+ 
+50$ pla  ;clean up stack 
+ clc 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl PRINT  PRINT#  CMD 
+ 
+;*********************************************************** 
+;* 
+;* PRINT   PRINT#   CMD 
+;* 
+;********************************************************** 
+ 

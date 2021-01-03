@@ -1,0 +1,153 @@
+preamb .byte ' YEK'  ;key preamble 
+ 
+keydat .byte '($RHC+"'  ;chr$( string 
+ 
+keychr .byte cr,$8d,$22,esc ;special KEY chars- return, sft-return, quote, esc 
+ 
+ .page 
+;************************************************************************ 
+; 
+;   Key_Change  Add, Delete or Change function key definition 
+; 
+;************************************************************************ 
+ 
+Key_Change 
+ jsr getbyt ;get key number (1-16) 
+ stx z_p_temp_1 ;save key number     [910925] 
+ dex 
+ cpx #number_fkeys 
+ bcs fcerr ;exit - key number invalid 
+ 
+; stx z_p_temp_1 ;save key number 
+ jsr chkcom ;look for comma 
+ jsr frmstr ;do frmevl, frestr. returns len in .a, addr in 'index' 
+ tay  ;set up for call to do-a-key 
+ lda #1  ;tell do-a-key that string is in bank 1 
+ sta index+2 
+ lda #index ;now .A points to (adr lo, adr hi, bank #) 
+ ldx z_p_temp_1 
+; inx         [910925] 
+key_restore 
+; jsr put_io_in_map 
+ jsr _doakey ;re-define the key 
+ bcs omerr ; bad return (.c=1) 
+ rts  ; ok return  (.c=0) 
+ 
+ .page 
+;************************************************************************ 
+;   Key_Load  Load function key definitions (from disk)   [900725] 
+;************************************************************************ 
+ 
+Key_Load 
+ jsr GetLoadChannel ;get a channel      [911001] 
+ ldy #>_pky_lengths 
+ lda #<_pky_lengths 
+ jsr LoadBlock  ;load it 
+ bra list_err  ;release channel, close file, return to main 
+ 
+ 
+GetLoadChannel   ;Used by KeyLoad and SpriteLoad    [911001] 
+ jsr chrget  ;eat LOAD token 
+ lda #$e6  ;parse:  filename [,U#] [,D#] 
+ jsr dosprs  ; (like dopen:  0 0 0 *  * 0 0 1 ) 
+ jsr chk1  ;check parameters 
+ lda #0 
+ sta dossa  ;setup as dload would (0 = load channel) 
+ jsr find_la  ;find an unused LA to use (cannot use reserved one) 
+ ldy #fopn 
+ ldx #4 
+ jsr open_file  ;open the file 
+ bcs LoadEOF  ; exit if problem 
+ ldx dosla 
+ jsr _chkin  ;get input channel 
+ bcs LoadEOF  ; exit if bad?? 
+ jsr _basin  ;waste dummy load address 
+ jsr _basin 
+ jsr _readst  ;prevent corruption if there's a problem 
+ bne LoadERR  ; exit if problem 
+ clc 
+ rts 
+ 
+ .page 
+LoadBlock 
+ sta highds  ;where to put data 
+ sty highds+1 
+LoadBlockNext 
+ ldy #0 
+10$ jsr _basin  ;read definitions 
+ sta (highds),y 
+ jsr _readst  ; check channel status 
+ bne LoadEOF  ;  exit if eof or error 
+ jsr _stop 
+ beq LoadEOF  ; exit if stop key down 
+ iny 
+ bne 10$   ; continue up to 1 page maximum 
+ clc   ;indicate "more" 
+ rts 
+ 
+ 
+LoadERR 
+ ldx #erload  ;Load Error 
+ sec 
+   .byte $89 
+ 
+LoadEOF 
+ clc 
+ bra list_err  ;release channel, close file, return to main 
+ 
+ .page 
+;************************************************************************ 
+;   Key_Save  Save function key definitions (from disk)   [900725] 
+;************************************************************************ 
+ 
+Key_Save 
+ jsr GetSaveChannel ;       [910930] 
+ lda #highds  ;set starting & ending addresses 
+ ldy #>_pky_lengths ; start address & pointer to it 
+ ldx #<_pky_lengths 
+ sty highds+1 
+ stx highds 
+ iny   ; end address = start address + 256 + 1 
+ inx 
+ bra savenb  ;       [910925] 
+; jsr _savesp  ;save it 
+;; clc   ; return no error  ????why not  [910404] 
+; bra exit_disk_op ; but if direct mode print DOS error  [910404] 
+ 
+ 
+ 
+GetSaveChannel   ;Used by KeySave and SpriteSave    [910930] 
+ jsr chrget  ;eat SAVE token 
+ lda #$66  ;parse:  filename [,U#] [,D#] 
+ jsr dosprs  ;parse options 
+ jsr chk2  ;check required parameters 
+ 
+ ldy #fopn  ;DOS table offset 
+ lda #4   ; length 
+ jsr sendp 
+ lda #sys_bank  ;set banks ???? buffer in system bank ???? 
+ ldx #sys_bank 
+ jmp _setbank 
+ 
+;.end 
+ .page 
+ .subttl  BANK 
+ 
+;************************************************************************ 
+;*  Set Memory Bank for PEEK,POKE,WAIT,BLOAD,BSAVE and SYS,BOOT Commands 
+;* 
+;*  Syntax: BANK DATA  n  for PEEK,POKE,WAIT,BLOAD,BSAVE 
+;*  BANK SYS  [a,x,y,z] for SYS,BOOT Commands 
+;* 
+;* where   n=  %11111111  to access I/O area (System MAP) 
+;*      %0xxxxxxx to use physical bank n 
+;* 
+;* or      a,x,y,z  describe precise configuration for MAPper 
+;*    if omitted, the System MAP is to be used. 
+;* 
+;* The DATA option is to access data,  i.e., LDA/STA_far 
+;* The SYS  option is to execute code, i.e., JMP/JSR_far 
+;* 
+;*  Idea: BANK SCREEN n  when REC is finalized???? 
+;************************************************************************ 
+ 

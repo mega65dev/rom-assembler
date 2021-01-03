@@ -1,0 +1,49 @@
+c65.setdpat 
+ jsr getbyt  ;get pattern type 
+ cpx #4+1  ;63+1       [911028] 
+10$ bcs fcerr  ; if out of range 
+ stx GKI__parm1 
+ txa 
+ bne 20$   ;if parm1 is 0 then get extra stuff 
+ 
+ jsr combyt  ;get number of bytes 
+ cpx #5 
+ bcs 10$   ; too many bytes 
+ stx GKI__parm2 
+ stx z_p_temp_1  ; save for count 
+ 
+ jsr combyt  ;get byte 1 
+ stx GKI__parm3 
+ dec z_p_temp_1 
+ beq 20$ 
+ bmi fcerr  ; too few bytes 
+ 
+ jsr combyt  ;get byte 2 
+ stx GKI__parm4 
+ dec z_p_temp_1 
+ beq 20$ 
+ 
+ jsr combyt  ;get byte 3 
+ stx GKI__parm5 
+ dec z_p_temp_1 
+ beq 20$ 
+ 
+ jsr combyt  ;get byte 4 
+ stx GKI__parm6 
+ 
+20$ jmp ($8016)  ;bra setdpat 
+ 
+ .page 
+;***************************************************************** 
+;* PALETTE   set palette colors 
+;* 
+;*  Syntax : PALETTE {screen|COLOR}, color_index, red, green, blue 
+;*           PALETTE RESTORE 
+;* 
+;*           parm1 = screen  0-3     [910711] 
+;*           parm2 = color_index 0-255 
+;*           parm3 = red           0-31 (b0-3 red, b4=fgbg)  [910520] 
+;*           parm4 = green         0-15 
+;*           parm5 = blue          0-15 
+;***************************************************************** 
+ 

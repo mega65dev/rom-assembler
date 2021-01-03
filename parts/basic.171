@@ -1,0 +1,67 @@
+qintrt rts 
+ 
+ 
+qint1 tay  ;put count in counter 
+ lda facsgn 
+ and #$80 ;get sign bit 
+ lsr facho ;save first shifted byte 
+ ora facho 
+ sta facho 
+ jsr rolshf ;shift the rest 
+ sty bits ;zero (bits) 
+ rts 
+ 
+ 
+ .page 
+; Greatest Integer Function 
+ 
+int lda facexp 
+ cmp #$a0 
+ bcs intrts ;forget it 
+ jsr round ;round FAC per FACOV (fixes the  INT(.9+.1) -> 0  Microsoft bug.  FAB) 
+ jsr qint ;INT(FAC) 
+ sty facov ;clr overflow byte 
+ lda facsgn 
+ sty facsgn ;make FAC look positive 
+ eor #$80 ;get complement of sign in carry 
+ rol a 
+ lda #$a0 ;@230+8 
+ sta facexp 
+ lda faclo 
+ sta integr 
+ bra fadflt 
+ 
+ 
+clrfac sta facho ;make it really zero 
+ sta facmoh 
+ sta facmo 
+ sta faclo 
+ tay 
+intrts rts 
+ 
+ .page 
+; Floating Point Input Routine. 
+; 
+; Number input is left in FAC.  At entry (TXTPTR) points to the first character 
+; in a text buffer.  The first character is also in (a).  FIN packs the digits 
+; into the FAC as an integer and keeps track of where the decimal point is. 
+; (DPTFLG) tells whether a dp has been seen.  (DECCNT) is the number of digits 
+; after the dp.  At the end (DECCNT) and the exponent are used to determine how 
+; many times to multiply or divide by ten to get the correct number. 
+ 
+ 
+fin stx fin_bank  ;save bank number where string is stored 
+ 
+ ldy #0   ;zero facsgn, sgnflg 
+ ldx #$0a  ;zero exp and ho (and moh) 
+10$ sty deccnt,x  ;zero mo and lo 
+ dex   ;zero tenexp and expsgn 
+ bpl 10$   ;zero deccnt, dptflg 
+ 
+ bcc findgq  ;flags still set from chrget 
+ cmp #'-'  ;a negative sign? 
+ bne qplus  ;no, try plus sign 
+ stx sgnflg  ;it's negative. (x=@377) 
+ bra finc  ;always branches 
+ 
+ .page 

@@ -1,0 +1,27 @@
+sadwrd jsr frmnum  ;get number     label [910307] 
+ bra getsad  ;get signed 2 byte coordinate,do rts 
+ 
+ .page 
+;************************************************************* 
+; CHKCOM_1  --  Check for a comma 
+; 
+;  carry set & eq = end of string 
+;  carry set & neq = not a comma 
+;  carry clear = a comma 
+;************************************************************* 
+ 
+chkcom_1 
+ jsr chrgot  ;get character in input stream 
+ beq 20$   ;skip if end of string 
+ cmp #','  ;check if a comma 
+ clc 
+ beq 10$   ;skip if yes 
+ sec              ;set carry if not 
+10$ php 
+ pha 
+ jsr chrget       ;move to next non-space character 
+ pla 
+ plp 
+20$ rts 
+ 
+ 

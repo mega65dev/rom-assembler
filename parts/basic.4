@@ -1,0 +1,62 @@
+init_vectors 
+ ldx #3$-2$-1 
+1$ lda 2$,x 
+ sta vectors_begin,x 
+ dex 
+ bpl 1$ 
+ 
+ rts 
+ 
+ 
+2$ .word  AutoScroll    ;autoscroll vector 
+ .word  n_esc_fn_vec    ;escape function vector 
+ .word  graphic_kernel    ;graphic extension vector 
+ .word  nerror,nmain,ncrnch,nqplop,ngone,neval ;traditional vectors 
+ .word  nesclk,nescpr,nescex   ;escape command vectors 
+3$ 
+ 
+ .page 
+;; CHRGET/CHRGOT code.  It is downloaded to RAM. 
+;; 
+;chrget_pattern 
+; inw txtptr ;CHRGET entry 
+; phz  ;CHRGOT entry (chrget+2) 
+; phx 
+; lda #0 
+; ldx #$f0 
+; ldy #0 
+; ldz #$f0 
+; map 
+; ldy #0 
+; lda (txtptr),y 
+; phy 
+; pha 
+; jsr _restore_sys 
+; nop  ;unmap 
+; pla 
+; ply 
+; plx 
+; plz 
+; 
+; cmp #':' ;QNUM entry (chrget+27) 
+; bcs 2$ 
+; cmp #' ' 
+; beq chrget_pattern 
+; sec 
+; sbc #'0' 
+; sec 
+; sbc #$d0 
+;2$ rts  ;(42 bytes to here) 
+; 
+; 
+; 
+;; Constants which must be moved to RAM 
+; 
+; .byte   0,0,0 ;zero, of course! 
+; 
+;endmov   ;(45 bytes to here) 
+ 
+ .page 
+; CHRGET/CHRGOT code. 
+; 
+ 

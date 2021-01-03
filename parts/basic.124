@@ -1,0 +1,13 @@
+finptr lda lowtr 
+ clc 
+ adc #2 
+ ldy lowtr+1 
+ bcc 10$ 
+ iny 
+10$ sta varpnt 
+ sty varpnt+1 
+ rts 
+ 
+ 
+ 
+ 

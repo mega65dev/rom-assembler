@@ -1,0 +1,21 @@
+strlit_1   ;//// entry from SPRSAV 
+ jsr strini 
+ tay 
+ beq putnew  ;length=0, don't bother copying 
+ pha   ;save length 
+ phx 
+ ldx #frespc 
+10$ dey 
+ jsr indst1  ;lda (strng1),y in bank 0 
+ jsr sta_far_ram1 ;sta (frespc),y in bank 1 
+ tya 
+ bne 10$ 
+ plx 
+ pla   ;restore length 
+ jsr mvdone  ;finish up by updating frespc 
+ 
+ .page 
+; Some string function is returning a result in DSCTMP.  Set up a temp 
+; descriptor with DSCTMP in it.  Put a pointer to the descriptor in FACMO&LO 
+; and flag the result as a string type. 
+ 

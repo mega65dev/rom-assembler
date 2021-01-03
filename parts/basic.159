@@ -1,0 +1,12 @@
+movpnt eor #$ff  ;comp and add 
+ sec 
+ adc grbpnt 
+ ldy grbpnt+1 
+ bcs 1$ 
+ dey 
+1$ sta grbpnt 
+ sty grbpnt+1 
+ rts 
+ 
+ 
+ 

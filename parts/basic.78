@@ -1,0 +1,45 @@
+p3code 
+ inx 
+ lda fbuffr+1,x  ;get character from number 
+ beq 30$   ;end of number 
+ 
+ pha   ;save digit from new number 
+ jsr chargt  ;get digit from old number 
+ cmp #':'  ;command terminator or letter? 
+ bcs 10$ 
+ cmp #' '  ;space? (fix for goto10 :rem) 
+ beq 10$ 
+ sec 
+ sbc #'0'  ;number? 
+ sec 
+ sbc #$d0 
+ bcc 20$   ;digit...move on 
+ 
+10$ jsr move_init  ;other char...move up 
+ jsr moveup 
+ inw text_top 
+ 
+20$ pla 
+ phx 
+ ldy #0 
+ jsr sta_far_txt  ;put new digit in new number (bleed-thru) 
+ plx 
+ bra p3code 
+ 
+ 
+30$ jsr chrget 
+ bcs iline_20  ;old stuff after # is other char 
+ 
+40$ jsr move_init  ;digit...move down 
+ jsr movedown 
+ dew text_top 
+ jsr chrgot 
+ bcc 40$   ;still digits... 
+ 
+ bra iline_20  ;branch always 
+ 
+ .page 
+;*************************** FORM_LINE ********************************* 
+ 
+; Remaps the destination line if it is greater than n3 
+ 

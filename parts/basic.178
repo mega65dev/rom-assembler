@@ -1,0 +1,88 @@
+negop   ;/// entry point 
+ lda facexp 
+ beq negrts 
+ lda facsgn 
+ eor #$ff 
+ sta facsgn 
+negrts rts 
+ 
+;.end 
+ .page 
+ .subttl Floating Point Math Package (CODE24) 
+ 
+; Exponentation Function 
+; 
+; First save the original argument and multiply the FAC by LOG2(e).  The 
+; result is used to determine if overflow will occur since 
+; 
+;  EXP(x) = 2^(x*LOG2(e)) 
+; 
+; where 
+;  LOG2(e) = LOG(e), base 2 
+; 
+; Then save the integer part of this to scale the answer at the end, since 
+; 2^y=2^INT(y)*2^(y-INT(y)) and 2^INT(y) are easy to compute.  Now compute 
+; 
+;  2^(x*LOG2(e)-INT(x*LOG2(e)) 
+; by 
+;  p(LOG(2)*(INT(x*LOG2(e))+1)-x 
+; 
+; where p is an approximation polynomial. The result is then scaled by the 
+; power of two previously saved.  Re: Taylor expansion. 
+ 
+ 
+exp lda #<logeb2 ;multiply by LOG(e) base 2 
+ ldy #>logeb2 
+ jsr rommlt ;LOGEB2->ARG, FAC=FAC*ARG 
+ lda facov 
+ adc #$50 ;???? 
+ bcc 10$ 
+ jsr incrnd 
+ 
+10$ sta oldov 
+ jsr movef ;to save in ARG without round.  ARG=FAC, facov=0) 
+ lda facexp 
+ cmp #$88 ;if ABS(FAC) >= 128, too big 
+ bcc 30$ 
+ 
+20$ jsr mldvex ;overflow or overflow 
+30$ jsr int  ;FAC=INT(FAC), uses facov 
+ lda integr ;get low part 
+ clc 
+ adc #$81 
+ beq 20$  ;overflow or overflow!! 
+ 
+ sec 
+ sbc #1  ;subtract it 
+ pha  ;save a while 
+ 
+ ldx #5  ;swap FAC and ARG 
+40$ lda argexp,x 
+ ldy facexp,x 
+ sta facexp,x 
+ sty argexp,x 
+ dex 
+ bpl 40$ 
+ 
+ lda oldov 
+ sta facov 
+ jsr fsubt ;FAC=ARG-FAC 
+ jsr negop ;negate FAC 
+ lda #<expcon 
+ ldy #>expcon 
+ jsr poly 
+ lda #0 
+ sta arisgn ;multiply by positive 1.0 
+ 
+ pla  ;recall scale factor 
+ jsr mldexp ;modify facexp and check for overflow 
+ rts  ; (has to do jsr due to pla's in muldiv) 
+ 
+ .page 
+; Polynomial Evaluator and the Random Number Generator. 
+; 
+; Evaluate  p(x^2)*x 
+; The pointer to degree is in (a,y) and the constants follow the degree. 
+; For x=FAC, compute  c0*x + c1*x^3 + c2*x^5 + c3*x^7 +...+ c(n)*x^(2*n+1) 
+ 
+ 

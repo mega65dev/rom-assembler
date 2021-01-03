@@ -1,0 +1,68 @@
+search sta srchtk ;save token to search for 
+ jsr movtos ;tos => fndpnt 
+ 
+ 
+; Test if pointer is at bottom of stack.  If so, the item was not found. 
+ 
+5$ lda fndpnt 
+ cmp #<stkbot 
+ bne 10$  ;(fndpnt) <> bottom, ok 
+ lda fndpnt+1 ;lsb's the same, test msb's 
+ cmp #>stkbot 
+ beq 98$  ;stack empty, rts 
+ 
+10$ ldy #0 
+ lda srchtk ;what are we looking for? 
+ cmp #for_token ;'for' tokens are special cases 
+ bne 20$ 
+ 
+; Looking for a 'for' token.  If next token examined is not a 'for' token, 
+; return with z = 0.  Otherwise, check the pointer to its 'for' variable. 
+; If the variable pointer = (forpnt) or if (forpnt) = $FFxx, return with z=1. 
+; Otherwise, set up x with length of a 'for' entry, and use the usual 
+; mechanisim for examining the next entry. 
+ 
+ cmp (fndpnt),y ;indirect ok- looking at runtime stack???? 
+ bne 99$  ;not 'for', do rts with z = 0 
+ ldy #2  ;point to msb of 'for' variable 
+ lda forpnt+1 
+ cmp #$ff 
+ beq 99$  ;do rts with z = 1 
+ cmp (fndpnt),y 
+ bne 15$  ;not right variable, keep looking. 
+ dey 
+ lda forpnt ;test lsb 
+ cmp (fndpnt),y 
+ beq 99$  ;a hit! rts with z = 1 
+ 
+15$ ldx #lenfor 
+ bra 30$  ;keep looking 
+ 
+20$ lda (fndpnt),y 
+ cmp srchtk ;is this the correct type of entry? 
+ beq 99$  ;rts with z = 1 
+ 
+; The entry on top of the run-time stack is not the entry we are looking for. 
+; Find out what is there, and advance temp. pointer past it. 
+ 
+ ldx #lenfor ;is it a 'for' entry? 
+ cmp #for_token 
+ beq 30$ 
+ ldx #5  ;must be gosub or do by default 
+ 
+30$ txa 
+ clc 
+ adc fndpnt 
+ sta fndpnt 
+ bcc 5$ 
+ inc fndpnt+1 
+ bra 5$  ;always 
+ 
+98$ ldy #1  ;clear z flag 
+99$ rts 
+ 
+ .page 
+; GETSTK 
+; 
+; Add (.A) elements to top of run-time stack.  Error if result exceeds tos. 
+ 

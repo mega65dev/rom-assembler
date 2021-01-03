@@ -1,0 +1,27 @@
+kloop clc  ;compute source address 
+ tya 
+ adc txtptr 
+ sta index1 
+ lda txtptr+1 
+ adc #0 
+ sta index1+1 
+ ldy #$ff 
+ 
+10$ iny 
+ lda (index1),y ;move source..  ????assumes text in common area 
+ sta (txtptr),y ;to destination offset ????assumes text in common area 
+ bne 10$  ;not end of line 
+ rts 
+ 
+ .page 
+;      RESER 
+; 
+;  Search reserved word list for a match 
+; 
+;  Entry:  (txtptr) is first char of word to match 
+;    (y,a) is start of table to check 
+; 
+;  Exit:   .y  length of word matched 
+;    .c  success/fail (set/clear) flag 
+;    count token value 
+ 

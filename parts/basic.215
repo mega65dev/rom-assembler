@@ -1,0 +1,13 @@
+find_la 
+ lda #0   ;1-127 possible 
+ 
+10$ inc a 
+ bmi too_many_files ; if none available error 
+ jsr _lkupla  ;kernel will lookup this la in its tables 
+ bcc 10$   ; if used keep looking 
+ sta dosla  ;save logical address 
+ rts   ;return .a = la 
+ 
+ 
+ 
+ 

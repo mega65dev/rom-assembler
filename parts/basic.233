@@ -1,0 +1,38 @@
+dbank lda #$01 ;repeated param? 
+ jsr prxrpt 
+ jsr gtbytc ;getval 
+; cpx #16  ;bank too large? 
+; bcs fcerr ;illegal qty 
+ stx dosbnk 
+ lda #$01 
+ tsb parstx ;set bnk bit in aux status 
+ lda #0  ;.a=std status wrd, no bits to set 
+ rts 
+ 
+ 
+newnam 
+ pha  ;save nam1,2 for subdir check later  [901115] 
+ jsr prmrpt ;check for repeated parameter 
+ jsr frmstr 
+ tax  ;save length of string 
+ beq err_mfn ;if length = 0 
+ ldy #0 
+ jsr indin1_ram1 
+ cmp #'@' ;Replace file convention? 
+ bne 10$  ; no 
+ lda #$80 ; yes- check for repeated param 
+ jsr prmrpt 
+ smb7 parsts ;  set "@" flag 
+ dex  ;  decrement length 
+ inw index1 ;  increment past "@" 
+ bra lenchk 
+ 
+10$ cmp #'/' ;Subdirectory (partition)?   [901115] 
+ bne lenchk ; no 
+ pla  ; yes- recall nam1 or nam2 
+ tsb dosflags ;  set appropriate '/' flag (.a=1 or 2) 
+ dex  ;  decrement length 
+ inw index1 ;  increment past "@" 
+   .byte $89 
+ 
+ 

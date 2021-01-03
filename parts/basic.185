@@ -1,0 +1,46 @@
+autoboot 
+ lda #0   ;Select internal drive 
+ sta fdc 
+10$ bit fdc+2  ; busywait 
+ bmi 10$ 
+ lda fdc+3  ;See if a diskette is present 
+ and #$08 
+ beq 30$   ; exit with no action taken if not 
+ 
+ lda #$e6  ;set up parameters for DOS parser like BLOAD 
+ ldx #$fc 
+ jsr dosprx  ;let the parser init DOS stuff 
+ 
+ ldy #$ff 
+20$ iny   ;Copy filename from ROM into buffer 
+ lda autoboot_filename,y 
+ sta savram,y 
+ bne 20$   ; null terminated 
+ sty dosf1l  ; length not counting terminator 
+ 
+ lda #%01000001  ;set flag for load indicating autoboot 
+ sta runmod  ;set flag for load not to go to ready 
+ jsr dload_boot  ;skip parser & load it 
+ 
+ lda #0   ; clear autoboot flags 
+ sta runmod 
+ phx   ; save end address 
+ phy 
+ jsr _readst  ;get status report, but check it later 
+ pha 
+ jsr Suck_DS  ;clear any DOS errors (to kill error LED) 
+ pla   ;now check I/O status 
+ ply 
+ plx 
+ and #$bf  ; EOI is okay 
+ bne 30$   ; outside problems 
+ bcs 30$   ; inside problems 
+ 
+ stx text_top  ;success- set end address & run it 
+ sty text_top+1 
+ cli 
+ bra run_a_program 
+ 
+30$ rts   ;failure- go_ready 
+ 
+ 

@@ -1,0 +1,13 @@
+sprbit txa 
+ lsr a   ;put lsb in .C (0 clear, 1 set sprite bit) 
+ bne fcerr  ;only 0 or 1, please. 
+; jsr put_io_in_map 
+ ldx z_p_temp_1  ;get sprite number 
+ lda sbits,x 
+ ora vic,y 
+ bcs 10$ 
+ eor sbits,x 
+10$ sta vic,y 
+ rts 
+ 
+ 

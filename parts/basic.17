@@ -1,0 +1,16 @@
+stop bcs stopc  ;STOP: .c=1 
+ 
+end clc   ;END: .c=0 
+stopc bne snerr  ; error if args present   [910410] 
+ 
+stop_1 bbr7 runmod,10$  ; branch if direct mode 
+ jsr tto   ;transfer txtptr to oldtxt 
+ lda curlin 
+ ldy curlin+1 
+ sta oldlin 
+ sty oldlin+1 
+10$ pla   ;.diris 
+ pla 
+ bcc ready  ;say 'ready' if END, say 'break' if STOP 
+ 
+ 

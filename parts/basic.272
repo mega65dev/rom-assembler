@@ -1,0 +1,27 @@
+foreground 
+ jsr getnyb  ;Set text foreground color 
+ stx _color 
+ rts 
+ 
+ 
+ 
+highlight 
+ beq snerr  ;missing args??     [911017] 
+ cmp #',' 
+ beq 10$   ; options byte only 
+ 
+ jsr getbyt  ;Set text highlight color 
+ stx highlight_color 
+ 
+10$ jsr optzer  ;set options:     [911001] 
+ bcc 20$   ; comma but no value not given?? 
+ txa 
+ and #3   ; 0= error msgs only 
+ asl a   ; 1= REMs 
+ asl a   ; 2= tokens 
+ asl a 
+ sta helper 
+20$ rts 
+ 
+ 
+ 

@@ -1,0 +1,59 @@
+hexd jsr chknum 
+ phw poker  ;save linnum    [910911] 
+ jsr getadr  ;2 byte val in (poker) 
+ lda #4 
+ jsr strspa 
+ ldy #0 
+ lda poker+1 
+ jsr hexit 
+ lda poker 
+ jsr hexit 
+ pla   ;restore linnum 
+ sta poker+1 
+ pla 
+ sta poker 
+ bra chrd1  ;pla,pla,jmp putnew 
+ 
+hexit pha 
+ lsr a 
+ lsr a 
+ lsr a 
+ lsr a 
+ jsr dohex 
+ pla 
+ 
+dohex and #$0f 
+ cmp #$0a 
+ bcc 1$ 
+ adc #6 
+1$ adc #'0' 
+ phx 
+ ldx #dsctmp+1 
+ jsr sta_far_ram1 ;sta (dsctmp+1),y 
+ plx 
+ iny 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl  JOY 
+ 
+;************************************************************* 
+; JOY (n)  -- Return joystick status 
+; 
+; where: n =  1  return position of joystick-1 
+;       2  return position of joystick-2 
+; 
+; result:      0  no direction, no button 
+;       1-8    direction (see below), no button 
+;       128 no direction, button 
+;       129-136 direction & button  128 + [1...8] 
+; 
+; button--->  128        1 
+;       8     2 
+; stick--->  7           3 
+;       6     4 
+;          5 
+; 
+;************************************************************* 
+ 

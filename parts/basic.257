@@ -1,0 +1,111 @@
+c65.screenopen 
+ jsr getbyt  ;get screen# in .x 
+ cpx #4   ; range 0-3   [910711] 
+ bcs fcerr  ; branch if out of range 
+ 
+ stx GKI__parm1 
+ jmp ($8008)  ;screenopen    [910826] 
+ 
+; bcs NoGraphicArea ; bad ???? let user catch via RGRAPHIC 
+; rts 
+ 
+ .page 
+;***************************************************************** 
+;* SCREEN CLOSE  close a graphic screen 
+;* 
+;*  Syntax : SCREEN CLOSE screen# 
+;* 
+;*           parm1 = screen#  0-3    [910711] 
+;***************************************************************** 
+ 
+ 
+ScreenClose 
+ jsr chrget  ;advance past Close token 
+ 
+c65.screenclose 
+ jsr getbyt  ;get screen# 
+ cpx #4   ; range 0-3   [910711] 
+ bcs fcerr  ; branch if out of range 
+ stx GKI__parm1 
+ 
+ jmp ($800a)  ;bra screenclose 
+ 
+ .page 
+;***************************************************************** 
+;* PEN 
+;* 
+;*  Syntax : PEN  Pen#, ColorReg 
+;* 
+;*           parm1 = pen#  0-2 
+;*           parm2 = color reg#  0-255 
+;***************************************************************** 
+ 
+c65.setpen 
+ jsr getbyt  ;get pen# 
+ cpx #3   ; range 0-2 
+ bcs fcerr  ; branch if out of range 
+ stx GKI__parm1 
+ 
+ jsr combyt  ;get color reg# 
+    ;???? error check for max color allowed 
+    ; for the current screen. 
+ stx GKI__parm2 
+ 
+ jmp ($8010)  ;bra setpen 
+ 
+ .page 
+;***************************************************************** 
+;* DMODE   Set Draw Mode 
+;* 
+;*  Syntax : DMODE  jam, complement, stencil, style, thickness 
+;* 
+;*         parm1 = jam           0-1 
+;*         parm2 = complement (XOR) 0-1 
+;*         parm3 = stencil       0-1  <<< not implemented  [911003] 
+;*         parm4 = style         0-3  <<< only 0-1 implemented [911003] 
+;*         parm5 = thickness     1-8  <<< not implemented  [911003] 
+;******************************************************************* 
+ 
+c65.setdmode 
+ jsr getbyt  ;jam mode 
+ cpx #2 
+ bcs 10$ 
+ stx GKI__parm1 
+ 
+ jsr combyt  ;complement (xor) mode 
+ cpx #2   ; (ignores jam mode if set) 
+ bcs 10$ 
+ stx GKI__parm2 
+ 
+ jsr combyt  ;stencil mode (not implemented) 
+ cpx #2 
+ bcs 10$ 
+ stx GKI__parm3 
+ 
+ jsr combyt  ;style mode 
+ cpx #4   ;0=solid, 1=pattern, 2=tile (not implemented), 3=reserved 
+ bcs 10$ 
+ stx GKI__parm4 
+ 
+ jsr combyt  ;thickness mode (not implemented) 
+; dex   ; adjust to 0-7     [911003] 
+ cpx #8+1 
+10$ bcs fcerr  ;illegal quantity error 
+ stx GKI__parm5 
+ 
+ jmp ($8014)  ;bra setdmode 
+ 
+ .page 
+;***************************************************************** 
+;* DPAT   set draw pattern 
+;* 
+;*  Syntax : DPAT  type [, # bytes, byte1, byte2, byte3, byte4] 
+;* 
+;*           parm1 = type        0-63  <<< only 0-4 implemented [911003] 
+;*           parm2 = # bytes     1-4 
+;*           parm3 = byte1       0-255 
+;*           parm4 = byte2       0-255 
+;*           parm5 = byte3       0-255 
+;*           parm6 = byte4       0-255 
+;***************************************************************** 
+ 

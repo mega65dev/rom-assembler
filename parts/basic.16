@@ -1,0 +1,29 @@
+nescex bcc xeqchr  ;jmp chrget 
+ 
+snerr1 bra snerr 
+ 
+morsts cmp #':' 
+ beq xeqcm  ;if ':', continue statement 
+ bra snerr1 
+ 
+ .page 
+; STOP, STOP KEY, and END handlers 
+; 
+ 
+is_stop_key_down 
+ jsr _stop  ;test stop key 
+ bne do_rts  ; not down, exit 
+ 
+; ldy trapno+1  ;test if trap on????   removed [910925] 
+; iny 
+; beq stop_1  ;no, do a normal stop 
+ 
+ 
+break_exit   ;STOP KEY:     [910104] 
+10$ jsr _stop  ;wait for the user to release the key 
+ beq 10$ 
+ ldx #erbrk  ;take the vector thru error to ready 
+ bra error 
+ 
+ 
+ 

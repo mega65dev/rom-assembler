@@ -1,0 +1,179 @@
+edit_load_done 
+ lda #0   ;EOF: terminate memory with a pair of nulls 
+ tay 
+ jsr sta_far_in1 
+ iny 
+ jsr sta_far_in1 
+ inw index 
+ inw index 
+ ldx index  ;set top 
+ ldy index+1 
+ stx text_top 
+ sty text_top+1 
+ bra link_program ;relink & RTS 
+ 
+ .page 
+edit_save 
+ lda #$e6  ;parse:  filename [,U#] [,D#] 
+ jsr dosprs  ; (like dopen:      0 0 0 *  * 0 0 1 ) 
+ jsr chk1  ;check parameters 
+ jsr find_la  ;find an available LA 
+ jsr find_sa  ;find an available SA 
+ ldy #fsavseq 
+ ldx #8 
+ jsr open_file  ;open the file 
+ bcs list_err  ; exit if error 
+ ldx dosla 
+ jsr _chkout  ;get output channel 
+ bcs 30$   ; error 
+ 
+ lda txttab  ;save address 
+ ldx txttab+1 
+ sta index 
+ stx index+1 
+ 
+10$ jsr _stop  ;check stop key 
+ beq 30$   ; exit if down 
+ jsr _readst  ;check channel status 
+ bne 30$   ; exit if eof or error???? 
+ 
+ ldy #3   ;save a line, starting past links & line# 
+20$ iny   ;bump buffer pointer 
+; cpy #buflen  ;check buffer (160 max. input buffer size to edit) 
+; beq ??$   ; split long lines into two???? 
+ jsr indin1 
+ tax   ;save character for eol check 
+ bne 21$ 
+ lda #cr   ; eol: substitute CR ???? allow some other terminator 
+21$ jsr _bsout  ;write file data 
+ txa 
+ bne 20$   ;loop until eol 
+ 
+ iny   ;advance text index to start of next line 
+ tya 
+ clc 
+ adc index 
+ sta index 
+ bcc 26$ 
+ inc index+1 
+ 
+26$ ldy #0   ;check for EOF: a pair of null links 
+ jsr indin1 
+ bne 10$ 
+ iny 
+ jsr indin1 
+ bne 10$   ; loop until end of text 
+ 
+30$ bra list_exit  ;release channel, close file, exit 
+ 
+;.end 
+ .page 
+ .subttl  ETC. 
+Sound_CLR 
+ jsr chkeos  ;eat CLR token, check eos   [910717] new 
+Sound_CLR_1 
+ php 
+ sei 
+; jsr go_slow  ;      [910716] 4567R7A 
+ lda #0 
+ ldx #24-1 
+40$ sta sid1,x  ;initialize SID chips 
+ sta sid2,x 
+ dex 
+ bpl 40$ 
+ 
+ sta filters1+2  ;set filters off 
+ sta filters2+2 
+ 
+ lda #8   ;set default volume 
+ sta filters1+3 
+ sta filters2+3  ;      [910612] 
+; sta filters+4  ;why?      [910612] 
+ sta sid1+24 
+ sta sid2+24 
+ 
+; jsr go_fast  ;      [910716] 4567R7A 
+ 
+ bit _pal_ntsc  ;determine if PAL or NTSC system  [910724] 
+ bmi 1$   ;...branch if PAL 
+ lda #<beats_ntsc/4 ;set beat to quarter note (4/4 time = .5 sec) 
+ ldy #>beats_ntsc/4 
+ bra 2$ 
+1$ lda #<beats_pal/4 
+ ldy #>beats_pal/4 
+2$ sta ntime 
+ sty ntime+1 
+ 
+ lda #4   ;set default octave 
+ sta octave 
+ lda #12   ;set default tempo    [910220] 
+ sta tempo_rate  ; 12 makes whole note in 4/4 time last 2 seconds 
+ 
+ ldy #30-1  ;initialize music tables 
+10$ lda atkmus,y 
+ sta atktab,y 
+ dey 
+ bpl 10$ 
+ 
+ ldx #10-1  ;initialize pulse widths 
+20$ lda pwhmus,x 
+ sta pulshi,x 
+ dex 
+ bpl 20$ 
+ 
+ txa   ;$ff 
+ ldx #6-1  ;stereo SIDs   (save space) [911119] 
+ ldy #1 
+25$ sta sound_time_hi,x ;turn all SOUND counters off 
+ sta voices,y  ;turn all PLAY counters off 
+ iny 
+ iny 
+ dex 
+ bpl 25$ 
+ 
+ ldy #6-1  ;set default envelope (piano) for all voices (6) 
+ sty voice 
+30$ ldx #0 
+ jsr set_envelope_1 
+ dec voice 
+ bpl 30$ 
+ inc voice  ;set default voice (0) 
+ 
+ plp 
+ rts 
+ 
+ .page 
+Sprite_CLR 
+ jsr chkeos  ;eat CLR token, check eos   [910717] new 
+Sprite_CLR_1 
+ php 
+ sei 
+ lda #0 
+ sta vic+21  ;Turn off all sprites 
+ sta vic+23  ;Unexpand them     [910828] 
+ sta vic+27  ;Sprite priority 
+ sta vic+28  ;Hires sprites 
+ sta vic+29 
+ 
+ ldx #init_as_0  ;Init sprite tables 
+40$ sta sprite_data,x 
+ dex 
+ bpl 40$ 
+ 
+ lda #sprite_base/64+7 ;Set up sprite pointers 
+ ldy #7 
+10$ bbr7 _mode,20$ 
+ sta sprite_ptrs_40,y ;40 col screen 
+ bra 30$ 
+20$ sta sprite_ptrs_80,y ;80 col screen 
+30$ dec a 
+ dey 
+ bpl 10$ 
+ 
+ plp 
+; rts 
+ 
+;.end 
+ .page 
+ .subttl BASIC NMI Handler 
+ 

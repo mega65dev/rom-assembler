@@ -1,0 +1,48 @@
+atn lda facsgn ;what is sign? 
+ pha  ;save for later 
+ bpl 10$ 
+ jsr negop ;if negative, negate FAC 
+   ;use arctan(x)=-arctan(-x) 
+10$ lda facexp 
+ pha  ;save this too for later 
+ cmp #$81 ;see if FAC >= 1.0 
+ bcc 20$  ;it is less than 1 
+ lda #<fone ;get pntr to 1.0 
+ ldy #>fone 
+ jsr romdiv ;compute reciprocal 
+   ;use aectan(x)=pi/2-arctan(1/x) 
+20$ lda #<atncon ;pointer to arctan constants 
+ ldy #>atncon 
+ jsr polyx 
+ pla 
+ cmp #$81 ;was original argument < 1? 
+ bcc 30$  ;yes 
+ lda #<pi2 
+ ldy #>pi2 
+ jsr romsub ;subtract arctan from pi/2 
+ 
+30$ pla  ;was original aurgument positive? 
+ bpl 40$  ;yes 
+ bra negop ;if negative, negate result 
+ 
+40$ rts  ;all done 
+ 
+;.end 
+ .page 
+ .subttl  BOOT 
+ 
+;**************************************************************************** 
+; BOOT  Boot has three modes of operation... 
+; 
+;   1. *B*LOAD a given binary file and SYS to its load address. 
+;   2. *D*LOAD a BASIC file named AUTOBOOT.C65* and RUN it. 
+;   3. BOOT SYS loads the home sector to $0400 and JMPs to it. 
+; 
+; For modes 1 & 2, syntax is the same as BLOAD.  Differentiate 
+; between the two modes via the presence of a filename.  All other 
+; parameters, such as drive and device numbers, are utilized in the 
+; normal manner.  For mode 3 there are no options.  It's intended 
+; to boot a new OS.  BASIC is turned off if it's successful.  If it 
+; fails, the run time stack & sprites might be corrupted. 
+;**************************************************************************** 
+ 

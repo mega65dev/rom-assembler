@@ -1,0 +1,663 @@
+keyword_list 
+ .byte 'EN','D'+$80  ;$80 
+ .byte 'FO','R'+$80  ;$81 
+ .byte 'NEX','T'+$80  ;$82 
+ .byte 'DAT','A'+$80  ;$83 
+ .byte 'INPUT','#'+$80  ;$84 
+ .byte 'INPU','T'+$80  ;$85 
+ .byte 'DI','M'+$80  ;$86 
+ .byte 'REA','D'+$80  ;$87 
+ .byte 'LE','T'+$80  ;$88 
+ .byte 'GOT','O'+$80  ;$89 
+ .byte 'RU','N'+$80  ;$8A 
+ .byte 'I','F'+$80  ;$8B 
+ .byte 'RESTOR','E'+$80  ;$8C 
+ .byte 'GOSU','B'+$80  ;$8D 
+ .byte 'RETUR','N'+$80  ;$8E 
+ .byte 'RE','M'+$80  ;$8F 
+ .byte 'STO','P'+$80  ;$90 
+ .byte 'O','N'+$80  ;$91 
+ .byte 'WAI','T'+$80  ;$92 
+ .byte 'LOA','D'+$80  ;$93 
+ .byte 'SAV','E'+$80  ;$94 
+ .byte 'VERIF','Y'+$80  ;$95 
+ .byte 'DE','F'+$80  ;$96 
+ .byte 'POK','E'+$80  ;$97 
+ .byte 'PRINT','#'+$80  ;$98 
+ .byte 'PRIN','T'+$80  ;$99 
+ .byte 'CON','T'+$80  ;$9A 
+ .byte 'LIS','T'+$80  ;$9B 
+ .byte 'CL','R'+$80  ;$9C 
+ .byte 'CM','D'+$80  ;$9D 
+ .byte 'SY','S'+$80  ;$9E 
+ .byte 'OPE','N'+$80  ;$9F 
+ .byte 'CLOS','E'+$80  ;$A0 
+ .byte 'GE','T'+$80  ;$A1 
+ .byte 'NE','W'+$80  ;$A2 
+ .byte 'TAB','('+$80  ;$A3 
+ .byte 'T','O'+$80  ;$A4 
+ .byte 'F','N'+$80  ;$A5 
+ .byte 'SPC','('+$80  ;$A6 
+ .byte 'THE','N'+$80  ;$A7 
+ .byte 'NO','T'+$80  ;$A8 
+ .byte 'STE','P'+$80  ;$A9 
+ .byte '+'+$80   ;$AA operators 
+ .byte '-'+$80   ;$AB 
+ .byte '*'+$80   ;$AC 
+ .byte '/'+$80   ;$AD 
+ .byte '^'+$80   ;$AE 
+ .byte 'AN','D'+$80  ;$AF 
+ .byte 'O','R'+$80  ;$B0 
+ .byte '>'+$80   ;$B1 
+ .byte '='+$80   ;$B2 
+ .byte '<'+$80   ;$B3 
+ .byte 'SG','N'+$80  ;$B4 first numeric function 
+ .byte 'IN','T'+$80  ;$B5 
+ .byte 'AB','S'+$80  ;$B6 
+ .byte 'US','R'+$80  ;$B7 
+ .byte 'FR','E'+$80  ;$B8 
+ .byte 'PO','S'+$80  ;$B9 
+ .byte 'SQ','R'+$80  ;$BA 
+ .byte 'RN','D'+$80  ;$BB 
+ .byte 'LO','G'+$80  ;$BC 
+ .byte 'EX','P'+$80  ;$BD 
+ .byte 'CO','S'+$80  ;$BE 
+ .byte 'SI','N'+$80  ;$BF 
+ .byte 'TA','N'+$80  ;$C0 
+ .byte 'AT','N'+$80  ;$C1 
+ .byte 'PEE','K'+$80  ;$C2 
+ .byte 'LE','N'+$80  ;$C3 
+ .byte 'STR','$'+$80  ;$C4 
+ .byte 'VA','L'+$80  ;$C5 
+ .byte 'AS','C'+$80  ;$C6 last numeric function 
+ .byte 'CHR','$'+$80  ;$C7 last single-arg function 
+ .byte 'LEFT','$'+$80  ;$C8 
+ .byte 'RIGHT','$'+$80  ;$C9 
+ .byte 'MID','$'+$80  ;$CA 
+ .byte 'G','O'+$80  ;$CB 
+     ; beginning of new C128 keywords------------ 
+ .byte 'RGRAPHI','C'+$80  ;$CC was 'rgr'   [910701] 
+ .byte 'RCOLO','R'+$80  ;$CD was 'rclr'   [910701] 
+ .byte $80   ;$CE null to skip over escape_function token 
+ .byte 'JO','Y'+$80  ;$CF 
+ .byte 'RPE','N'+$80  ;$D0 (was rdot in c128) 
+ .byte 'DE','C'+$80  ;$D1 
+ .byte 'HEX','$'+$80  ;$D2 
+ .byte 'ERR','$'+$80  ;$D3 
+ .byte 'INST','R'+$80  ;$D4 last function 
+ 
+ .byte 'ELS','E'+$80  ;$D5 
+ .byte 'RESUM','E'+$80  ;$D6 
+ .byte 'TRA','P'+$80  ;$D7 
+ .byte 'TRO','N'+$80  ;$D8 
+ .byte 'TROF','F'+$80  ;$D9 
+ .byte 'SOUN','D'+$80  ;$DA 
+ .byte 'VO','L'+$80  ;$DB 
+ .byte 'AUT','O'+$80  ;$DC 
+ .byte 'PUDE','F'+$80  ;$DD 
+ .byte 'GRAPHI','C'+$80  ;$DE 
+ .byte 'PAIN','T'+$80  ;$DF 
+ .byte 'CHA','R'+$80  ;$E0 
+ .byte 'BO','X'+$80  ;$E1 
+ .byte 'CIRCL','E'+$80  ;$E2 
+ .byte 'PAST','E'+$80  ;$E3 (was gshape in C128) 
+ .byte 'CU','T'+$80  ;$E4 (was sshape in C128) 
+ .byte 'LIN','E'+$80  ;$E5 (was draw in C128) 
+ .byte 'LOCAT','E'+$80  ;$E6 
+ .byte 'COLO','R'+$80  ;$E7 
+ .byte 'SCNCL','R'+$80  ;$E8 
+ .byte 'SCAL','E'+$80  ;$E9 
+ .byte 'HEL','P'+$80  ;$EA 
+ .byte 'D','O'+$80  ;$EB 
+ .byte 'LOO','P'+$80  ;$EC 
+ .byte 'EXI','T'+$80  ;$ED 
+ .byte 'DI','R'+$80  ;$EE 
+ .byte 'DSAV','E'+$80  ;$EF 
+ .byte 'DLOA','D'+$80  ;$F0 
+ .byte 'HEADE','R'+$80  ;$F1 
+ .byte 'SCRATC','H'+$80  ;$F2 
+ .byte 'COLLEC','T'+$80  ;$F3 
+ .byte 'COP','Y'+$80  ;$F4 
+ .byte 'RENAM','E'+$80  ;$F5 
+ .byte 'BACKU','P'+$80  ;$F6 
+ .byte 'DELET','E'+$80  ;$F7 
+ .byte 'RENUMBE','R'+$80  ;$F8 
+ .byte 'KE','Y'+$80  ;$F9 
+ .byte 'MONITO','R'+$80  ;$FA 
+ .byte 'USIN','G'+$80  ;$FB 
+ .byte 'UNTI','L'+$80  ;$FC 
+ .byte 'WHIL','E'+$80  ;$FD 
+ .byte 0    ;$FE skip over the escape_command token 
+ 
+;.end 
+ 
+ .page 
+ .subttl Escape Tokens and Keywords 
+ 
+; Escape Command Tokens 
+ 
+esc_command_list 
+ .byte 'BAN','K'+$80  ;$02: set bank number 
+ .byte 'FILTE','R'+$80  ;$03: set up filter 
+ .byte 'PLA','Y'+$80  ;$04: play a tune 
+ .byte 'TEMP','O'+$80  ;$05: set rate for playing 
+ .byte 'MOVSP','R'+$80  ;$06: sprite position/movement 
+ .byte 'SPRIT','E'+$80  ;$07: turn on/set up sprite 
+ .byte 'SPRCOLO','R'+$80  ;$08: set sprite multicolor registers 
+ .byte 'RRE','G'+$80  ;$09: retreive register values after 'SYS' 
+ .byte 'ENVELOP','E'+$80  ;$0A: set up SID envelopes 
+ .byte 'SLEE','P'+$80  ;$0B: delay 
+ .byte 'CATALO','G'+$80  ;$0C: disk directory 
+ .byte 'DOPE','N'+$80  ;$0D: open a disk file 
+ .byte 'APPEN','D'+$80  ;$0E: open a disk file for appending 
+ .byte 'DCLOS','E'+$80  ;$0F: close a file opened w/ DOPEN 
+ .byte 'BSAV','E'+$80  ;$10: binary (non-program) save 
+ .byte 'BLOA','D'+$80  ;$11: binary load 
+ .byte 'RECOR','D'+$80  ;$12: 
+ .byte 'CONCA','T'+$80  ;$13: concatenate 2 files 
+ .byte 'DVERIF','Y'+$80  ;$14: verify a saved program 
+ .byte 'DCLEA','R'+$80  ;$15: re-initialize a drive 
+ .byte 'SPRSA','V'+$80  ;$16: sprite/string to sprite/string 
+ .byte 'COLLISIO','N'+$80 ;$17: set traps for sprite & light pen collisions 
+ .byte 'BEGI','N'+$80  ;$18: mark start of a b-block 
+ .byte 'BEN','D'+$80  ;$19: ..and its end, too! 
+ .byte 'WINDO','W'+$80  ;$1A: set screen window 
+ .byte 'BOO','T'+$80  ;$1B: load&run ML or autoboot a disk 
+ .byte 'WIDT','H'+$80  ;$1C: single/double width drawing 
+ .byte 'SPRDE','F'+$80  ;$1D: define a sprite 
+ .byte 'QUI','T'+$80  ;$1E: (UNIMPLEMENTED) 
+ .byte 'DM','A'+$80  ;$1F: access memory 
+ .byte ' '+$80   ;$20: POISON - space character 
+ .byte 'DM','A'+$80  ;$21: access memory 
+ .byte ' '+$80   ;$22: POISON - quote character 
+ .byte 'DM','A'+$80  ;$23: access memory 
+ .byte 'OF','F'+$80  ;$24: KEY OFF 
+ .byte 'FAS','T'+$80  ;$25: go to 2 MHz. mode 
+ .byte 'SLO','W'+$80  ;$26: go to 1 MHz. mode 
+ .byte 'TYP','E'+$80  ;$27: type SEQ file 
+ .byte 'BVERIF','Y'+$80  ;$28: verify a saved program 
+ .byte 'ECTOR','Y'+$80  ;$29: dirECTORY 
+ .byte 'ERAS','E'+$80  ;$2A: alias for scratch 
+ .byte 'FIN','D'+$80  ;$2B: find string 
+ .byte 'CHANG','E'+$80  ;$2C: change string 
+ .byte 'SE','T'+$80  ;$2D: 
+ .byte 'SCREE','N'+$80  ;$2E: 
+ .byte 'POLYGO','N'+$80  ;$2F: 
+ .byte 'ELLIPS','E'+$80  ;$30: 
+ .byte 'VIEWPOR','T'+$80  ;$31: 
+ .byte 'GCOP','Y'+$80  ;$32: 
+ .byte 'PE','N'+$80  ;$33: 
+ .byte 'PALETT','E'+$80  ;$34: 
+ .byte 'DMOD','E'+$80  ;$35: 
+ .byte 'DPA','T'+$80  ;$36: 
+ .byte 'FORMA','T'+$80  ;$37: alias for HEADER command  [911017] 
+ .byte 'GENLOC','K'+$80  ;$38:     [910108] 
+ .byte 'FOREGROUN','D'+$80 ;$39:     [910109] 
+ .byte ' '+$80   ;$3A: POISON - colon character  " 
+ .byte 'BACKGROUN','D'+$80 ;$3B:     " 
+ .byte 'BORDE','R'+$80  ;$3C:     " 
+ .byte 'HIGHLIGH','T'+$80 ;$3D:     " 
+ .byte 'MOUS','E'+$80  ;$3E:     [910122] 
+ .byte 'RMOUS','E'+$80  ;$3F: return coordinates of mouse [910123] 
+ .byte 'DIS','K'+$80  ;$40:     [910123] 
+ .byte 'CURSO','R'+$80  ;$41:     [910228] 
+ .byte 'RCURSO','R'+$80  ;$42: return cursor position  [910228] 
+ .byte 'LOADIF','F'+$80  ;$43: load IFF picture from disk [910402] 
+ .byte 'SAVEIF','F'+$80  ;$44: save IFF picture to   disk [910402] 
+ .byte 'EDI','T'+$80  ;$45: Edit mode on/off   [910620] 
+ 
+ .byte 0    ; End marker 
+     ;(don't forget to change last_command_token!) 
+ .page 
+; Escape Function Tokens 
+ 
+esc_function_list 
+ .byte 'PO','T'+$80  ;$02: return paddle value 
+ .byte 'BUM','P'+$80  ;$03: read sprite collision 
+ .byte 'LPE','N'+$80  ;$04: read light pen value 
+ .byte 'RSPPO','S'+$80  ;$05: read sprite position 
+ .byte 'RSPRIT','E'+$80  ;$06: read sprite value 
+ .byte 'RSPCOLO','R'+$80  ;$07: read sprite multicolor value 
+ .byte 'XO','R'+$80  ;$08: exclusive or 
+ .byte 'RWINDO','W'+$80  ;$09: read window size 
+ .byte 'POINTE','R'+$80  ;$0a: return address of descriptor 
+ .byte 'MO','D'+$80  ;$0b: modulus    [910402] 
+ .byte 'PIXE','L'+$80  ;$0c: return BP data at pixel  [910820] 
+ .byte 'RPALETT','E'+$80  ;$0d: return RGB component of color [910820] 
+ .byte 0 
+ 
+;.end 
+ .page 
+ .subttl Jump Table For Dispatch Routine 
+stmdsp 
+ .word  end-1 
+ .word  for-1 
+ .word  next-1 
+ .word  data-1 
+ .word  inputn-1 
+ .word  input-1 
+ .word  dim-1 
+ .word  read-1 
+ .word  let-1 
+ .word  goto-1 
+ .word  run-1 
+ .word  if-1 
+ .word  restor-1 
+ .word  gosub-1 
+ .word  return-1 
+ .word  rem-1 
+ .word  stop-1 
+ .word  ongoto-1 
+ .word  wait-1 
+ .word  load-1 
+ .word  save-1 
+ .word  verify-1 
+ .word  def-1 
+ .word  poke-1 
+ .word  printn-1 
+ .word  print-1 
+ .word  cont-1 
+ .word  list-1 
+ .word  clear-1 
+ .word  cmd-1 
+ .word  sys-1 
+ .word  open-1 
+ .word  close-1 
+ .word  get-1 
+ .word  new-1 
+ 
+ .word  else-1 
+ .word  resume-1 
+ .word  trap-1 
+ .word  tron-1 
+ .word  troff-1 
+ .word  sound-1 
+ .word  volume-1 
+ .word  auto-1 
+ .word  puctrl-1 
+ .word  graphic-1 
+ 
+ .word  c65.paint-1 
+ .word  c65.char-1 
+ .word  c65.box-1 
+ .word  c65.circle-1 
+ .word  c65.paste-1 ;gshape 
+ .word  c65.cut-1 ;sshape 
+ .word  c65.line-1 ;draw 
+ 
+ .word  bad_command-1 ;escape - SYSTEM - unimplemented command 
+; .word  locate-1 
+ 
+ .word  color-1        [910109] 
+ .word  scnclr-1 
+ 
+ .word  bad_command-1 ;escape - SYSTEM - unimplemented command 
+; .word  scale-1 
+ 
+ .word  help-1 
+ .word  do-1 
+ .word  loop-1 
+ .word  exit-1 
+ .word  directory-1 
+ .word  dsave-1 
+ .word  dload-1 
+ .word  header-1 
+ .word  scratch-1 
+ .word  collect-1 
+ .word  dcopy-1 
+ .word  rename-1 
+ .word  backup-1 
+ .word  delete-1 
+ .word  renumber-1 
+ .word  key-1 
+ .word  _monitor-1 
+ .word  bank-1  ;escape 
+ .word  filter-1  ;escape 
+ .word  play-1  ;escape 
+ .word  tempo-1  ;escape 
+ 
+ .word  movspr-1  ;escape 
+ .word  sprite-1  ;escape 
+ .word  sprcolor-1 ;escape 
+ 
+ .word  rreg-1  ;escape 
+ .word  envelope-1 ;escape 
+ .word  sleep-1  ;escape 
+ .word  directory-1 ;escape 
+ .word  dopen-1  ;escape 
+ .word  append-1  ;escape 
+ .word  dclose-1  ;escape 
+ .word  bsave-1  ;escape 
+ .word  bload-1  ;escape 
+ .word  record-1  ;escape 
+ .word  concat-1  ;escape 
+ .word  dverify-1 ;escape 
+ .word  dclear-1  ;escape 
+ 
+ .word  sprsav-1  ;escape 
+ .word  collision-1 ;escape 
+ 
+ .word  data-1  ;escape - BEGIN 
+ .word  data-1  ;escape - BEND 
+ .word  window-1  ;escape 
+ .word  boot-1  ;escape 
+ 
+ .word  bad_command-1 
+; .word  set_width-1 ;escape - WIDTH 
+ 
+ .word  bad_command-1 
+; .word  sprdef-1  ;escape - Sprite Definition mode 
+ 
+ .word  bad_command-1 ;escape - QUIT - unimplemented command 
+ .word  dma-1  ;escape 
+ .word  0  ; placeholder to skip over the space character 
+ .word  dma-1  ;escape 
+ .word  0  ; placeholder to skip over the quote character 
+ .word  dma-1  ;escape 
+ .word  bad_command-1 ;escape - OFF - unimplemented command 
+ .word  fast-1  ;escape 
+ .word  slow-1  ;escape 
+ .word  type-1  ;escape (C65: type SEQ file) 
+ .word  bverify-1 ;escape (C65: verify BINary file) 
+ .word  snerr-1  ;escape (C65: kludge- dirECTORY) 
+ .word  scratch-1 ;escape (C65: erase alias for scratch) 
+ .word  find-1  ;escape (C65: find BASIC text) 
+ .word  change-1  ;escape (C65: change BASIC text) 
+ 
+ .word  c65.set-1 ;escape (C65: multi-purpose command) 
+ .word  screen-1  ;escape (C65: SCREEN) 
+ .word  c65.polygon-1 ;escape (C65: POLYGON) 
+ .word  c65.ellipse-1 ;escape (C65: ELLIPSE) 
+ .word  c65.viewport-1 ;escape (C65: VIEWPORT) 
+ .word  c65.copy-1 ;escape (C65: GCOPY) 
+ .word  c65.setpen-1 ;escape (C65: PEN) 
+ .word  c65.setpalette-1 ;escape (C65: PALETTE) 
+ .word  c65.setdmode-1 ;escape (C65: DMODE) 
+ .word  c65.setdpat-1 ;escape (C65: DPAT) 
+ .word  header-1  ;format alias for header command [911017] 
+ .word  genlock-1 ;     [910108] 
+ 
+stmdsp2 
+ .word  foreground-1 ;this is the 128th command!  [910109] 
+ .word  0  ; placeholder to skip over the colon character 
+ .word  background-1 
+ .word  border-1 
+ .word  highlight-1 
+ .word  mouse-1  ;     [910122] 
+ .word  rmouse-1  ;     [910123] 
+ .word  disk-1  ;     [910123] 
+ .word  cursor-1  ;     [910228] 
+ .word  rcursor-1 ;     [910228] 
+ .word  loadiff-1 ;     [910402] 
+ .word  saveiff-1 ;     [910930] 
+ .word  edit-1  ;     [910620] 
+ 
+ .page 
+fundsp 
+ .word  sgn 
+ .word  int 
+ .word  abs 
+ .word  usrpok 
+ .word  fre 
+ .word  pos 
+ .word  sqr 
+ .word  rnd 
+ .word  log 
+ .word  exp 
+ .word  cos 
+ .word  sin 
+ .word  tan 
+ .word  atn 
+ .word  peek 
+ .word  len 
+ .word  strd 
+ .word  val 
+ .word  asc 
+ .word  chrd 
+ .word  leftd 
+ .word  rightd 
+ .word  midd 
+ .word  rgraphic  ;      [910701] 
+ .word  rcolor  ;      [910701] 
+ .word  0  ;placeholder for escape function token 
+ .word  joy 
+ .word  rpen  ;was rdot     [910820] 
+ .word  dcml  ;dec 
+ .word  hexd 
+ .word  errd 
+ .word  pot  ;escape 
+ .word  bump  ;escape 
+ .word  lpen  ;escape 
+ .word  rsppos  ;escape 
+ .word  rsprite  ;escape 
+ .word  rspcolor  ;escape 
+ .word  xor  ;escape 
+ .word  rwindow  ;escape 
+ .word  pointer  ;escape 
+ .word  mod  ;escape c65     [910402] 
+ .word  pixel  ;escape c65     [910820] 
+ .word  rpalette  ;escape c65     [910820] 
+ 
+ .page 
+optab .byte   121 
+ .word  faddt-1 
+ .byte   121 
+ .word  fsubt-1 
+ .byte   123 
+ .word  fmultt-1 
+ .byte   123 
+ .word  fdivt-1 
+ .byte   127 
+ .word  fpwrt-1 
+ .byte   80 
+ .word  andop-1 
+ .byte   70 
+ .word  orop-1 
+negtab .byte   125 
+ .word  negop-1 
+ .byte   90 
+ .word  notop-1 
+ptdorl .byte   100 
+ .word  dorel-1 
+ 
+;.end 
+ .page 
+ .subttl  Keyword Equates 
+ 
+end_token  = $80 ;v2 commands 
+for_token  = $81 
+next_token  = $82 
+data_token  = $83 
+input_token  = $84 
+goto_token  = $89 
+run_token  = $8a 
+restore_token  = $8c 
+gosub_token  = $8d 
+rem_token  = $8f 
+on_token  = $91 
+load_token  = $93 
+save_token  = $94 
+verify_token  = $95 
+def_token  = $96 
+print_token  = $99 
+clr_token  = $9c 
+sys_token  = $9e 
+open_token  = $9f 
+close_token  = $a0 
+new_token  = $a2 
+tab_token  = $a3 
+to_token  = $a4 
+fn_token  = $a5 
+spc_token  = $a6 
+then_token  = $a7 
+not_token  = $a8 
+step_token  = $a9 
+plus_token  = $aa ;operators 
+minus_token  = $ab 
+greater_token  = $b1 
+equal_token  = $b2 
+less_token  = $b3 
+first_function_token = $b4 ;v2 functions 
+left_token  = $c8 
+mid_token  = $ca 
+go_token  = $cb ;kludges 
+rgraphic_token  = $cc ;first new v7 token 
+esc_function_token = $ce 
+err_token  = $d3 
+instr_token  = $d4 
+last_function_token = $d4 
+else_token  = $d5 
+resume_token  = $d6 
+trap_token  = $d7 
+color_token  = $e7 
+do_token  = $eb 
+loop_token  = $ec 
+key_token  = $f9 
+monitor_token  = $fa 
+using_token  = $fb 
+until_token  = $fc 
+while_token  = $fd 
+esc_command_token = $fe 
+ .page 
+first_esc_command_token = $02 
+collision_token  = $17 
+begin_token  = $18 
+bend_token  = $19 
+off_token  = $24 
+ectory_token  = $29 
+set_token  = $2d 
+pic_token  = $37 
+disk_token  = $40 
+last_esc_command_token = $45    ;<<<< last_command_token 
+ 
+first_esc_function_token = $02 
+pointer_token  = $0a 
+last_esc_function_token = $0d    ;   [910820] 
+ 
+ .page 
+ .subttl Error Messages 
+ 
+ok_error_message 
+ .byte 'O','K'+$80    ;0 for ERR$ [910911] 
+error_message_list 
+ .byte 'TOO MANY FILE','S'+$80   ;1 
+ .byte 'FILE OPE','N'+$80   ;2 
+ .byte 'FILE NOT OPE','N'+$80   ;3 
+ .byte 'FILE NOT FOUN','D'+$80   ;4 
+ .byte 'DEVICE NOT PRESEN','T'+$80  ;5 
+ .byte 'NOT INPUT FIL','E'+$80   ;6 
+ .byte 'NOT OUTPUT FIL','E'+$80   ;7 
+ .byte 'MISSING FILE NAM','E'+$80  ;8 
+ .byte 'ILLEGAL DEVICE NUMBE','R'+$80  ;9 
+ .byte 'NEXT WITHOUT FO','R'+$80   ;10 
+ .byte 'SYNTA','X'+$80    ;11 
+ .byte 'RETURN WITHOUT GOSU','B'+$80  ;12 
+ .byte 'OUT OF DAT','A'+$80   ;13 
+ .byte 'ILLEGAL QUANTIT','Y'+$80   ;14 
+ .byte 'OVERFLO','W'+$80    ;15 
+ .byte 'OUT OF MEMOR','Y'+$80   ;16 
+ .byte 'UNDEF',$27,'D STATEMEN','T'+$80  ;17 
+ .byte 'BAD SUBSCRIP','T'+$80   ;18 
+ .byte 'REDIM',$27,'D ARRA','Y'+$80  ;19 
+ .byte 'DIVISION BY ZER','O'+$80   ;20 
+ .byte 'ILLEGAL DIREC','T'+$80   ;21 
+ .byte 'TYPE MISMATC','H'+$80   ;22 
+ .byte 'STRING TOO LON','G'+$80   ;23 
+ .byte 'FILE DAT','A'+$80   ;24 
+ .byte 'FORMULA TOO COMPLE','X'+$80  ;25 
+ .byte 'CAN',$27,'T CONTINU','E'+$80  ;26 
+ .byte 'UNDEF''D FUNCTIO','N'+$80  ;27 
+ .byte 'VERIF','Y'+$80    ;28 
+ .byte 'LOA','D'+$80    ;29 
+ .byte 'BREA','K'+$80    ;30 ???? null & space [910925] 
+ .byte 'CAN''T RESUM','E'+$80   ;31 
+ .byte 'LOOP NOT FOUN','D'+$80   ;32 
+ .byte 'LOOP WITHOUT D','O'+$80   ;33 
+ .byte 'DIRECT MODE ONL','Y'+$80   ;34 
+; .byte 'NO GRAPHICS ARE','A'+$80   ;35 
+ .byte 'SCREEN NOT OPE','N'+$80   ;35    [911001] 
+ .byte 'BAD DIS','K'+$80    ;36 ???? used for failed bootsys 
+ .byte 'BEND NOT FOUN','D'+$80   ;37 
+ .byte 'LINE NUMBER TOO LARG','E'+$80  ;38 
+ .byte 'UNRESOLVED REFERENC','E'+$80  ;39 
+ .byte 'UNIMPLEMENTED COMMAN','D'+$80  ;40 
+ .byte 'FILE REA','D'+$80   ;41 
+ .byte 'EDIT MOD','E'+$80   ;42    [910620] 
+ 
+ .page 
+ .subttl  Error Message Numbers 
+ 
+errtmf   = 1 
+errfno   = 3 
+errfnf   = 4 
+err_missing_fname = 8 
+err_illegal_device = 9 
+errnf   = 10 
+errsn   = 11 
+errrg   = 12 
+errod   = 13 
+errfc   = 14 
+errov   = 15 
+errom   = 16 
+errus   = 17 
+errbs   = 18 
+errdd   = 19 
+errdvo   = 20 
+errid   = 21 
+errtm   = 22 
+errls   = 23 
+errbd   = 24 
+errst   = 25 
+errcn   = 26 
+erruf   = 27 
+ervfy   = 28 
+erload   = 29 
+erbrk   = 30 
+errcr   = 31 
+errlnf   = 32 
+errlwd   = 33 
+erroid   = 34 
+errng   = 35 
+errbdk   = 36 
+err_no_bend  = 37 
+err_too_large  = 38 
+err_ref   = 39 
+err_bad_command  = 40 
+err_file_read  = 41 
+edit_mode_error  = 42 ;      [910620] 
+last_error_message = 42 ;# of last error msg 
+ 
+;.end 
+ .page 
+ .subttl Error message output 
+ 
+; Routine to translate error message # in .a 
+; into address of string containing message in index2 
+ 
+erstup tax   ;error set up 
+ ldy #0   ;start with address of first error message 
+ lda #<error_message_list 
+ sta index2 
+ lda #>error_message_list 
+ sta index2+1 
+ 
+1$ dex 
+ bmi 4$   ;finished when .x decrements out 
+ 
+2$ lda (index2),y  ;look at msg, and find end (msb set) (ind.ok) 
+ inw index2 
+ and #$ff  ;was msb set? 
+ bpl 2$   ; no, not end of message 
+ bra 1$   ; yes, tick off another msg 
+ 
+4$ rts 
+ 
+;.end 
+ .page 
+ .subttl Execute Dispatcher 
+ 
+; Here for new statement. Character -> by txtptr is ':' or eol. The adr of 
+; this loc is left on the stack when a statement is executed so that it can 
+; merely do a rts when it is done. 
+; Get char, exit via xeqcm3, and return to newstt. 
+ 

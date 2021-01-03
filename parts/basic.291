@@ -1,0 +1,93 @@
+bump jsr chkcls 
+ jsr conint  ;get arg in .X 
+ dex   ;adjust [1..2] to [0..1] 
+ cpx #2 
+ bcs fcerr  ;value error 
+ 
+ sei 
+ ldy collisions,x ;get recorded collisions 
+ lda #0   ;reset them 
+ sta collisions,x 
+ cli 
+ bra sngflt  ;float 1 byte arg in .Y 
+ 
+;.end 
+ .page 
+ .subttl Sprite Support Routines 
+ 
+; GRAPHIC3.SRC 
+;**************************************************************** 
+;  getang  -  set cosine & sine values 
+;             results in sinval & cosval based as a fraction 
+;             - over 65536 
+;             angsgn = angle phase (0-3) 
+;    on input vwork+y = 2 byte angle 
+;*************************************************************** 
+ 
+getang 
+ jsr settwo      ;move angle value into y/a 
+ 
+gtang1 ldx #0  ;init count of phase 
+ 
+10$ inx 
+ sec 
+ sbc #90  ;subtract 90 until less than 0 
+ bcs 10$ 
+ dey 
+ bpl 10$ 
+ stx angsgn ;save phase (here it is 1-4) 
+ pha 
+ adc #90  ;make positive 
+ jsr 20$  ;do division by 10 
+ pla  ;get 2's comp of angle 
+ clc 
+ eor #$ff 
+ adc #1  ;make positive 
+ dec angsgn ;correct phase 
+ 
+20$ ldx #$ff 
+30$ inx  ;do division by 10 
+ sec 
+ sbc #10 
+ bcs 30$ 
+ adc #10  ;make positive 
+ sta vtemp1 ;save remainder 
+ txa 
+ asl a  ;get quotient*2 as index 
+ tax 
+ lda angval+1,x ;get low byte base 
+ ldy angval,x ;get high byte value 
+ 
+40$ clc 
+ dec vtemp1 
+ bmi 50$  ;done - remainder = 0 
+ adc incval+1,x ;add low byte increment 
+ pha 
+ tya 
+ adc incval,x ;add high byte increment 
+ tay 
+ pla 
+ bcc 40$  ;...always 
+ 
+50$ pha  ;save low byte of result 
+ ldx #0  ;point to sinval 
+ lda angsgn 
+ lsr a 
+ bcs 60$  ;skip if sine value 
+ ldx #2  ;point to cosval 
+ 
+60$ pla 
+ sta sinval,x ;save low byte result 
+ tya 
+ sta sinval+1,x ;save high byte result 
+ rts 
+ 
+ .page 
+;************************************************************* 
+;  angmlt  -  multiple 2-byte integer times angle 
+;       carry set/reset = cosine/sine 
+; 
+;       vwork+x = 2-byte integer 
+;       result left in y/a 
+;************************************************************* 
+ 

@@ -1,0 +1,47 @@
+movspr_irq 
+ lda vic+21  ;any sprites active?    [910212] 
+ beq music_irq  ; no- skip ahead 
+ 
+ ldy #7   ;check each of 8 sprites 
+10$ lda vic+21  ; is this sprite is enabled? 
+ and sbits,y 
+ beq 40$   ;  sprite not enabled 
+ 
+ ldx sproff,y  ; get offset to sprite info from a table 
+ lda sprite_data,x ; is this sprite moving (speed >0 )? 
+ beq 40$   ;  sprite not moving 
+ bpl 15$   ;  sprite moving, no destination 
+ bsr movspr_to_irq ;  sprite moving to a destination [910809] 
+ bra 40$ 
+ 
+15$ sta sprite_data+1,x ;set counter 
+20$ tya   ;convert sprite# to a VIC register pointer 
+ asl a 
+ tay 
+ lda sprite_data+2,x ;get angle sign 
+ dec a   ;subtract 1 for cosine 
+ inx 
+ inx 
+ iny 
+ jsr sprsub  ;update y position 
+ dex 
+ dex 
+ dey 
+ lda sprite_data+2,x 
+ jsr sprsub  ;update x position 
+ php 
+ tya 
+ lsr a   ;restore index (.Y=sprite pointer) 
+ tay 
+ plp 
+ bcc 30$   ;skip if no overflow 
+ lda vic+16  ;get x position msb bits ???vic_save 
+ eor sbits,y  ;invert bit 
+ sta vic+16  ;    ???vic_save 
+30$ dec sprite_data+1,x 
+ bne 20$   ; loop until counter done 
+ 
+40$ dey   ;check next sprite 
+ bpl 10$   ; loop until done moving all sprites 
+ bra music_irq  ; then continue with next IRQ task 
+ .page 

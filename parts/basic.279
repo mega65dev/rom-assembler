@@ -1,0 +1,116 @@
+movspr_line 
+ ldx #ypos-vwork 
+ ldy #ydest-vwork 
+10$ lda #0 
+ sta xsgn,x  ;init direction pointers 
+ sta xsgn+1,x 
+ jsr abstwo  ;get absolute value of coordinate differences 
+ bpl 20$   ;and determine direction 
+ dec xsgn,x  ; negative direction 
+ dec xsgn+1,x 
+ bra 40$ 
+ 
+20$ cmp #0 
+ bne 30$ 
+ cpy #0 
+ beq 40$   ; zero direction 
+30$ inc xsgn,x  ; positive direction 
+40$ sta xabs,x 
+ asl a 
+ sta fct,x  ;fct(x,y) = 2*abs(x,y) 
+ tya 
+ sta xabs+1,x 
+ rol a 
+ sta fct+1,x 
+ dex 
+ dex 
+ ldy #xdest-vwork ;loop to do in x-direction 
+ cpx #xpos-vwork 
+ beq 10$ 
+ 
+ ldx #yabs-savram ;determine max(xabs,yabs) 
+ ldy #xabs-savram 
+ jsr subtwo_savram 
+ lda #0 
+ rol a 
+ rol a   ;a = c * 2 
+ sta lesser  ;index to smaller delta 
+ eor #2 
+ sta greatr  ;index to greater delta 
+ 
+ clc 
+ lda #fct-savram 
+ adc lesser 
+ pha 
+ tay 
+ eor #2 
+ tax 
+ jsr subtwo_savram ;fct(greatr) = fct(lesser)-fct(greatr) 
+ sta savram,x 
+ sty savram+1,x 
+ 
+ ply   ;fct(lesser) 
+ clc 
+ lda #xabs-savram 
+ adc greatr 
+ tax 
+ jsr subtwo_savram ;error = fct(lesser) - abs(greatr) 
+ sta errval 
+ sty errval+1 
+ 
+; At this point, we've positioned the sprite at the start position, and have 
+; calculated everything we need to move it along a line towards the destination 
+; position.  All that's left is to copy the working vars into the sprite_data 
+; tables where the IRQ routine can find & diddle with our data. 
+; 
+;    move ang/dist move line 
+;  offset= 0 b7=0+speed b7=1+speed 
+;   1 counter  counter lo 
+;   2 angle sign         hi 
+;   3,4 delta-X  dir+min/max 
+;   5,6 delta-Y  fct1 
+;   7,8 total-X  fct2 
+;   9,10 total-Y  error 
+ 
+ ldy z_p_temp_1  ;sprite # 
+ ldx sproff,y  ;sprite IRQ table offset 
+ 
+ lda xcnt  ;set speed factor 
+ sta sprite_data,x 
+ ldy greatr 
+ lda xabs,y  ;set counter = max(xyabs) 
+ sta sprite_data+1,x 
+ lda xabs+1,y 
+ sta sprite_data+2,x 
+ lda xsgn,y  ;set dir(max) and max 
+ ora xsgn+1,y 
+ and #3 
+ lsr a 
+ ror a 
+ ora greatr 
+ ror a 
+ sta sprite_data+4,x 
+ ldy lesser 
+ lda xsgn,y  ;set dir(min) and min 
+ ora xsgn+1,y 
+ and #3 
+ lsr a 
+ ror a 
+ ora lesser 
+ ror a 
+ sta sprite_data+3,x 
+ ldy #0   ;set f1, f2, and e 
+50$ lda fct,y 
+ sta sprite_data+5,x 
+ inx 
+ iny 
+ cpy #6 
+ bcc 50$ 
+ 
+ cli 
+ rts   ;done! 
+ 
+ .page 
+;  SPRCOR  -- Get sprite position coordinate 
+; 
+ 

@@ -1,0 +1,55 @@
+polyx sta polypt ;retain polynomial pointer for later 
+ sty polypt+1 
+ jsr mov1f ;save FAC in factmp (y=0 upon return) 
+ lda #tempf1 
+ jsr fmult ;compute x^2. 
+ jsr poly1 ;compute p(x^2). 
+ lda #<tempf1 
+ ldy #>tempf1 
+ bra fmult ;multiply by FAC again 
+ 
+ 
+; Polynomial Evaluator 
+; 
+; Pointer to degree is in (a,y). 
+; Compute:  c0+c1*x+c2*x^2+c3*x^3+c4*x^4...+c(n-1)*x^(n-1)+c(n)*x^n 
+;  which is roughly (LOG(2)^n)/LOG(EXP(1))/n! 
+ 
+ 
+poly sta polypt 
+ sty polypt+1 
+ 
+poly1 jsr mov2f ;save FAC (rounds, .y=0) 
+ lda (polypt),y 
+ sta degree 
+ inw polypt 
+ lda polypt 
+ ldy polypt+1 
+ 
+10$ jsr rommlt 
+ lda polypt ;get current pointer 
+ ldy polypt+1 
+ clc 
+ adc #5 
+ bcc 20$ 
+ iny 
+20$ sta polypt 
+ sty polypt+1 
+ jsr romadd ;add in constant 
+ lda #<tempf2 ;multiply the original FAC 
+ ldy #>tempf2 
+ dec degree ;done? 
+ bne 10$ 
+ rts  ;yes 
+ 
+;.end 
+ .page 
+ .subttl Floating Point Math Package (TRIG) 
+ 
+; Sine, Cosine, and Tangent Functions. 
+ 
+ 
+ 
+; Cosine function cos(x)=sin(x+pi/2) 
+ 
+ 

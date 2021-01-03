@@ -1,0 +1,16 @@
+wait_for_all_quiet  ;Wait for all voices on this SID to be quiet [910626] 
+ ldy #3 
+ ldx voice 
+ cpx #3   ;determine left/right SID 
+ bcs 10$ 
+ ldy #0 
+10$ ldz #3   ;for each of 3 voices 
+20$ ldx times2,y 
+30$ bit voices+1,x  ; wait for voice to be inactive (IRQ) 
+ bpl 30$ 
+ iny   ; next voice 
+ dez 
+ bne 20$   ; until done 3 voices 
+ rts 
+ 
+ .page 

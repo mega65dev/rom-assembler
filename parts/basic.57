@@ -1,0 +1,7 @@
+qdata bmi datlop  ;branch if READ 
+ lda channl  ;else it's INPUT 
+ bne 10$ 
+ jsr outqst  ;console input, so display '? ' prompt 
+ 
+10$ jsr PromptedInput ;get another line 
+ 

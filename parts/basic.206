@@ -1,0 +1,22 @@
+cdout jsr outch ;outdo ;char out 
+ dec cform ;count it 
+ rts 
+ 
+ .page 
+; Using- anaf: analyze format 
+ 
+anaf ldy endfd ;format pointer 
+gfor jsr ansub 
+ jsr comp ;check special chars 
+ bne pchar ;no match... 
+ sty begfd ;save beginning of field 
+ bcc ffoun ;# was found 
+ tax  ;save char 
+ 
+sfur jsr ansub ;get next format char 
+ bcs 10$  ;stop on wrap-around 
+ jsr com1 ;compare specials 
+ beq foun1 ;found some... 
+ 
+10$ ldy begfd 
+ txa 

@@ -1,0 +1,74 @@
+break jsr release_channels ;make sure we're in text mode????  [910909] 
+ jsr RestoreTextScreen 
+ jsr highlight_text ;????      [910624] 
+ jsr _primm 
+   .byte cr,'BREAK',0 
+ bra errfin  ;exit via 'in line #' 
+ 
+do_rts rts 
+ 
+;.end 
+ .page 
+ .subttl Function Handler 
+ 
+; At this point, eval has determined that the token in a has to be a 
+; function.  It must therefor be in the range SGN...MID$ (old BASIC), 
+; or RGR...INSTR (new extensions).  We will collapse these two disjoint 
+; blocks into one continuous range. 
+; 
+; On entry, we can assume the token is >= 'sgn' 
+ 
+isfun cmp #esc_function_token  ;is this an escape function? 
+ beq do_esc_fn   ; yes 
+ cmp #last_function_token+1 
+ bcs snerr1   ; no- must be syntax error 
+ cmp #mid_token+1 
+ bcc 1$    ;no need to adjust 
+ sbc #rgraphic_token-mid_token-1 
+ 
+1$ pha    ;save token 
+ tax 
+ jsr chrget   ;set up for synchk. 
+ cpx #instr_token-1  ;look for (adjusted) instr token 
+ beq 2$    ; yes 
+ cpx #rgraphic_token-1  ;look for rgraphic which now takes 2 args [910801] 
+ beq rgraphic   ; yes 
+ 
+ cpx #mid_token+1 
+ bcs oknorm   ;LEFT$,RIGHT$,MID$ require multiple args 
+ cpx #left_token   ;is it past last single-arg function? 
+ bcc oknorm   ;no, must be normal function 
+ 
+ 
+; Most functions take a single argument.  The return address of these functions 
+; is CHKNUM, which ascertains that VALTYP=0 (numeric).  Normal functions which 
+; return string results (eg. CHR$) must pop off that return address and return 
+; directly to FRMEVL. 
+; 
+; The so called "funny" functions can take more than one argument, the first 
+; of which must be string and the second of which must be a number between 0 
+; and 255.  The closed parenthesis must be checked and return is directly to 
+; FRMEVL with the text pointer pointing beyond the ")".  The pointer to the 
+; description of the string argument is stored on the stack underneath the 
+; value of the integer argument. 
+ 
+2$ jsr chkopn ;check for an open parenthesis 
+ jsr frmevl ;eat open paren and first argument 
+ jsr chkcom ;two args so comma must delimit 
+ jsr chkstr ;make sure first was string 
+ 
+ pla  ;check token 
+ cmp #instr_token-1 ;special case: INSTR() bails out here 
+ beq instr 
+ ldx facmo+1 ;push address of string arg1 
+ phx 
+ ldx facmo 
+ phx 
+ pha  ;push token 
+ jsr getbyt ;get arg2 
+ pla  ;retrieve token 
+ phx  ;push value of arg2 
+ bra fingo ;go set up to evaluate fn 
+ 
+ 
+ 

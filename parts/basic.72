@@ -1,0 +1,138 @@
+cont_rts 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl  RUN 
+;*********************************************************** 
+;* 
+;* RUN Command 
+;* 
+;* RUN [line_number] 
+;* RUN filename [[ON] Ddrive_number[,Uunit_number]] 
+;* 
+;* Entry:  RUN_A_PROGRAM sets up, links, and executes 
+;*  a program previously loaded into RAM. 
+;* 
+;*********************************************************** 
+ 
+run bbs4 runmod,edit_err ;      [910620] 
+ beq run$10  ;branch if no arguments 
+ bcc run$20  ;branch if number (i.e., RUN line_number) 
+ 
+ 
+; Here if of the form "RUN file_name" 
+ 
+ smb6 runmod  ;set flag for load not to go to ready 
+ jsr dload  ;use DLOAD's parser, and load the program 
+ bcs erexit  ; if problem loading   [900801] 
+ 
+run_a_program 
+ jsr crdo  ;      [911010] 
+ jsr fix_links  ;re-link the program 
+ jsr setexc  ;set various run modes 
+ jsr runc 
+ bra newstt  ;start executing 
+ 
+ 
+; Here if of the form "RUN" 
+ 
+run$10 jsr setexc  ;set various run codes 
+ bra runc  ;..and start executing 
+ 
+ 
+; Here if of the form "RUN line_number" 
+ 
+run$20 jsr clearc  ;first trash all variables 
+ jsr chrgot 
+ jsr goto  ;set up to execute from new line number 
+ jsr setexc  ;..and do a little housekeeping, 
+ bra newstt  ;..otherwise it's business as usual 
+ 
+;.end 
+ .page 
+ .subttl  RESTORE 
+;********************************************************************* 
+;* 
+;* RESTORE Command 
+;* 
+;* Reset pointers to next DATA statement.  Allows optional argument 
+;* specifying a specific line number, otherwise the default is the 
+;* beginning of text area. 
+;* 
+;********************************************************************* 
+ 
+restor 
+ beq restore$1 ;branch if no argument...use default 
+ jsr getwrd ;get 2 byte argument (???? no check for real number means a var legal) 
+ sty linnum 
+ sta linnum+1 
+ jsr FindLine ;get pointer to specified line 
+ bcc userr ;error if not found 
+ 
+ lda lowtr ;decrement 2 byte pointer, and save it 
+ ldy lowtr+1 
+ bra restore$2 ;always 
+ 
+ 
+restore$1  ;entry from FLOAD 
+ sec 
+ lda txttab 
+ ldy txttab+1 
+ 
+restore$2 
+ sbc #1 
+ bcs 1$ 
+ dey 
+1$ sta datptr 
+ sty datptr+1 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl  RENUMBER 
+;*********************************************************************** 
+; 
+; RENUMBER Command 
+; 
+; Syntax:  RENUMBER [n1 [,[n2] ,n3]] 
+; 
+;  n1 = new start line number, default 10 
+;  n2 = line increment, default 10 
+;  n3 = start line, default first 
+; 
+; - Syntax error may occur for missing commas or bad line numbers. 
+; - Illegal quantity error for line increment of 0 or for bad range. 
+; - Overflow error if increment wraps line number during renumber, 
+;  line number too large error if renumbering would force line 
+;  numbers greater than 63999. 
+; - Out of memory error if the renumbered program would be too large. 
+; - Unresolved reference error if an imbedded line number references 
+;  a line which does not exist. 
+; 
+; Otherwise returns to "ready" mode upon completion. 
+; 
+;*********************************************************************** 
+ 
+ 
+; Before any data is changed in any way, two preliminary passes are 
+; made to insure no errors would occur during the actual renumbering 
+; process (as detailed below). 
+; 
+; Pass 1 makes sure that the renumbered program would have no line 
+; numbers greater than 63999 (nothing is actually renumbered; the 
+; statement table is not modified). 
+; 
+; Pass 2 checks if the renumbered program would be too long and also 
+; checks for non-existant line number destinations. 
+; 
+; Pass 3 examines the entire statement table first for imbedded line 
+; numbers (branches) to fix. This is done by looking for keywords (GOTO, 
+; GOSUB, THEN, RUN) which are usually followed by line numbers. The old 
+; line number is mapped to a new value and the string representing the 
+; new branch label replaces the original text. 
+; 
+; Pass 4 then replaces the statement number bytes by their final values. 
+; and the table is relinked. 
+ 
+ 

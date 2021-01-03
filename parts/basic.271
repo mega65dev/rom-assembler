@@ -1,0 +1,37 @@
+color cmp #','  ;optional first arg 
+ beq 20$ 
+ cmp #on_token  ;SOFTWARE (Editor) color mode 
+ beq 10$ 
+ jsr chkesc 
+ cmp #off_token 
+5$ bne snerr 
+ 
+ ldy #'['  ;OFF (color & attributes) 
+   .byte $2c 
+10$ ldy #']'  ;ON 
+ lda #esc 
+ jsr _bsout  ;do it 
+ tya 
+ jsr _bsout 
+ jsr chrget  ;eat token 
+ beq 40$   ; eol- exit 
+ 
+20$ jsr chkcom  ; else must be comma, eat & get next 
+; jsr chrgot  ;      [910930] 
+ cmp #on_token  ;HARDWARE (Vic) color mode 
+ beq 30$ 
+ jsr chkesc 
+ cmp #off_token 
+ bne 5$ 
+ 
+ lda #%00000010  ;OFF (monochrome) 
+ tsb vic+49 
+ bra 35$ 
+ 
+30$ lda #%00000010  ;ON 
+ trb vic+49 
+35$ bra chrget  ;exit after eating last token 
+ 
+40$ rts   ;exit after encountering eol 
+ 
+ .page 

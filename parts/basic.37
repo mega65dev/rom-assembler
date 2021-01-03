@@ -1,0 +1,28 @@
+p1l010 ldy lstpnt 
+ and #$7f 
+ 
+p1l015 cmp #':'  ;end-of-stmt?     [900516] 
+ bne 5$   ; no 
+ bbr7 helper,5$  ; yes, but skip e-o-s check if not HELP... 
+ bbs7 dores,5$  ;  or ':' is inside quotes 
+ jsr highlight_done ; yes, restore normal text color 
+ lda #':' 
+ 
+5$ jsr outch  ;outdo 
+ cmp #'"'  ;if quote character, toggle quote-switch 
+ bne 10$ 
+ lda dores 
+ eor #$ff 
+ sta dores 
+ 
+10$ iny   ;point to next character (should never wrap) 
+ bbs0 helper,15$  ; branch if highlighting tokens 
+ bbs5 helper,15$  ; branch if called by FIND/CHANGE 
+ bbr7 helper,20$  ; branch if called by LIST or HELP satisfied 
+15$ jsr helpsb 
+ 
+20$ jsr indlow 
+ beq highlight_done ;finished when trailing null is found 
+ jmp (iqplop)  ; usually points to nqplop 
+ 
+ .page 

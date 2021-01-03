@@ -1,0 +1,23 @@
+fin_chrget 
+ lda fin_bank  ;text or string bank? 
+ beq chrget  ;get byte from text bank via normal CHRGET mechanism 
+ 
+fin_chrget_1   ;get byte from string bank via modified CHRGET mechanism 
+ inw index1 
+fin_chrget_2 
+ ldy #0 
+ jsr indin1_ram1 
+ cmp #':' 
+ bcs 10$ 
+ cmp #' ' 
+ beq fin_chrget_1 ;skip over spaces 
+ sec 
+ sbc #'0'  ;set up .c as CHRGET would 
+ sec 
+ sbc #$d0 
+10$ rts 
+ 
+;.end 
+ .page 
+ .subttl Floating Point Math Package (CODE22,23) 
+ 

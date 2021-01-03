@@ -1,0 +1,39 @@
+header_rts 
+ clc 
+ rts 
+ 
+ .page 
+; SCRATCH sdfn  aliases: DELETE, ERASE 
+ 
+scratch jsr dospar  ;parse the line 
+ jsr chk1 
+ jsr are_you_sure ;confirm if in direct mode 
+ bne 30$   ; branch if 'no' response given 
+ 
+ ldy #fscr  ;offset 
+ lda #4   ;length 
+ bit dosflags  ;scratch or recover? 
+ bvc 1$   ; scratch 
+ ldy #frscr  ; recover 
+ lda #6 
+1$ jsr trans  ;transmit scratch command 
+ jsr Read_DS  ;read error channel & update DS$ 
+ 
+ bbs7 runmod,30$  ;branch if not direct mode 
+ jsr crdo  ;output cr 
+ 
+ ldy #0   ;display 'files scratched' DOS message 
+10$ lda #dsdesc+1 
+ jsr lda_far_ram1 ; lda (dsdesc+1),y 
+ beq 20$   ; if end of error message 
+ jsr outch  ; print it 
+ iny 
+ bpl 10$   ; always (bpl=failsafe) 
+ 
+20$ jsr crdo  ; done 
+ 
+30$ rts 
+ 
+ .page 
+; RECORD- relative record access 
+ 

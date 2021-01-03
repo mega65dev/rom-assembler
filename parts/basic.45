@@ -1,0 +1,18 @@
+if_true jsr chrgot 
+ beq 20$  ;branch if end of statement 
+ bcs 10$  ;branch if not a number 
+ bra goto ;here if of the form 'THEN line#' 
+ 
+10$ cmp #esc_command_token ;is this the beginning of a b-block? 
+ bne 20$  ;no, must be an escape command 
+ iny  ;might be, look at escape token 
+ jsr indtxt 
+ cmp #begin_token 
+ bne 20$ 
+ jsr chrget ;skip over 'BEGIN' if so... 
+ jsr chrget ;..and the second token, as well. 
+ 
+20$ jsr chrgot ;get back original character, & set up flags 
+ bra xeqcm3 ;..and go execute whatever it is 
+ 
+ .page 

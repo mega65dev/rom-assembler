@@ -1,0 +1,84 @@
+gloop jsr chkgrb  ;check garbage string 
+ bne 2$   ;if not garbage 
+ 
+1$ dey   ;back up to length 
+ jsr indgrb 
+ jsr movpnt  ;move grbpnt to next 
+ sec 
+ ror highds  ;indicate garbage string found 
+ bra gloop  ;always 
+ 
+2$ bit highds 
+ bpl 30$   ;if garbage string not found 
+ ldx #0 
+ stx highds  ;clear indicator 
+ 
+ lda #2   ;skip pointers past 
+ 
+; Move a string over garbage 
+ 
+5$ phx 
+ ldx #grbtop 
+ ldy #1   ;move the link bytes 
+ jsr indgrb 
+ jsr sta_far_ram1 ;sta (grbtop),y 
+ dey 
+ jsr indgrb 
+ jsr sta_far_ram1 ;sta (grbtop),y 
+ plx 
+ 
+ jsr indin1_ram1 
+ tax 
+ jsr movtop  ;move top pointer 
+ sta frespc  ;save in frespc 
+ sty frespc+1 
+ txa 
+ jsr movpnt  ;move grbpnt 
+ txa   ;put length-1 in .y 
+ tay 
+ 
+10$ dey 
+ jsr indgrb 
+ phx 
+ ldx #grbtop 
+ jsr sta_far_ram1 ;sta (grbtop),y 
+ plx 
+ dex 
+ bne 10$ 
+ 
+ ldy #2   ;fix the descriptor 
+ phx 
+ ldx #index1 
+20$ lda grbtop-1,y 
+ jsr sta_far_ram1 ;sta (index1),y 
+ dey 
+ bne 20$ 
+ plx 
+ 
+ lda grbpnt  ;check pointer 
+ ldy grbpnt+1 
+ jsr chkgrb  ;check garbage string 
+ beq 1$   ;if garbage found 
+ bne 5$   ;always 
+ 
+30$ ldy #0   ;skip over good strings 
+ jsr indin1_ram1 
+ tax 
+ jsr movtop 
+ sta frespc 
+ sty frespc+1 
+ txa 
+ jsr movpnt 
+ bra gloop 
+ 
+ .page 
+; Subroutines used for garbage collection. 
+; 
+;  Compare for (y,a) = fretop. 
+; Entry  (y,a) = address of current string descriptor. 
+; Exits to caller if (y,a) = fretop, else z flag set if garbage string. 
+;      z flag clear if not garbage string. 
+; In either case pointers are setup for next loop and string movement. 
+; If carry clear (y,a) <= fretop 
+ 
+ 

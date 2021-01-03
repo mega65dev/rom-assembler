@@ -1,0 +1,84 @@
+done pla   ;get aux error flag 
+ and parstx  ;repeated or illegal params? 
+ bne snerr  ; yes- report syntax error 
+ pla   ;get error flags 
+ jsr prmrpt 
+ lda parsts 
+ ldx parstx 
+ rts 
+ 
+ .page 
+; Parse given parameters.  what it is  example 
+;     -------------------- --------- 
+parse1 cmp #'"' 
+ beq name1  ; explicit filename "file" 
+ cmp #'(' 
+ beq name1  ; evaluate filename (f$) 
+ cmp #'#' 
+ beq logadr  ; logical file number #1 
+ cmp #'U' 
+ beq unit1  ; unit number  U8 
+ cmp #'D' 
+ beq drv1  ; drive number  D0 
+ cmp #'P' 
+ beq doffl  ; load/save address P1234 
+ cmp #'B' 
+ beq dbank1  ; load/save bank   B0 
+ cmp #'W' 
+ beq reclen  ; write mode  W 
+ cmp #'L' 
+ beq reclen  ; record length  L80 
+ cmp #'R' 
+ beq recover  ; recover mode  R 
+ cmp #'I' 
+ beq ident  ; ID   Ixx 
+ cmp #on_token 
+; beq on1   ; ON token  ON 
+ 
+ bne snerr  ; none of these, syntax error 
+ 
+ .page 
+on1 jsr on 
+ bra del1 
+ 
+ 
+unit1 jsr unit ;do unit# parsing 
+ bra del1 ;always 
+ 
+ 
+dbank1 jsr dbank 
+ bra del1 ;always 
+ 
+ 
+logadr lda #4 
+ jsr prmrpt ;check for repeated parameter 
+ jsr gtbytc ;getval 
+ txa  ; cpx #0 
+ beq fcerr ;if illegal value 
+ stx dosla 
+ lda #4  ;set logical address flag 
+ bra del1 ;get next parameter 
+ 
+ 
+reclen tax  ;save char 
+ lda #$40 
+ jsr prmrpt ;check for repeated parameter 
+ cpx #'W' 
+ bne 10$ 
+ jsr chrget 
+ bra 20$  ;set parsts 
+ 
+10$ ldx #1  ;a kludge to allow  DOPEN#lf,"relfile",L  [911024] 
+ jsr chrget 
+ beq 12$  ;eol? open existing rel file 
+ jsr getbyt ;get reclen (was getval) 
+12$ stx dosrcl ;store parcel 
+ txa  ; cpx #0 
+ beq 15$  ;zero illegal dosrcl 
+ inx  ; cpx #255 
+15$ beq fcerr ;illegal dosrcl 
+ 
+20$ lda #$40 ;set dosrcl flag & 
+ bra del1 
+ 
+ 

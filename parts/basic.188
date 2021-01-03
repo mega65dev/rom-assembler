@@ -1,0 +1,37 @@
+cld10    ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< entry from dload 
+; jsr put_io_in_map 
+ lda verck 
+ ldx txttab  ;.x and .y have alt... 
+ ldy txttab+1  ;...load address 
+ 
+; Any changes to the following code must be duplicated at: 
+;  bload 
+;  save (exit_disk_op) 
+ 
+load_file 
+ jsr _loadsp  ;load it 
+ bbs0 runmod,cld20 ; skip error checks if autoboot (rts) 
+ phx   ;save end address 
+ phy 
+ php   ; save kernel load status (.c) 
+ pha   ; save kernel error # (.a) 
+ jsr _readst  ; save I/O status byte 
+ sta parsts 
+ jsr print_dos_error ; report error msg if any only in direct mode 
+ pla   ; restore error stuff 
+ plp 
+ bcc 30$   ; branch if no error (rts) 
+ bbs7 runmod,20$  ; branch if run mode (erexit) 
+ cmp #errfnf  ; is it 'file not found' catch-all? 
+ bne 10$   ;  no  (erexit) 
+ sta errnum  ;  yes- save error # for 'er' 
+ ora #$80  ;   but no errdis 
+10$ sec 
+20$ bcs erexit  ; exit if kernel problem 
+30$ ply   ;restore end address 
+ plx 
+ lda verck 
+ beq cld50  ;was load 
+ 
+; Finish verify 
+ 

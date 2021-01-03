@@ -1,0 +1,88 @@
+putnew ldx temppt  ;pointer to first free temp 
+ cpx #tempst+strsiz+strsiz+strsiz 
+ beq sterr  ;string temporary error 
+ 
+ lda dsctmp  ;length 
+ sta 0,x 
+ lda dsctmp+1  ;pointer to string lo 
+ sta 1,x 
+ lda dsctmp+2  ;   hi 
+ sta 2,x 
+ 
+ ldy #0   ;pointer to temp. descriptor 
+ stx facmo  ;   lo 
+ sty facmo+1  ;   hi 
+ sty facov 
+ dey   ;($ff) 
+ sty valtyp  ;type is string 
+ stx lastpt  ;set pointer to last-used temp 
+ 
+ inx 
+ inx 
+ inx   ;point further 
+ stx temppt  ;save pointer to next temp, if any 
+ rts   ;all done 
+ 
+ .page 
+; The following routine concatenates two strings.  At this point, the FAC 
+; contains the first one and (txtptr) points to the + sign. 
+ 
+cat lda faclo  ;push high order onto stack 
+ pha 
+ lda facmo  ;and the low 
+ pha 
+ jsr eval  ;can come back here since operator is known 
+ jsr chkstr  ;must be string 
+ pla 
+ sta strng1  ;get high order of old descriptor 
+ pla 
+ sta strng1+1 
+ ldy #0 
+ jsr indst1_ram1  ;get length of old string 
+ sta syntmp 
+ jsr indfmo 
+ clc 
+ adc syntmp 
+ bcs errlen  ;result >255, error "long string" 
+ 
+ jsr strini  ;sizeok.  initialize string 
+ jsr movins  ;move it 
+ lda dscpnt  ;get pointer to second 
+ ldy dscpnt+1 
+ jsr fretmp  ;free it 
+ jsr movdo  ;move second string 
+ lda strng1 
+ ldy strng1+1 
+ jsr fretmp 
+ jsr putnew 
+ bra tstop  ;"cat" reenters frmevl from tstop 
+ 
+ .page 
+movins ldy #0   ;get address of string 
+ jsr indst1_ram1 
+ pha 
+ iny 
+ jsr indst1_ram1 
+ tax 
+ iny 
+ jsr indst1_ram1 
+ tay 
+ pla 
+ 
+movstr stx index  ;adr in (x,y), len in a 
+ sty index+1 
+ 
+movdo tay 
+ beq mvdone 
+ 
+ pha 
+ phx 
+ ldx #frespc 
+10$ dey 
+ jsr indin1_ram1 
+ jsr sta_far_ram1 ;sta (frespc),y 
+ tya 
+ bne 10$ 
+ plx 
+ pla 
+ 

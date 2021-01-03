@@ -1,0 +1,106 @@
+edit_load   ;Called by DLOAD/DVERIFY when in EDIT mode 
+ ldz #1 
+ jsr open_SEQ_file ;Open the file just like TYPE: filename [,U#] [,D#] 
+   jsr Check_DS  ; check current disk error message 
+   ldy #0 
+   lda #dsdesc+1 
+   jsr lda_far_ram1 ; lda (dsdesc+1),y peek at first character 
+   cmp #'2' 
+   bcs 30$  ; exit if error 
+   jsr Clear_DS  ; else zap 'ok' message so user gets fresh one 
+ ldx dosla 
+ jsr _chkin  ;get input channel 
+   bcs 30$  ; error 
+ 
+ bbs0 verck,1$ 
+ jsr _primm 
+   .byte  cr,'LOADING',0 
+ bra 2$ 
+1$ jsr _primm 
+   .byte  cr,'VERIFYING',0 
+ 
+2$ lda #<1000  ;default starting line # 
+ ldx #>1000 
+ sta linnum 
+ stx linnum+1 
+ 
+ lda txttab  ;load address 
+ ldx txttab+1 
+ sta index 
+ stx index+1 
+ 
+10$ ldy #0   ;Input one line of text 
+ jsr _stop  ;check stop key 
+ beq 28$   ; exit if down 
+ jsr _readst  ;check channel status 
+ bne 28$   ; exit if eof or error 
+ 
+ bbr0 verck,15$ 
+ ldy #3 
+ bra 20$   ;skip ahead if verify op 
+ 
+15$ lda #1   ;install fake line links for this line 
+ jsr sta_far_in1 
+ iny   ;1 
+ jsr sta_far_in1 
+ iny   ;2 
+ lda linnum  ;install line number for this line 
+ jsr sta_far_in1 
+ iny   ;3 
+ lda linnum+1 
+ jsr sta_far_in1 
+ clc 
+ lda linnum  ;generate next line number 
+ adc #10 
+ sta linnum 
+ bcc 20$ 
+ inc linnum+1 
+ 
+ .page 
+20$ iny   ;bump buffer pointer 
+ cpy #buflen  ;check buffer (160 max. input buffer size to edit) 
+ beq 25$   ; split long lines into two???? 
+ jsr _basin  ;read file data 
+ beq 25$   ; CR or null terminates line 
+ cmp #cr 
+ beq 25$ 
+; cmp #$20  ;adjust invisible characters less than space 
+; bcc 21$   ; ????make them appear in reverse field, but note 
+; ora #$80  ; that these lines can't be edited without losing them. 
+ 
+21$ bbr0 verck,22$ 
+ jsr indcmp_in1  ;Compare to memory 
+ beq 20$   ; ok 
+ jsr list_exit 
+ ldx #ervfy  ; verify error 
+ bra error 
+ 
+22$ jsr sta_far_in1  ;Load into memory 
+ bra 20$   ;loop until eol or error (kernel returns CR in case of error) 
+ 
+25$ bbs0 verck,26$ 
+ lda #0 
+ jsr sta_far_in1  ;terminate line with null (replaces CR) 
+26$ iny 
+ tya 
+ clc 
+ adc index 
+ sta index 
+ bcc 27$ 
+ inc index+1 
+27$ lda index+1 
+ cmp max_mem_0+1  ;out of memory???? 
+ bcc 10$   ; no, continue until eof 
+ bsr edit_load_done ; yes, patch things up best we can 
+ jsr list_exit  ;  close disk 
+ bra omerr  ;  report error & exit 
+ 
+28$ bbs0 verck,30$ 
+ jsr edit_load_done ;EOF: terminate memory with a pair of nulls 
+30$ bra list_exit  ;release channel, close file, etc. 
+ 
+; bbr0 verck,40$ 
+; jsr verify_ok  ;if Verify, report 'ok' 
+;40$ lda #0   ;exit directly to main???? 
+; bra end 
+ .page 

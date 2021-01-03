@@ -1,0 +1,34 @@
+find_loop_2 
+ jsr _stop  ;check stop key 
+ beq find_break  ; exit if down 
+ 
+ ldx fndpnt  ;duh, where are we? 
+ clc 
+ txa   ; program: 
+ adc lowtr  ;   txtptr = line start + position in line 
+ sta txtptr 
+ lda #0 
+ adc lowtr+1 
+ sta txtptr+1  ; search string: 
+ ldz #0   ;   at the beginning 
+ 
+40$ jsr chargt  ;get next character from text 
+ beq find_loop  ; eol (no match this line) 
+ inx   ; bump pointer to next character 
+ cmp (fstr1),z  ;character match?  ind okay- buffer 
+ bne 40$   ; no 
+ stx fndpnt  ; yes- save next position 
+ 
+50$ inz   ;bump position in search string 
+ cpz fstr1+2  ;string match? 
+ bcs print_line  ; yes 
+ jsr chargt 
+ beq find_loop  ; no- eol 
+ cmp (fstr1),z  ;    ind okay- buffer 
+ bne find_loop_2  ; no- rewind to beginning of search string 
+ beq 50$   ; maybe- still more chars to compare 
+ 
+ 
+; Print the line of text at LOWTR, highlighting the section of code 
+; beginning at LOWTR+FNDPNT and running for FIND_COUNT characters. 
+ 

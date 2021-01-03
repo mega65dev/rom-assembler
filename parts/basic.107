@@ -1,0 +1,35 @@
+play_bad_value 
+ jsr clear_flag 
+ bra fcerr  ;illegal quantity 
+ 
+play_dot 
+ sta dnote 
+ rts 
+ 
+ 
+ 
+set_note_length 
+; ldy #<beats  ;found note (.x), divide beats accordingly 
+; sty ntime 
+; ldy #>beats 
+; sty ntime+1 
+ 
+ bit _pal_ntsc  ;determine if PAL or NTSC system  [910724] 
+ bmi 1$   ;...branch if PAL 
+ ldz #<beats_ntsc ;(whole note 4/4 time = 2 sec) 
+ ldy #>beats_ntsc 
+ bra 2$ 
+1$ ldz #<beats_pal 
+ ldy #>beats_pal 
+2$ stz ntime 
+ sty ntime+1 
+ 
+10$ dex 
+ bmi 20$   ;finished dividing, exit 
+ lsr ntime+1 
+ ror ntime 
+ bra 10$ 
+ 
+20$ rts 
+ 
+ .page 

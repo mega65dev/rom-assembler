@@ -1,0 +1,17 @@
+else cmp #esc_command_token ;is this of the form "ELSE b-block"? 
+ bne 10$  ;no, must be an escape command 
+ iny  ;might be, look at escape token 
+ jsr indtxt 
+ cmp #begin_token 
+ bne 10$  ;no, justa plain-old "ELSE statement" 
+ jsr find_bend ;yes, it is a b-block. skip over the b-block. 
+10$ bra rem 
+ 
+ 
+;.end 
+ .page 
+ .subttl ON...GOTO  ON...GOSUB 
+ 
+;********************************************************* 
+;* ON expression {GOTO | GOSUB} line_number 
+;********************************************************* 

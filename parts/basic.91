@@ -1,0 +1,32 @@
+trap 
+; jsr errdir ;why not????      [910925] 
+ jsr chrgot ;if no #, means 'turn off trap' 
+ beq 10$ 
+ jsr getwrd 
+ sty trapno 
+   .byte $2c 
+ 
+10$ lda #$ff ;flag no trap 
+ sta trapno+1 
+ rts 
+ 
+;.end 
+ 
+ .page 
+ .subttl  RESUME 
+ 
+; RESUME command 
+; 
+; Used to resume execution following a TRAPped error. 
+; 
+; Syntax: RESUME [line_number | NEXT] 
+; 
+; Can take the following forms: 
+; 
+; RESUME   :resume executing at the statement which caused 
+;     the error. 
+; RESUME NEXT  :resume execution at the statement FOLLOWING 
+;     the statement which caused the error. 
+; RESUME line_number :resume at the specified line number. 
+ 
+ 

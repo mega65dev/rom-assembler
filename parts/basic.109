@@ -1,0 +1,28 @@
+play_command 
+ cmp #'M'  ;measure? 
+ beq 10$ 
+ 
+ lda rbits,x  ;all others, set flag for next number 
+ sta flag 
+ rts 
+ 
+; Wait for msb of all 3 voice counters to underflow 
+ 
+;10$ ldy #5 
+;20$ lda voices,y 
+; bpl 20$ 
+; dey 
+; dey 
+; bpl 20$ 
+; rts 
+ 
+10$ ldy #5   ;      [910626] 
+20$ ldx times2,y 
+30$ bit voices+1,x  ; wait for voice to be inactive (IRQ) 
+ bpl 30$ 
+ dey   ; next voice 
+ bpl 20$   ; until done 6 voices 
+ rts 
+ 
+ 
+ 
