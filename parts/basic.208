@@ -1,150 +1,36 @@
-isp cmp #'+' ;plus? 
- bne chom ;no... 
- lda sno  ;sign neg? 
- bpl spos ;yes... 
- lda #'+' 
- sta sno 
+rrts rts 
  
-spos lda posp ;+ or - already? 
- bne ero 
- ror posp ;make posp neg/clc 
- sty endfd ;end field pointer 
- inc cform ;correct counter 
-trts rts 
+ .page 
+; Using- alg: delete leading zeros of no 
  
+alg ldy point ;start with a .? 
+ beq szer ;yes... 
  
-chom cmp #'-' ;minus? 
- beq spos ;yes... 
- sec 
-efo sty endfd ;end field pointer 
- dec endfd 
+cho ldy bnr 
+cmo lda fbuffr,y ;start with a 0? 
+ cmp #'0' 
  rts 
  
  
-; Using- comp: compare .a with symbols 
+nbr inc point ;adjust point 
+ jsr eado ;and exponent 
+ inc bnr  ;and pointer to begin of no 
+ cpy enr  ;end of number? 
+ beq rrts ;yes... 
+ iny 
  
-comp cmp #'+' 
- beq rt 
- cmp #'-' 
- beq rt 
+szer jsr cmo  ;zero in no? 
+ beq nbr  ;yes... 
+ rts  ;no... 
  
-com1 cmp #'.' 
- beq rt 
  
-com2 cmp #'=' 
- beq rt 
- cmp #'>' 
- beq rt 
- cmp #'#' 
- bne rt 
- clc 
-rt rts 
+; Using- chout: print number 
  
-;.end 
- .page 
- .subttl  INSTR() 
+chout lda dolr ;dollar flag set? 
+ bmi 10$  ;no... 
+ inc z_p_temp_1 ;make room for $ 
  
-;  INSTRing - Find position of str1 in str2 at or after position n 
-; 
-; Usage: INSTR(a$,b${,n}) 
- 
-instr lda facmo ;save pointer to temporary descriptors 
- sta tmpdes 
- lda facmo+1 
- sta tmpdes+1 
- 
- jsr frmevl ;get next arg 
- jsr chkstr ;must be string 
- lda facmo 
- sta tmpdes+2 
- lda facmo+1 
- sta tmpdes+3 
- 
- ldx #1  ;default starting position 
- stx faclo 
- jsr chrgot 
- cmp #')' ;any length argument? 
- beq 1$  ;branch if not 
- jsr combyt ;else go get a one byte argument 
- 
-1$ jsr chkcls ;look for ) 
- ldx faclo 
- beq fcerr ;starting position can't be 0 
+10$ ldx bnr  ;start of # 
  dex 
- stx positn 
- 
- ldx #3  ;copy 'pointers to temp descriptors' to zero page 
-3$ lda tmpdes,x 
- sta ptarg1,x 
- dex 
- bpl 3$ 
- 
- ldy #2  ;now get the descriptors 
-4$ lda #ptarg1 
- jsr lda_far_ram1 ;lda (ptarg1),y 
- sta str1,y 
- lda #ptarg2 
- jsr lda_far_ram1 ;lda (ptarg2),y 
- sta str2,y 
- dey 
- bpl 4$ 
- 
- lda str2 ;check if string 2 is null 
- beq 50$  ;if so, return 0 
- 
-10$ lda #0 
- sta match 
- clc 
- lda str2 ;length of string 2 
- adc positn 
- bcs 50$  ;too long, not found 
- cmp str1 ;see if > length of string 1 
- bcc 20$  ;< len string 1 
- bne 50$  ;must be >, not found 
- 
-20$ ldy match 
- cpy str2 ;if match len = str len, then found 
- beq 40$ 
- tya 
- clc 
- adc positn ;compare str1(s+p+m) with str2(m) 
- tay 
- lda #str1+1 
- jsr lda_far_ram1 ;lda (str1+1),y 
- sta syntmp 
- ldy match 
- lda #str2+1 
- jsr lda_far_ram1 ;lda (str2+1),y 
- cmp syntmp 
- beq 30$ 
- inc positn ;not the same, start over from next positn 
- bra 10$  ;always 
- 
-30$ inc match ;count characters that match 
- bra 20$  ;always 
- 
- 
-40$ inc positn ;found 
- lda positn 
-   .byte $2c 
- 
-50$ lda #0  ;not found 
-; sta sw_rom_ram0 ;???? 
- pha 
- lda tmpdes+2 ;free temp descriptors 
- ldy tmpdes+3 
- jsr fretmp 
-; sta sw_rom_ram0 ;???? 
- lda tmpdes 
- ldy tmpdes+1 
- jsr fretmp 
- ply 
- bra sngflt ;float 1 byte in .y 
- 
-;.end 
- .page 
- .subttl  TYPE 
- 
-; TYPE  types a given disk (SEQ) file to output channel 
-; 
+ ldy begfd ;begin of field 
  

@@ -1,79 +1,62 @@
-midd2 
-midwrk =midd2-1 
+tron   ;trace mode on 
+ smb5 runmod ;trcflg 
+ rts 
  
- jsr chkopn  ;check for '(' 
- jsr ptrget  ;get pointer to descriptor of string-var 
- sta forpnt  ;store for later use 
- sty forpnt+1 
- jsr chkstr  ;check if string 
  
- jsr combyt  ;look for comma, followed by 1 byte starting address 
- dex   ;adjust starting addr 
- stx hulp  ;store    " " 
+troff   ;trace mode off 
+ rmb5 runmod ;trcflg 
+ rts 
  
- cmp #')'  ;finished? 
- beq 10$   ;branch if so (use default length) 
- jsr combyt  ;..else get length 
-   .byte $2c 
- 
-10$ ldx #$ff  ;default length 
- stx z_p_temp_1 
- jsr chkcls  ;look for ')' 
- lda #equal_token ;look for '=' 
- jsr synchr 
- jsr frmevl  ;bring on the source! 
- jsr chkstr  ;nothing funny 
- 
- ldy #2   ;get string descriptors 
-20$ lda #forpnt  ;target 
- jsr lda_far_ram1 ;lda (forpnt),y 
- sta str1,y 
- jsr indfmo  ;source 
- sta str2,y 
- dey 
- bpl 20$ 
- 
-; Test for target string in text was removed-  all strings are copied to 
-; string RAM when they are created. 
- 
- sec   ;adjust pointer to source string so that the same 
- lda str2+1  ;..index can load & save 
- sbc hulp 
- sta str2+1 
- bcs 30$ 
- dec str2+2 
- 
-30$ lda z_p_temp_1  ;get specified length (or default) 
- cmp str2  ;compare with length of source 
- bcc 40$   ;ok if less, 
- lda str2  ;..else use length of source 
-40$ tax 
- beq 80$   ;done if length=0 
- clc 
- adc hulp  ;add length to starting posn. 
- bcs fcerr  ;illegal quantity error if > 256 
- cmp str1 
- bcc 60$ 
- bne fcerr  ;...or if > target length 
- 
-60$ ldy hulp  ;get adjusted starting address 
-70$ phx 
- ldx #str1+1 
- lda #str2+1 
- jsr lda_far_ram1 ;fetch from string bank 
- jsr sta_far_ram1 ;this is what it's all about 
- iny 
- plx 
- dex 
- bne 70$   ;keep going for specified length 
- 
-80$ bra frefac  ;free up temp. string, rts 
  
 ;.end 
- 
  .page 
- .subttl  AUTO 
+ .subttl  RREG 
  
-; AUTO Increment 
-;   Syntax :    auto {line-number} (line-number = 0 means turn off) 
+; RREG - Return values of 6502 registers following a SYS call. 
+; 
+; Syntax : RREG [.A variable [,[.X[...Z] variable] [,[.S variable] ]]] 
+ 
+rreg lda #0 
+ sta count 
+ 
+10$ jsr chrgot 
+ beq 50$   ;reached end of statement- done 
+ cmp #','  ;skip this arg? 
+ beq 30$   ;branch if so 
+ jsr ptrget  ;get pointer to target variable 
+ sta forpnt  ;a little bit of set up so we can share LET code 
+ sty forpnt+1 
+ lda valtyp  ;what kind of variable name did ptrget find? 
+ bne chkerr  ; type mismatch error if string 
+ 
+ ldy count  ;which register's value are we looking for? 
+ lda _a_reg,y  ;.A, .X, .Y, & .Z are contiguious 
+ cpy #4 
+ bne 20$ 
+ lda _s_reg  ;but .S isn't 
+ 
+20$ tay   ;low byte in .Y 
+ lda #0   ;high byte of zero 
+ jsr givayf  ;go float it 
+ lda intflg  ;set conditions for type of var (int/float) 
+ jsr qintgr  ;..and use part of LET to do the work 
+ 
+30$ inc count  ;5 registers to do 
+ lda count 
+ cmp #5 
+ bcs 50$ 
+ jsr chrgot  ;was this e-o-statement? 
+ beq 50$ 
+ jsr chrget  ;not e-o-s, skip over comma, 
+ bne 10$   ;..and go do next 
+ 
+50$ rts 
+ 
+;.end 
+ .page 
+ .subttl MID$ 
+ 
+; Alternate use of the MID$ function, as the target of an assignment. 
+; 
+; MID$(string_var,starting_position [,length]) = string_expression 
  

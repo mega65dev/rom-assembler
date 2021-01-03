@@ -1,56 +1,150 @@
-dopen lda #$22  ;set error flag 
- jsr dosprs  ;parse the line 
- jsr chk6  ;check required parameters 
- jsr find_sa  ;find unused secondary address 
- ldy #fopn  ;fcb format pointer 
- ldx #4   ;normal length 
- bbr6 parsts,open_it ;relative record? branch if not relative 
- ldx #8   ;random access length 
- bra open_it  ;      [910925] 
+isp cmp #'+' ;plus? 
+ bne chom ;no... 
+ lda sno  ;sign neg? 
+ bpl spos ;yes... 
+ lda #'+' 
+ sta sno 
  
-;10$ jsr open_file  ;open it 
-; bra exit_disk_op ;report any DOS errors, & return to main [910404] 
- 
- 
- 
-; APPEND 
- 
-append lda #$e2  ;set error flags 
- jsr dosprs  ;parse the line 
- jsr chk6  ;check required parameters 
- jsr find_sa  ;find secondary address 
- ldy #fapn  ;tabld index 
- ldx #5   ;length 
-open_it 
- jsr open_file  ;open it 
- bra exit_disk_op ;report any DOS errors, & return to main [910404] 
+spos lda posp ;+ or - already? 
+ bne ero 
+ ror posp ;make posp neg/clc 
+ sty endfd ;end field pointer 
+ inc cform ;correct counter 
+trts rts 
  
  
+chom cmp #'-' ;minus? 
+ beq spos ;yes... 
+ sec 
+efo sty endfd ;end field pointer 
+ dec endfd 
+ rts 
  
-open_file   ;dop2. 
- txa   ;set length into a 
- jsr sendp 
- jsr _clrch 
- ldx #sys_bank  ;fname is in system space, bank0  [910620] 
- txa   ; (load bank not req'd)???? 
- jsr _setbank 
- jmp _open 
  
+; Using- comp: compare .a with symbols 
+ 
+comp cmp #'+' 
+ beq rt 
+ cmp #'-' 
+ beq rt 
+ 
+com1 cmp #'.' 
+ beq rt 
+ 
+com2 cmp #'=' 
+ beq rt 
+ cmp #'>' 
+ beq rt 
+ cmp #'#' 
+ bne rt 
+ clc 
+rt rts 
+ 
+;.end 
  .page 
-; Find an available secondary address 
+ .subttl  INSTR() 
  
-find_sa 
- ldy #$61  ;2-14 possible 
+;  INSTRing - Find position of str1 in str2 at or after position n 
+; 
+; Usage: INSTR(a$,b${,n}) 
  
-10$ iny 
- cpy #$6f 
- beq too_many_files ; if none available error 
- jsr _lkupsa  ;kernel will lookup this sa in its tables 
- bcc 10$   ; if used keep looking 
- sty dossa  ;save secondary address 
- rts   ;return .y = sa 
+instr lda facmo ;save pointer to temporary descriptors 
+ sta tmpdes 
+ lda facmo+1 
+ sta tmpdes+1 
+ 
+ jsr frmevl ;get next arg 
+ jsr chkstr ;must be string 
+ lda facmo 
+ sta tmpdes+2 
+ lda facmo+1 
+ sta tmpdes+3 
+ 
+ ldx #1  ;default starting position 
+ stx faclo 
+ jsr chrgot 
+ cmp #')' ;any length argument? 
+ beq 1$  ;branch if not 
+ jsr combyt ;else go get a one byte argument 
+ 
+1$ jsr chkcls ;look for ) 
+ ldx faclo 
+ beq fcerr ;starting position can't be 0 
+ dex 
+ stx positn 
+ 
+ ldx #3  ;copy 'pointers to temp descriptors' to zero page 
+3$ lda tmpdes,x 
+ sta ptarg1,x 
+ dex 
+ bpl 3$ 
+ 
+ ldy #2  ;now get the descriptors 
+4$ lda #ptarg1 
+ jsr lda_far_ram1 ;lda (ptarg1),y 
+ sta str1,y 
+ lda #ptarg2 
+ jsr lda_far_ram1 ;lda (ptarg2),y 
+ sta str2,y 
+ dey 
+ bpl 4$ 
+ 
+ lda str2 ;check if string 2 is null 
+ beq 50$  ;if so, return 0 
+ 
+10$ lda #0 
+ sta match 
+ clc 
+ lda str2 ;length of string 2 
+ adc positn 
+ bcs 50$  ;too long, not found 
+ cmp str1 ;see if > length of string 1 
+ bcc 20$  ;< len string 1 
+ bne 50$  ;must be >, not found 
+ 
+20$ ldy match 
+ cpy str2 ;if match len = str len, then found 
+ beq 40$ 
+ tya 
+ clc 
+ adc positn ;compare str1(s+p+m) with str2(m) 
+ tay 
+ lda #str1+1 
+ jsr lda_far_ram1 ;lda (str1+1),y 
+ sta syntmp 
+ ldy match 
+ lda #str2+1 
+ jsr lda_far_ram1 ;lda (str2+1),y 
+ cmp syntmp 
+ beq 30$ 
+ inc positn ;not the same, start over from next positn 
+ bra 10$  ;always 
+ 
+30$ inc match ;count characters that match 
+ bra 20$  ;always 
  
  
+40$ inc positn ;found 
+ lda positn 
+   .byte $2c 
  
-; Find an available logical address 
+50$ lda #0  ;not found 
+; sta sw_rom_ram0 ;???? 
+ pha 
+ lda tmpdes+2 ;free temp descriptors 
+ ldy tmpdes+3 
+ jsr fretmp 
+; sta sw_rom_ram0 ;???? 
+ lda tmpdes 
+ ldy tmpdes+1 
+ jsr fretmp 
+ ply 
+ bra sngflt ;float 1 byte in .y 
+ 
+;.end 
+ .page 
+ .subttl  TYPE 
+ 
+; TYPE  types a given disk (SEQ) file to output channel 
+; 
  

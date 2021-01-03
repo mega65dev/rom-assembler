@@ -1,61 +1,166 @@
-getdef jsr indlow_ram1 ;get # of dim's from string bank 
- sta count ;save a counter 
- lda #0  ;zero (curtol) 
- sta curtol 
+bserr ldx #errbs ;get bad sub error number 
+   .byte $2c 
  
-inlpnm sta curtol+1 
- plx  ;get low indice 
- stx indice 
- iny 
+fcerr ldx #errfc ;too big. Illegal Quantity error 
+ bra error 
+ 
+ 
+ 
+gotary ldx #errdd ;perhaps a "re-dimension" error 
+ lda dimflg ;test the DIMFLG 
+ bne error 
+ jsr fmaptr 
+ ldy #4 
  jsr indlow_ram1 
  sta syntmp 
- pla  ;and the high part 
- sta indice+1 
- cmp syntmp ;compare with max indice 
- bcc inlpn2 
- bne bserr7 ;if greater, "bad subscript" error 
- iny 
- jsr indlow_ram1 
- sta syntmp 
- cpx syntmp 
- bcc inlpn1 
+ lda count ;get number of dims input. 
+ cmp syntmp ;# of dims the same? 
+ bne bserr ;same so get definition. 
+ bra getdef 
  
-bserr7 bra bserr 
+ .page 
+; Come here when variable is not found in the array table to build an entry. 
+; 
+; Put down the descriptor. 
+; Setup number of dimensions. 
+; Make sure there is room for the new entry. 
+; Remember VARPNT. 
+; Tally=4. 
+; Skip two locs for later fill in of size. 
+; LOOP: Get an indice. 
+;  Put down number+1 and increment VARPTR. 
+;  Tally=tally*number+1 
+;  Decrement number of dims. 
+;  Bne LOOP 
+; Call REASON with (a,b) reflecting last loc of variable. 
+; Update STREND 
+; Zero all. 
+; Make tally include maxdims and descriptor. 
+; Put down tally 
+; If called by dimension, return. 
+;  Else index into the variable as if it were found on the initial search. 
  
- 
-inlpn2 iny 
-inlpn1 lda curtol+1 ;don't multiply if curtol=0 
- ora curtol 
- clc  ;prepare to get indice back 
- beq 10$  ;get high part of indice back 
- jsr umult ;multiply (curtol) by (5&6,lowtr) 
- txa 
- adc indice ;add in (indice) 
- tax 
- tya 
- ldy index1 
- 
-10$ adc indice+1 
- stx curtol 
- dec count ;any more? 
- bne inlpnm ;yes 
- sta curtol+1 
+notfdd 
+ jsr fmaptr  ;form ARYPNT 
+ jsr reason 
+ ldy #0 
+ sty curtol+1 
  ldx #5 
  lda varnam 
+ php 
+ phx 
+ ldx #lowtr  ;point to string/array bank 
+ jsr sta_far_ram1 ;sta (lowtr),y 
+ plx 
+ plp 
+ bpl 10$ 
+ dex 
+ 
+10$ iny   ;notflt. 
+ lda varnam+1 
+ php 
+ phx 
+ ldx #lowtr  ;point to string/array bank 
+ jsr sta_far_ram1 ;sta (lowtr),y 
+ plx 
+ plp 
  bpl 20$ 
  dex 
-20$ lda varnam+1 
- bpl 30$ 
  dex 
- dex 
-30$ stx addend 
+ 
+20$ stx curtol 
+ lda count  ;save number of dimensions 
+ iny 
+ iny 
+ iny 
+ ldx #lowtr  ;point to string/array bank 
+ jsr sta_far_ram1 ;sta (lowtr),y 
+ 
+30$ ldx #11   ;loppta. default size 
  lda #0 
- jsr umultd ;on rts, a & y = hi. x = lo. 
+ bbr6 dimflg,40$  ;not in a dim statement 
+ pla   ;get low order of indice 
+ clc 
+ adc #1 
+ tax 
+ pla   ;get high order of indice 
+ adc #0 
+ 
+40$ iny   ;notdim. 
+ phx 
+ ldx #lowtr 
+ jsr sta_far_ram1 ;sta (lowtr),y ;store high part of indice 
+ plx 
+ iny 
+ txa 
+ phx 
+ ldx #lowtr 
+ jsr sta_far_ram1 ;sta (lowtr),y ;store low part of indice 
+ plx 
+ jsr umult  ;(a,x)+(curtol)*(lowtr,y) 
+ stx curtol  ;save new tally 
+ sta curtol+1 
+ ldy index 
+ dec count  ;any more indices left? 
+ bne 30$   ;yes 
+ adc arypnt+1 
+ bcs omerr  ;overflow 
+ sta arypnt+1  ;compute where to zero 
+ tay 
  txa 
  adc arypnt 
- sta varpnt 
- tya 
- adc arypnt+1 
- sta varpnt+1 
- tay 
- lda varpnt 
+ bcc 50$ 
+ iny 
+ beq omerr 
+ 
+50$ jsr reason  ;grease.  get room 
+ sta strend 
+ sty strend+1  ;new end of storage 
+ lda #0   ;storing (a) is faster than clear 
+ inc curtol+1 
+ ldy curtol 
+ beq 70$ 
+ 
+60$ dey   ;zero out new entry 
+ php 
+ phx 
+ ldx #arypnt 
+ jsr sta_far_ram1 ;sta (arypnt),y 
+ plx 
+ plp 
+ bne 60$   ;no. continue 
+ 
+70$ dec arypnt+1  ;deccur. 
+ dec curtol+1 
+ bne 60$   ;do another block 
+ inc arypnt+1  ;bump back up. will use later 
+ sec 
+ lda strend  ;restore (a) 
+ sbc lowtr  ;determine length 
+ ldy #2 
+ phx 
+ ldx #lowtr 
+ jsr sta_far_ram1 ;sta (lowtr),y ;low 
+ lda strend+1 
+ iny 
+ sbc lowtr+1 
+ jsr sta_far_ram1 ;sta (lowtr),y ;high 
+ plx 
+ lda dimflg  ;quit here if this is a DIM statement 
+ bne dimrts  ;bye! 
+ iny 
+ 
+ 
+; At this point (LOWTR,y) points beyond the size to the number of dimensions. 
+; Strategy: 
+;  NUMDIM = number of dimensions 
+;  curtol = 0 
+;  INLPNM: Get a new indice 
+;   Make sure indice is not too big 
+;   Multiply CURTOL by CURMAX 
+;   Add indice to CURTOL 
+;   NUMDIM=NUMDIM-1 
+;   bne INLPNM 
+;  Use (CURTOL)*4 as offset 
+ 
+ 

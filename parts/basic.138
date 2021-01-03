@@ -1,38 +1,39 @@
-joy jsr conint  ;get 1 byte arg in x 
- dex 
- cpx #2   ;make sure arg. is valid 
- bcs fcerr  ;>1, error 
+fre jsr conint ;get integer argument in .x 
+ cpx #1  ;which bank? 
+ beq 20$  ; go do bank one 
+ cpx #2  ; go do expansion banks   [910107] 
+ beq 30$  ; else it must be bank zero 
+ bcs fcerr ;  any other is unpleasant to talk about 
  
- txa 
- eor #1   ;invert to match legends on case 
- tax 
- php   ;save status 
+ sec  ;FRE(text_bank) 
+ lda max_mem_0 
+ sbc text_top 
+ tay  ; set up result for nosflt 
+ lda max_mem_0+1 
+ sbc text_top+1 
+ bra 40$  ; assumes text_top < max_mem 
  
-; jsr put_io_in_map 
- sei   ;disable IRQ to inhibit kybd 
- lda d1pra 
- pha   ;save kybd output lines 
- ldy #$ff 
- sty d1pra  ;set to not read any kybd inputs 
  
-10$ lda d1pra,x  ;read joystick values 
- cmp d1pra,x  ;debounce 
- bne 10$ 
- 
- tax   ;save joystick values 
- pla 
- sta d1pra  ;reset kybd output lines 
- txa   ;restore joystick values 
- plp   ;restore status 
- and #$0f  ;test which direction 
+20$ jsr garba2 ;FRE(var_bank) do garbage collect first 
+ sec 
+ lda fretop 
+ sbc strend 
  tay 
- lda joytab-5,y  ;get direction indicator 
- tay   ;save direction : 0-8 
- txa   ;restore joystick value 
- and #$10  ;test if button triggered 
- bne 20$   ;skip if not 
- tya 
- ora #$80  ;show trigger depressed 
- tay 
-20$ bra sngflt  ;float 1 byte arg in y. 
+ lda fretop+1 
+ sbc strend+1 
+ bra 40$ 
+ 
+30$ ldy _expansion ;FRE(expansion banks)    [910107] 
+ lda #0 
+ 
+40$ bra nosflt ; go float the number (y,a)=(lo,hi) 
+ 
+;.end 
+ .page 
+ .subttl  VAL 
+ 
+; The VAL function takes a string and turns it into a number by interpreting 
+; the PETSCII digits etc.  Except for the problem that a terminator must be 
+; supplied by replacing the character beyond the string, VAL is merely a call 
+; to floating point input (FIN). 
  

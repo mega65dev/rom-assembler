@@ -1,10 +1,139 @@
-if jsr frmevl ;evaluate the conditional expression 
- jsr chrgot ;re-get current character 
- cmp #goto_token ;is terminating character a GOTO? 
- beq 10$  ; yes 
- lda #then_token ; no, it must be THEN 
- jsr synchr 
+fload jsr restore$1  ;reset pointer for DATA statements 
  
-10$ lda facexp ;test truth value of argument 
- bne if_true ; branch if true 
+ .page 
+; INIT_STACK Routine (formerly STKINI) 
+; 
+;   Init_Stack resets the stack pointer.  String temporaries are freed up, 
+;   SUBFLG is reset, continuing is prohibited. 
+ 
+init_stack 
+ ply  ;pop return address 
+ pla 
+ ldx #stkend-257 ;reset system stack pointer 
+ txs 
+ pha  ;push return address 
+ phy 
+ ldx #tempst ;reset string temporaries 
+ stx temppt 
+ lda #0 
+ sta subflg ;allow subscripted & integer vars 
+ sta oldtxt+1 ;disallow continuing 
+ sta bits ;reset math bit/byte flag 
+ 
+stkrts rts 
+ 
+ 
+ 
+reset_txtptr 
+ clc  ;load (txtptr) with (txttab)-1 
+ lda txttab 
+ adc #$ff 
+ sta txtptr 
+ lda txttab+1 
+ adc #$ff 
+ sta txtptr+1 ;set up text pointers 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl RETURN 
+;********************************************************************* 
+; RETURN Routine 
+; 
+; Restores the line number and text pointer from the stack, and 
+; eliminates all the FOR entries in front of the GOSUB entry. 
+; 
+;********************************************************************* 
+ 
+return 
+ 
+; Ok, pay attention: we got here by a pseudo-jsr which left a return to NEWSTT 
+; on the stack for us to return to.  There is also a return to NEWSTT left on 
+; the stack from the GOSUB we are returning from.  This is true UNLESS we got 
+; here on a sprite collision, in which case we still have the NEWSUB return 
+; recently left by our current call, but the second return goes back to the 
+; trapping mechanism.  The bottom line is: we have an extra return address on 
+; the stack, which we have to get rid of before leaving. 
+ 
+ pla  ;mea culpa, mea culpa, mea culpa 
+ pla 
+ lda #gosub_token 
+ jsr search ;look for GOSUB on runtime stack 
+ beq ret010 ; found 
+ ldx #errrg ; else error 
+ bra error 
+ 
+ret010 jsr movfnd ;(fndpnt) => (tos) 
+ ldy #lengos 
+ jsr rlsstk ;effectivly pop GOSUB off run-time stack 
+; dey 
+; lda (fndpnt),y 
+; sta txtptr+1 
+; dey 
+; lda (fndpnt),y 
+; sta txtptr 
+; dey 
+; lda (fndpnt),y 
+ jsr retpat ;01/18/84 patch: correct RETURN to GOSUB from direct mode 
+; lda (fndpnt),y 
+; sta curlin ;jump to DATA to waste rest of stmt (in case of ON..GOSUB) 
+ bra data 
+ 
+;.end 
+ .page 
+ .subttl DATA 
+ 
+data 
+ jsr datan ;skip to end of statement- offset in .y 
+addon tya 
+ clc 
+ adc txtptr ;add offset to end to txtptr 
+ sta txtptr 
+ bcc remrts 
+ inc txtptr+1 
+remrts rts  ;NEWSTT rts addr is still there 
+ 
+ 
+ 
+rem jsr remn ;skip rest of statement 
+ bra addon ;will always branch 
+ 
+ 
+datan ldx #':' ;DATA terminates on ":" and null 
+   .byte $2c 
+ 
+remn ldx #0  ;REM terminates on null only 
+ stx charac ;preserve terminator 
+ ldy #0  ;this makes charac=0 after swap 
+ sty endchr 
+ 
+10$ lda endchr 
+ ldx charac 
+ sta charac 
+ stx endchr 
+20$ jsr indtxt 
+ beq remrts ;null always terminates 
+ cmp endchr ;is it some another terminator? 
+ beq remrts ; yes, it's finished 
+ iny  ;progress to next character 
+ cmp #'"' ;is it a quote? 
+ bne 20$  ; no, just continue 
+ beq 10$  ; yes, time to change 
+ 
+;.end 
+ .page 
+ .subttl IF  THEN  ELSE 
+ 
+;**************************************************************** 
+;* 
+;* IF Statment 
+;* 
+;* IF exp {GOTO line#  | THEN {line# | statements | b-block} } 
+;*  [:ELSE {line# | statements | b-block} ] 
+;* 
+;* B-block 
+;* 
+;* BEGIN : [statement(s) on one or more lines] : BEND 
+;* 
+;**************************************************************** 
  

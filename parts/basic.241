@@ -1,37 +1,21 @@
-optw99 clc 
- rts 
- 
- .page 
-comsad jsr chkcom  ;get a comma & signed 2-byte arg in y,a   [910307] 
- bra sadwrd 
- 
+rid lda dosdid ;include id 
+ sta dosstr,x 
+ inx 
+ lda dosdid+1 
+ bra sdp5 ;always 
  
  
-optsad jsr chrgot  ;get a comma & optional, signed 2-byte arg in y,a [910307] 
- beq 10$   ; eol, therefore this arg is not specified 
- jsr chkcom  ; eat comma 
- cmp #','  ;is next a comma too? 
- beq 10$   ; yes, therefore this arg is not specified 
- jsr sadwrd  ;get signed word 
- sec 
- rts 
+rwrt lda dosrcl ;check for L or W 
+ beq 10$  ;zero then write 
+ lda #'L' 
+ bra sdp5 ;always 
  
-10$ lda #0   ;default optional arg to zero 
- tay 
- clc 
- rts 
+10$ lda #'S' ;send W,S 
+ sta dosrcl 
+ lda #'W' 
+ bra sdp5 ;always 
  
- .page 
-;***************************************************************** 
-;  OPTBYT - get an optional 1 byte value in x. 
-; 
-;  Enter with default value in x. 
-; 
-;      case 1 : pointer at end of line: 
-;   return default x. 
-;      case 2 : pointer is at comma, next non-blank is also a comma: 
-;   return default x. 
-;      case 3 : pointer is at comma, next non-blank is not a comma: 
-;   get byte in x. 
-;***************************************************************** 
+ 
+ 
+; Move record number 
  

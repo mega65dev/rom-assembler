@@ -1,116 +1,22 @@
-movrts rts 
+fadflt bcs normal ;here if signs differ. if carry, FAC is set ok 
+ jsr negfac ;negate (FAC) 
  
+normal ldy #0 
+ tya 
+ clc 
  
- .page 
-round lda facexp ;zero? 
- beq movrts ; yes, done rounding 
- asl facov ;round? 
- bcc movrts ; no, msb off 
- 
-incrnd jsr incfac ;yes, add one to lsb(FAC) /// entry from EXP 
-   ;note .c=1 since incfac doesn't touch .c 
- beq rndshf ; carry:   squeeze msb in and rts 
- rts  ; no carry: rts now 
- 
- 
- 
-; Put sign in FAC into (a). 
- 
-sign lda facexp 
- beq signrt ;if number is zero, so is result 
- 
-fcsign lda facsgn 
-fcomps rol a 
- lda #$ff ;assume negative 
- bcs signrt 
- lda #1  ;get +1 
-signrt rts 
- 
- 
- .page 
-; SGN function 
- 
-sgn jsr sign 
- 
-   ;float the signed integer in accb 
-float sta facho ;put (accb) in high order 
- lda #0 
- sta facho+1 
- ldx #$88 ;get the exponent 
-   ;float the signed number in FAC 
- 
- 
-floats lda facho 
- eor #$ff 
- rol a  ;get comp of sign in carry 
-floatc lda #0  ;zero (a) but not carry 
- sta faclo 
- sta facmo 
- 
-floatb stx facexp 
- sta facov 
- sta facsgn 
- bra fadflt 
- 
- 
- 
- 
-; Absolute value of FAC 
- 
-abs lsr facsgn 
- rts 
- 
- 
- .page 
-; Compare two numbers: 
-; 
-; a=1  if  ARG < FAC 
-; a=0  if  ARG = FAC 
-; a=-1 if  ARG > FAC 
- 
-fcomp sta index2 
- sty index2+1 
- ldy #0 
- lda (index2),y ;has argexp 
- iny  ;bump pointer up 
- tax  ;save a in x and reset codes 
- beq sign 
- lda (index2),y 
- eor facsgn ;signs the same 
- bmi fcsign ;signs differ so result is 
- cpx facexp ;sign of FAC again 
+10$ ldx facho 
+ bne norm1 
+ ldx facho+1 ;shift 8 bits at a time for speed 
+ stx facho 
+ ldx facmoh+1 
+ stx facmoh 
+ ldx facmo+1 
+ stx facmo 
+ ldx facov 
+ stx faclo 
+ sty facov 
+ adc #8 
+ cmp #32 
  bne 10$ 
- 
- lda (index2),y 
- ora #$80 
- cmp facho 
- bne 10$ 
- iny 
- lda (index2),y 
- cmp facmoh 
- bne 10$ 
- iny 
- lda (index2),y 
- cmp facmo 
- bne 10$ 
- iny 
- lda #$7f 
- cmp facov 
- lda (index2),y 
- sbc faclo ;get zero if equal 
- beq qintrt ;rts 
- 
-10$ lda facsgn 
- bcc 20$ 
- eor #$ff 
-20$ bra fcomps ;a part of sign sets up (a) 
- 
-;.end 
- .page 
- .subttl Floating Point Math Package (CODE21) 
- 
-; Quick Greatest Integer Function 
-; 
-; Leaves INT(FAC) in FACHO&MO&LO signed 
-; Assumes FAC < 2~23 =8388608 
  

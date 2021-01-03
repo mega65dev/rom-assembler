@@ -1,48 +1,82 @@
-rightd jsr pream 
- pha 
- jsr inddpt 
- sta syntmp 
+xor phw poker ;protect the poker value (could be in use)  [910911] 
+ jsr chknum 
+ jsr getadr ;get first arg 
+ pha  ;save MSB 
+ phy  ;save LSB 
+ 
+ jsr comwrd ;check for comma, get word 
+ jsr chkcls ;check for closing parens 
+ 
  pla 
- clc   ;(length des'd)-(length)-1 
- sbc syntmp 
- eor #$ff  ;negate 
- bra rleft 
- 
- 
-; MID$($,#) returns string with chars from # position onward. If # > LEN($) 
-; then return null string.  MID($,#,#) returns string with characters from 
-; # position for #2 characters.  If #2 goes past end of string return as much 
-; as possible. 
- 
-midd lda #255  ;default 
- sta faclo  ;save for later compare 
- jsr chrgot  ;get current character 
- cmp #')'  ;is it a right paren )? 
- beq 1$   ;no third paren. 
-; jsr chkcom  ;must have comma 
-; jsr getbyt  ;get the length into "faclo" 
- jsr combyt  ;      [910820] 
- 
-1$ jsr pream  ;check it out 
- beq fcerr  ;illegal qty error 
- dex   ;compute offset 
- phx 
- phx   ;preserve a while (2 copies) 
- ldx #0 
- jsr inddpt  ;get length of what's left 
- sta syntmp 
+ eor poker ;xor LSB (comwrd left a copy of its arg in POKER) 
+ tay 
  pla 
- clc 
- sbc syntmp 
- bcs rleft2  ;give null string 
- eor #$ff  ;in sub c was 0 so just complement 
- cmp faclo  ;greater than what's desired 
- bcc rleft3  ;no, just copy that much 
- lda faclo  ;get length of what's desired 
- bcs rleft3  ;copy it 
+ eor poker+1 ;..and MSB 
+ jsr nosflt ;..and go float 'em 
+ 
+ pla 
+ sta poker+1 
+ pla 
+ sta poker 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl  MOD 
+ 
+;************************************************************** 
+;* 
+;* MOD  -  Modulus of a number 
+;* 
+;* Syntax : MOD (number, range) 
+;*      910402 FAB 
+;************************************************************** 
+ 
+; Calculate   MOD = NUMBER-RANGE*INT(NUMBER/RANGE) 
+ 
+mod jsr chknum ;1st arg in FAC1 (number) 
+ jsr pushf1 ; save two copies of it for later 
+ jsr pushf1 
+ jsr chkcom ;check for comma 
+ jsr frmnum ;2nd arg in FAC1 (range) 
+ jsr chkcls ;check for closing paren 
+ 
+ jsr movaf ;save range in FAC2 
+ jsr pullf1 ;get back number in FAC1 
+ ldx #5  ;swap FAC1 and FAC2 
+10$ lda facexp,x 
+ ldy argexp,x 
+ sta argexp,x 
+ sty facexp,x 
+ dex 
+ bpl 10$ 
+ jsr pushf1 ;save one copy of range for later 
+ 
+ jsr fdivt_c65 ;number/range 
+ jsr int  ;INT(number/range) 
+ jsr movaf ; round & move to FAC2 
+ jsr pullf1 ; retrieve arg2 (range) 
+ jsr fmultt_c65 ;range*INT(number/range) 
+ jsr negop ;-range*INT(number/range) 
+ jsr movaf ; move to FAC2 
+ jsr pullf1 ; retrieve arg1 (number) 
+ bra faddt_c65 ;number-range*INT(number/range) 
  
  
+;.end 
+ .page 
+ .subttl  RWINDOW 
  
- 
-; Common routine used by RIGHT$, LEFT$, MID$, for parameter chk and setup. 
+;****************************************************************************** 
+; 
+; RWINDOW  - Returns information about the current console display environment. 
+; 
+;   Syntax : RWINDOW (n) 
+; 
+;   Where: n=0 : number of lines in the current window 
+;   =1 : number of rows in the current window 
+;   =2 : returns either 40 or 80, depending on the 
+;   current console device 
+; 
+;****************************************************************************** 
  

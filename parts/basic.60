@@ -1,45 +1,50 @@
-datlop jsr datan ;skip some text 
- iny 
- tax  ;end of line? 
- bne 10$  ; no 
- ldx #errod ; yes, "no data" error 
- iny 
- jsr indtxt 
- beq error 
- 
- iny 
- jsr indtxt ;get high byte of line number 
- sta datlin 
- iny 
- jsr indtxt ;get low byte 
- iny 
- sta datlin+1 
- 
-10$ jsr addon ;nowlin.  txtptr+.y 
- jsr chrgot ;span blanks 
- tax  ;used later 
- cpx #data_token ;is it a DATA statement? 
- bne datlop ;not quite right, keep looking 
- bra datbk1 ;this is the one 
+ott lda oldtxt 
+ ldy oldtxt+1 
+ sta txtptr  ;put user back to beginning of input 
+ sty txtptr+1 
+ rts 
  
  
-;.end 
+ 
+trmok ldx #1 
+1$ lda txtptr,x 
+ sta inpptr,x  ;save for more reads 
+ lda vartxt,x 
+ sta txtptr,x  ;point to variable list 
+ dex 
+ bpl 1$ 
+ 
+ jsr chrgot  ;look at last vartab character 
+ beq 2$   ;that's the end of the list 
+ jsr chkcom  ;not end. check for comma 
+ bra inloop 
+ 
+2$ lda inpptr  ;put away a new data pntr name 
+ ldy inpptr+1 
+ bbr7 input_flag,3$ 
+ sta datptr 
+ sty datptr+1 
+ rts 
+ 
+3$ ldy #0   ;last data chr could have been ',' or ':' but should be null 
+ lda #inpptr 
+ jsr lda_far_ram0 
+ beq 4$   ;it is null 
+ lda channl  ;if not terminal, no type 
+ bne 4$ 
+ 
+ jsr highlight_text ;      [911119] 
+ jsr _primm 
+   .byte '?EXTRA IGNORED', cr, 0 
+ jsr highlight_done ;      [911119] 
+ 
+4$ rts   ;do next statement 
+ 
  .page 
- .subttl NEXT 
- 
-; Next routine 
+; DATLOP Routine Subroutine to find data. 
 ; 
-; 'FOR' entry on the stack has the following format: 
-; 
-; Low address 
-;  token (for_token) 1 byte 
-;  a pointer to the loop variable 2 bytes 
-;  the step 5 bytes 
-;  a byte reflecting the sign of the incr. 2 bytes 
-;  the upper value (packed) 5 bytes 
-;  the line number of the FOR statement 2 bytes 
-;  a text pointer into the FOR statement 2 bytes 
-; High address 
-; 
-; (total 16 bytes) 
+; The search is made by using the execution code for data to skip over 
+; statements, the start word of each statement is compared with "data_token". 
+; Each new line number is stored in "datlin" so that if any error occurs while 
+; reading data the error message can give the line number of the bad data. 
  

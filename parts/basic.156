@@ -1,68 +1,56 @@
-strfre sta frespc 
- sty frespc+1 
- ldy #1   ;flag string as garbage 
- lda #$ff 
- phx   ;set up string bank 
- ldx #index1 
- jsr sta_far_ram1 ;sta (index1),y  ;flag 
- plx 
- dey 
- pla   ;length 
- phx   ;set up string bank 
- ldx #index1 
- jsr sta_far_ram1 ;sta (index1),y  ;length 
- plx 
- ldx frespc 
- ldy frespc+1 
- stx fretop 
- sty fretop+1  ;save new (fretop) 
-getrts rts 
+strini 
+ ldx facmo ;get facmo to store in dscpnt 
+ ldy facmo+1 
+ stx dscpnt ;retain the descriptor pointer 
+ sty dscpnt+1 
  
- 
-garbag lda garbfl 
- bmi omerr  ;if out of memory 
- jsr garba2 
- sec 
- ror garbfl 
- pla   ;get back string length 
- bra tryag2  ;always branches 
- 
+strspa jsr getspa ;get string space 
+ stx dsctmp+1 ;save location 
+ sty dsctmp+2 
+ sta dsctmp ;save length 
+ rts  ;done 
  
  .page 
-; Routine looks for and squashes out any unused string space it finds, thus 
-; returning the space for future use by the string routines.  GARBA2 is called 
-; only when BASIC needs space or the FRE() function is used. 
+; STRLT2 takes the string literal whose first character is pointed to by 
+; (xreg)+1 and builds a descriptor for it.  The descriptor is initially 
+; built in DSCTMP, but PUTNEW transfers it into a temporary and leaves a 
+; pointer to the temporary in FACMO & FACLO.  The characters other than the 
+; zero that terminates the string should be set up in CHARAC and ENDCHR. 
+; If the terminator is a quote, the quote is skipped over.  Leading quotes 
+; should be skipped before call.  On return, the character after the string 
+; literal is pointed to by (strng2). 
  
  
-garba2 ldx temppt  ;ptr to temp. strings 
-10$ cpx #tempst  ;any out there? 
- beq 20$   ;none 
- jsr slr1  ;setup ptr (tempf2) to temp. string's bkptr 
- beq 10$   ; (skip if null string!) 
- txa   ;.x = lsb of ptr to descriptor 
- phx   ;set up string bank 
- ldx #tempf2 
- ldy #0 
- jsr sta_far_ram1 ;(tempf2),y ;place backpointer on string to temp. descr 
- tya   ;.a = msb of ptr (0) 
- iny 
- jsr sta_far_ram1 ;(tempf2),y 
- plx 
- bra 10$   ;always 
+strlit ldx #'"' ;assume string ends on quote 
+ stx charac 
+ stx endchr 
  
+strlt2 sta strng1 ;save pointer to string 
+ sty strng1+1 
+ sta dsctmp+1 ;in case no strcpy 
+ sty dsctmp+2 
  
-20$ ldy #0   ;set up flag 
- sty highds 
- ldx max_mem_1 
- ldy max_mem_1+1 
- stx grbtop  ;set both pointers 
- stx grbpnt 
- stx frespc 
- sty grbtop+1 
- sty grbpnt+1 
- sty frespc+1 
- txa 
+ ldy #255 ;initialize character count 
+strget iny 
+ jsr indst1 ;get character 
+ beq 20$  ;if zero 
+ cmp charac ;this terminator? 
+ beq 10$  ;yes 
+ cmp endchr 
+ bne strget ;look further 
+ 
+10$ cmp #'"' ;strfin.  quote? 
+ beq 30$ 
+ 
+20$ clc 
+30$ sty dsctmp ;no, back up. retain count 
+ tya 
+ adc strng1 ;wishing to set (txtptr) 
+ sta strng2 
+ ldx strng1+1 
+ bcc 40$ 
+ inx 
+40$ stx strng2+1 
+ tya 
  
  .page 
-; do while (grbpnt <= fretop) 
- 

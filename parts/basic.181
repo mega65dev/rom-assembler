@@ -1,31 +1,95 @@
-tan jsr mov1f ;move FAC into temporary 
+inprt jsr _primm 
+   .byte ' IN ',0 
+ 
+curprt lda curlin+1 
+ ldx curlin 
+ 
+linprt sta facho 
+ stx facho+1 
+ ldx #$90 ;exponent of 16 
+ sec  ;number is positive 
+ jsr floatc 
+ jsr foutc 
+ bra strout ;print and return 
+ 
+ 
+fout ldy #1 
+foutc lda #' ' ;if positive, print space 
+ bbr7 facsgn,10$ 
+ lda #'-' ;if neg 
+10$ sta fbuffr-1,y ;store the character 
+ sta facsgn ;make FAC pos for QINT 
+ sty fbufpt ;save for later 
+ iny 
+ lda #'0' ;get zero to type if FAC=0 
+ ldx facexp 
+ beq fout19 
+ 
  lda #0 
- sta tansgn ;remember whether to negate 
- jsr sin  ;compute the sin 
- ldx #<tempf3 
- ldy #>tempf3 
- jsr movmf ;put sign into other temp 
- lda #<tempf1 
- ldy #>tempf1 
- jsr movfm ;put this memory location into FAC 
- lda #0 
- sta facsgn ;start off positive 
- lda tansgn 
- jsr 10$  ;compute cosine 
- lda #<tempf3 
- ldy #>tempf3 ;address of sine value 
-; bra fdiv ;divide sine by cosine and return 
- jsr conupk ;unpack constant    [910226] FAB 
- beq overr ;overflow error     " 
- bra fdivt ;      " 
+ cpx #$80 ;is number < 1? 
+ beq 20$  ;no 
+ bcs 30$ 
  
-10$ pha  ;cosc. 
- bra sin1 
+20$ lda #<nmil ;mult by 10~6 
+ ldy #>nmil 
+ jsr rommlt 
+ lda #$f7 
+30$ sta deccnt ;save count or zero it 
+ 
+40$ lda #<n9999 
+ ldy #>n9999 
+ jsr fcomp ;is number > 999999.499 or 999999999.5? 
+ beq 100$ ;go to biggies 
+ bpl 70$  ;yes, make it smaller 
+ 
+50$ lda #<n0999 
+ ldy #>n0999 
+ jsr fcomp ;is number > 99999.9499 or 99999999.90625? 
+ beq 60$ 
+ bpl 80$  ;yes. done multiplying 
+ 
+60$ jsr mul10 ;make it bigger 
+ dec deccnt 
+ bne 50$  ;see if that does it (this always goes) 
+ 
+70$ jsr div10 ;make it smaller 
+ inc deccnt 
+ bne 40$  ;see if that does it (this always goes) 
+ 
+80$ jsr faddh ;add a half to round up 
  
  
-; Arctangent function 
-; 
-; Use identities to get arg between 0 and 1 and then use an approximation 
-; polynomial to compute arctan(x). 
+100$ jsr qint ;biggies. 
+ ldx #1  ;decimal point count 
+ lda deccnt 
+ clc 
+ adc #$0a ;should number be printed in E notation?  (ie, is number .lt. .01?) 
+ bmi 110$ ;yes 
+ cmp #$0b ;is it > 999999 or 9999999999? 
+ bcs 120$ ;yes, use E notation 
+ adc #$ff ;number of places before decimal point 
+ tax  ;put into accx 
+ lda #2  ;no E notation 
+110$ sec 
  
+120$ sbc #2  ;effectively add 5 to orig exp 
+ sta tenexp ;that is the exponent to print 
+ stx deccnt ;number of decimal places 
+ txa 
+ beq 130$ 
+ bpl 150$ ;some places before dec pnt 
+ 
+130$ ldy fbufpt ;get pointer to output 
+ lda #'.' ;put in "." 
+ iny 
+ sta fbuffr-1,y 
+ txa 
+ beq 140$ 
+ lda #'0' ;get the ensuing zero 
+ iny 
+ sta fbuffr-1,y 
+ 
+140$ sty fbufpt ;save it for later 
+ 
+150$ ldy #0 
  

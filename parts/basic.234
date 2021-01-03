@@ -1,232 +1,84 @@
-lenchk pla  ;      [901115] 
- txa  ;Check filename length 
- beq err_mfn ; too small, missing filename  [901115] 
-; cmp #17  ;  ???? (problem if name has ',P') 
-; bcs errlen ; too long 
- ldx index1 
- ldy index1+1 ; ok- return pointer to filename 
+done pla   ;get aux error flag 
+ and parstx  ;repeated or illegal params? 
+ bne snerr  ; yes- report syntax error 
+ pla   ;get error flags 
+ jsr prmrpt 
+ lda parsts 
+ ldx parstx 
  rts 
- 
- 
-err_mfn ldx #err_missing_fname 
-   .byte $2c 
- 
-err_ild ldx #err_illegal_device 
-   .byte $2c 
- 
-errlen ldx #errls ;string or filename too long 
- bra error 
- 
- 
- 
-; Get next value routine (use gtbytc instead!) 
- 
-;getval jsr chrget ;get nxt chr 
-; beq snerr ;if end of statement 
-; bra getbyt ;       [911024] 
- 
-; bcc getbyt ;can be numeric, go evaluate it  why this crap ???? 
-; jsr chkopn ;or a "(" 
-; jsr getbyt ;anything else is an error 
-; bra chkcls ;need closing ")" 
- 
- 
- 
-; Get next 2-byte expression.  Exit: .a,.y (high,low) value 
- 
-getoff jsr chrget ;get nxt chr 
- beq snerr ;if end of statement 
- bcc getwrd ;can be num. const, go evaluate it 
- jsr chkopn ;or a "(" 
- jsr getwrd ;expr 
- jsr chkcls ;need closing ")" 
- ldy poker 
- lda poker+1 
- rts 
- 
- 
- 
-; Prmrpt checks for a repeated parameter. 
-; 
-; Entry: .a contains parsts flag to check 
- 
- 
-prmrpt and parsts ;compare mask with status 
- bne snerr ;error if bit previously set 
- rts 
- 
- 
- 
-; Prxrpt checks for a repeated parameter. 
-; 
-; Entry: .a contains parstx flag to check 
- 
- 
-prxrpt and parstx ;and with parstx 
- bne snerr ;if bit previously set 
- rts 
- 
-;.end 
- .page 
- .subttl  DOS 3 
- 
-; CBM-2001 BASIC-4 disk verb processors.  -- rsr 7-24-79 -- 
-; 
-; Token Table Definitions 
- 
-xsca =$c2 ;send dossca 
-xid =$d0 ;sends disk id 
-xd1 =$d1 ;sends dosds1 
-xd2 =$d2 ;sends dosds2 
-xrec =$e0 ;sends S for SEQ, or dosrcl 
-xwrt =$e1 ;sends W or L 
-xrcl =$e2 ;send low ((poker)) 
-xfat =$f0 ;sends "@" or "/" if specified 
-xfn1 =$f1 ;sends filename1 
-xfn2 =$f2 ;sends filename2 
- 
- 
-; Tabld - used to build disk command strings 
- 
-tabld 
-finit = $ff      ;Dclear 
- .byte 'I',xd1 
- 
-fdir = *-tabld-1     ;Dir 
- .byte '$',xd1,':',xfn1 
- 
-fdirr = *-tabld-1     ;Recover Dir  [901024] 
- .byte '_',xd1,':',xfn1    ; ('_'=CBM backarrow, $5F) 
- 
-fopn = *-tabld-1     ;Dopen 
- .byte xfat,xd1,':',xfn1,',',xwrt,',',xrec 
- 
-fopnseq = *-tabld-1     ;Type   [900801] 
- .byte xfat,xd1,':',xfn1,',S' 
- 
-fsavseq = *-tabld-1     ;EDIT_SAVE  [910620] 
- .byte xfat,xd1,':',xfn1,',S,W' 
- 
-fconc = *-tabld-1     ;Concat 
- .byte 'C',xd2,':',xfn2,'=',xd2,':',xfn2,',' 
- 
-fapn = *-tabld-1     ;Append 
- .byte xd1,':',xfn1,',A' 
- 
-fhed = *-tabld-1     ;Header 
- .byte 'N',xd1,':',xfn1,',',xid 
- 
-fcoll = *-tabld-1     ;Collect 
- .byte 'V',xd1 
- 
-fbak = *-tabld-1     ;Backup 
- .byte 'D',xd2,'=',xd1 
- 
-fcopy = *-tabld-1     ;Copy 
- .byte 'C',xd2,':',xfn2,'=',xd1,':',xfn1 
- 
-fren = *-tabld-1     ;Rename 
- .byte 'R',xd1,':',xfn2,'=',xd1,':',xfn1 
- 
-fscr = *-tabld-1     ;Scratch 
- .byte 'S',xd1,':',xfn1 
- 
-frscr = *-tabld-1     ;Recover Del  [901024] 
- .byte 'F-R',xd1,':',xfn1 
- 
-fdisk = *-tabld-1     ;Disk command  [910123] 
- .byte xfat,xfn1     ; pass '/' [911030] 
- 
-frec = *-tabld-1     ;Record 
- .byte 'P',xsca,xrcl,xrec 
  
  .page 
-; Send parameters to device 
-; 
-; Entry: .a = number of bytes in format 
-;  .y = pointer to TABLD entry 
+; Parse given parameters.  what it is  example 
+;     -------------------- --------- 
+parse1 cmp #'"' 
+ beq name1  ; explicit filename "file" 
+ cmp #'(' 
+ beq name1  ; evaluate filename (f$) 
+ cmp #'#' 
+ beq logadr  ; logical file number #1 
+ cmp #'U' 
+ beq unit1  ; unit number  U8 
+ cmp #'D' 
+ beq drv1  ; drive number  D0 
+ cmp #'P' 
+ beq doffl  ; load/save address P1234 
+ cmp #'B' 
+ beq dbank1  ; load/save bank   B0 
+ cmp #'W' 
+ beq reclen  ; write mode  W 
+ cmp #'L' 
+ beq reclen  ; record length  L80 
+ cmp #'R' 
+ beq recover  ; recover mode  R 
+ cmp #'I' 
+ beq ident  ; ID   Ixx 
+ cmp #on_token 
+; beq on1   ; ON token  ON 
  
-sendp sta xcnt ;save number of string bytes 
- phy 
- jsr Clear_DS ;clear old status 
+ bne snerr  ; none of these, syntax error 
  
- ldx #0 
-sdp1 pla 
- dec xcnt 
- bmi tranr 
- tay 
- iny  ;move down table 
- phy 
- lda tabld,y ;get next entry 
- bpl sdp5 ;if not escape code 
- cmp #xsca ;if not secondary address 
- beq rsca 
- cmp #xid 
- beq rid  ;if disk id 
- cmp #xrcl 
- beq rdcn ;if record number 
- cmp #xwrt 
- beq rwrt ;if W or L 
- cmp #xfat 
- beq rfat ;if "@" symbol request 
- cmp #xfn1 
- beq rsfn ;if filename 1 
- cmp #xfn2 
- beq rdfn ;if filename 2 
- cmp #xrec 
- bne sdp2 ;if not record type 
- lda dosrcl ;get rec # 
- cmp #1  ; kludge to allow DOPEN#lf,"relfile",L  [911024] 
- bne sdp5 ; (note RECORD byte 0 = byte 1 anyhow) 
- dec a 
- bra sdp5 ;always branch 
- 
-sdp2 cmp #xd1 
- bne sdp3 ;if not drive 1 
- lda dosds1 
- bra sdp4 ;always branch 
- 
-sdp3 cmp #xd2 
- bne sdp1 ;if not drive 2, continue 
- lda dosds2 
-sdp4 ora #'0' ;change # to PETSCII 
- 
-sdp5 sta dosstr,x ;else into buffer 
- inx 
- bra sdp1 ;always 
+ .page 
+on1 jsr on 
+ bra del1 
  
  
-tranr txa  ;length to a 
- pha 
- ldx #<dosstr ;set filename 
- ldy #>dosstr 
- jsr _setnam 
- 
- lda dosla ;set channel 
- ldx dosfa 
- ldy dossa 
- jsr _setlfs 
- 
- pla 
- rts 
+unit1 jsr unit ;do unit# parsing 
+ bra del1 ;always 
  
  
+dbank1 jsr dbank 
+ bra del1 ;always 
  
  
-rsca lda dossa_temp ;secondary address (record) 
- bra sdp5 ;always 
+logadr lda #4 
+ jsr prmrpt ;check for repeated parameter 
+ jsr gtbytc ;getval 
+ txa  ; cpx #0 
+ beq fcerr ;if illegal value 
+ stx dosla 
+ lda #4  ;set logical address flag 
+ bra del1 ;get next parameter 
  
  
-rfat bbr7 parsts,10$ ;if "@" not encountered 
- lda #'@' 
- bra sdp5 ;always 
+reclen tax  ;save char 
+ lda #$40 
+ jsr prmrpt ;check for repeated parameter 
+ cpx #'W' 
+ bne 10$ 
+ jsr chrget 
+ bra 20$  ;set parsts 
  
-10$ lda dosflags 
- lsr a 
- bcc sdp1 ;if "/" not encountered 
- lda #'/' 
- bra sdp5 
+10$ ldx #1  ;a kludge to allow  DOPEN#lf,"relfile",L  [911024] 
+ jsr chrget 
+ beq 12$  ;eol? open existing rel file 
+ jsr getbyt ;get reclen (was getval) 
+12$ stx dosrcl ;store parcel 
+ txa  ; cpx #0 
+ beq 15$  ;zero illegal dosrcl 
+ inx  ; cpx #255 
+15$ beq fcerr ;illegal dosrcl 
  
+20$ lda #$40 ;set dosrcl flag & 
+ bra del1 
  
-; ID subroutine 
  

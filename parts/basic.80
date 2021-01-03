@@ -1,222 +1,50 @@
-n1_reset 
- lda renum_tmp_1 
- sta facho+1 
- lda renum_tmp_1+1 
- sta facho 
- bra reset_txtptr 
+form_line 
+ jsr n1_reset 
+find_it 
+ jsr chargt_x2  ;new line, skip over link 
+ bne 70$   ;if we get to end-of-text without finding the 
+ ldx #err_ref  ;line # then 'unresolved reference' error 
+ lda forpnt 
+ sta curlin  ;fake error routine into saying 'in line xxxxx' 
+ lda forpnt+1 
+ sta curlin+1 
+ bra error 
  
- 
-;*************************** LINE_ADD ********************************** 
- 
-; Adds n2 (new line increment) to line number stored in facho if the 
-; current line number (highds) >= n3 (line to start renumbering with). 
-; The line is then scanned. 
- 
-line_add 
- lda highds  ;if line# >= start# then incr new# 
- sec 
- sbc hightr 
- lda highds+1 
+70$ jsr chargt  ;get line number low 
+ sta highds  ;highds = current line# in loop 
+ cmp linnum 
+ bne 100$ 
+ jsr chargt  ;get line number high 
+ sta highds+1 
+ cmp linnum+1 
+ bne 110$ 
+ sec   ;if linnum < start#, no remapping 
  sbc hightr+1 
- bcc scan_thru 
+ bcc 80$ 
+ bne 90$ 
+ lda linnum 
+ sbc hightr 
+ bcs 90$ 
  
-line_inc 
- jsr new_num 
- 
-scan_thru 
- jsr chargt  ;scan to end of line 
- bne scan_thru 
- rts 
- 
- 
-;**************************** NEW_NUM ********************************** 
- 
-; Adds n2 (the new line increment) to the line number stored in facho. 
- 
-new_num 
- lda facho+1  ;increment new line# 
- clc 
- adc renum_tmp_2 
+80$ lda linnum  ;use same line# 
  sta facho+1 
- lda facho 
- adc renum_tmp_2+1 
+ lda linnum+1 
  sta facho 
- rts 
  
- 
-;********************** CHARGT & CHARGT_X2 ***************************** 
- 
-; Chargt simulates chrget but doesn't ignore spaces & carry has no 
-; significance.  Chargt_x2 executes chargt twice. 
-; Used by Renumber, Find/Change, etc. 
- 
-chargt_x2 
- inw txtptr  ;jsr chargt 
-chargt 
- ldy #0   ;increment txtptr 
- inw txtptr 
- bra indtxt 
- 
- .page 
-;*********************************************************************** 
-;************************* MEMORY MOVE ROUTINES ************************ 
-;*********************************************************************** 
- 
-;****************************** MOVEINIT ******************************* 
- 
-; Setup for Renumber memory move. 
- 
-move_init 
- lda txtptr  ;index1 = txtptr 
- sta index1 
- lda txtptr+1 
- sta index1+1 
- 
- lda text_top  ;index2 = text_top 
- sta index2 
- lda text_top+1 
- sta index2+1 
- 
- lda #1   ;move 1 character 
- sta count  ; lo 
- dec a 
- sta argmo  ; hi 
- 
- rts 
- 
- .page 
-;****************************** MOVEDOWN ******************************* 
- 
-; Move block of BASIC text from INDEX1+COUNT to INDEX2 down to INDEX1. 
-; Used by commands Renumber, Find/Change. 
- 
-movedown 
- sec   ;set up DMA list:   [900524] 
- lda index2 
- sbc index1 
- sta dma1_cnt_lo  ; cnt = index2-index1-count 
- lda index2+1 
- sbc index1+1 
- sta dma1_cnt_hi 
+90$ ldx #$90  ;make replacement string 
  sec 
- lda dma1_cnt_lo 
- sbc count  ;  lo 
- sta dma1_cnt_lo 
- lda dma1_cnt_hi 
- sbc argmo  ;  hi 
- sta dma1_cnt_hi 
+ jsr floatc 
+ bra fout 
  
- clc 
- lda index1 
- sta dma1_dest_lo ; dest = index1 
- adc count 
- sta dma1_src_lo  ; src = index1+count 
- lda index1+1 
- sta dma1_dest_hi 
- adc argmo 
- sta dma1_src_hi 
  
- lda text_bank  ; bank = BASIC text bank 
-; and #%00001111  ;      [910520] F018A 
- sta dma1_src_bank 
- sta dma1_dest_bank 
+100$ jsr chargt 
+ sta highds+1  ;(** 01/27/84 fix) 
  
-execute_DMA1   ;      [910620] Edit 
- lda #0 
- sta dma1_cmd  ; command = copy from startpoint 
- sta dma1_subcmd  ;      [910520] F018A 
- 
- sta dma_ctlr+2  ;dma_list bank 
- lda #>dma1_cmd 
- sta dma_ctlr+1  ;dma_list hi 
- lda #<dma1_cmd 
- sta dma_ctlr  ;dma_list lo & trigger 
- rts 
+110$ jsr line_add  ;scan to end of line 
+ bra find_it  ;always 
  
  .page 
-;******************************* MOVEUP ******************************** 
+;*************************** N1_RESET ********************************** 
  
-; Move block of BASIC text from INDEX1 to INDEX2 up to INDEX2+COUNT. 
-; Used by commands Renumber, Find/Change. 
- 
-moveup 
- sec   ;set up DMA list:   [900524] 
- lda index2 
- sbc index1 
- sta dma1_cnt_lo  ; cnt = index2-index1 
- lda index2+1 
- sbc index1+1 
- sta dma1_cnt_hi 
- 
- dew index2  ; (index2 = text_top = end+1) 
- clc 
- lda index2 
- sta dma1_src_lo  ; src = index2 
- adc count 
- sta dma1_dest_lo ; dest = index2+count 
- lda index2+1 
- sta dma1_src_hi 
- adc argmo 
- sta dma1_dest_hi 
- 
-; lda dma_ctlr+3  ;dma controller version    [910520] F018A 
-; and #1 
-; beq 10$   ; F018    removed [910808] F018B 
- lda #%00110000  ; F018A,B 
-10$ sta dma1_cmd  ;command=copy, source=start   [910102] 
-; php 
- lda text_bank  ; bank = BASIC text bank   [910520] F018A 
-; plp   ;version?    removed [910808] F018B 
-; bne 20$   ; F018A 
-; and #%00001111  ; F018     [910102] 
-; ora #%01000000  ;(copy source=endpoint)    [910102] 
-20$ sta dma1_src_bank ;banks 
- sta dma1_dest_bank 
- 
- lda #0   ;      [910219] 
-; sta dma1_cmd  ; command = copy, source=endpoint 
- sta dma1_subcmd  ;      [910520] F018A 
-; dec a   ;      [910219] 
- sta dma_ctlr+2  ;dma_list bank 
- ldy #>dma1_cmd  ;dma_list 
- lda #<dma1_cmd 
- sty dma_ctlr+1  ;dma_list hi 
- sta dma_ctlr  ;dma_list lo & trigger 
- rts 
- 
-;.end 
- .page 
- .subttl  FOR 
-; FOR 
-; 
-; Push the following information on the run-time stack: 
-; 
-; (bottom)   highest memory 
-; ========================= 
-;  txtptr    address of next statement 
-;  txtptr+1 
-;  ======== 
-;  curlin+1  current line number 
-;  curlin 
-;  ======== 
-;  to lo 
-;  to mo 
-;  to moh    'to' value 
-;  to ho 
-;  to exp 
-;  ======== 
-;  step sign 
-;  step lo 
-;  step mo 
-;  step moh  'step' value 
-;  step ho 
-;  step exp 
-;  ======== 
-;  forpnt+1  'for' variable pointer 
-;  forpnt 
-;  ======== 
-;  'for' token       <== (tos) top of stack pointer 
-; ============================ 
-; (top of stack)  lowest memory 
- 
+; Copies n1 (new renumber origin) into facho & sets (txtptr) = (txttab)-1 
  

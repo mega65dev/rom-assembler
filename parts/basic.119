@@ -1,8 +1,207 @@
-isletc cmp #'A' 
- bcc 1$  ;if less than "a", return 
- sbc #'Z'+1 ;$5a + 1 
- sec 
- sbc #$a5 ;reset carry if (a) .gt. "z". 
-1$ rts 
+ds_rts rts 
  
+ .page 
+is_numeric 
+ bbr7 intflg,is_floating ;branch if not an integer 
+ ldy #0 
+ jsr indfmo ;fetch high 
+ tax 
+ iny 
+ jsr indfmo ;fetch low 
+ tay  ;put low in y 
+ txa  ;get high in a 
+ bra givayf ;float and return 
+ 
+ 
+; Screen out TI, ST, ER, and EL, and assign values to them.  First test 
+; if the pointer points to "ROM" zero.  If not, it can't be any of the above. 
+ 
+is_floating 
+ lda facmo+1 
+ cmp #>zero 
+ bne gomovf ;not TI, etc. 
+ lda facmo 
+ cmp #<zero 
+ bne gomovf ;not TI, etc. 
+ 
+ .page 
+; The pointer does point to the ROM zero.  Now it is necessary to 
+; examine the actual variable name case by case. 
+ 
+ cpx #'T' ;TI? 
+ bne qstatv ; no 
+ cpy #'I' 
+ bne gomovf ; no, and it can't be ST either 
+ beq Get_TI 
+ 
+ 
+qstatv cpx #'S' ;ST? 
+ bne qdsav ;no, go test DS 
+ cpy #'T' 
+ bne gomovf 
+ jsr _readst ; (???? system bank for rs232 st) 
+ bra float 
+ 
+ 
+qdsav cpx #'D' ;DS? 
+ bne qerlin ;no, go test ER & EL 
+ cpy #'S' 
+ bne gomovf 
+ 
+; Get disk status - make the first two characters of DS$ string into a number. 
+ 
+ jsr Check_DS ;get a DS$ string if one doesn't exist already 
+ ldy #0 
+ lda #dsdesc+1 
+ jsr lda_far_ram1 ; lda (dsdesc+1),y 
+ and #$0f 
+ asl a 
+ sta garbfl 
+ asl a 
+ asl a 
+ adc garbfl 
+ sta garbfl 
+ iny 
+ lda #dsdesc+1 
+ jsr lda_far_ram1 ; lda (dsdesc+1),y 
+ and #$0f 
+ adc garbfl 
+ bra float 
+ 
+ 
+qerlin cpx #'E' ;ER or EL? 
+ bne gomovf 
+ cpy #'R' 
+ beq qnumer 
+ cpy #'L' 
+ bne gomovf 
+ 
+ lda errlin+1 ;want EL (last error line #) 
+ ldy errlin 
+ bra nosflt 
+ 
+qnumer lda errnum ;want ER (number of last error) 
+ bra float 
+ 
+ .page 
+gomovf lda facmo 
+ ldy facmo+1 
+ 
+movfrm sta index1  ;move value from RAM 
+ sty index1+1 
+ 
+ ldy #0 
+ jsr indin1_ram1 
+ sta facexp 
+ sty facov 
+ 
+ iny   ;(1) 
+ jsr indin1_ram1 
+ sta facsgn 
+ ora #$80 
+ sta facho 
+ 
+ iny   ;(2) 
+ jsr indin1_ram1 
+ sta facmoh 
+ 
+ iny   ;(3) 
+ jsr indin1_ram1 
+ sta facmo 
+ 
+ iny   ;(4) 
+ jsr indin1_ram1 
+ sta faclo 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl Variable Search 
+ 
+;  Read the variable name at the current text position and put a pointer 
+;  to its value in VARPNT.   TXTPTR points to the terminating character. 
+;  Note that evaluating subscripts in a variable name can cause recursive 
+;  calls to PTRGET, so all values must be stored on the stack. 
+ 
+ptrget ldx #0 
+ jsr chrgot 
+ptrgt1 stx dimflg ;store flag away 
+ptrgt2 sta varnam 
+ jsr chrgot ;get current character 
+ jsr isletc ;check for a letter 
+ bcc snerr ; not a letter 
+ 
+ ldx #0  ;assume no second character 
+ stx valtyp ;default is numeric 
+ stx intflg ;assume floating 
+ jsr chrget ;get following character 
+ bcc 10$  ;branch if numeric 
+ jsr isletc ;is it alpha? 
+ bcc 30$  ;no, no second character. branch 
+10$ tax  ;issec. save second character of name 
+ 
+20$ jsr chrget ;skip over remainder of name. we only care about 2 chars. 
+ bcc 20$  ;..eat numbers, 
+ jsr isletc 
+ bcs 20$  ;..and alphas, too! 
+ 
+30$ cmp #'$' ;nosec. is this a string? 
+ bne 40$  ;if not, VALTYP = 0 
+ lda #$ff 
+ sta valtyp ;..else, flag 'string' 
+ bra 50$ 
+ 
+40$ cmp #'%' ;notstr. isn't string. is it integer? 
+ bne 60$  ; branch if not 
+ lda subflg 
+; bne snerr ; syntax error if integers disabled 
+ bne chkerr ; integers disallowed- type mismatch error  [910114] 
+ lda #$80 ;flag integer by turning on both high bits 
+ sta intflg 
+ tsb varnam 
+ 
+50$ txa  ;turnon. turn on msb of second character 
+ ora #$80 
+ tax 
+ jsr chrget ;get character after $ or % 
+ 
+60$ stx varnam+1 ;strnam. store away second character 
+ sec 
+ ora subflg ;add flag whether to allow arrays 
+ sbc #'(' 
+ beq is_array ;note: won't match if SUBFLG set 
+ 
+ ldy #0 
+ sty subflg ;allow subscripts again 
+ lda vartab ;place to start search 
+ ldx vartab+1 
+ 
+70$ stx lowtr+1 ;stxfnd. 
+80$ sta lowtr 
+ cpx arytab+1 ;at end of table yet? 
+ bne 90$ 
+ cmp arytab 
+ beq notfns ;yes, we couldn't find it 
+ 
+90$ jsr indlow_ram1 ;lda (lowtr),y 
+ cmp varnam ;compare high orders 
+ bne 100$ 
+ iny 
+ jsr indlow_ram1 
+ cmp varnam+1 ;and the low part? 
+ beq finptr ;!!that's it!! 
+ 
+ dey 
+100$ clc 
+ lda lowtr 
+ adc #7  ;makes no difference among types 
+ bcc 80$ 
+ inx 
+ bra 70$  ;branch always 
+ 
+ 
+ 
+ 
+; Test for a letter: (c)=0 not a letter 
+;   (c)=1 a letter 
  

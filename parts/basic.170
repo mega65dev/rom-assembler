@@ -1,18 +1,110 @@
-qint lda facexp 
- beq clrfac ;if zero, got it 
+zerofc lda #0  ;not needed by NORMAL, but by others 
+zerof1 sta facexp ;number must be zero 
+zeroml sta facsgn ;make sign positive 
+zerrts rts  ;all done 
+ 
+ 
+fadd2 adc oldov 
+ sta facov 
+ lda faclo 
+ adc arglo 
+ sta faclo 
+ lda facmo 
+ adc argmo 
+ sta facmo 
+ lda facmoh 
+ adc argmoh 
+ sta facmoh 
+ lda facho 
+ adc argho 
+ sta facho 
+ bra squeez ;go round if signs same 
+ 
+ 
+norm2 adc #1  ;decrement shift counter 
+ asl facov ;shift all left one bit 
+ rol faclo 
+ rol facmo 
+ rol facmoh 
+ rol facho 
+ 
+norm1 bpl norm2 ;if msb=0 shift again 
  sec 
- sbc #$a0 ;get number of places to shift 
+ sbc facexp 
+ bcs zerofc 
+ eor #$ff 
+ adc #1  ;complement 
+ sta facexp 
  
- bbr7 facsgn,10$ 
+squeez bcc rndrts ;bits to shift? 
+rndshf inc facexp 
+ beq overr 
+ ror facho 
+ ror facmoh 
+ ror facmo 
+ ror faclo 
+ ror facov 
+rndrts rts  ;all done adding 
  
- tax 
- lda #$ff 
- sta bits ;put $ff in when shftr shifts bytes 
- jsr negfch ;truly negate quantity in FAC 
- txa 
  
-10$ ldx #fac 
- cmp #$f9 
- bpl qint1 ;if number of places > 7 shift 1 place at a time 
- jsr shiftr ;start shifting bytes, then bits 
- sty bits ;zero bits since adder wants zero 
+negfac lda facsgn 
+ eor #$ff ;complement FAC entirely 
+ sta facsgn 
+ 
+negfch lda facho 
+ eor #$ff ;complement just the number 
+ sta facho 
+ lda facmoh 
+ eor #$ff 
+ sta facmoh 
+ lda facmo 
+ eor #$ff 
+ sta facmo 
+ lda faclo 
+ eor #$ff 
+ sta faclo 
+ lda facov 
+ eor #$ff 
+ sta facov 
+ inc facov 
+ bne incfrt 
+ 
+incfac inc faclo 
+ bne incfrt 
+ inc facmo 
+ bne incfrt ;if no carry, return 
+ inc facmoh 
+ bne incfrt 
+ inc facho ;carry complement 
+incfrt rts 
+ 
+ 
+; SHIFTR shifts (x+1:x+3) (-a) bits right.  Shifts bits to start with 
+; if possible. 
+ 
+mulshf ldx #resho-1 ;entry point for multiplier 
+shftr2 ldy 4,x  ;shift bits first 
+ sty facov 
+ ldy 3,x 
+ sty 4,x 
+ ldy 2,x  ;get mo 
+ sty 3,x  ;store lo 
+ ldy 1,x  ;get ho 
+ sty 2,x  ;store mo 
+ ldy bits 
+ sty 1,x  ;store ho 
+ 
+shiftr adc #8 
+ bmi shftr2 
+ beq shftr2 
+ sbc #8  ;c can be either 1,0 and it works! 
+ tay 
+ lda facov 
+ bcs shftrt ;equiv to beq here 
+ 
+shftr3 asl 1,x 
+ bcc 10$ 
+ inc 1,x 
+10$ ror 1,x 
+ ror 1,x  ;yes, two of them 
+ 

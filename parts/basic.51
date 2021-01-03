@@ -1,87 +1,73 @@
-getspt ldy #2  ;get pntr to descriptor 
- jsr indfmo 
- cmp dsdesc+2 ;check for DS$ hi 
- bne dskx2 ;nope 
+let jsr ptrget  ;get pntr to variable into "varpnt" 
+ sta forpnt  ;preserve pointer 
+ sty forpnt+1 
+ lda #equal_token 
+ jsr synchr  ;"=" is necessary 
+ 
+ lda intflg  ;save type for later 
  pha 
- dey 
- jsr indfmo 
- cmp dsdesc+1 ;check for DS$ lo 
- bne dskx1 ;nope 
- lda dsdesc ;check if len=0 
- beq dskx1 ;yup 
- pla  ;fall through to copy 
+ lda valtyp  ;retain the variable's value type too 
+ pha 
  
+ jsr frmevl  ;get value of formula into FAC 
+ pla 
+ rol a   ;carry set for string, off for numeric 
+ jsr chkval  ;make sure VALTYP matches carry 
+    ;and set zero flag for numeric 
+ bne copstr  ;if numeric, copy it 
+ pla   ;get number type 
  
-copy ldy #0 
- jsr indfmo 
- jsr strini ;get room to copy string into 
- lda dscpnt ;get pointer to old descriptor, so 
- ldy dscpnt+1 
- sta strng1 ;movins can find string 
- sty strng1+1 
- jsr movins ;copy it 
- 
- lda strng1 ;fix to free get strings 
- ldy strng1+1 
- jsr fretms ;free the string, if it is a temp 
- 
- lda #<dsctmp 
- ldy #>dsctmp 
- 
-copyc sta dscpnt 
- sty dscpnt+1 
- sta index ;index points to new descriptor 
- sty index+1 
- jsr fretms 
- 
- .page 
-;   Fix the strings by flagging the old string as garbage and the new 
-;   string by pointing it to its new descriptor. 
- 
- jsr stradj ;set up new string 
- bcc 10$  ;leave it alone 
+qintgr bpl copflt  ;store a floating point number 
+ jsr round  ;round integer 
+ jsr ayint  ;make two-byte number 
  ldy #0 
- lda forpnt ;put in backwards link 
- phx 
- ldx #index 
- jsr sta_far_ram1 
- iny 
- lda forpnt+1 
- jsr sta_far_ram1 
- plx 
- 
-10$ lda forpnt ;fix old string 
- sta index 
- lda forpnt+1 
- sta index+1 
- jsr stradj ;point to old string 
- bcc 20$  ;in text do not fix 
- dey  ;restore y 
- phx 
- ldx #index 
- lda #$ff ;garbage flag 
- jsr sta_far_ram1 
- dey 
- pla  ;(was txa) 
- pha 
- jsr sta_far_ram1 ;store length 
- plx 
- 
-20$ ldy #2  ;set the descriptor 
+ lda facmo  ;get high 
  phx 
  ldx #forpnt 
-30$ lda #dscpnt 
- jsr lda_far_ram1 ;lda (dscpnt),y from RAM1 
- jsr sta_far_ram1 ;sta (forpnt),y to   RAM1 
- dey 
- bpl 30$ 
+ jsr sta_far_ram1 ;sta (forpnt),y ;store it 
+ iny 
+ lda faclo  ;get low 
+ jsr sta_far_ram1 ;sta (forpnt),y 
  plx 
  rts 
  
- .page 
-;   STRADJ takes the pointer index which points to a descriptor and 
-;   indexes to the desciptor's string data.  If the string is not in 
-;   string space (no action to take) we return with carry clear, else 
-;   we return with the pointer set to the link bytes in the string, the 
-;   length in .a and the carry set. 
  
+ 
+copflt ldx forpnt 
+ ldy forpnt+1 
+ bra movmf_ram1  ;put number @forpnt in var bank 
+ 
+ 
+ 
+copstr pla   ;if string, no INTFLG 
+ 
+inpcom ldy forpnt+1  ;TI$? 
+ cpy #>zero  ; (only TI$ can be this on assign) 
+ beq Set_TI_String ; yes 
+ bra getspt  ; no 
+ 
+ .page 
+dskx1 pla 
+ iny 
+ 
+dskx2 cmp fretop+1 
+ bcc 20$ 
+ bne 10$ 
+ dey 
+ jsr indfmo 
+ cmp fretop 
+ bcc 20$ 
+ 
+10$ ldy faclo ;qvaria 
+ cpy vartab+1 ;if (vartab) > (facmo), don't copy 
+ bcc 20$ 
+ bne copy ;it is less 
+ lda facmo 
+ cmp vartab ;compare low orders 
+ bcs copy 
+ 
+20$ lda facmo ;dntcpy 
+ ldy facmo+1 
+ bra copyc 
+ 
+ .page 

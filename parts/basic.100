@@ -1,20 +1,11 @@
-lstest cpx #number_fkeys 
- bne lstky1  ;...loop until done all keys 
- rts 
+lstnd dec keysiz 
+ bne lsloop  ;loop to end of definition 
+ cpx #9 
+ bcc 10$   ;skip if previous not normal character 
+ lda #'"' 
+ jsr _bsout  ;add ending quote 
  
+10$ lda #$8d 
+ jsr _bsout  ;add ending return (shifted) 
  
-list_special 
- plx  ;restore .x 
-10$ lda keydat-3,x ;display something like  ' "+CHR$( ' 
- jsr _bsout 
- dex 
- cpx #3 
- bcs 10$ 
- pla  ;restore character 
- jsr prtdec ;display decimal value of chr in .a 
- lda #')' ;finish off with closing paren. 
- jsr _bsout 
- ldx #8  ;mark end of special 
- bra lstnd ;..always 
- 
- 
+ ldx z_p_temp_1  ;key number 

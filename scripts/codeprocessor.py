@@ -61,8 +61,8 @@ class CodeProcessor(BaseProcessor):
 	def processCode(self,mnemonic):
 		romOpcode = self.readROM(self.currentPC) 								# what is actually in the ROM ?
 		opList = self.cpuInfo.getOpcodeList(mnemonic)							# the possible mnemonics it could be.
-		assert romOpcode in opList
-		self.currentPC += opList[romOpcode]										# adjust the program counter.
+		#assert romOpcode in opList
+		#self.currentPC += opList[romOpcode]										# adjust the program counter.
 	#
 	#		Read ROM.
 	#		
@@ -78,7 +78,6 @@ if __name__ == "__main__":
 		for l in PartLoader().load(page):		
 			p = hp.process(l)
 			if p is not None:
-				#print("{0:04x} {1}".format(hp.currentPC,p))
-				pass
+				print("{0:04x} {1}".format(hp.currentPC,p))
 			else:
-				print(l)
+				assert False,l

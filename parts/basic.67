@@ -1,33 +1,36 @@
-helpsb    ;logic to highlight error or find string 
- bbs4 helper,highlight_done ;branch if highlighting tokens 
- bbs5 helper,10$   ;branch if FIND 
+auto 
+ jsr errind 
+ jsr linget 
+ lda linnum 
+ sta autinc 
+ lda linnum+1 
+ sta autinc+1 
+ rts 
  
- ldx lowtr+1  ;has P1LINE reached code in error? 
- tya 
- clc 
- adc lowtr  ;add character pointer to line pointer... 
- bcc 1$ 
+;.end 
+ .page 
+ .subttl  HELP 
+ 
+help ldx errnum ;check for error status 
  inx 
-1$ cpx errtxt+1  ;and compare to error pointer 
- bne 3$   ; not there 
- cmp errtxt 
- bcs highlight_text ; we're there- begin highlighting 
-3$ rts 
+ beq 1$  ; exit if there is no current error 
+ lda errlin 
+ ldy errlin+1 
+ sta linnum 
+ sty linnum+1 
+ jsr FindLine ;find the beginning of line with error 
+ bcc 1$  ; exit if line not found? 
  
+ jsr crdo ;begin a new line 
+ ldx linnum 
+ lda linnum+1 
+ ldz helper 
+ rmb4 helper ;temporarily disable token highlighting 
+ smb7 helper ;set 'help' flag for P1LINE 
+ jsr p1line ;display line & highlight error 
+ stz helper 
+1$ rmb7 helper ;reset 'help' flag 
+ bra crdo ;and return to caller 
  
-10$ cpy fndpnt  ;at first character of find string? 
- bcc 30$   ; before it 
- lda find_count 
- beq 30$   ; past it 
- bmi 40$   ; at last character 
- cmp fstr1+2 
- bcc 20$   ; in middle of string 
- jsr highlight_text ; at first char- start highlight 
-20$ dec find_count  ;one less character to highlight 
- beq 20$   ;special case- 
-    ;make it negative for next time around 
-30$ rts 
- 
-40$ inc find_count  ;make it zero 
  
  

@@ -1,28 +1,11 @@
-highlight_text   ;nasty kludge to colorize error or found text 
- bit highlight_save 
- bpl 10$   ; (unless it's already highlighted) 
- lda _color  ;save current (normal) color 
- sta highlight_save ; msb=0 to mark highlight_save valid 
- lda highlight_color 
- sta _color  ;change color to highlight 
+highlight_done   ;nasty kludge to colorize error or found text 
+ lda highlight_save 
+ bmi 10$   ; (unless it's already normal) 
+ sta _color  ;restore normal color 
+ ora #$80 
+ sta highlight_save ;mark highlight_save invalid 
+ rmb7 helper  ;remove HELP flag 
+ rmb1 helper  ;remove token flag 
 10$ rts 
- 
-;.end 
- .page 
- .subttl  GOSUB  GOTO 
- 
-; GOSUB-  Push text pointer, line #, & gosub token on stack: 
-; 
-;  (bottom) highest memory 
-;=========================================================== 
-;  txtptr+1 address of next statement 
-;  txtptr 
-;  ======== 
-;  curlin+1 current line number 
-;  curlin 
-;  ======== 
-;  'gosub' token <== (tos) top of stack pointer 
-;=========================================================== 
-;  (top of stack) lowest memory 
  
  

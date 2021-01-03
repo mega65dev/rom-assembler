@@ -1,97 +1,74 @@
-verify_cmd .byte 'U0>V' ;Verify on/off command 
+AutoScrollprint 
+ ldy #2   ; get line number to print 
+ jsr indlow 
+ tax 
+ iny 
+ jsr indlow 
+ jsr p1line  ; print the number & the line 
+; bra AutoScrolldone ;Normal exit 
  
+AutoScrolldone 
+ jsr _primm  ;kill special Editor modes 
+   .byte esc,esc,0 
+ ldx point  ;restore cursor position 
+ ldy point+1 
+ clc 
+ jsr _plot 
+ rmb1 helper  ;remove LINGET flag 
+ pla   ;restore character 
+ clc   ;return to Editor, with flag we handled character 
+ rts 
+ 
+AutoSearch 
+ ldy #0   ;search for any line number on screen in leftmost column 
+ clc 
+ jsr _plot  ; move to beginning of next line 
+; bcs AutoScrollpop ;  exit if no more lines 
+ bcs 30$   ;  no more lines- fake one   [910716] 
+ sec 
+ jsr _plot  ;  else check if wrapped line 
+ bcs 10$   ;   it's wrapped- move up one line 
+ lda _pnt 
+ adc _screen_left ;(.c=0) 
+ sta txtptr  ; copy screen address of logical line to txtptr 
+ lda _pnt+1 
+ adc #0 
+ sta txtptr+1 
+ ldy #0   ; get first character on this line in window 
+ lda (txtptr),y 
+; jsr indtxt  ;    (I did not want to limit search to the first column, 
+ cmp #'9'+1  ;     but it was way too slow searching the entire screen) 
+ bcs 10$   ;  it's not a number 
+ cmp #'0' 
+ bcs 20$   ;  it's a digit 0-9, continue 
+ 
+10$ bbs7 form,15$  ; not on this line- move to next line 
+ dex   ;  move up one line 
+   .byte $89 
+15$ inx   ;  move down one line 
+ bra AutoSearch  ;loop until we find a numeric digit or run out of lines 
+ 
+20$ clc   ;found a digit, get entire number into linnum & rts 
+ bra linget 
+ 
+30$ lda #$ff  ;no line found, fake end of program   [910716] 
+ sta linnum+1 
+ rts 
+ 
+ .ifgt *-$7f00 
+ .messg ***ROM OVERFLOW: $7F00 
+ .endif 
 ;.end 
  .page 
- .subttl  CHAR 
+ .subttl  GRAPHIC Interface 
+ 
+ * = $af00  ;      [911001] 
  
 ;***************************************************************** 
-;* CHAR   draw a character string 
-;* 
-;*  Syntax : CHAR column, row, height, width, direction, "string" [,charsetadr [,bank]] 
-;* 
-;* parm1  = column# 
-;* parm2  = row lo 
-;* parm3  = row hi 
-;* parm4  = height 
-;* parm5  = width 
-;* parm6  = direction 
-;* parm7  = len of string 
-;* parm8  = lo addr of string 
-;* parm9  = hi addr of string 
-;* parm10 = lo addr of character set $29800 default 
-;* parm11 = hi addr of character set 
-;* parm12 = bank of character set   [910912] 
-;**************************************************************** 
- 
-c65.char 
- jsr CheckGraphicMode 
- jsr getbyt  ; get column 
- stx GKI__parm1 
- 
- jsr comsad  ; get row 
- sty GKI__parm2 
- sta GKI__parm3 
- 
- jsr combyt  ; get height 
- stx GKI__parm4 
- 
- jsr combyt  ; get width 
- stx GKI__parm5 
- 
- jsr combyt  ; get direction 
- stx GKI__parm6 
- 
- jsr chkcom 
- jsr frmevl  ;evaluate the string 
- jsr chkstr  ; type mismatch error if not string 
- ldy #0 
- jsr indfmo  ; pointer to string descriptor is left in the fac by frmevl 
- sta GKI__parm7  ; length  ???? check for null string ???? 
- pha 
- iny 
- jsr indfmo 
- sta GKI__parm8  ; adrlo 
- iny 
- jsr indfmo 
- sta GKI__parm9  ; adrhi 
- jsr frefac  ;       [910917] 
- pla 
- jsr getspa 
- 
- jsr optwrd  ;get charset address (????bank) 
- bcs 10$   ; given 
- ldy #<$9800  ; not given- use ROM as default   [910207] FAB 
- lda #>$9800  ;  ???? uc/lc or graphic set ???? 
-10$ sty GKI__parm10  ; lo 
- sta GKI__parm11  ; hi 
- ldx #2   ; default to ROM bank 2    [910912] FAB 
- jsr optbyt 
- stx GKI__parm12 
- 
- lda GKI__parm7  ;???? check for null string ???? 
- beq 40$ 
- jmp ($802c)  ;bra kg65.char 
- 
-40$ rts 
- 
- .page 
- .subttl  PAINT 
- 
+; SCREEN DEF      define a screen 
+; SCREEN SET  set draw, view screen 
+; SCREEN CLR  clear a screen 
+; SCREEN OPEN  open a screen 
+; SCREEN CLOSE  close a screen 
 ;***************************************************************** 
-;* PAINT   fill a graphic area with color 
-;* 
-;*  Syntax : PAINT x, y [,mode [,color]] 
-;* 
-;* parm1  = x lo 
-;* parm2  = x lo 
-;* parm3  = y lo 
-;* parm4  = y hi 
-;* parm5  = mode 
-;* parm6  = color 
-;* 
-;* fill color is pen-A 
-; mode 0: fill region defined by color at x,y (default) new modes [910916] FAB 
-; mode 1: fill region using given color as boundary 
-; mode 2: fill connected region 
-;**************************************************************** 
  

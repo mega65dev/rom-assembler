@@ -1,47 +1,99 @@
-set_palette 
- jsr combyt  ;get red & fgbg 
- cpx #32   ;      [910520] 
- bcs fcerr 
- stx GKI__parm3 
+rmouse lda #0   ;Init 
+ sta count  ; variable count = 0 
+ dec a 
+ ldx #6-1 
+10$ sta grapnt,x  ; positions/buttons = -1 
+ dex 
+ bpl 10$ 
  
- jsr getcomnyb  ;get green 
-; cpx #16 
-; bcs 10$ 
- stx GKI__parm4 
+ lda _mouse_enable ;Is there a mouse in the house? 
+ and #%11000000 
+ beq 50$   ; no, exit 
+ pha   ; yes, save port assigns for later 
+ sei 
+ ldy _mouse_pointer ;Where is it?  Get pointer to sprite 
+ lda vic,y  ;Get X position    ???vic_save 
+ sta grapnt  ; lsb 
+ lda sbits,y 
+ and vic+16  ; msb    ???vic_save 
+ beq 20$ 
+ lda #1   ;  convert to 0 or 1 
+20$ sta grapnt+1 
+ iny   ;Get Y position 
+ lda vic,y  ; lsb    ???vic_save 
+ sta grapnt+2 
+ lda #0   ; msb (fake it) 
+ sta grapnt+3 
  
- jsr getcomnyb  ;get blue 
-; cpx #16 
-; bcs fcerr  ; illegal quantity error 
- stx GKI__parm5 
+ sta grapnt+4  ;Init button status 
+ sta grapnt+5 
+ ldz d1pra  ;Set up port & read buttons 
+ lda #$ff  ; save kybd output lines (IRQ already disabled) 
+ sta d1pra  ; set to not read any kybd inputs 
  
- lda GKI__parm1  ;logical or physical color register? 
- bpl 40$   ; logical 
- ldx GKI__parm2 
- lda GKI__parm3  ; physical 
- sta _red,x 
- lda GKI__parm4 
- sta _green,x 
- lda GKI__parm5 
- sta _blue,x 
- bra 50$ 
+ ldy #0   ; which port? 
+ plx   ;  recall port assignments 
+30$ txa 
+ asl a   ;  .c=1 if this one 
+ tax 
+ bcc 40$   ;  not this one 
+ lda d1pra,y  ; read it (logical port is opposite physical port) 
+ and #%00010001  ;  want left, right buttons only 
+ eor #%00010001  ;  (invert, since low means button down) 
+ tsb grapnt+4 
+ and #%00010000  ;  shift left button to msb 
+ beq 40$ 
+ smb7 grapnt+4 
+40$ iny   ; next port 
+ cpy #2 
+ bcc 30$ 
  
-40$ jsr ($8012)  ;go set screen palette 
- bcs NoGraphicArea ; illegal screen# or color#  [910917] 
+ lda #%01111110  ; clean up 
+ trb grapnt+4  ;  fix button register 
+ stz d1pra  ;  restore port for Kernel 
+ cli 
  
-50$ jsr optbyt  ;get another color reg # ? 
- stx GKI__parm2 
- bcs set_palette  ; yes- loop 
- rts 
+; At this point, we have snapshot the current mouse status. 
+; Now pass requested info along in a manner very similar to RREG... 
  
+50$ jsr chrgot  ;Get a variable name from variable list 
+ beq 90$   ; eol- exit 
+ cmp #','  ; 
+ beq 70$   ; null- skip this arg 
+ jsr ptrget  ;Get pointer to target variable 
+ sta forpnt  ; set up so we can share LET code 
+ sty forpnt+1 
+ lda valtyp  ; what kind of variable name did ptrget find? 
+ bne chkerr  ;  string- type mismatch error 
+ 
+60$ ldx count  ;Make assignment 
+ ldy grapnt,x  ; low byte 
+ lda grapnt+1,x  ; high byte 
+ jsr givayf  ; float it 
+ lda intflg  ; set flags for type of var (int/float) 
+ jsr qintgr  ; use part of LET to do the work 
+ 
+70$ inc count  ;Next assignment 
+ inc count 
+ ldx count 
+ cpx #6   ; there are 3 possible 
+ bcs 90$   ;  done all 3, exit 
+ jsr chrgot  ; check terminator 
+ beq 90$   ;  eol- exit 
+ jsr chkcom  ; check delimiter 
+ bra 50$   ; loop until done 
+ 
+90$ rts 
+ 
+;.end 
  .page 
+ .subttl   CURSOR 
+ 
 ;***************************************************************** 
-;* LINE  draw a dot, a line or a stick shape 
+;*   CURSOR [ON|OFF,] [column] [,row [,style] ] 
 ;* 
-;*  Syntax : LINE  x0, y0 [,[x1] [,y1]]... 
-;* 
-;* parm1,2 = x0 (lo/hi) 
-;* parm3,4 = y0 
-;* parm5,6 = x1 (x1,y1)=(x0,y0) if not specified 
-;* parm7,8 = y1 
+;*   where: column,row = x,y logical screen position 
+;*  style      = flashing (0) or solid (1) 
+;*  ON,OFF     = to turn the cursor on or off 
 ;***************************************************************** 
  

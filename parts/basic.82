@@ -1,51 +1,95 @@
-delete bcc delete_line  ;branch if a number (assume range parameter) 
- cmp #minus_token 
- beq delete_line  ;branch if a dash (assume range parameter) 
- bra scratch  ;branch if string (assume filename or U#) 
+for lda #$80 
+ sta subflg ;no arrays(), no integers% 
+ jsr let  ;get & set FOR variables 
+ lda #for_token ;set up for call to see if 
+ jsr search ;..this 'for' variable is unique 
+ beq 10$  ; branch if not 
  
-delete_line 
- jsr errind  ;direct mode only command 
- jsr chrgot  ;requires line# or range, no default 
- beq snerr  ; error, none given 
+; If the variable is not unique, (fndpnt) will point to last occurance 
+; in stack, and we will reset the stack to that point.  Otherwise we 
+; will adjust the pointer by 'lenfor' and start from that point. 
  
- jsr range  ;parse range, find starting line, ptr to ending line 
- lda lowtr 
- ldx lowtr+1 
- sta index1  ;     (destination) 
- stx index1+1 
+ lda #lenfor 
+ jsr getstk ;updates stack pointer, error if overflow 
+ jsr movtos ;(tos) => (fndpnt) 
  
- jsr FindLine  ;find ending line 
- bcc 20$   ; branch if not found 
- ldy #1 
- jsr indlow  ;if eot, use this ptr.  else, need ptr to next 
+10$ jsr movfnd ;(fndpnt) => (tos)   (redundant for new entries) 
+ jsr datan ;find address of next statement 
+ tya  ;offset from (txtptr) in y 
+ ldy #lenfor-1 
+ 
+ clc  ;Push address of next statement on stack 
+ adc txtptr 
+ sta (tos),y ;(common area) 
+ lda txtptr+1 
+ adc #0 
  dey 
- tax   ; save it in case of swap 
- bne 10$   ; branch if not eot (end-of-text) 
- jsr indlow 
- beq 20$   ; branch if eot (null link bytes) 
+ sta (tos),y ;(common area) 
  
-10$ jsr indlow 
- sta lowtr  ;     (source) 
- stx lowtr+1 
+ lda curlin+1 ;Push current line number on stack 
+ dey 
+ sta (tos),y ;(common area) 
+ lda curlin 
+ dey 
+ sta (tos),y ;(common area) 
  
-20$ lda lowtr  ;check that start <= end 
- sec 
- sbc index1  ;calculate delta 
- sta count  ;     (count) 
- lda lowtr+1  ; (does not catch case where 
- sbc index1+1  ;  start>end when end=start+1, 
- sta argmo  ;  but it does no harm) 
- ora count 
- beq fix_links  ; all done- nothing to move!? 
- bcc snerr  ; error- bad range (start > end) 
+ lda #to_token ;Look for TO, must appear 
+ jsr synchr 
+ jsr chknum ;get TO value 
+ jsr frmnum 
+ lda facsgn 
+ ora #$7f 
+ and facho 
+ sta facho 
  
- lda text_top  ;setup for common DMA move routine: [900530] 
- ldx text_top+1 
- sta index2  ; index2 = top 
- stx index2+1  ; index1 = destination 
-    ; count  = delta 
+ ldx #4 
+ ldy #lenfor-5 
+20$ lda facexp,x ;Push faclo,mo,moh,ho,exp 
+ sta (tos),y ;(common area) 
+ dex 
+ dey 
+ bpl 20$ 
  
- jsr movedown  ;delete the text, then relink & exit 
+ lda #<fone ;Push STEP value 
+ ldy #>fone ; (point to default 'one' in ROM) 
+ jsr movfm 
+ jsr chrgot 
+ cmp #step_token 
+ bne 30$  ;branch if no step given 
+ jsr chrget 
+ jsr frmnum 
  
+30$ jsr sign 
+ pha  ;save sign for a moment 
+ jsr round 
+ pla 
  
+ ldy #lenfor-10 
+ ldx #5 
+40$ sta (tos),y ;(common area) 
+ lda facexp-1,x 
+ dey 
+ dex 
+ bpl 40$ 
+ 
+ lda forpnt+1 ;Finally push pointer to 'for' variable, & 'for' token 
+ sta (tos),y ;(common area) 
+ lda forpnt 
+ dey 
+ sta (tos),y ;(common area) 
+ lda #for_token 
+ dey 
+ sta (tos),y ;(common area) 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl  DELETE 
+ 
+; Delete a range of source   -or-   Delete a disk file 
+; 
+; Syntax: DELETE from# - to# (same range parameters as LIST) 
+;  DELETE "filename" (same parameters as SCRATCH) 
+ 
+; Determine which form of DELETE we have... 
  

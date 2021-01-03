@@ -1,47 +1,22 @@
-optzer ldx #0  ;optional byte, with default=0 
- 
-optbyt jsr chrgot 
- beq optw99 ;EOL: clc/rts 
- jsr chkcom 
- cmp #',' 
- beq optw99 ;Comma: clc/rts 
- jsr getbyt 
- sec 
- rts 
- 
- .page 
-prtdec 
- phy 
- phx 
- tax   ;prints decimal value of chr in .a 
- lda #0 
- jsr linprt 
- plx 
- ply 
- rts 
- 
- 
- 
-retpat   ;f.bowen 
- dey  ;      [910828] 
- lda (fndpnt),y ;restore pointers 
- sta txtptr+1 
- dey 
- lda (fndpnt),y 
- sta txtptr 
- dey 
- lda (fndpnt),y 
- 
- sta curlin+1 ;fixes a problem when RETURNing to a GOSUB in direct mode 
- dey  ;or LOOPing to a DO in direct mode. 'curlin+1' must not be 
- tax  ;restored to $ff without also resetting 'runmod' 
+rdcn lda poker 
+ sta dosstr,x 
+ lda poker+1 
  inx 
- bne 10$  ;branch if GOSUB or DO was from a program 
- lda #%11000000 
- trb runmod ;else force return to direct mode 
+ bra sdp5 ;always 
  
-10$ lda (fndpnt),y 
- sta curlin 
- rts 
+ 
+; Move file names 
+ 
+rsfn ldy dosf1l ;file name 1: get length 
+ beq rdrt0 ;if null string 
+ 
+ ldy #0  ;move name to dosstr 
+10$ lda savram,y 
+ sta dosstr,x 
+ inx 
+ iny 
+ cpy dosf1l 
+ bne 10$  ;if move not complete 
+ bra rdrt1 ;always 
  
  

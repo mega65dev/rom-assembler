@@ -1,74 +1,57 @@
-list rmb7 helper  ;clear 'help' flag for p1line 
+linget ldx #0   ;enter with CHRGET flags set 
+ stx endchr  ;flags line # input 
+ stx linnum  ;init line # to 0 
+ stx linnum+1 
  
-; Determine which form of LIST we have... 
+10$ bcs 40$   ;it's not a digit, do rts 
+15$ inc endchr  ;indicate line # input 
+ sbc #$2f  ;'0'-1 since .c=0 
+ sta charac  ;save for later 
+ lda linnum+1 
+ sta index 
+ cmp #25   ;line number will be < 64000? 
+ bcc 20$   ; yes, continue 
+ bbs1 helper,40$  ; no, if called by AutoScroll it's okay 
+ bra snerr  ;     else syntax error 
  
- beq list_memory  ;branch if terminator (no parameter) 
- bcc list_memory  ;branch if a number (assume range parameter) 
- cmp #minus_token 
- beq list_memory  ;branch if a dash (assume range parameter) 
+20$ lda linnum 
+ asl a   ;multiply by 10 
+ rol index 
+ asl a 
+ rol index 
+ adc linnum 
+ sta linnum 
+ lda index 
+ adc linnum+1 
+ sta linnum+1 
+ asl linnum 
+ rol linnum+1 
+ lda linnum 
+ adc charac  ;add in digit 
+ sta linnum 
+ bcc 30$ 
+ inc linnum+1 
+30$ 
+; jsr chrget  ;ALLOW SPACES to terminate number  [910620] 
+; bra 10$ 
+ inw txtptr  ;get next character from text 
+ ldy #0   ;re-get current character from text 
+ jsr indtxt  ; lda (txtptr),y from RAM0 
+ cmp #' '  ; space=eol    [910708] 
+ beq 50$ 
+ cmp #':'  ; 
+ bcs 40$   ; eol 
+ sec 
+ sbc #'0'  ; alpha or numeric? 
+ sec 
+ sbc #$d0 
+ bcc 15$   ;  numeric 
+40$ rts   ;exit 
  
+50$ jsr chargt  ;terminating character is a space, eat it just this once 
+ bra chrtst  ; return with flags set appropriately (esp. for 'range') 
  
-; LIST command is of the form  LIST filename [,U#] [,D#] 
- 
-list_file 
- lda #$e6  ;parse:  filename [,U#] [,D#] 
- jsr dosprs  ; (like dopen:  0 0 0 *  * 0 0 1 ) 
- jsr chk1  ;check parameters 
- lda #0 
- sta dossa  ;setup as dload would (0 = load channel) 
- jsr find_la  ;find an available la to use (cannot use reserved one) 
- ldy #fopn 
- ldx #4 
- jsr open_file  ;open the file 
- bcs list_err  ; exit if error 
- 
- ldx dosla 
- jsr _chkin  ;get input channel 
- bcs list_err  ; exit if bad?? 
- jsr _basin  ;waste 'load address' 
- jsr _basin 
- 
-10$ jsr _basin  ;get link bytes 
- sta dosstr 
- jsr _basin 
- sta dosstr+1 
- ora dosstr 
- beq list_exit  ; done if null pointer 
- jsr _readst 
- bne list_exit  ; done if eof or bad status 
-    ; ???? assumes serial bus 
- lda #>dosstr  ;point p1line's pointer at our line buffer 
- ldx #<dosstr 
- sta lowtr+1 
- stx lowtr 
- 
- ldx #2 
- jsr _basin  ;read line into buffer 
- sta dosstr,x 
- inx 
- jsr _basin  ; 2-byte line # 
- sta dosstr,x 
- inx 
-20$ cpx #255  ; check buffer (buflen????) 
- bcs errlen  ;  'too long' error 
- jsr _basin 
- sta dosstr,x 
- inx 
- tay   ; save char 
- jsr _readst  ; check channel status (serial bus????) 
- bne list_exit  ;  exit if eof or error 
- jsr _stop 
- beq list_exit  ; exit if stop key down 
- tya 
- bne 20$   ; loop until eol 
- 
- jsr dcato  ;get output channel 
- jsr crdo  ;start new line 
- ldx dosstr+2  ; get line # 
- lda dosstr+3 
- jsr p1line  ;print line #, space, and the line of code 
- jsr _clrch 
- ldx dosla 
- jsr _chkin  ;get input channel 
- bcc 10$   ;     [900730] 
+;.end 
+ .page 
+ .subttl LIST 
  

@@ -1,16 +1,91 @@
-wait_for_all_quiet  ;Wait for all voices on this SID to be quiet [910626] 
- ldy #3 
- ldx voice 
- cpx #3   ;determine left/right SID 
- bcs 10$ 
- ldy #0 
-10$ ldz #3   ;for each of 3 voices 
-20$ ldx times2,y 
-30$ bit voices+1,x  ; wait for voice to be inactive (IRQ) 
- bpl 30$ 
- iny   ; next voice 
- dez 
- bne 20$   ; until done 3 voices 
- rts 
+set_voice 
+ dec a 
+ cmp #6   ;stereo SIDs: 0-2=right, 3-5=left  [910612] 
+ bcs play_bad_value 
+ sta voice  ;0-5 
+ bra clear_flag  ;always 
+ 
+ 
+set_octave 
+ cmp #7 
+ bcs play_bad_value ;too big octave 
+ sta octave  ;set octave 
+ bra clear_flag  ;always 
+ 
+ 
+set_envelope 
+ jsr wait_for_quiet ;      [910626] 
+ tax 
+set_envelope_1   ;entry for initialization code 
+; jsr put_io_in_map 
+ ldy voice 
+ lda wavtab,x 
+ sta waveform,y  ;set waveform 
+ lda SID_offset,y ;get hardware offset for this voice 
+ tay 
+; jsr go_slow  ;      [910716] 4567R7A 
+ lda atktab,x 
+ sta sid1+5,y  ;set attack/decay 
+ lda sustab,x 
+ sta sid1+6,y  ;set sustain/release 
+ lda pulslw,x 
+ sta sid1+2,y  ;set pulse width - low byte 
+ lda pulshi,x 
+ sta sid1+3,y  ;set pulse width - high byte 
+; jsr go_fast  ;      [910716] 4567R7A 
+ bra clear_flag 
  
  .page 
+set_volume 
+ jsr wait_for_all_quiet ;      [910626] 
+ tax 
+ ldy voice  ;      [910612] 
+ lda filter_offset,y ;get filter offset for this voice 
+ tay 
+ lda filters1+3,y ;get mode/volume for this SID 
+ and #$f0  ;mask out old volume 
+ ora voltab,x  ;add new volume 
+ sta filters1+3,y ;save for filter change 
+; lda filters1+4,y ;get current filter-type/volume ????why  [910612] 
+; and #$f0 
+; ora voltab,x 
+ tax 
+ ldy voice 
+ lda SID_offset,y ;get hardware offset for current voice 
+ and #$f0  ;$00 or $20 
+ tay 
+; jsr go_slow  ;      [910716] 4567R7A 
+ stx sid1+24,y  ;set new volume 
+; jsr go_fast  ;      [910716] 4567R7A 
+    ;fall into clear_flag 
+ .page 
+clear_flag 
+ lda #0 
+ sta flag 
+ rts 
+ 
+ 
+go_fast 
+ lda sid_speed_flag 
+ tsb vic+49 
+ rts 
+ 
+ 
+go_slow 
+ pha 
+ lda #$40 
+ and vic+49 
+ trb vic+49 
+ sta sid_speed_flag 
+ pla 
+ rts 
+ 
+ 
+wait_for_quiet   ;Wait for current voice to be quiet  [910626] 
+ ldy voice 
+ ldx times2,y  ;voice*2 
+10$ bit voices+1,x  ;test if voice is active   [910617] 
+ bpl 10$   ; loop until inactive (IRQ) 
+ rts 
+ 
+ 

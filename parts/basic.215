@@ -1,13 +1,63 @@
-find_la 
- lda #0   ;1-127 possible 
+type ldz #0 
  
-10$ inc a 
- bmi too_many_files ; if none available error 
- jsr _lkupla  ;kernel will lookup this la in its tables 
- bcc 10$   ; if used keep looking 
- sta dosla  ;save logical address 
- rts   ;return .a = la 
+open_SEQ_file 
+ phz   ;save EDIT load flag    [910620] 
+ lda #$e6  ;parse:  filename [,U#] [,D#] 
+ jsr dosprs  ; (like dopen:      0 0 0 *  * 0 0 1 ) 
+ jsr chk1  ;check parameters 
+ jsr find_la  ;find an available LA 
+ jsr find_sa  ;find an available SA 
+ ldy #fopnseq 
+ ldx #6 
+ jsr open_file  ;open the file 
+ bcs list_err  ; exit if error 
+ plz   ;      [910620] 
+ beq 20$ 
+ rts   ; or exit if called by EDIT load routine 
  
+20$ jsr _stop  ;check stop key 
+ beq 30$   ; exit if down 
+ ldx dosla 
+ jsr _chkin  ;get input channel 
+ bcs 30$   ; exit if bad?? 
+ ldx #0 
+25$ cpx #255  ;check buffer (buflen????) 
+; bcs 99$   ; 'too long' error 
+ beq 26$   ; allow long lines   [910620] 
+ jsr _basin  ;read file data 
+ sta dosstr,x  ; buffer it 
+ inx   ; bump buffer pointer 
+ tay   ; save char 
+ jsr _readst  ;check channel status 
+ bne 26$   ; exit if eof or error 
+ cpy #cr 
+ bne 25$   ;loop until eol 
  
+26$ php   ;save input channel status (beq=eol, bne=eof/err) 
+ stx t4   ;save character count 
+ jsr dcato  ;get output channel 
+ ldx #0 
+27$ cpx t4   ;check buffer 
+ bcs 28$   ; end of buffered data 
+ lda dosstr,x  ;output data 
+ jsr _bsout 
+ inx   ; bump buffer pointer 
+ bne 27$   ;loop until end of buffer 
  
+28$ jsr _clrch 
+ plp   ;check input status 
+ beq 20$   ; loop until eof or bad status 
+ 
+30$ bra list_exit  ;release channel, close file, return to main 
+ 
+;99$ jsr _clrch  ;non-I/O trouble   removed [910620] 
+; lda dosla  ; shut down disk & report BASIC error 
+; clc 
+; jsr _close 
+; bra errlen  ;buffer overflow: report 'string too long' 
+ 
+ .page 
+ .subttl  DISK command 
+ 
+; DISK "command_string" [,U#] [,D#]     new [910123] 
  

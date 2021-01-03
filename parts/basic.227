@@ -1,150 +1,52 @@
-trans jsr sendp  ;build string to output 
+print_dos_error   ;      [900725] 
+ bbs7 runmod,header_rts ;branch if not direct mode 
+ jsr Check_DS  ;get current disk error message 
+ ldy #0 
+ lda #dsdesc+1 
+ jsr lda_far_ram1 ; lda (dsdesc+1),y peek at first character 
+ cmp #'2' 
+ bcc header_rts  ; branch if no error occured ('00' or '01') 
+ cmp #'7' 
+ bne 1$   ;      [900730] 
+ iny 
+ lda #dsdesc+1 
+ jsr lda_far_ram1 ; might be '73' powerup message 
+ cmp #'3' 
+ beq header_rts  ;  yup 
+ 
+; ldx #errbdk  ; bad disk error (carry is set) 
+; bra error 
+ 
+; Print DOS error message as if it were a BASIC error message   [900910] 
+ 
+1$ lda #$ff  ;reset error line 
+ sta errlin  ; 
+ sta errlin+1 
  jsr _clrch 
- ldx #sys_bank  ;name is in system space, bank0 ????  [910620] 
- txa 
- jsr _setbank 
- jsr _open  ;send it... 
- php   ;save error status (.c) 
- pha   ;save error code (if any) 
- lda dosla 
- sec 
- jsr _close  ;special close... 
- pla   ;pop error 
- plp   ;pop error status 
- bcs erexit  ;...branch if there was an error opening 
- rts 
+; inc a   ;a=0 restore output to screen   [910909] 
+ sta channl 
+ jsr RestoreTextScreen ;make sure we're in text mode????  [910404] 
+ jsr init_stack  ;clean up system, string temps, etc.  [910121] 
  
-;.end 
- .page 
- .subttl  DOS 2 
+ jsr highlight_text ;      [910624] 
+ jsr _primm  ;start a new line with '?DOS: ' 
+   .byte cr,'?DOS: ',0 ; (to distinguish ?DOS: SYNTAX ERROR from ?SYNTAX ERROR) 
  
-; This is the DOS parser routine which looks at lines passed to it and 
-; verifies that the syntax is proper.  -mgm 7/23/79- 
-; 
-; Entry  (dosprs) 
-; a = parsts bit which must be zero. 
-; 
-; Exit  a = parsts as follows 
-; 
-;    --------------------------------- 
-;    | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 | 
-;    --------------------------------- 
-;      ^   ^   ^   ^   ^   ^   ^   ^ 
-;      |   |   |   |   |   |   |   |_____ fn1 set for the first filename 
-;      |   |   |   |   |   |   |_______ fn2 set for second filename 
-;      |   |   |   |   |   |_________ la set when #lfn parsed 
-;      |   |   |   |   |___________ fa set for device number 
-;      |   |   |   |_____________ d1 set for first disk unit 
-;      |   |   |_______________ d2 set for second disk unit 
-;      |   |_________________ dosrcl set for record size 
-;      |___________________ @ set when @ encountered 
-; 
-; The following are the vaild bit patterns for parsts after parsing for the 
-; various keywords: 
-; 
-;       7 6 5 4  3 2 1 0 
-; 
-;     header  0 0 0 *  * 0 0 1 
-;     collect 0 0 0 *  * 0 0 0 
-;     dclear  0 0 0 *  * 0 0 0 
-;     backup  0 0 1 1  * 0 0 0 
-;     copy    0 0 1 1  * 0 0 0 
-;      or..   0 0 * *  * 0 1 1 
-;     concat  0 0 * *  * 0 1 1 
-;     bsave   * 0 0 *  * 0 0 1 
-;     dsave   * 0 0 *  * 0 0 1 
-;     bload   0 0 0 *  * 0 0 1 
-;     dload   0 0 0 *  * 0 0 1 
-;     dverify 0 0 0 *  * 0 0 1 
-;     catalog 0 0 0 *  * 0 0 * 
-;     rename  0 0 0 *  * 0 1 1 
-;     append  0 0 0 *  * 1 0 1 
-;     scratch 0 0 0 *  * 0 0 1 
-;     dopen   * * 0 *  * 1 0 1 
-;     dclose  0 0 0 0  * * 0 0 
-;             ^ ^ ^ ^  ^ ^ ^ ^ 
-;             @ l d d  f l f f 
-;             r r 2 1  a a n n 
-;             p e          2 1 
-;             l l 
-; 
-;      "0" bits are required to be clear 
-;      "1" bits are required to be set 
-;      "*" bits are optional parameters 
- .page 
-; Entry (dosprs): 
-;  parstx shall be set to prevent any auxiliary options to be specified. 
-; 
-; Entry (dosprx): 
-;  .x = parstx bits which must be zero. 
-; 
-; Exit:  .x = parstx as follows: 
-; 
-;     --------------------------------- 
-;     | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 | 
-;     --------------------------------- 
-;       ^   ^   ^   ^   ^   ^   ^   ^____ bnk is set for bank option 
-;       |   |   |   |   |   |   | ______ offl set for 1st address 
-;       |   |   |   |   |   |_________ offh set for 2nd address 
-;       |   |   |   |   |___________ unused 
-;       |   |   |   |_____________ unused 
-;       |   |   |_______________ unused 
-;       |   |_________________ unused 
-;       |___________________ unused 
-; 
-; The following are the valid bit patterns for parstx after parsing for the 
-; various keywords.  These options are allowed for load/save commands only. 
-; 
-;    7 6 5 4  3 2 1 0 
-; 
-;   bsave   0 0 0 0  0 1 1 * 
-;   bload   0 0 0 0  0 0 * * 
-;   bverify 0 0 0 0  0 0 * * 
-;   [auto]boot 0 0 0 0  0 0 * * 
-;    ^ ^ ^ ^  ^ ^ ^ ^ 
-;    ? ? ? ?  ? o o b 
-;        f f n 
-;        h l k 
-; 
-;      "0" bits are required to be clear 
-;      "1" bits are required to be set 
-;      "*" bits are optional parameters 
+ ldy #3   ;print text part of message only 
+ lda #dsdesc+1 
+ jsr lda_far_ram1 ; skip err#, comma, & leading space if any 
+ cmp #' ' 
+ bne 20$ 
+ iny 
+10$ lda #dsdesc+1 
+ jsr lda_far_ram1 
+ cmp #','  ; finished at comma preceding trk, sector 
+ beq 30$ 
+20$ jsr outch 
+ iny 
+ bpl 10$   ; loop always (bpl=failsafe) 
  
-dostbl .word $ffff,$ffff  ;default start/end address 
- .byte doslfn,dosffn,$6f  ;default la/fa/sa 
- 
- .page 
-dospar lda #0   ;DOS Parser 
- 
-dosprs    ;special error flag entry 
- ldx #$ff  ;no aux options! 
- 
-dosprx    ;spec aux error flag entry 
- pha   ;save error flags 
- phx 
- lda #0 
- sta parsts  ;reset parser status/option words 
- sta parstx 
- 
- ldx #dosspc  ;clear DOS scratch area   [900522] 
-10$ sta xcnt-1,x 
- dex   ; no filenames, null lengths 
- bne 10$ 
- 
- ldx #dossa-dosofl ;set some defaults from table 
-20$ lda dostbl,x 
- sta dosofl,x  ; start/end adr = $FFFF, la/fa/sa 
- dex 
- bpl 20$ 
- 
- ldx _default_drive ;set default device   [900522] 
- stx dosfa 
- ldx current_bank ;set current bank 
- stx dosbnk 
- 
- jsr chrgot  ;get next character from command string 
- bne parse1  ; if eol stick with defaults, else begin parsing 
- 
- 
-; Done parsing, check for errors, return if everything okay 
+30$ jsr highlight_done ;      [910624] 
+ jsr crdo 
+ bra ready  ;we're in direct mode, error msg has been printed, abort 
  

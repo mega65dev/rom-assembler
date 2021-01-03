@@ -1,46 +1,31 @@
-strd jsr chknum  ;arg has to be numeric 
- ldy #0 
- jsr foutc  ;do its output 
- pla 
- pla 
+lpen jsr chkcls  ;look for closing parens 
+ jsr conint  ;get 1 byte arg in .X 
+; dex   ;convert [1-2] to [0-1] 
+ cpx #2 
+ bcs fcerr  ;bad value 
  
-timstr lda #<lofbuf 
- ldy #>lofbuf 
- bra strlit 
+ lda #0 
+ sei 
+ ldy lightpen_xpos,x ;get latched light pen value (a=msb, y=lsb) 
+ sta lightpen_xpos,x ;reset to zero (????preserve last latched position) 
+ cli 
+ cpx #0 
+ bne 10$   ;done if y position 
+ tya 
+ asl a   ;else multiply *2 to get correct x position 
+ tay   ; lsb 
+ lda #0 
+ rol a   ; msb 
+10$ bra nosflt  ;float it (y,a) 
  
  
-; CHR$() creates a string which contains as its only character the PETSCII 
-; equivalent of the integer argument (#) which must be < 256. 
- 
-chrd jsr conint  ;get integer in range 
- phx 
- lda #1   ;one-character string 
- jsr strspa  ;get space for string 
- ldy #0 
- pla 
-; phx   ;set up string bank 
- ldx #dsctmp+1 
- jsr sta_far_ram1 ;sta (dsctmp+1),y 
-; plx 
- 
-chrd1 pla   ;get rid of "chknum" return address 
- pla 
- bra putnew  ;setup FAC to point to desc 
+;.end 
  .page 
+ .subttl  POINTER 
  
-; The following is the LEFT$($,#) function.  It takes the leftmost # characters 
-; of the string.  If # > len of the string, it returns the whole string. 
+;****************************************************************** 
+; 
+; POINTER(var_name) - Return address of descriptor for var_name 
+; 
+;****************************************************************** 
  
-leftd jsr pream  ;test parameters 
- pha   ;# arg 
- jsr inddpt  ;string len 
- sta syntmp 
- pla 
- cmp syntmp 
- tya   ;that's all there is to LEFT$ 
- 
-rleft bcc 1$ 
- jsr inddpt 
- tax   ;put length into x 
- tya   ;zero (a), the offset 
-1$ pha   ;save offset 

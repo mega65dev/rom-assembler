@@ -1,75 +1,76 @@
-aryva2 lda arypnt 
- ldx arypnt+1 
- 
-aryva3 cpx strend+1  ;end of arrays? 
- bne aryvgo 
- cmp strend 
- beq arydon  ;...finished 
+ldzr lda #<zero ;set up pointer to simulated zero 
+ ldy #>zero 
+ rts  ;for strings or numeric 
  
  
-aryvgo sta index1 
- stx index1+1 
- ldy #0 
- jsr indin1_ram1  ;look at array name 
- tax 
- iny 
- jsr indin1_ram1  ;name 2nd char 
- php   ;save status reg 
- iny 
- jsr indin1_ram1  ;point to offset to next array 
- adc arypnt 
- sta arypnt  ;save start of next array in arypnt 
- iny 
- jsr indin1_ram1 
- adc arypnt+1 
- sta arypnt+1 
- plp   ;restore status 
- bpl aryva2  ;not a string type 
- txa 
- bmi aryva2  ;not a string array 
- iny   ;ok we have a string array 
- jsr indin1_ram1  ;get number of dimensions 
- ldy #0 
- asl a   ;move index to ptr to 1st string (add 2*number of dims + 5) 
- adc #5 
- adc index1 
- sta index1 
- bcc aryget 
- inc index1+1 
+qst001 cpy #'I'+$80 ;we know first is T, is second <shift>I (TI$)? 
+ beq ldzr 
+ cpy #'I' ;or I (TI)? 
+ bne varok 
+ beq gobadv 
  
-aryget ldx index1+1 
- cpx arypnt+1  ;done with this array? 
- bne 10$ 
- cmp arypnt 
- beq aryva3  ;yes 
  
-10$ ldy #0   ;process string pointer 
- jsr indin1_ram1  ;get length of string 
- beq dvarts  ;skip if null string 
- sta syntmp 
- iny 
- jsr indin1_ram1  ;get lo byte of string ptr 
- clc 
- adc syntmp  ;and add string length 
+qst004 cpy #'S'+$80 ;check for DS$ 
+ beq gobadv 
+ cpy #'S' ;check for DS 
+ bne varok 
+ beq gobadv 
+ 
+ 
+qst002 cpy #'T' ;check for ST 
+ bne varok 
+ beq gobadv 
+ 
+ 
+qst003 cpy #'R' ;check for ER 
+ beq gobadv 
+ cpy #'L' ;check for EL 
+ bne varok 
+ 
+ 
+gobadv bra snerr 
+ 
+ 
+ 
+notevl lda varnam 
+ ldy varnam+1 
+ cmp #'T' ;screen out TI 
+ beq qst001 
+ cmp #'S' ;...and ST 
+ beq qst002 
+ cmp #'E' ;...and ER and EL 
+ beq qst003 
+ cmp #'D' ;...and DS 
+ beq qst004 
+ 
+ 
+varok lda arytab 
+ ldy arytab+1 
+ sta lowtr 
+ sty lowtr+1 
+ lda strend 
+ ldy strend+1 
  sta hightr 
+ sty hightr+1 
+ clc 
+ adc #7 
+ bcc 10$  ;not even 
  iny 
- jsr indin1_ram1  ;get hi byte of string ptr 
- adc #0   ;adjust high byte 
- sta hightr+1 
  
-; Fix backwards pointer by adding move length to it. 
- 
- phx 
- ldx #hightr 
- ldy #0 
- jsr indhtr_ram1  ;lda (hightr),y 
- adc #7   ;carry clear (careful!) 
- jsr sta_far_ram1 ;sta (hightr),y 
+10$ sta highds 
+ sty highds+1 
+ jsr bltu 
+ lda highds 
+ ldy highds+1 
  iny 
- jsr indhtr_ram1  ;lda (hightr),y 
- adc #0 
- jsr sta_far_ram1 ;sta (hightr),y 
- plx   ;done with this string 
+ sta arytab 
+ sty arytab+1 
  
-; Fix the next string in the array 
+ 
+; Scan thru array entries for string arrays.  If any are found it will be 
+; necessary to adjust the back-links of the strings in that array, since 
+; the array descriptor block itself was moved. 
+ 
+ sta arypnt  ;set pointer to arrays 
+ sty arypnt+1 
  

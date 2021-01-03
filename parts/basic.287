@@ -1,41 +1,79 @@
-pixel jsr CheckGraphicMode ;verify screen open 
- jsr PushParms  ;preserve Graphics parameters & LINNUM  [910820] 
- 
- jsr getsad  ;get x 
- sty GKI__parm1 
- sta GKI__parm2 
- jsr comsad  ;get y 
- sty GKI__parm3 
- sta GKI__parm4 
- jsr chkcls  ;check for closing parens 
- 
- jsr ($8032)  ;get Bitplane data at pixel (x,y), returned in .y 
- jsr sngflt  ;go float 1 byte arg in .Y 
- 
- jsr PopParms  ;restore graphics parameters 
+get_sprite_number 
+ jsr getbyt 
+; dex        [910221] 
+ cpx #8 
+ bcs fcerr 
+ stx z_p_temp_1 
  rts 
  
+;.end 
  .page 
-; Return the color of a drawscreen's PEN      [910820] 
-;  RPEN (pen#) where pen# = 0,1,2 
+ .subttl MOVSPR Command 
  
-rpen jsr CheckGraphicMode ;verify screen open 
- jsr PushParms  ;preserve Graphics parameters & LINNUM  [910820] 
+;**************************************************************** 
+; Move Sprite.  Position sprite and optionally animate it. 
+; 
+;   MOVSPR n, [ p | x#y ]   or   MOVSPR n, p1 TO p2, speed 
+; 
+;  n = Sprite number (0-7) 
+; p = (x,y) coordinate. 
+;  Relative and angular distances  are relative to 
+;  current sprite position and scaled if scaling is on. 
+; x#y = Constant movement at an angle-x with speed-y. 
+;**************************************************************** 
  
- jsr conint  ;get 1 byte arg in .x (old style single arg function) 
- cpx #3 
- bcs 10$   ; illegal pen #? 
- stx GKI__parm1 
+movspr lda #0   ;flag 'movspr' initial coord   [910808] 
+ sta op   ;(0=movspr, $80=movspr_to, $7f=mouse) 
+ jsr get_sprite_number ;get sprite # 
+ jsr sprcor  ;get first coordinate (y,a) 
+movspr_1   ;entry to eval destination coordinate  [910808] 
+ bit numcnt  ; test coordinate type 
+ bvs snerr  ;  syntax error 
+ sty xdest  ; save coordinate value 
+ sty xdest+2 
+ sta xdest+1 
+ sta xdest+3 
  
- jsr ($8036)  ;convert to logical color# (palette index#) 
-10$ bcs fcerr  ; drawscreen not set or illegal quantity somewhere 
+ jsr sprcor  ;get second coordinate (y,a) 
+ bit numcnt  ; test coordinate type & dispatch accordingly 
+ bvc movspr_normal ;  normal coordinates 
+ bmi movspr_angle ;  angular coordinates 
  
- jsr sngflt  ;go float 1 byte arg in .Y 
+ bit op   ;  angle#speed, test if allowed 
+ bmi snerr  ;   ng- movspr_to call 
+ phy   ;   ok- save speed value 
+ ldy #xdest-vwork 
+ jsr getang  ;get angle of movement 
+ ldx z_p_temp_1  ;get sprite number 
+ ldy sproff,x  ;get offset to speed data 
+ lda #0 
+ sta sprite_data,y ;turn off sprite speed 
+ iny 
  
- jsr PopParms  ;restore graphics parameters 
+ ldx #3 
+20$ lsr sinval,x 
+ dex 
+ ror sinval,x 
+ dex 
+ bpl 20$ 
+ 
+30$ sei 
+ inx   ;x=0 
+ lda angsgn,x  ;move angle data to speed data 
+ iny 
+ sta sprite_data,y 
+ cpx #4 
+ bne 30$ 
+ 
+ lda #0   ;clear speed angle counts 
+40$ iny 
+ sta sprite_data,y 
+ dex 
+ bne 40$ 
+ 
+ pla   ;restore speed value 
+ and #$3f  ; limit range (0-63) ????  [910806] 
+ sta sprite_data-10,y  ; start sprite movement 
+ cli 
  rts 
- 
- .page 
-; Return the R,G, or B component of a color     [910820] 
-; RPALETTE (screen#, color#, rgb) 
  

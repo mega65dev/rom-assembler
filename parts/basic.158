@@ -1,51 +1,88 @@
-chkgrb cpy fretop+1  ;end of strings? 
- bcc 50$ 
- bne 10$   ;if not equal 
- cmp fretop 
- beq 50$ 
- bcc 50$ 
+putnew ldx temppt  ;pointer to first free temp 
+ cpx #tempst+strsiz+strsiz+strsiz 
+ beq sterr  ;string temporary error 
  
-10$ bit highds  ;check flag 
- bmi 20$   ;if empty string found 
- lda #2   ;skip pointers past 
- jsr movtop  ;move top pointer 
+ lda dsctmp  ;length 
+ sta 0,x 
+ lda dsctmp+1  ;pointer to string lo 
+ sta 1,x 
+ lda dsctmp+2  ;   hi 
+ sta 2,x 
  
-20$ lda #2   ;skip pointers past 
- jsr movpnt  ;move pointers 
- ldy #1 
- jsr indgrb  ;garbage? 
- cmp #$ff 
- beq 40$   ;yes 
+ ldy #0   ;pointer to temp. descriptor 
+ stx facmo  ;   lo 
+ sty facmo+1  ;   hi 
+ sty facov 
+ dey   ;($ff) 
+ sty valtyp  ;type is string 
+ stx lastpt  ;set pointer to last-used temp 
  
-30$ jsr indgrb  ;to link bytes 
- sta index1,y 
- dey 
- bpl 30$   ;if two bytes not moved 
-40$ rts 
- 
- 
-50$ ldx temppt  ;ptr to temp. strings 
- 
-60$ cpx #tempst  ;any out there? 
- beq 70$   ;no 
- jsr slr1  ;setup ptr (tempf2) to temp. string's bkptr. 
- beq 60$   ; (skip if null string!) 
- phx 
- ldx #tempf2 
- ldy #0   ;.a = string length 
- jsr sta_far_ram1 ;sta (tempf2),y ;remove backpointer built at garba2 
- iny 
- lda #$ff 
- jsr sta_far_ram1 ;sta (tempf2),y ;and mark as garbage 
- plx 
- bra 60$   ;always 
- 
-70$ pla   ;throw away return address 
- pla 
- lda frespc  ;fix fretop and frespc 
- ldy frespc+1 
- sta fretop 
- sty fretop+1 
- rts 
+ inx 
+ inx 
+ inx   ;point further 
+ stx temppt  ;save pointer to next temp, if any 
+ rts   ;all done 
  
  .page 
+; The following routine concatenates two strings.  At this point, the FAC 
+; contains the first one and (txtptr) points to the + sign. 
+ 
+cat lda faclo  ;push high order onto stack 
+ pha 
+ lda facmo  ;and the low 
+ pha 
+ jsr eval  ;can come back here since operator is known 
+ jsr chkstr  ;must be string 
+ pla 
+ sta strng1  ;get high order of old descriptor 
+ pla 
+ sta strng1+1 
+ ldy #0 
+ jsr indst1_ram1  ;get length of old string 
+ sta syntmp 
+ jsr indfmo 
+ clc 
+ adc syntmp 
+ bcs errlen  ;result >255, error "long string" 
+ 
+ jsr strini  ;sizeok.  initialize string 
+ jsr movins  ;move it 
+ lda dscpnt  ;get pointer to second 
+ ldy dscpnt+1 
+ jsr fretmp  ;free it 
+ jsr movdo  ;move second string 
+ lda strng1 
+ ldy strng1+1 
+ jsr fretmp 
+ jsr putnew 
+ bra tstop  ;"cat" reenters frmevl from tstop 
+ 
+ .page 
+movins ldy #0   ;get address of string 
+ jsr indst1_ram1 
+ pha 
+ iny 
+ jsr indst1_ram1 
+ tax 
+ iny 
+ jsr indst1_ram1 
+ tay 
+ pla 
+ 
+movstr stx index  ;adr in (x,y), len in a 
+ sty index+1 
+ 
+movdo tay 
+ beq mvdone 
+ 
+ pha 
+ phx 
+ ldx #frespc 
+10$ dey 
+ jsr indin1_ram1 
+ jsr sta_far_ram1 ;sta (frespc),y 
+ tya 
+ bne 10$ 
+ plx 
+ pla 
+ 

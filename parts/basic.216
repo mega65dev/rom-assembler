@@ -1,40 +1,89 @@
-too_many_files 
- ldx #errtmf  ;too many files open 
+disk 
+ lda #$f6  ;parse:  command_string [,U#] 
+ jsr dosprs 
+ jsr chk1  ;check parameters 
+ lda #doslfn  ;la (reserved la) 
+ sta dosla 
+ lda #$6f 
+ sta dossa  ;sa (command channel) 
+ ldy #fdisk 
+ ldx #2   ;     add "/" [911108] 
+ jsr open_file  ;open command channel & send command string 
+ php   ;save error status    [910404] 
+ pha 
+ lda #doslfn  ;close it 
+ sec   ; not a real close 
+ jsr _close  ; close it 
+ pla   ;      [910404] 
+ plp 
+ bra exit_disk_op ; common error check & exit path ???? 
+ 
+ 
+;.end 
+ .page 
+ .subttl  DOS 1 
+ 
+; These routines take tokens and values after the following BASIC keywords: 
+; 
+;  DOPEN,   DCLOSE,  APPEND,  CONCAT, RECORD 
+;  DLOAD,   DSAVE,   DVERIFY, BLOAD,  BSAVE 
+;  FORMAT,  COLLECT, BACKUP,  COPY 
+;  CATALOG, RENAME,  SCRATCH, DCLEAR 
+; 
+; It then parses the following line and finds syntax errors, checks for values 
+; out of range, and sets variables in the zero-page to be passed to the disk 
+; message generator. 
+ 
+ 
+directory   ;display disk directory (catalog) 
+ jsr chrgot  ;get current chr 
+ cmp #esc_command_token  ; eat dirECTORY kludge if it's there 
+ bne 1$ 
+ jsr chrget  ; (esc token + another) 
+ cmp #ectory_token 
+ bne snerr 
+ jsr chrget  ; yes- get next good char 
+ 
+1$ jsr dospar  ;parse the line 
+ lda parsts  ;check options 
+ and #$e6 
+ bne snerr 
+ 
+ ldy #fdir  ;table offset for directory 
+ bit dosflags  ;want recoverable files? [901024] 
+ bvc 2$   ; no 
+ ldy #fdirr  ; yes 
+2$ ldx #1   ;just $ 
+ lda parsts  ;check for default 
+ and #$11  ;no drive? 
+ beq 20$ 
+ lsr a 
+ bcc 10$   ;just drive 
+ inx   ;drive and filename 
+ inx 
+10$ inx 
+20$ txa   ;a now has length 
+ jsr sendp  ;build 
+ 
+ ldx #sys_bank  ;set banks????  fname in system space, bank0 [910620] 
+ txa   ; (load bank is don't care- we're not actually loading) 
+ jsr _setbank 
+ 
+ ldy #$60  ;sa, load floppy 
+ ldx dosfa 
+ lda #doslfn  ;lfn 
+ jsr _setlfs  ;set file parameters 
+ jsr _open  ;open it... 
+ bcc 30$   ;...ok 
+ pha 
+ jsr dcat11  ;...error, shut down and report 
+ plx 
+ sec 
  bra error 
  
- .page 
-; Close disk file 
+30$ lda channl  ;determine DIR vs LDIR 
+ bne ldir  ; if output channel not default (screen) 
+    ; use LDIR 
  
-dclose lda #$f3  ;set error flags 
- jsr dosprs  ;parse the line 
- jsr Clear_DS 
- bbr2 parsts,dclall ;any la given?  branch if not 
- lda dosla 
- bra close_out 
- 
-dclall lda dosfa  ;get disk # 
-; jsr put_io_in_map 
- jmp _close_all  ;close all channels 
- 
- 
- 
-; DSAVE dfn 
- 
-dsave bbr4 runmod,10$  ;PROGRAM or EDIT mode?    [910620] 
- bra edit_save  ; edit 
- 
-10$ lda #$66  ;set error flags 
- jsr dosprs  ;parse the line 
- jsr chk2  ;check required parameters 
- ldy #fopn  ;table offset 
- lda #4   ;..length, 
- jsr sendp 
- 
- lda text_bank  ;default to text bank set up banks???? [910620] 
- ldx #sys_bank  ;fname is in system space, bank0 
- jsr _setbank 
- bra savenp 
- 
- .page 
-; DVERIFY 
+; Get length in blocks 
  

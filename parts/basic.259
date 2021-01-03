@@ -1,21 +1,106 @@
-c65.setpalette 
- cmp #restore_token ;restore palette? 
- bne 10$   ; no 
- jsr chrget  ; yes- advance past Restore token 
- jmp _palette_init 
+mouse cmp #on_token  ;      new [910122] 
+ beq 10$ 
+ jsr chkesc 
+ cmp #off_token 
+ bne snerr 
  
-10$ cmp #color_token ;set physical color register? 
- bne 20$   ; no- set logical color register 
- sta GKI__parm1 
- jsr chrget  ; yes- advance past Color token 
- jsr getbyt 
- bra 30$ 
+;    The Kernel MOUSE_CMD is called to install or remove mouse driver. 
+; .a= B7,6 set to install mouse in game port 2 ($80), 1 ($40), or both ($C0) 
+; .a= 0 to disable mouse driver 
+; .x= 0-7 physical sprite pointer 
  
-20$ jsr getbyt  ;get screen# 
- cpx #4   ;      [910711] 
- bcs fcerr 
- stx GKI__parm1 
+ lda #0   ;TURN MOUSE OFF 
+ jsr _mouse  ; do it 
+ bra chkeos  ; eat token & exit after checking for eos 
  
- jsr combyt  ;get color reg # 
-30$ stx GKI__parm2  ; (GKI will check for out of range????) 
+    ;TURN MOUSE ON 
+10$ jsr chrget  ; eat token 
+ ldx #2   ; get (optional) port# in .X 
+ jsr optbyt  ;  if not present default to port 2 
+ cpx #4   ; 
+ bcs fcerr  ;  illegal value 
+ phx 
+ 
+ ldx #0   ; get (optional) sprite# in .X 
+ jsr optbyt  ;  if not present default to sprite 0 
+ cpx #8 
+ bcs fcerr  ;  illegal value 
+ stx z_p_temp_1 
+ ldy sproff,x  ; kill moving sprite 
+ lda #0   ;  get offset to speed data 
+ sta sprite_data,y ;  reset sprite's speed value 
+ 
+ pla   ; setup for Kernel call- get port# into b7,6 
+ ror a   ;  .a= port(s), .x=sprite 
+ ror a 
+ ror a 
+ jsr _mouse  ; do it (???? do after coord error check) 
+ 
+ .page 
+ jsr optbyt  ; get (optional) hotspot, x  new [910307] 
+ bcc 20$   ;  not given 
+ cpx #24 
+ bcs fcerr  ;  out of range (0-23) 
+ txa 
+ neg a 
+ tax 
+ adc #24 
+ sta _mouse_left 
+ txa 
+ clc 
+ adc #87 
+ sta _mouse_right 
+ 
+20$ jsr optbyt  ; get (optional) hotspot, y 
+ bcc 30$   ;  not given 
+ cpx #21 
+ bcs fcerr  ;  out of range (0-20) 
+ txa 
+ neg a 
+ tax 
+ adc #50 
+ sta _mouse_top 
+ txa 
+ clc 
+ adc #250 
+ sta _mouse_bottom 
+ 
+30$ jsr chrgot  ; get (optional) position coordinate  [910123] 
+ beq 40$   ;  eol, use this sprite's last position 
+ jsr sprcor  ;  else get first coordinate 
+ bit numcnt  ;   test coordinate type 
+ bvs snerr  ;    syntax error 
+ sty xdest  ;   save coordinate value 
+ sty xdest+2 
+ sta xdest+1 
+ sta xdest+3 
+ 
+ lda #$7f  ;  flag 'mouse' for movspr call  [910808] 
+ sta op 
+ jsr sprcor  ;  get second coordinate 
+ bit numcnt  ;  test type of coordinate 
+ bvc movspr_normal ;  position sprite, normal coordinates 
+ bmi movspr_angle ;     angular coordinates 
+ bra snerr  ;     else error 
+ 
+40$ rts 
+ 
+;.end 
+ .page 
+;************************************************************************ 
+;*   RMOUSE Returns in variable list current status of mouse * 
+;*         * 
+;*   Syntax: RMOUSE [Xposition [,Yposition [, Buttons] ]]  * 
+;*         * 
+;*   Where: X,Yposition = current position of mouse pointer sprite * 
+;*  Button      = current status of mouse buttons  * 
+;*         * 
+;*   0   = no button     * 
+;*   1   = right button    * 
+;*   128 = left button    * 
+;*   129 = both buttons    * 
+;*         * 
+;* If a mouse is not installed, "-1" is returned for all vars. * 
+;* If both ports are enabled, buttons from each port are merged. * 
+;************************************************************************ 
  

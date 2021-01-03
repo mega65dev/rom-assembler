@@ -1,33 +1,52 @@
-rsprite jsr conint ;get first arg, sprite #, in .X 
-; dex  ;adjust [1..8] to [0..7]   [910220] 
- cpx #8  ; (318018-03 mod; fab) 
- bcs 1$  ;value error 
- txa 
- pha  ;save sprite number 
- 
-; jsr chkcom ;check for proper delimiter 
-; jsr getbyt ;do frmevl, get 1 byte arg (arg) in .X 
- jsr combyt ;      [910820] 
- jsr chkcls ;look for closing paren 
- cpx #6 
-1$ bcs fcerr ;value error 
- 
- ply  ;sprite number 
-; jsr put_io_in_map 
- lda vic+39,y ;assume 'color' 
- and #$0f ;range 0-15 
-; inc a  ;adjust to 'keyboard' colors   [910724] 
- cpx #1 
- beq 10$  ;it was color. set up for float 
- 
- lda rspmod,x ;get index for this function 
- tax 
- lda sbits,y ;get mask for this sprite number 
- and vic,x 
- beq 10$ 
- lda #1  ;return all non-zeros as '1' 
- 
-10$ tay 
- bra sngflt ;go float 1 byte arg in .Y 
+movspr_normal   ;      [910122] 
+ sty xdest+2  ;save second coordinate (y,a) 
+ sta xdest+3 
+; ldx #xdest-vwork 
+; jsr scalxy  ;scale the coordinates 
  
  
+movspr_position 
+ sei   ;      [910123] 
+ lda z_p_temp_1  ;get sprite number 
+ tax   ;use as an index 
+ asl a 
+ tay   ;get sprite-number * 2 as another index 
+ 
+ bbr7 op,10$ 
+ rts   ;>>>exit here if movspr_to call   [910808] 
+ 
+10$ lda xdest+2  ;get y-coordinate 
+ asl numcnt  ;test if relative 
+ bcc 80$   ;skip if absolute 
+ clc 
+ bpl 75$   ;skip if normal coordinates 
+ eor #$ff 
+ sec   ;invert to subtract if angular 
+75$ adc vic+1,y  ;add to current sprite y-value  ???vic_save 
+ 
+80$ sta vic+1,y  ;save new sprite y-position  ???vic_save 
+ lda xdest  ;get low byte of x-coordinate 
+ asl numcnt  ;test if relative 
+ bpl 95$   ;skip if absolute 
+ clc 
+ adc vic,y  ;add current sprite x-position  ???vic_save 
+ sta vic,y  ;save sprite x-position   ???vic_save 
+ bcs 90$   ;skip if carry 
+ inc xdest+1  ;invert lsb 
+ 
+90$ lda vic+16  ;get x-position msb bits  ???vic_save 
+ bra 98$   ;test if need to invert msb bit 
+ 
+95$ sta vic,y  ;save new sprite x-position  ???vic_save 
+ lda vic+16  ;     ???vic_save 
+ ora sbits,x  ;set x-position msb bit 
+ 
+98$ lsr xdest+1  ;match to lsb of x-coordinate high byte 
+ bcs 100$  ;skip if should be set 
+ eor sbits,x  ;reset bit 
+ 
+100$ sta vic+16  ;save position msb bits   ???vic_save 
+; cli 
+;110$ rts   ; mouse or movspr_to 
+ 
+ .page 

@@ -1,67 +1,101 @@
-desc_free    ;free temporary descriptor, set up pointers to string. 
- lda facmo   ;get address of temp descriptor 
- ldy facmo+1 
- jsr fretms 
- ldy #0    ;get len, addr of string 
- jsr indfmo 
- tax 
- iny 
- jsr indfmo 
- pha 
- iny 
- jsr indfmo 
- tay 
- pla 
- sec    ;flag 'string found' 
- rts    ;return w/ x=len, (a,y)==> string 
- 
-;.end 
- .page 
- .subttl COLLISION Command 
- 
-;***************************************************************** 
-; COLLISION Command 
-; 
-; Syntax:  COLLISION n [,address] 
-; 
-; Where:   n= 1 ==> sprite / sprite 
-;   2 ==> sprite / background 
-;   3 ==> light pen 
-; 
-; Address ==> BASIC line number to trap to on interrupt 
-;      (no address ==> disable trapping) 
-;***************************************************************** 
- 
-collision 
- jsr getbyt  ;get type in .X 
- dex   ;adjust 1..3 to 0..2 
- cpx #3 
- bcs fcerr  ;value error 
- 
- phx   ;save collision type 
- jsr optwrd  ;get address (line number) in .Y,.A (optional) 
- plx 
-; php   ;save .C (.C == 1 ==> real value) 
- sta int_adr_hi,x ;save address given 
- sty int_adr_lo,x 
- 
- lda intval  ;this records valid interrupts 
- ora sbits,x  ;set correct bit 
-; plp 
- bcs 10$   ;..unless this is a 'clear', 
- eor sbits,x  ;..in which case we'll reset bit 
-10$ sta intval 
+background 
+ jsr getnyb  ;Set Vic background color 
+ stx vic+33 
  rts 
  
+ 
+ 
+border 
+ jsr getnyb  ;Set Vic border color 
+ stx vic+32 
+ rts 
+ 
+ .page 
+getcomnyb 
+ jsr chkcom  ;check for comma 
+getnyb 
+ jsr getbyt  ;Get a nybble, check range (0-15) 
+chknyb 
+ cpx #16 
+ bcs fcerr 
+ rts 
+ 
+ 
+ 
+chkesc    ;Check for escape token, error if not, else get next token 
+ cmp #esc_command_token 
+ bne snerr 
+ jsr chrget 
+ beq snerr  ; eos? report error if so 
+ rts 
+ 
+ 
+ 
+chkeos    ;Check for next byte = end of statement, error if not 
+ jsr chrget 
+ bne snerr  ; eos? report error if not 
+ rts 
+ 
+ 
 ;.end 
  .page 
- .subttl  RCOLOR Function 
+ .subttl SPRITE Commands and Functions 
  
-;************************************************************************ 
-;  RCOLOR (source)  --  return current color assigned to source 
-;   0  :  Background color 
-;   1  :  Foreground color 
-;   2  :  Highlight color 
-;   3  :  Border color 
-;************************************************************************ 
+;************************************************************************************ 
+; SPRITE CLR 
+; SPRITE {LOAD|SAVE} "filename" [,Ddrive] [,Udevice] 
+; SPRITE sprite [,enable [,color [,priority [,xexp [,yexp [,resolution] ]]]]] 
+; 
+; where: sprite  :== sprite number (1-8) 
+;  enable  :== enable  (0=off, 1=on) 
+;  color  :== color  (0-15) 
+;  priority :== sprite/bgnd  (0=sprite, 1=bgnd) 
+;  xexp  :== expand x direction (0=no, 1=yes) 
+;  yexp  :== expand y direction (0=no, 1=yes) 
+;  resolution :== resolution  (0=hires, 1=multicolor) 
+;************************************************************************************ 
  
+sprite cmp #clr_token  ;SPRITE CLR: init environment   [910717] 
+ beq Sprite_CLR  ; yes 
+ cmp #save_token  ;SPRITE SAVE: save sprite data   [911001] 
+ beq Sprite_Save  ; yes 
+ cmp #load_token  ;SPRITE LOAD: load sprite data   [911001] 
+ beq Sprite_Load  ; yes 
+ 
+ jsr get_sprite_number ;get sprite number in z_p_temp_1 
+ jsr optbyt  ;look for (optional) enable 
+ bcc 10$   ;none here, don't change 
+ ldy #21 
+ jsr sprbit  ;set/clear sprite bit 
+ 
+10$ jsr optbyt  ;get (optional) color 
+ bcc 20$   ;branch if no arg 
+ jsr chknyb  ;       [910109] 
+ txa 
+ ldx z_p_temp_1  ;get back sprite number 
+; jsr put_io_in_map 
+ sta vic+39,x 
+ 
+20$ jsr optbyt  ;look for (optional) priority 
+ bcc 30$ 
+ ldy #27 
+ jsr sprbit 
+ 
+30$ jsr optbyt  ;look for (optional) x expansion 
+ bcc 40$ 
+ ldy #29 
+ jsr sprbit 
+ 
+40$ jsr optbyt  ;look for (optional) y expansion 
+ bcc 50$ 
+ ldy #23 
+ jsr sprbit 
+ 
+50$ jsr optbyt  ;look for (optional) resolution 
+ bcc 60$ 
+ ldy #28 
+ jsr sprbit 
+ 
+60$ rts 
+ 
+ .page 

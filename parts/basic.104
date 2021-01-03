@@ -1,32 +1,52 @@
-set_filter 
- jsr wait_for_all_quiet ;      [910722] 
- cmp #2 
- bcs play_bad_value ;value too large 
- lsr a   ;.c=on/off 
- ldy voice  ;0-5 
- ldx filter_offset,y ;0 0 0 4 4 4 
- lda filters1+2,x ;get current filter data for this SID  [910612] 
- ora vbits,y  ;update filter voice bit 
- bcs 20$   ; branch to turn filter on 
- eor vbits,y  ; else, turn filter off   [910612] 
- 
-20$ sta filters1+2,x 
-; lda filters1+3,x ;why????     [910612] 
-; sta filters1+4,x ;save new filter-type/volume 
- 
-; jsr put_io_in_map 
- lda SID_offset,y ;get hardware offset for current voice 
- and #$f0  ;$00 or $20 
- tay 
-; jsr go_slow  ;      [910716] 4567R7A 
- ldz #3 
-30$ lda filters1,x  ;update the hardware 
- sta sid1+21,y 
- inx 
- iny 
- dez 
- bpl 30$ 
-; jsr go_fast  ;      [910716] 4567R7A 
- bra clear_flag  ;always 
+play_rts 
+ rts 
  
  .page 
+play_one_character 
+ cmp #' '  ;spaces are a 'no-op' 
+ beq play_rts 
+ 
+5$ cmp #'A'  ;note name a-g? 
+ bcc 10$ 
+ cmp #'H' 
+ bcc play_note  ;yes...play it 
+ 
+10$ ldx #4   ;test for notes,'w,h,q,i,s' 
+20$ cmp notes,x 
+ beq set_note_length 
+ dex 
+ bpl 20$ 
+ 
+ cmp #'R'  ;rest? 
+ beq play_rest 
+ cmp #'.'  ;dotted note? 
+ beq play_dot 
+ 
+ ldx #5   ;test for v,o,t,x,u,m commands 
+30$ cmp mutabl,x 
+ beq play_command 
+ dex 
+ bpl 30$   ;test all 5 characters in table 
+ 
+ cmp #'#'  ;sharp? 
+ beq play_sharp 
+ cmp #'$'  ;flat? 
+ beq play_flat 
+ 
+ .page 
+; Must be a digit here for Octave, Voice, envelope (T), filter (X), or volume (U) 
+ 
+ sec 
+ sbc #'0'  ;mask nybble 
+ cmp #10   ;must be in range 0..9 
+ bcs play_bad_value 
+ 
+ asl flag  ;octave, voice, envelope, filter, or volume? 
+ bcs set_voice 
+ asl flag  ;octave, envelope, filter, or volume? 
+ bcs set_octave 
+ asl flag  ;envelope, filter, or volume? 
+ bcs set_envelope 
+ asl flag  ;filter or volume? 
+ bcc set_volume 
+ 

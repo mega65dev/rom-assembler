@@ -1,94 +1,77 @@
-nescpr bcs p1l015  ;no takers, print a funny graphic character 
- ldy #0 
- bra p1l070 
+p1l070    ;found text for this token 
+ bbr4 helper,p1l072 ; branch if not highlighting tokens 
+ lda (index1),y  ;peek at first character 
+ bmi p1l010  ; branch if operator (1-byte, msb=1) 
+ smb0 helper  ; else begin highlight 
+p1l071 jsr highlight_text 
  
- 
-;.end 
- .page 
- .subttl NEW  CLR 
-; 
-; The NEW command clears the program text as well as variable space. 
-; 
- 
-new beq init_text  ;Erase program in memory 
- cmp #restore_token ;Restore an erased program?    [910103] 
- bne snerr  ; no- syntax error    [910410] 
- jsr chkeos  ; yes- eat token, error if not eos  [910429] 
- lda txttab  ;  "seed" first link to fool 'chead' 
- ldx txttab+1 
- sta index 
- stx index+1 
- lda #0 
- ldy #1 
- ldx #index 
- jsr sta_far_ram0 ;   clear msb  (bleed-thru) 
- dey 
- inc a 
- jsr sta_far_ram0 ;   set lsb   (bleed-thru) 
- bra renumber  ; make renumber check it for us (not 100%) & relink 
- 
- 
-init_text 
- lda txttab  ;find the bottom of basic text 
- ldx txttab+1 
- sta index 
- stx index+1 
- dew index  ; (the absolute bottom) 
- 
- lda #0 
- tay 
- ldx #index 
- jsr sta_far_ram0 ;clear bottom     (bleed-thru) 
+p1l072 lda (index1),y  ;get char from ROM table 
+ bmi p1l010  ; msb=1=last char this token, contine line 
+ jsr outch  ; else print it 
  iny 
- jsr sta_far_ram0 ;clear first link bytes    (bleed-thru) 
+ bra p1l072 
+ 
+ .page 
+; Print Escape Command 
+ 
+print_esc_cmd 
+ tax    ;save type (cmd) in case it is a foreign esc token 
  iny 
- jsr sta_far_ram0 ;      (bleed-thru) 
- clc 
- lda txttab 
- adc #2 
- sta text_top  ;set up (text_top), the end of text 
- lda txttab+1 
- adc #0 
- sta text_top+1 
+ jsr indlow   ;look at second token 
+ beq p1l015   ; none?  print funny character 
+ sty lstpnt 
+ cmp #first_esc_command_token ;is this one of ours? 
+ bcc print_foreign_esc  ; nope 
+ cmp #last_esc_command_token+1 
+ bcs print_foreign_esc  ; nope 
+ adc #$80-first_esc_command_token ;yes- make a pointer p1l will be proud of 
+ tax 
+ ldy #<esc_command_list 
+ lda #>esc_command_list 
+ bra p1l026   ;go scan list and print it 
  
- rmb5 runmod  ;trcflg. reset trace flag 
  
  
-runc jsr reset_txtptr ;load (txtptr) with (txttab)-1 
- bra clearc  ;"CLR" to clear vars    [910410] 
+; Print Escape Function 
  
- .page 
-; CLeaR Routines 
-; 
- 
-; Special forms of CLR command: 
-; 
-; CLR ERR$ Clears program error status, useful in TRAP handlers which 
-;   have resolved an error & wish to RESUME with a clean status. 
-; 
-; CLR DS$  Clears the currently buffered DS,DS$ messages.  The next 
-;   use of DS or DS$ will make BASIC re a new message from DOS. 
- 
-clear beq clearc  ;branch if no args    [910410] 
- 
- cmp #err_token  ;CLR ERR$ 
- bne 10$   ; no 
- jsr chkeos  ; yes- eat token & error if not eos 
- bra error_clear  ;      and go clear ERR$ 
- 
-10$ cmp #'D'  ;CLR DS$     [910717] 
- bne 20$   ; no- error 
- jsr chrget 
- cmp #'S' 
- bne 20$ 
- jsr chrget 
- cmp #'$' 
-20$ bne snerr  ; no- error 
- jsr chkeos 
- bra Clear_DS  ; yes- clear current DS$ 
+print_esc_fn 
+ tax    ;save type (function) in case it's a foreign esc token 
+ iny 
+ jsr indlow   ;look at second token 
+ beq p1l015   ; none?  print funny character 
+ sty lstpnt 
+ cmp #first_esc_function_token ;is this one of ours? 
+ bcc print_foreign_esc  ; nope 
+ cmp #last_esc_function_token+1 
+ bcs print_foreign_esc  ; nope 
+ adc #$80-first_esc_function_token ;yes- make a pointer p1l will be proud of 
+ tax 
+ ldy #<esc_function_list 
+ lda #>esc_function_list 
+ bra p1l026   ;go scan list and print it 
  
  .page 
-; Clearc is a subroutine which initializes the variable and array space by 
-; resetting STREND (the end of array storage).  It falls into INIT_STACK, 
-; which resets the stack. 
+; The token to be printed is an escape token which is NOT recognized by BASIC. 
+; We will jump through the indirect chain and see if anyone claims this token. 
+; 
+; At this point: 
+; .C = 1 to signal 'unclaimed' 
+; .X = type (0==>command, ff==>function) 
+; .A = second token character 
+; 
+; If anyone claims this token, they should: 
+; 
+; > Clear .C to flag 'taken' 
+; > Point (INDEX1) at the string to be printed (with msb of last char set) 
+; > Note: string to print MUST be in RAM-0! 
+ 
+print_foreign_esc 
+ cpx #esc_command_token 
+ bne 1$ 
+ ldx #0 
+   .byte $2c 
+ 
+1$ ldx #$ff 
+ sec 
+ jmp (iescpr) 
  

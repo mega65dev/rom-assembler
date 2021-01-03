@@ -1,0 +1,74 @@
+Sound_CLR 
+ jsr chkeos  ;eat CLR token, check eos   [910717] new 
+Sound_CLR_1 
+ php 
+ sei 
+; jsr go_slow  ;      [910716] 4567R7A 
+ lda #0 
+ ldx #24-1 
+40$ sta sid1,x  ;initialize SID chips 
+ sta sid2,x 
+ dex 
+ bpl 40$ 
+ 
+ sta filters1+2  ;set filters off 
+ sta filters2+2 
+ 
+ lda #8   ;set default volume 
+ sta filters1+3 
+ sta filters2+3  ;      [910612] 
+; sta filters+4  ;why?      [910612] 
+ sta sid1+24 
+ sta sid2+24 
+ 
+; jsr go_fast  ;      [910716] 4567R7A 
+ 
+ bit _pal_ntsc  ;determine if PAL or NTSC system  [910724] 
+ bmi 1$   ;...branch if PAL 
+ lda #<beats_ntsc/4 ;set beat to quarter note (4/4 time = .5 sec) 
+ ldy #>beats_ntsc/4 
+ bra 2$ 
+1$ lda #<beats_pal/4 
+ ldy #>beats_pal/4 
+2$ sta ntime 
+ sty ntime+1 
+ 
+ lda #4   ;set default octave 
+ sta octave 
+ lda #12   ;set default tempo    [910220] 
+ sta tempo_rate  ; 12 makes whole note in 4/4 time last 2 seconds 
+ 
+ ldy #30-1  ;initialize music tables 
+10$ lda atkmus,y 
+ sta atktab,y 
+ dey 
+ bpl 10$ 
+ 
+ ldx #10-1  ;initialize pulse widths 
+20$ lda pwhmus,x 
+ sta pulshi,x 
+ dex 
+ bpl 20$ 
+ 
+ txa   ;$ff 
+ ldx #6-1  ;stereo SIDs   (save space) [911119] 
+ ldy #1 
+25$ sta sound_time_hi,x ;turn all SOUND counters off 
+ sta voices,y  ;turn all PLAY counters off 
+ iny 
+ iny 
+ dex 
+ bpl 25$ 
+ 
+ ldy #6-1  ;set default envelope (piano) for all voices (6) 
+ sty voice 
+30$ ldx #0 
+ jsr set_envelope_1 
+ dec voice 
+ bpl 30$ 
+ inc voice  ;set default voice (0) 
+ 
+ plp 
+ rts 
+ 
+ .page 

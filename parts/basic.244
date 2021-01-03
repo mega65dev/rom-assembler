@@ -1,58 +1,116 @@
-collision_irq 
-; sei 
- lda _vicIRQ  ;check VIC IRQ flags 
- and #%00001110  ; mask all but lp, s/s, and s/bgnd flags 
- beq 40$   ; exit if none set 
- trb _vicIRQ  ; else reset flags we're going to handle 
- lsr a   ;shift out raster interrupt bit (not used) 
- 
-; Test for 3 types of collision interrupts : sprite/sprite, sprite/bgnd, & light pen 
- 
- ldy #1   ;loop for sprite/bgnd and sprite/sprite collision check 
-10$ lsr a 
- bcc 30$   ;bit not set ==> not source of interrupt 
- 
- pha 
- lda vic+30,y  ;accumulate collision data (resets register) 
- ora collisions,y 
- sta collisions,y 
- 
- lda intval  ;allowable interrupts 
- cpy #0   ;examine selected bit 
- beq 20$ 
- lsr a 
-20$ lsr a 
- bcc 25$   ;BASIC doesn't want this interrupt 
- lda #$ff 
- sta int_trip_flag,y ;turn on trip flag 
- 
-25$ pla 
- 
-30$ dey 
- bpl 10$ 
+rdrt0 dex  ;case cdd=sd 
+rdrt1 bra sdp1 ;get next symbol 
  
  .page 
-; Check light pen latch 
+; Syntax checker DOS write 
  
- lsr a 
- bcc 40$   ;LightPen latch not valid 
+chk1 and #$e6 ;for HEADER, DLOAD, SCRATCH, TYPE, LIST 
+ bne snerr 
  
- ldx vic+49  ;4567R7 bug- must read LP_latches in Slow mode???? 
- lda #%01000000  ;      [910618] 
- trb vic+49 
- ldy vic+19  ;save latched x position 
- sty lightpen_xpos 
- ldy vic+20  ;save latched y position 
- sty lightpen_ypos 
- stx vic+49  ;restore speed     [910618] 
+chk2 lda parsts ;for DSAVE 
+ and #1 
+ cmp #1  ;check required parameters 
+ bne snerr ;error if 1 missing 
+ lda parsts ;reload for return 
+ rts 
  
- lda intval  ;is BASIC interested in our little find? 
- and #4 
- beq 40$   ; no, move on to next IRQ task 
- lda #$ff 
- sta int_trip_flag+2 ; yes- let BASIC know we caught one 
  
-40$ 
+chk3 and #$e7 ;for COLLECT 
+ bne snerr ;check optional parameters 
+ rts 
+ 
+ 
+chk4 and #$c4 ;for COPY, CONCAT 
+ bne snerr ;check optional parameters 
+ lda parsts 
+chk5 and #3  ;for RENAME 
+ cmp #3  ;check required parameters 
+ bne snerr 
+ lda parsts ;reload for return 
+ rts 
+ 
+ 
+chk6 and #5  ;for APPEND, DOPEN 
+ cmp #5  ;check required parameters 
+ bne snerr 
+ lda parsts ;reload for rts 
+ rts 
+ 
+;.end 
  .page 
-; Update moving sprites 
+ .subttl  DOS 4 
+ 
+; Allocate DS$ if nesessary, but use old DS$ string otherwise 
+; Called by DS$ and DS 
+ 
+Check_DS   ;chkds. 
+ lda dsdesc 
+ beq Read_DS_1  ;branch if DS$ is not in memory 
+ rts   ;else return & use old one 
+ 
+ 
+; Allocate DS$ if necessary & Read DOS error channel 
+ 
+Read_DS    ;errchl. 
+ lda dsdesc  ;has DS$ space been allocated? 
+ bne Read_DS_2  ; yes 
+ 
+Read_DS_1 
+ lda #40   ; no- get 40 char string 
+ sta dsdesc 
+ jsr getspa  ;allocate space for DS$ 
+ stx dsdesc+1  ; low address of string 
+ sty dsdesc+2  ; high   "    "    " 
+ ldx #dsdesc+1  ;set up string back pointer to dsdesc 
+ ldy #40 
+ lda #<dsdesc 
+ jsr sta_far_ram1 ; sta (dsdesc+1),y 
+ iny 
+ lda #>dsdesc 
+ jsr sta_far_ram1 ; sta (dsdesc+1),y 
+ 
+Read_DS_2 
+ ldx dosfa  ;fa 
+ cpx #2 
+ bcs 10$   ; if =0 or 1 use default  [910429] 
+ ldx _default_drive ; (was dosffn)   [900710] 
+ stx dosfa 
+10$ lda #doslfn  ;la (reserved la) 
+ ldy #$6f  ;sa (command channel) 
+ jsr _setlfs 
+ lda #0   ;no name (so no setbank) 
+ jsr _setnam 
+ jsr _open  ;get command channel 
+ ldx #doslfn 
+ jsr _chkin 
+ bcs 40$   ; a problem (file already open??) 
+ 
+ ldy #$ff 
+20$ iny   ;read disk error message 
+ jsr _basin 
+ cmp #cr 
+ beq 30$   ; if eol 
+ ldx #dsdesc+1 
+ jsr sta_far_ram1 ; sta (dsdesc+1),y copy to DS$ 
+ cpy #40 
+ bcc 20$   ; loop unless too long 
+ 
+30$ lda #0   ;errend. 
+ ldx #dsdesc+1  ;terminate DS$ with a null 
+ jsr sta_far_ram1 ;sta (dsdesc+1),y 
+ 
+ jsr _clrch  ;shut down command channel 
+ lda #doslfn 
+ sec   ; not a real close 
+ jmp _close  ; close it and rts 
+ 
+40$ pha   ;errbad. 
+ jsr 30$ 
+ jsr Clear_DS  ;flag 'no DS available' 
+ plx   ;get error 
+ bra error 
+ 
+ .page 
+; Clear_DS subroutine - forget current DS$ message, if any 
+; 
  

@@ -1,11 +1,69 @@
-movtop eor #$ff  ;comp and add 
- sec 
- adc grbtop 
- ldy grbtop+1 
- bcs 1$ 
+frmstr jsr frmevl 
+ 
+frestr jsr chkstr  ;make sure it's a string 
+frefac lda facmo  ;free up string pointed to by FAC 
+ ldy facmo+1 
+fretmp sta index  ;get length for later 
+ sty index+1 
+ jsr fretms  ;check desc. if last 
+ bne 30$   ;one then scratch it 
+ jsr stradj  ;index points to link 
+ bcc 30$   ;literal no fix 
+ 
+ phx   ;.x=length 
+ dey   ;.y=1 
+ ldx #index 
+ lda #$ff  ;flag string as garbage 
+ jsr sta_far_ram1 ;sta (index),y 
+ pla 
+ pha   ;get length, but leave copy on stack 
  dey 
-1$ sta grbtop 
- sty grbtop+1 
+ ldx #index 
+ jsr sta_far_ram1 ;sta (index),y ;put in length 
+ 
+ eor #$ff  ;put index back 
+ sec   ;to first byte 
+ adc index 
+ ldy index+1 
+ bcs 10$ 
+ dey 
+10$ sta index 
+ sty index+1 
+ 
+ tax   ;lo into x 
+ pla   ;pull length from stack 
+ cpy fretop+1  ;= to fretop? 
+ bne frerts 
+ cpx fretop 
+ bne frerts 
+ 
+ .page 
+; The string was the last one put into string space.  Save garbage 
+; collection some time by freeing up. (length + 2) 
+ 
+ pha   ;save length on stack 
+ sec   ;plus one 
+ adc fretop 
+ sta fretop 
+ bcc 20$ 
+ inc fretop+1 
+20$ inw fretop  ;+ one more 
+ pla   ;pull length off stack 
+ rts 
+ 
+ 
+30$ ldy #0   ;set up x,y,a and index 
+ jsr indin1_ram1  ;length 
+ pha   ;on stack 
+ iny 
+ jsr indin1_ram1  ;pointer lo 
+ tax 
+ iny 
+ jsr indin1_ram1  ;pointer hi 
+ tay 
+ stx index 
+ sty index+1 
+ pla   ;get back length 
  rts 
  
  

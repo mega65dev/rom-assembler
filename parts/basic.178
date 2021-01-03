@@ -1,88 +1,72 @@
-negop   ;/// entry point 
- lda facexp 
- beq negrts 
- lda facsgn 
- eor #$ff 
- sta facsgn 
-negrts rts 
+qplus cmp #'+'  ;plus sign? 
+ bne fin1  ;yes, skip it 
  
-;.end 
- .page 
- .subttl Floating Point Math Package (CODE24) 
+finc jsr fin_chrget 
  
-; Exponentation Function 
-; 
-; First save the original argument and multiply the FAC by LOG2(e).  The 
-; result is used to determine if overflow will occur since 
-; 
-;  EXP(x) = 2^(x*LOG2(e)) 
-; 
-; where 
-;  LOG2(e) = LOG(e), base 2 
-; 
-; Then save the integer part of this to scale the answer at the end, since 
-; 2^y=2^INT(y)*2^(y-INT(y)) and 2^INT(y) are easy to compute.  Now compute 
-; 
-;  2^(x*LOG2(e)-INT(x*LOG2(e)) 
-; by 
-;  p(LOG(2)*(INT(x*LOG2(e))+1)-x 
-; 
-; where p is an approximation polynomial. The result is then scaled by the 
-; power of two previously saved.  Re: Taylor expansion. 
+findgq bcc findig 
  
+fin1 cmp #'.'  ;the dp? 
+ beq findp  ;no kidding 
+ cmp #'E'  ;exponent follows 
+ bne fine  ;no 
  
-exp lda #<logeb2 ;multiply by LOG(e) base 2 
- ldy #>logeb2 
- jsr rommlt ;LOGEB2->ARG, FAC=FAC*ARG 
- lda facov 
- adc #$50 ;???? 
- bcc 10$ 
- jsr incrnd 
+ jsr fin_chrget  ;yes, get another, to check sign of exponent 
+ bcc fnedg1  ;is it a digit. (easier than backing up pointer) 
+ cmp #minus_token ;minus? 
+ beq finec1  ;negate 
+ cmp #'-'  ;minus sign? 
+ beq finec1 
+ cmp #plus_token  ;plus? 
+ beq finec 
+ cmp #'+'  ;plus sign? 
+ beq finec 
+ bra finec2 
  
-10$ sta oldov 
- jsr movef ;to save in ARG without round.  ARG=FAC, facov=0) 
- lda facexp 
- cmp #$88 ;if ABS(FAC) >= 128, too big 
- bcc 30$ 
+finec1 ror expsgn  ;turn it on 
  
-20$ jsr mldvex ;overflow or overflow 
-30$ jsr int  ;FAC=INT(FAC), uses facov 
- lda integr ;get low part 
- clc 
- adc #$81 
- beq 20$  ;overflow or overflow!! 
+finec jsr fin_chrget  ;get another 
  
- sec 
- sbc #1  ;subtract it 
- pha  ;save a while 
- 
- ldx #5  ;swap FAC and ARG 
-40$ lda argexp,x 
- ldy facexp,x 
- sta facexp,x 
- sty argexp,x 
- dex 
- bpl 40$ 
- 
- lda oldov 
- sta facov 
- jsr fsubt ;FAC=ARG-FAC 
- jsr negop ;negate FAC 
- lda #<expcon 
- ldy #>expcon 
- jsr poly 
+fnedg1 bcc finedg  ;it is a digit 
+finec2 bbr7 expsgn,fine 
  lda #0 
- sta arisgn ;multiply by positive 1.0 
+ sec 
+ sbc tenexp 
+ bra fine1 
  
- pla  ;recall scale factor 
- jsr mldexp ;modify facexp and check for overflow 
- rts  ; (has to do jsr due to pla's in muldiv) 
+findp ror dptflg 
+ bbr6 dptflg,finc 
  
- .page 
-; Polynomial Evaluator and the Random Number Generator. 
-; 
-; Evaluate  p(x^2)*x 
-; The pointer to degree is in (a,y) and the constants follow the degree. 
-; For x=FAC, compute  c0*x + c1*x^3 + c2*x^5 + c3*x^7 +...+ c(n)*x^(2*n+1) 
+fine lda tenexp 
+fine1 sec 
+ sbc deccnt  ;get number of places to shift 
+ sta tenexp 
+ beq finqng  ;negate? 
+ bpl finmul  ;positive, so multiply 
+ 
+findiv jsr div10 
+ inc tenexp  ;done? 
+ bne findiv  ;no 
+ bra finqng  ;yes 
+ 
+ 
+finmul jsr mul10 
+ dec tenexp  ;done? 
+ bne finmul  ;no 
+finqng lda sgnflg 
+ bmi negop  ;if negative, negate and return 
+ rts   ;if positive, return 
+ 
+ 
+ 
+findig pha 
+ bbr7 dptflg,10$ 
+ inc deccnt 
+10$ jsr mul10 
+ pla   ;get it back 
+ sec 
+ sbc #'0' 
+ jsr finlog  ;add it in 
+ bra finc 
+ 
  
  

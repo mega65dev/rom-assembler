@@ -1,37 +1,36 @@
-c65.screendef 
- jsr getbyt  ;get screen number 
- cpx #4   ; range 0-3   [910711] 
- bcs 10$ 
- stx GKI__parm1  ; screen# 
+music_irq 
+ ldx #0 
+100$ ldy voices+1,x 
+ bmi 110$  ;skip if not active 
  
- jsr combyt  ;get width 
- cpx #3   ; range 0-2 ???? 1280 mode ???? 
- bcs 10$ 
- stx GKI__parm2  ; width 
+ lda voices,x 
+ sec 
+ sbc tempo_rate  ;decrement current value by current tempo 
+ sta voices,x 
+ bcs 110$ 
+ tya   ;lda voices+1,x 
+ sbc #0 
+ sta voices+1,x 
+ bcs 110$  ;ok, no underflow 
  
- jsr combyt  ;get height 
- cpx #2   ; range 0-1 
- bcs 10$ 
- stx GKI__parm3  ; height 
+ txa 
+ lsr a   ;get offset to waveform 
+ tay 
+ lda waveform,y  ;get waveform 
+ and #$fe  ;mask out gate bit 
+ pha 
+ lda SID_offset,y ;get offset to correct oscillator 
+ tay 
+ pla 
+; jsr go_slow  ;      [910716] 4567R7A 
+ sta sid1+4,y  ;turn off sound 
+; jsr go_fast  ;      [910716] 4567R7A 
  
- jsr combyt  ;get depth (# bitplanes) 
- dex   ; convert 1-8 to 0-7 
- cpx #8   ; range 0-7 
-10$ bcs fcerr  ;illegal quantity error 
- stx GKI__parm4  ; depth 
- 
- jmp ($8006)  ;bra screendef 
- 
+110$ inx 
+ inx 
+ cpx #6+6  ;      [910612] 
+ bcc 100$  ;loop for 6 voices 
+    ;then continue with next IRQ task 
  .page 
-;***************************************************************** 
-;* SCREEN OPEN  open a graphic screen for viewing or drawing 
-;* 
-;*  Syntax : SCREEN OPEN screen# 
-;* 
-;*           parm1 = screen#      0-3    [910711] 
-;***************************************************************** 
- 
- 
-ScreenOpen 
- jsr chrget  ;advance past Open token 
+; Test if SOUND command wants anything 
  

@@ -1,20 +1,51 @@
-fix_links   ;<<<<<<<<<<<<<<<<<<<<<<<<<<< entry from renumber 
+delete bcc delete_line  ;branch if a number (assume range parameter) 
+ cmp #minus_token 
+ beq delete_line  ;branch if a dash (assume range parameter) 
+ bra scratch  ;branch if string (assume filename or U#) 
  
- jsr link_program ;relink program 
- lda index1 
- ldx index1+1 
- clc 
- adc #2 
- bcc 10$ 
- inx 
-10$ sta text_top  ;set eot pointer 
- stx text_top+1 
- rts   ;C128-04 fix: was 'jmp ready' (FAB) 
+delete_line 
+ jsr errind  ;direct mode only command 
+ jsr chrgot  ;requires line# or range, no default 
+ beq snerr  ; error, none given 
  
- .page 
-;******************************** 
-;* 
-;*    Input Range Parameters 
-;* 
-;******************************** 
+ jsr range  ;parse range, find starting line, ptr to ending line 
+ lda lowtr 
+ ldx lowtr+1 
+ sta index1  ;     (destination) 
+ stx index1+1 
+ 
+ jsr FindLine  ;find ending line 
+ bcc 20$   ; branch if not found 
+ ldy #1 
+ jsr indlow  ;if eot, use this ptr.  else, need ptr to next 
+ dey 
+ tax   ; save it in case of swap 
+ bne 10$   ; branch if not eot (end-of-text) 
+ jsr indlow 
+ beq 20$   ; branch if eot (null link bytes) 
+ 
+10$ jsr indlow 
+ sta lowtr  ;     (source) 
+ stx lowtr+1 
+ 
+20$ lda lowtr  ;check that start <= end 
+ sec 
+ sbc index1  ;calculate delta 
+ sta count  ;     (count) 
+ lda lowtr+1  ; (does not catch case where 
+ sbc index1+1  ;  start>end when end=start+1, 
+ sta argmo  ;  but it does no harm) 
+ ora count 
+ beq fix_links  ; all done- nothing to move!? 
+ bcc snerr  ; error- bad range (start > end) 
+ 
+ lda text_top  ;setup for common DMA move routine: [900530] 
+ ldx text_top+1 
+ sta index2  ; index2 = top 
+ stx index2+1  ; index1 = destination 
+    ; count  = delta 
+ 
+ jsr movedown  ;delete the text, then relink & exit 
+ 
+ 
  

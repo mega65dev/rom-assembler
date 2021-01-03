@@ -14,7 +14,7 @@ import re
 #		Is line a label
 #
 def isLabel(s):
-	return s[0] >= 'a' and s[0] <= 'z'
+	return s[0].lower() >= 'a' and s[0].lower() <= 'z'
 #
 #		Is line a local label e.g. nn$
 #

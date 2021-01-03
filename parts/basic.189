@@ -1,76 +1,47 @@
-verify_check 
- ldx #ervfy  ;assume error 
-; jsr _readst  ;read status 
- bbs4 parsts,cld55 ; branch if 'verify' error 
- bbs7 runmod,cld20 ; branch if not direct mode 
-verify_ok 
- jsr _primm 
-   .byte cr, 'OK', cr, 0 
-cld20 rts 
+boot cmp #sys_token  ;BOOTSYS?      [910111] 
+ bne 1$   ; no 
+ jsr chrget  ; yes- eat token 
+ jsr _bootsys  ;  attempt to boot a new OS 
+ bcc 15$   ;  returned to us after successful install 
+ ldx #errbdk  ;  bootsys failed, report 'bad disk'???? 
+ bra error 
  
+1$ bbr4 runmod,2$  ;Error if in Edit mode     [910620] 
+ bra edit_err 
  
+2$ lda #0   ;BOOT "filename"     [910417] 
+ sta verck  ; want 'load', not 'verify' 
+ lda #$e6  ;set up parameters for DOS parser like BLOAD 
+ ldx #$fc 
+ jsr dosprx  ;parse the command 
+ bbr0 parsts,20$  ;was there a filename?  branch if not 
+ jsr bload_boot  ; yes- bload it 
+ bcs erexit  ;  load error 
  
-; Finish load 
+; ldx current_bank ;assume no B(ank) arg was given    [910114] 
+; bbr0 parstx,10$  ; correct, use current setup 
+ ldx dosbnk  ; else use given bank number 
+10$ stx _bank 
+ lda _starting_addr ;set up address BLOAD loaded to 
+ sta _pclo 
+ lda _starting_addr+1 
+ sta _pchi 
+ jsr _jsr_far  ;call it 
+15$ rts 
  
-cld50 
-; jsr _readst  ;check I/O status 
- lda parsts 
- and #%10111111  ; EOI is okay, so mask it 
- beq cld60  ; good- finish load operation 
+20$ ldy #$ff 
+30$ iny   ;Copy default filename from ROM into buffer 
+ lda autoboot_filename,y 
+ sta savram,y 
+ bne 30$   ; null terminated 
  
-load_error 
- ldx #erload 
-cld55 bra error 
- 
- 
-cld60 stx text_top 
- sty text_top+1  ;end load address 
- 
- bbs7 runmod,cld70 ;branch if not direct mode 
- bbs6 runmod,cld20 ;special "RUN file_name" flag...get out here (rts) 
- 
- jsr link_program ;relink 
- jsr runc  ;clear vars 
- bra ready_2  ;print 'ready' & return to main 
- 
- 
-; Program load 
- 
-cld70 jsr reset_txtptr 
- jsr link_program 
- bra fload 
- 
- .page 
-open jsr paoc  ;parse statement 
- jsr _open  ;open it 
- bra close_out_1 
- 
- 
- 
-close jsr paoc  ;parse statement 
-; jsr put_io_in_map 
- lda andmsk  ;get la 
- 
- 
-close_out   ;enter with .a=LA   [900725] 
- clc   ;flag a real close 
- jsr _close  ;close it 
- 
-close_out_1 
- php 
- pha 
- lda _fa   ;special error checking if disk op 
- cmp #8 
- bcc 10$ 
- pla 
- plp 
- bra exit_disk_operation ; disk 
- 
-10$ pla   ; something else 
- plp 
- bcs erexit 
- rts 
+ sty dosf1l  ; length not counting terminator 
+ smb6 runmod  ;set flag for load not to go to ready 
+ jsr dload_boot  ;Load it 
+ bcs erexit  ; error if problems 
+ bra run_a_program ; else go run it 
  
  .page 
-; Parse LOAD, SAVE, & VERIFY commands 
+; AUTOBOOT_CSG Runs a system diagnostic if PB0 is low after initialization. 
+;  Diagnostic is copied to RAM-0 from ROM-2 and jumped to. 
  

@@ -1,41 +1,18 @@
-record lda #'#' 
- jsr synchr  ;syntax error if not 'record#' 
+dverify lda #1   ;flag 'verify' 
+   .byte $2c 
  
- jsr getbyt  ;get lfn in x 
- cpx #0 
- beq fcerr  ;cannot be zero 
- stx dosla  ;save logical address 
  
- jsr comwrd  ;check for comma, get record number in 'poker' 
  
- ldx #1   ;set up to get starting byte # - default is 1 
- jsr optbyt 
- stx dosrcl  ;save byte position (pos)    [911024] 
- txa   ; cpx #0 
- beq fcerr  ;if out of range 
- inx   ; cpx #$ff 
- beq fcerr  ;if out of range 
+; DLOAD dfn 
  
- lda dosla  ;get logical address 
-; jsr put_io_in_map 
- jsr _lkupla  ;logical to physical map 
- bcs 20$   ;if file not found (not open)    [910404] 
- sty dossa_temp  ;save secondary address 
+dload lda #0 
+ sta verck  ;set load flag (for verify check later) 
  
- stx dosfa  ;set up device number for trans routine 
- lda #0 
- sta dosla  ;set up logical address for trans routine 
- lda #$6f 
- sta dossa  ;and secondary address, too! 
+ bbr4 runmod,10$  ;PROGRAM or EDIT mode?    [910620] 
+ bra edit_load  ; edit 
  
- ldy #frec  ;set pointer 
- lda #4   ;process five bytes 
- jsr trans  ;send command 
- bra print_dos_error ;if any 
+10$ lda #$e6  ;set error flags 
+ jsr dosprs  ;parse the line 
+ jsr chk2  ;check required parameters 
  
-20$ ldx #errfno  ;file not found err (file not open)   [910404] 
- bra error 
- 
- .page 
-; DCLEAR - reinitilaize the drive 
  

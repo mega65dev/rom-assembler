@@ -1,73 +1,30 @@
-let jsr ptrget  ;get pntr to variable into "varpnt" 
- sta forpnt  ;preserve pointer 
- sty forpnt+1 
- lda #equal_token 
- jsr synchr  ;"=" is necessary 
- 
- lda intflg  ;save type for later 
+ongoto 
+ jsr getbyt  ;get & save GOTO/GOSUB 
  pha 
- lda valtyp  ;retain the variable's value type too 
- pha 
+ cmp #goto_token  ;GOTO? 
+ beq 1$   ; yes 
+ cmp #gosub_token ;GOSUB? 
+ bne snerr  ; no, syntax error 
  
- jsr frmevl  ;get value of formula into FAC 
- pla 
- rol a   ;carry set for string, off for numeric 
- jsr chkval  ;make sure VALTYP matches carry 
-    ;and set zero flag for numeric 
- bne copstr  ;if numeric, copy it 
- pla   ;get number type 
+1$ dec faclo 
+ bne 2$   ;skip another line number 
+ pla   ;get dispatch character 
+ bra xeqcm2 
  
-qintgr bpl copflt  ;store a floating point number 
- jsr round  ;round integer 
- jsr ayint  ;make two-byte number 
- ldy #0 
- lda facmo  ;get high 
- phx 
- ldx #forpnt 
- jsr sta_far_ram1 ;sta (forpnt),y ;store it 
- iny 
- lda faclo  ;get low 
- jsr sta_far_ram1 ;sta (forpnt),y 
- plx 
- rts 
+2$ jsr chrget  ;advance and set codes 
+ jsr linget  ;read next line 
+ cmp #','  ;is it a "comma"? 
+ beq 1$ 
+ pla   ;remove stack entry (token) 
+ rts   ;either end of line or syntax error 
  
- 
- 
-copflt ldx forpnt 
- ldy forpnt+1 
- bra movmf_ram1  ;put number @forpnt in var bank 
- 
- 
- 
-copstr pla   ;if string, no INTFLG 
- 
-inpcom ldy forpnt+1  ;TI$? 
- cpy #>zero  ; (only TI$ can be this on assign) 
- beq Set_TI_String ; yes 
- bra getspt  ; no 
- 
+;.end 
  .page 
-dskx1 pla 
- iny 
+ .subttl LET 
  
-dskx2 cmp fretop+1 
- bcc 20$ 
- bne 10$ 
- dey 
- jsr indfmo 
- cmp fretop 
- bcc 20$ 
+;**************************************************************** 
+;* 
+;*  [LET] variable = expression 
+;* 
+;**************************************************************** 
  
-10$ ldy faclo ;qvaria 
- cpy vartab+1 ;if (vartab) > (facmo), don't copy 
- bcc 20$ 
- bne copy ;it is less 
- lda facmo 
- cmp vartab ;compare low orders 
- bcs copy 
- 
-20$ lda facmo ;dntcpy 
- ldy facmo+1 
- bra copyc 
- 
- .page 

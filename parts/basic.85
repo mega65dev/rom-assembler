@@ -1,36 +1,44 @@
-find 
- rmb7 op   ;FIND flag 
-   .byte $2c 
+range beq 10$   ;a terminator from chrgot? 
+ bcc 10$   ;a number? 
+ cmp #minus_token ;a dash? 
+ bne 40$   ;if it's not a dash, error (C128-03 fix; FAB) 
+ ldy #1 
+ jsr indtxt  ;let's peek, and see what follows the dash! 
+ beq 40$   ;uh-oh! it's of the form 'delete -' - error 
+ cmp #':'  ;the other terminator 
+ beq 40$   ;..still bad 
+ sec   ;set up for linget 
  
-change 
- smb7 op   ;CHANGE flag 
- rmb6 op   ;reset change-all mode 
- jsr errind  ;report error if not in direct mode 
+10$ jsr linget  ;get first # 
+ jsr FindLine  ;find it & set ptrs 
+ jsr chrgot  ;get last char 
+ beq 20$   ;skip done 
+ cmp #minus_token ;a dash? 
+ bne 40$   ; no- syntax error 
+ jsr chrget  ; yes- skip dash 
+ jsr linget  ;get second # 
+ bne 40$   ; error- wasn't a number 
  
- jsr chrgot  ;get delimeter 
- ldx #0   ;evaluate string args 
- jsr delimit_string ; string1 
- lda fstr1+2 
- beq fcerr  ;  error if string1 null 
- bbr7 op,10$  ;branch if no string2 
- jsr chrget  ; pick up required 'to' token 
- cmp #to_token 
- bne snerr  ;  error if missing 
- jsr chrget 
- beq snerr  ;  error if eol 
- ldx #3 
- jsr delimit_string ; string2 
+20$ lda endchr  ;was a # input? 
+ bne 30$   ;yes 
+ lda #$ff  ;no - make max 
+ sta linnum 
+ sta linnum+1 
+30$ rts 
  
-10$ jsr chrget  ;line number range given? 
- beq 20$   ; no, eol 
- jsr chkcom  ; yes, pick up required comma 
-20$ jsr range  ;set up line number range (lowtr,linnum) 
- jsr tto   ;save txtptr for restoration when done 
- rmb7 helper  ;clear 'help' flag for 'p1line' 
- lda helper 
- pha 
- rmb4 helper  ;temporarily disable token highlighting 
- smb5 helper  ;set   'find' flag for 'p1line' 
- bra find_loop_1  ;begin 
  
+40$ bra snerr  ;syntax error 
+ 
+;.end 
  .page 
+ .subttl  FIND  CHANGE 
+ 
+; FIND   "string"                    [,line_range] 
+; CHANGE "oldstring" TO "newstring"  [,line_range] 
+; 
+; where <"> delimiter can be any character, but only 
+; double-quotes will prevent tokenization of strings. 
+; 
+; N.B.: I am assuming that lines cannot be greater than 255 chars, as is 
+; the case where the line was entered "normally", that is, using LINGET. 
+ 

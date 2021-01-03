@@ -1,77 +1,39 @@
-p1l070    ;found text for this token 
- bbr4 helper,p1l072 ; branch if not highlighting tokens 
- lda (index1),y  ;peek at first character 
- bmi p1l010  ; branch if operator (1-byte, msb=1) 
- smb0 helper  ; else begin highlight 
-p1l071 jsr highlight_text 
+nqplop    ;<<<<<<< vector entry 
+ bpl p1l015  ;not a token, just print character 
+ bbs7 dores,p1l015 ;branch if inside quotes, print chr as is 
  
-p1l072 lda (index1),y  ;get char from ROM table 
- bmi p1l010  ; msb=1=last char this token, contine line 
- jsr outch  ; else print it 
- iny 
- bra p1l072 
+;  At this point, we know we're talking token.  Scan the token text 
+;  list until the correct text is found, and print that text. 
  
- .page 
-; Print Escape Command 
- 
-print_esc_cmd 
- tax    ;save type (cmd) in case it is a foreign esc token 
- iny 
- jsr indlow   ;look at second token 
- beq p1l015   ; none?  print funny character 
- sty lstpnt 
- cmp #first_esc_command_token ;is this one of ours? 
- bcc print_foreign_esc  ; nope 
- cmp #last_esc_command_token+1 
- bcs print_foreign_esc  ; nope 
- adc #$80-first_esc_command_token ;yes- make a pointer p1l will be proud of 
+ sta token_saver  ;save token for REM check   [910626] 
+ cmp #esc_command_token ;is this an escape token? 
+ beq print_esc_cmd ; yes- escape command 
+ cmp #esc_function_token 
+ beq print_esc_fn ; yes- escape function 
+ cmp #pi 
+ beq p1l015  ; no- pi is >$80, but should be printed 'as is' 
  tax 
- ldy #<esc_command_list 
- lda #>esc_command_list 
- bra p1l026   ;go scan list and print it 
+ sty lstpnt  ; no- use the token as index into ROM keyword list 
+ lda #>keyword_list 
+ ldy #<keyword_list 
  
+; Scan list pointed to by (y,a) for token in (x), and print token's text 
  
+p1l026 sta index1+1  ;index1 points to token text list in ROM 
+ sty index1 
+ ldy #0   ;begin scanning lists for this token's text 
+ dex 
+ bpl p1l070  ; what luck! it's the first one 
  
-; Print Escape Function 
+10$ inw index1  ;scan text until next command found 
+ lda (index1),y  ;ind.ok (ROM) 
+ bpl 10$   ; loop until terminal char (msb=1) 
+ dex   ;is next text the one we want? 
+ bmi 10$   ; no, keep scanning 
+ inw index1  ; yes, point to first character 
  
-print_esc_fn 
- tax    ;save type (function) in case it's a foreign esc token 
- iny 
- jsr indlow   ;look at second token 
- beq p1l015   ; none?  print funny character 
- sty lstpnt 
- cmp #first_esc_function_token ;is this one of ours? 
- bcc print_foreign_esc  ; nope 
- cmp #last_esc_function_token+1 
- bcs print_foreign_esc  ; nope 
- adc #$80-first_esc_function_token ;yes- make a pointer p1l will be proud of 
- tax 
- ldy #<esc_function_list 
- lda #>esc_function_list 
- bra p1l026   ;go scan list and print it 
- 
- .page 
-; The token to be printed is an escape token which is NOT recognized by BASIC. 
-; We will jump through the indirect chain and see if anyone claims this token. 
-; 
-; At this point: 
-; .C = 1 to signal 'unclaimed' 
-; .X = type (0==>command, ff==>function) 
-; .A = second token character 
-; 
-; If anyone claims this token, they should: 
-; 
-; > Clear .C to flag 'taken' 
-; > Point (INDEX1) at the string to be printed (with msb of last char set) 
-; > Note: string to print MUST be in RAM-0! 
- 
-print_foreign_esc 
- cpx #esc_command_token 
- bne 1$ 
- ldx #0 
-   .byte $2c 
- 
-1$ ldx #$ff 
- sec 
- jmp (iescpr) 
+ bbr3 helper,p1l070 ;found text for this token, is it REM?  [910626] 
+ lda token_saver  ;      [910628] 
+ cmp #rem_token 
+ beq p1l071  ; yes, and REM highlighting is enabled 
  

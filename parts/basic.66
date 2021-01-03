@@ -1,36 +1,79 @@
-auto 
- jsr errind 
- jsr linget 
- lda linnum 
- sta autinc 
- lda linnum+1 
- sta autinc+1 
- rts 
+midd2 
+midwrk =midd2-1 
+ 
+ jsr chkopn  ;check for '(' 
+ jsr ptrget  ;get pointer to descriptor of string-var 
+ sta forpnt  ;store for later use 
+ sty forpnt+1 
+ jsr chkstr  ;check if string 
+ 
+ jsr combyt  ;look for comma, followed by 1 byte starting address 
+ dex   ;adjust starting addr 
+ stx hulp  ;store    " " 
+ 
+ cmp #')'  ;finished? 
+ beq 10$   ;branch if so (use default length) 
+ jsr combyt  ;..else get length 
+   .byte $2c 
+ 
+10$ ldx #$ff  ;default length 
+ stx z_p_temp_1 
+ jsr chkcls  ;look for ')' 
+ lda #equal_token ;look for '=' 
+ jsr synchr 
+ jsr frmevl  ;bring on the source! 
+ jsr chkstr  ;nothing funny 
+ 
+ ldy #2   ;get string descriptors 
+20$ lda #forpnt  ;target 
+ jsr lda_far_ram1 ;lda (forpnt),y 
+ sta str1,y 
+ jsr indfmo  ;source 
+ sta str2,y 
+ dey 
+ bpl 20$ 
+ 
+; Test for target string in text was removed-  all strings are copied to 
+; string RAM when they are created. 
+ 
+ sec   ;adjust pointer to source string so that the same 
+ lda str2+1  ;..index can load & save 
+ sbc hulp 
+ sta str2+1 
+ bcs 30$ 
+ dec str2+2 
+ 
+30$ lda z_p_temp_1  ;get specified length (or default) 
+ cmp str2  ;compare with length of source 
+ bcc 40$   ;ok if less, 
+ lda str2  ;..else use length of source 
+40$ tax 
+ beq 80$   ;done if length=0 
+ clc 
+ adc hulp  ;add length to starting posn. 
+ bcs fcerr  ;illegal quantity error if > 256 
+ cmp str1 
+ bcc 60$ 
+ bne fcerr  ;...or if > target length 
+ 
+60$ ldy hulp  ;get adjusted starting address 
+70$ phx 
+ ldx #str1+1 
+ lda #str2+1 
+ jsr lda_far_ram1 ;fetch from string bank 
+ jsr sta_far_ram1 ;this is what it's all about 
+ iny 
+ plx 
+ dex 
+ bne 70$   ;keep going for specified length 
+ 
+80$ bra frefac  ;free up temp. string, rts 
  
 ;.end 
+ 
  .page 
- .subttl  HELP 
+ .subttl  AUTO 
  
-help ldx errnum ;check for error status 
- inx 
- beq 1$  ; exit if there is no current error 
- lda errlin 
- ldy errlin+1 
- sta linnum 
- sty linnum+1 
- jsr FindLine ;find the beginning of line with error 
- bcc 1$  ; exit if line not found? 
- 
- jsr crdo ;begin a new line 
- ldx linnum 
- lda linnum+1 
- ldz helper 
- rmb4 helper ;temporarily disable token highlighting 
- smb7 helper ;set 'help' flag for P1LINE 
- jsr p1line ;display line & highlight error 
- stz helper 
-1$ rmb7 helper ;reset 'help' flag 
- bra crdo ;and return to caller 
- 
- 
+; AUTO Increment 
+;   Syntax :    auto {line-number} (line-number = 0 means turn off) 
  

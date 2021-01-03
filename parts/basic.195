@@ -1,57 +1,76 @@
-reay jsr chrgot ;get old character 
- cmp #',' ;comma? 
- beq eex2 ;continue print use if yes 
- sec 
- ror z_p_temp_1 ;set flag for anaf 
- jsr anaf ;print rest of format 
- ply  ;restore descriptor 
- pla 
- jsr fretmp 
- jsr chrgot 
- cmp #';' ;semi-colon? 
- bne crdo ;end of print using 
- jmp chrget ;branch if yes 
+verify_check 
+ ldx #ervfy  ;assume error 
+; jsr _readst  ;read status 
+ bbs4 parsts,cld55 ; branch if 'verify' error 
+ bbs7 runmod,cld20 ; branch if not direct mode 
+verify_ok 
+ jsr _primm 
+   .byte cr, 'OK', cr, 0 
+cld20 rts 
+ 
+ 
+ 
+; Finish load 
+ 
+cld50 
+; jsr _readst  ;check I/O status 
+ lda parsts 
+ and #%10111111  ; EOI is okay, so mask it 
+ beq cld60  ; good- finish load operation 
+ 
+load_error 
+ ldx #erload 
+cld55 bra error 
+ 
+ 
+cld60 stx text_top 
+ sty text_top+1  ;end load address 
+ 
+ bbs7 runmod,cld70 ;branch if not direct mode 
+ bbs6 runmod,cld20 ;special "RUN file_name" flag...get out here (rts) 
+ 
+ jsr link_program ;relink 
+ jsr runc  ;clear vars 
+ bra ready_2  ;print 'ready' & return to main 
+ 
+ 
+; Program load 
+ 
+cld70 jsr reset_txtptr 
+ jsr link_program 
+ bra fload 
  
  .page 
-;  FFORM - output a number to format 
-; 
-;  Number is in fbuffr,  format checked by anaf 
- 
-fform 
-; sta sw_rom_ram0 ;???? 
- lda pufill 
- sta blfd ;set working fill char 
- lda #$ff 
-ana sta sno  ;save blank or '-' in sno 
- bra insy 
+open jsr paoc  ;parse statement 
+ jsr _open  ;open it 
+ bra close_out_1 
  
  
-stp stx point ;set point pointer 
-insy cpy hulp ;end of no reached? 
- beq eoa  ;branch if yes 
- lda fbuffr,y ;get character of no 
- iny 
- cmp #' ' ;blank? 
- beq insy ;yes...span 
- cmp #'-' ;sign no negative 
- beq ana  ;yes... 
- cmp #'.' ;decimal point? 
- beq stp  ;yes... 
- cmp #'E' ;is char 'e'? 
- beq lsg  ;yes... 
- sta fbuffr,x ;move number 
- stx enr  ;update end-no pointer 
- inx 
- bit point ;point pointer set? 
- bpl insy ;yes... 
- inc vn  ;count digits before point 
- bra insy 
+ 
+close jsr paoc  ;parse statement 
+; jsr put_io_in_map 
+ lda andmsk  ;get la 
  
  
-lsg lda fbuffr,y 
- cmp #'-' ;sign of exponent negative 
- bne 10$  ;no... 
- ror usgn ;make sign negative 
-10$ iny 
- sty uexp ;set exponent pointer 
+close_out   ;enter with .a=LA   [900725] 
+ clc   ;flag a real close 
+ jsr _close  ;close it 
+ 
+close_out_1 
+ php 
+ pha 
+ lda _fa   ;special error checking if disk op 
+ cmp #8 
+ bcc 10$ 
+ pla 
+ plp 
+ bra exit_disk_operation ; disk 
+ 
+10$ pla   ; something else 
+ plp 
+ bcs erexit 
+ rts 
+ 
+ .page 
+; Parse LOAD, SAVE, & VERIFY commands 
  

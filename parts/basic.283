@@ -1,58 +1,37 @@
-sprsav jsr savinp        ;evaluate 1st expression 
- bcs 20$    ;skip if source is a string 
- sta forpnt 
- sty forpnt+1      ;save sprite address 
- ldy #62 
+color cmp #','  ;optional first arg 
+ beq 20$ 
+ cmp #on_token  ;SOFTWARE (Editor) color mode 
+ beq 10$ 
+ jsr chkesc 
+ cmp #off_token 
+5$ bne snerr 
  
-10$ lda (forpnt),y   ;move sprite def to save area 
- sta savram,y 
- dey 
- bpl 10$ 
+ ldy #'['  ;OFF (color & attributes) 
+   .byte $2c 
+10$ ldy #']'  ;ON 
+ lda #esc 
+ jsr _bsout  ;do it 
+ tya 
+ jsr _bsout 
+ jsr chrget  ;eat token 
+ beq 40$   ; eol- exit 
  
- iny    ;(0) 
- sty savram+64     ;save sprite column length 
- sty savram+66     ;save sprite row length 
- lda #23 
- sta savram+63 
- lda #20 
- sta savram+65 
- ldx #<savram      ;set ptr to start of sprite def 
- ldy #>savram 
- stx strng1   ;** 
- sty strng1+1   ;** 
+20$ jsr chkcom  ; else must be comma, eat & get next 
+; jsr chrgot  ;      [910930] 
+ cmp #on_token  ;HARDWARE (Vic) color mode 
+ beq 30$ 
+ jsr chkesc 
+ cmp #off_token 
+ bne 5$ 
  
- lda #67           ;set sprite length including lengths 
- jsr strlit_1   ;**get string space, copy savram to it 
- jsr desc_free   ;**free up temp descriptor 
+ lda #%00000010  ;OFF (monochrome) 
+ tsb vic+49 
+ bra 35$ 
  
-20$ stx savsiz        ;save source length 
- sta savsiz+1 
- sty savsiz+2      ;save source start address 
+30$ lda #%00000010  ;ON 
+ trb vic+49 
+35$ bra chrget  ;exit after eating last token 
  
- jsr chkcom        ;check for a comma 
- lda txtptr        ;save basic text pointer 
- sta sprtmp_1 
- lda txtptr+1 
- sta sprtmp_2 
- jsr savinp        ;get next destination parameter 
- bcs savs50        ;skip if string 
+40$ rts   ;exit after encountering eol 
  
- sta grapnt 
- sty grapnt+1      ;save sprite address 
- lda savsiz+1 
- sta forpnt        ;get source address 
- lda savsiz+2 
- sta forpnt+1 
- ldy #0 
-40$ cpy savsiz        ;test index vs source length 
- beq 45$    ;exit if source depleted 
- lda #forpnt   ;move source byte to sprite 
- jsr lda_far_ram1  ; (from ram bank 1) 
-; sta sw_rom_ram0 
- sta (grapnt),y   ; (to sprite area in bank 0)???? 
- iny 
- cpy #63 
- bne 40$ 
-45$ rts 
- 
- 
+ .page 

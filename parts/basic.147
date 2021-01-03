@@ -1,19 +1,31 @@
-rleft2 txa 
-rleft3 pha   ;save length 
- jsr strspa  ;get space 
- lda dscpnt 
- ldy dscpnt+1 
- jsr fretmp 
- ply 
+pointer jsr chrget  ;skip over escape token 
+ jsr chkopn  ;test for open paren 
+ jsr isletc  ;test if character follows parens 
+ bcc snerr  ;...syntax error if not. 
+ jsr ptrget  ;look for this varname in table 
+ 
+pointer_ret=*-1 
+ tax 
+ phy 
+ jsr chkcls  ;look for closing paren 
+ txa 
+ tay 
  pla 
- clc 
- adc index  ;compute where to copy 
- sta index 
- bcc 1$ 
- inc index+1 
-1$ tya 
- jsr movdo  ;go move it 
- bra putnew 
+ cmp #>zero  ;is this a dummy pointer? 
+ bne 10$ 
+ lda #0   ;if so, return 0 
+ tay 
+10$ bra nosflt 
  
+;.end 
+ .page 
+ .subttl  XOR 
  
+;************************************************************** 
+;* 
+;*   XOR - Exclusive-or two 16 bit arguments 
+;* 
+;* Syntax : XOR (arg1, arg2) 
+;* 
+;************************************************************** 
  

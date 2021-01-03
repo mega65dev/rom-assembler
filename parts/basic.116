@@ -1,332 +1,62 @@
-fast 
- bne snerr  ;no args      [910410] 
-; jsr put_io_in_map 
- lda #%01000000 
- tsb vic+49  ;set FAST (4MHz?) mode 
- rts 
+window jsr getbyt  ;get u.l. col 
+ cpx #80 
+ bbr7 _mode,10$ 
+ cpx #40 
+10$ bcs 98$ 
+ stx window_temp 
  
+ jsr combyt  ;get u.l. row 
+ cpx #25 
+ bcs 98$ 
+ stx window_temp+1 
  
+ jsr combyt  ;get l.r. column 
+ cpx #80 
+ bbr7 _mode,20$ 
+ cpx #40 
+20$ bcs 98$ 
+ stx window_temp+2 
+ cpx window_temp  ;can't be less than u.l. column 
+ bcc 98$ 
  
-;*********************************************************************** 
-; 
-;    SLOW - put the system in SLOW (1 MHz) mode. 
-; 
-;*********************************************************************** 
+ jsr combyt  ;get l.r. row 
+ cpx #25 
+ bcs 98$ 
+ stx window_temp+3 
+ cpx window_temp+1 ;can't be less than u.l. row 
+ bcc 98$ 
  
-slow 
- bne snerr  ;no args      [910410] 
-; jsr put_io_in_map 
- lda #%01000000 
- trb vic+49 
- rts 
- 
-;.end 
- .page 
- .subttl Check Value Types 
- 
-; These routines check for certain VALTYP.   (c) is not preserved. 
- 
- 
- 
-frmnum jsr frmevl 
- 
-chknum clc 
-   .byte $89 
- 
-chkstr sec 
- 
-chkval 
-; bbs7 valtyp,docstr ;cannot do this- return status +/-/= needed! 
- bit valtyp 
- bmi docstr 
- bcs chkerr 
-chkok rts 
- 
-docstr bcs chkok 
- 
-chkerr ldx #errtm 
-   .byte $2c 
- 
-sterr ldx #errst 
- bra error 
- 
-;.end 
- .page 
- .subttl Formula Evaluator 
- 
-; Formula Evaluator Routine 
-; 
-; The formula evaluator starts with (txtptr) pointing to the first character 
-; in the formula.  At the end (txtptr) points to the terminator. 
-; The result is left in the FAC.  On return (a) does not reflect the terminator. 
-; 
-; The formula evaluator uses the operator (optab) to determine precedence and 
-; dispatch addresses for each operator. 
-; A temporary result on the stack has the following format: 
-; 
-;     * The address of the operator routine. 
-;     * The floating point temporary result. 
-;     * The precedence of the operator. 
- 
- 
-frmevl dew txtptr  ;txtptr points to 1st char. in formula 
- ldx #0   ;dummy precedence = 0 
-   .byte $89 
- 
-lpoper pha   ;save precedence 
+ jsr optzer  ;get optional clear flag 
+ cpx #2 
+ bcs 98$ 
  phx 
- tsx   ;confirm enough system stack available (recursive calls) 
- cpx #<sysstk+44  ;bottom of stack + room for error handling 
- bcc sterr  ; formula too complex 
- jsr eval 
- lda #0 
- sta opmask 
  
-tstop jsr chrgot  ;last char 
-loprel sec   ;prepare to subtract 
- sbc #greater_token ;is current character a relation? 
- bcc endrel  ;no, relations all through 
- cmp #less_token-greater_token+1 
- bcs endrel  ;really relational?  no, just big 
- cmp #1   ;reset carry for zero only 
- rol a   ;0 to 1, 1 to 2, 2 to 4 
- eor #1 
- eor opmask  ;bring in the old bits 
- cmp opmask  ;make sure that the new mask is bigger 
- bcc snerr  ;syntax error, because two of the same 
- sta opmask  ;save mask 
- jsr chrget 
- bra loprel  ;get the next candidate 
+ ldx window_temp 
+ lda window_temp+1 
+ clc 
+ jsr _set_window 
  
+ ldx window_temp+2 
+ lda window_temp+3 
+ sec 
+ jsr _set_window 
+ 
+ ldx #19   ;assume 'home', not 'cls' 
+ pla 
+ beq 30$ 
+ ldx #147 
+30$ txa 
+ jmp _bsout 
+ 
+98$ bra fcerr  ;illegal value error 
+ 
+;.end 
  .page 
-endrel ldx opmask  ;were there any? 
- bne finrel  ;yes, handle as special op 
- bcs qop   ;not an operator 
- adc #greater_token-plus_token 
- bcc qop   ;not an operator 
- adc valtyp  ;(c)=1 
- beq cat   ;only if (a)=0 and VALTYP=$FF (a string) 
+ .subttl  FAST  SLOW 
  
- adc #$ff  ;get back original (a) 
- sta index1 
- asl a   ;multiply by two 
- adc index1  ;by three 
- tay   ;set up for later 
- 
-qprec pla   ;get previous precedence 
- cmp optab,y  ;is old precedence greater or equal? 
- bcs qchnum  ;yes, go operate 
- jsr chknum  ;can't be string here 
- 
-doprec pha   ;save old precedence 
- 
-negprc jsr dopre1  ;save a return for op 
- pla   ;pull off previous precedence 
- ldy opptr  ;get pointer to op 
- bpl qprec1  ;that's a real operator 
- tax   ;done? 
- beq qopgo  ;done! 
- bra pulstk 
- 
- .page 
-finrel lsr valtyp  ;get value type into (c) 
- txa 
- rol a   ;put VALTYP into low order bit of mask 
- dew txtptr  ;decrement text pointer 
- ldy #ptdorl-optab ;make (y) point at operator entry 
- sta opmask  ;save the operation mask 
- bra qprec  ;branch always 
- 
- 
-qprec1    ;note b7(VALTYP)=0 so CHKNUM call is ok 
- cmp optab,y  ;last precedence is greater? 
- bcs pulstk  ;yes, go operate 
- bcc doprec  ;no, save argument and get other operand 
- 
- 
-dopre1 lda optab+2,y 
- pha   ;disp addr goes on stack 
- lda optab+1,y 
- pha 
- jsr pushf1  ;save FAC on stack unpacked, precedence in (x) 
- lda opmask  ;(a) may be mask for rel 
- bra lpoper 
- 
- .page 
-pushf1    ;save FAC on stack unpacked 
- pla   ;first grab return address off stack 
- sta index1 
- pla 
- sta index1+1 
- inw index1 
- 
- ldx optab,y  ;precedence 
- ldy facsgn 
- phy 
- jsr round  ;put rounded FAC on stack 
- lda faclo 
- pha 
- lda facmo 
- pha 
- lda facmoh 
- pha 
- lda facho 
- pha 
- lda facexp 
- pha 
- jmp (index1)  ;return 
- 
- 
-pullf1    ;retrieve FAC from stack unpacked  [910402] 
- pla   ;first grab return address off stack 
- sta index1 
- pla 
- sta index1+1 
- inw index1 
- 
- lda #0   ;it's been rounded 
- sta facov 
- pla 
- sta facexp 
- pla 
- sta facho 
- pla 
- sta facmoh 
- pla 
- sta facmo 
- pla 
- sta faclo 
- pla 
- sta facsgn 
- jmp (index1)  ;return 
- 
- .page 
-qop ldy #255 
- pla   ;get high precedence of last op 
-qopgo beq qoprts  ;done! 
- 
-qchnum cmp #100  ;relational operator? 
- beq unpstk  ;yes, don't check operand 
- jsr chknum  ;must be number 
- 
-unpstk sty opptr  ;save operator's pointer for next time 
-pulstk pla   ;get mask for rel op if it is one 
- lsr a   ;setup .c for dorel's chkval 
- sta domask  ;save for "docmp" 
- pla   ;unpack stack into arg 
- sta argexp 
- pla 
- sta argho 
- pla 
- sta argmoh 
- pla 
- sta argmo 
- pla 
- sta arglo 
- pla 
- sta argsgn 
- eor facsgn  ;get probable result sign 
- sta arisgn  ;sign used by add, sub, mul, div 
- 
-qoprts lda facexp  ;get it and set codes 
- rts   ;return 
- .page 
-eval jmp (ieval) 
- 
-neval lda #0   ;assume numeric 
- sta valtyp 
- 
-eval0 jsr chrget  ;get a character 
- bcs eval2 
-eval1 ldx #0   ;flag 'bank 0' (text bank) 
- bra fin   ;it is a number 
- 
-eval2 jsr isletc  ;variable name? 
- bcs is_variable  ;yes. 
- cmp #pi   ;pi? 
- bne qdot 
- lda #<pival 
- ldy #>pival 
- jsr movfm  ;put value in for p1. 
- jmp chrget 
- 
- 
-qdot cmp #'.'  ;constant? 
- beq eval1 
- cmp #minus_token ;negation? 
- beq domin  ;yes. 
- cmp #plus_token 
- beq eval0 
- cmp #'"'  ;string? 
- bne eval3 
- 
-strtxt lda txtptr 
- ldy txtptr+1 
- adc #0   ;c=1 
- bcc strtx2 
- iny 
-strtx2 jsr strlit  ;process string 
- 
-st2txt ldx strng2 
- ldy strng2+1 
- stx txtptr 
- sty txtptr+1 
- rts 
- 
- .page 
-eval3 cmp #not_token  ;not? 
- bne eval4 
- ldy #24 
- bne gonprc  ;branch always 
- 
- 
-notop jsr ayint  ;integerize 
- lda faclo  ;get argument 
- eor #$ff 
- tay 
- lda facmo 
- eor #$ff 
- 
-givayf jsr stoint  ;integer to float routine 
- bra floats 
- 
- 
-eval4 cmp #fn_token   ;user defined function? 
- beq fndoer   ; yes 
- cmp #first_function_token ;function name? 
- bcs isfun   ; yes 
-     ; (functions are the highest numbered 
-     ; tokens so no need to check further) 
- .page 
-parchk jsr chkopn  ;only thing left is formula in parens 
- jsr frmevl  ;a formula in parens 
- 
-chkcls lda #')'  ;close paren? 
-   .byte $2c 
- 
-chkopn lda #'('  ;open paren? 
-   .byte $2c 
- 
-chkcom lda #','  ;comma? 
- 
- 
-; SYNCHR looks at the current character to make sure it is the specific 
-; thing loaded into (a) just before the call to SYNCHR.  If not, it calls 
-; the "syntax error" routine.  Otherwise it gobbles the next char and returns. 
+;*********************************************************************** 
 ; 
-; (a)=new char and TXTPTR is advanced by CHRGET. 
- 
- 
-synchr ldy #0 
- sta syntmp 
- jsr indtxt 
- cmp syntmp 
- bne snerr 
- jmp chrget  ;ok 
- 
- 
- 
-domin 
-10$ =negtab-optab  ;negoff 
- ldy #10$  ;precedence below '-' 
+;    FAST - put the system in FAST (4 MHz?) mode. 
+; 
+;*********************************************************************** 
  

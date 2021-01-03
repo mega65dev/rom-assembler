@@ -1,300 +1,57 @@
-rcursor sec   ;      new [910228] 
- jsr _plot  ;get current cursor position & save it 
- stx srow 
- sty column 
+movspr_to_irq   ;      [910809] 
+ phy   ;sprite # 
+ and #$3f  ;speed factor 
+ taz 
+ tya   ;vic sprite index 
+ asl a 
+ tay 
  
- ldx #0   ;just like RREG and RMOUSE... 
- stx count 
-50$ jsr chrgot  ;Get a variable name from variable list 
- beq 90$   ; eol- exit 
- cmp #','  ; 
- beq 70$   ; null- skip this arg 
- jsr ptrget  ;Get pointer to target variable 
- sta forpnt  ; set up so we can share LET code 
- sty forpnt+1 
- lda valtyp  ; what kind of variable name did ptrget find? 
- bne chkerr  ;  string- type mismatch error 
- 
-60$ ldx count  ;Make assignment 
- ldy column,x  ; low byte 
- lda #0   ; high byte 
- jsr givayf  ; float it 
- lda intflg  ; set flags for type of var (int/float) 
- jsr qintgr  ; use part of LET to do the work 
- 
-70$ inc count  ;Next assignment 
- ldx count 
- cpx #2   ; there are 2 possible 
- bcs 90$   ;  done 2, exit 
- jsr chrgot  ; check terminator 
- beq 90$   ;  eol- exit 
- jsr chkcom  ; check delimiter 
- bra 50$   ; loop until done 
- 
-90$ rts 
- 
-;.end 
- .page 
- .subttl  AutoScroll 
- 
-AutoScroll 
- pha   ;save character for Editor 
- bbs7 runmod,AutoScrollno ;branch if not direct mode 
- ldy channl  ;is output redirected? 
- bne AutoScrollno ; yes- can't do scroll (need to read screen) 
- lda txttab 
- ldx txttab+1  ;is there a program in memory to scroll? 
- sta txtptr 
- stx txtptr+1 
- iny   ;(1) 
- jsr indtxt 
- bne AutoScrollyes ; yes- continue 
- bra AutoScrollno ; no-  exit 
- 
-AutoScrollpop 
- pla 
- pla 
-AutoScrollng 
- ldx point  ;restore cursor position 
- ldy point+1 
- clc 
- jsr _plot 
-AutoScrollno 
- rmb1 helper  ;remove LINGET flag 
- pla   ;restore character 
- sec   ;return to Editor with no action taken 
+10$ sec   ;for i = 1 to abs(greatr) 
+ lda sprite_data+1,x 
+ sbc #1 
+ sta sprite_data+1,x 
+ bcs 20$ 
+ lda sprite_data+2,x 
+ sbc #0 
+ sta sprite_data+2,x 
+ bcs 20$ 
+ lda #0 
+ sta sprite_data,x ;done!  sprite is at its destination 
+ ply   ;remember sprite # 
  rts 
  
-AutoScrollyes 
- ror form  ;save .c=direction (character already on stack) 
- sec 
- jsr _plot  ;get current cursor position & save it 
- stx point 
- sty point+1 
- smb1 helper  ;set flag for LINGET not to go to error if it has problems 
- bbs7 form,AutoScrolldn ;branch according to direction of scroll... 
+20$ lda sprite_data+3,x ;ptr(lesser) 
+ bit sprite_data+10,x 
+ bmi 30$   ;if e > 0 
+ bit sprite_data+3,x ; sgn(lesser) (b7=1=neg, b6=1=pos, else 0) 
+ jsr drwinc  ; pos(lesser) = pos(lesser) + sgn(lesser) 
  
- .page 
-AutoScrollup   ;wanting to scroll up 
- sec 
- lda _screen_bottom ; put cursor at bottom of screen 
- sbc _screen_top 
- sta form+1  ;  save where it is- we'll be printing line there 
- tax 
- jsr AutoSearch  ; search for a line number on screen, put it in linnum 
- jsr FindLine  ; find the line in program 
- bcc 10$   ;  line not found; we have a pointer to the next line 
- ldy #0 
- jsr indlow  ; find the next line, the one we want to print, via link bytes 
- tax 
- iny 
- jsr indlow 
- stx lowtr  ;  advance pointer to it 
- sta lowtr+1 
-10$ ldx form+1  ; put cursor back at bottom of screen 
- ldy #0 
- clc 
- jsr _plot 
-20$ jsr crdo  ; get a blank line to print on- scroll screen up 
- ldy #1 
- jsr indlow  ; end of program marker? 
- bne AutoScrollprint ;  no-  print this line & exit 
- lda txttab  ;  yes- loop to start of program, 
- ldx txttab+1 
- sta lowtr 
- stx lowtr+1 
- jsr crdo  ;        and add an extra newline 
- bra 20$ 
+ lda sprite_data+4,x ;ptr(greater) 
+30$ lsr a   ;which f? 
+ bcs 40$ 
+ lda sprite_data+9,x ; e = e + f1 
+ adc sprite_data+5,x 
+ sta sprite_data+9,x 
+ lda sprite_data+10,x 
+ adc sprite_data+6,x 
+ sta sprite_data+10,x 
+ bra 50$ 
  
- .page 
-AutoScrolldn   ;wanting to scroll down 
- ldx #0   ; put cursor at top of screen 
- jsr AutoSearch  ; search for a line number on screen, put it in linnum 
- ldx #0   ; get a blank line to print on 
- ldy #0   ;  put cursor at top of screen 
- clc 
- jsr _plot 
-10$ jsr _primm  ;  and scroll screen (kill any pending Editor modes, too) 
-   .byte esc,esc,esc,"W",0 
- jsr FindLine  ; find the line in program whose number we found on screen 
- lda lowtr  ;  (does not matter if it or next higher line is found) 
- cmp txttab 
- bne 20$ 
- lda lowtr+1 
- cmp txttab+1 
- bne 20$ 
- lda #$ff  ;  special case- it's the very first line, want to wrap to last line 
- sta linnum+1  ;   fake pointer to the last line, 
- jsr _primm  ;   scroll screen to insert extra space, 
-   .byte esc,"W",0 
- bra 10$   ;   and go around again 
+40$ clc 
+ lda sprite_data+9,x ; e = e + f2 
+ adc sprite_data+7,x 
+ sta sprite_data+9,x 
+ lda sprite_data+10,x 
+ adc sprite_data+8,x 
+ sta sprite_data+10,x 
  
-20$ lda txttab  ; start at beginning of program (txttab) and find the line which points at (lowtr) 
- ldx txttab+1 
-30$ sta index  ;  pointer to link bytes 
- stx index+1 
- ldy #1 
- jsr indin1  ;  get link bytes 
- tax 
- dey 
- jsr indin1 
- cpx lowtr+1  ;  do link bytes point at target line? 
- bne 30$ 
- cmp lowtr 
- bne 30$   ;   no- use these link bytes to find next line 
+50$ lda sprite_data+4,x ;ptr(greater) 
+ bit sprite_data+4,x ;sgn(greater) (b7=1=neg, b6=1=pos, else 0) 
+ jsr drwinc  ;pos(greater) = pos(greater) + sgn(greater) 
  
- lda index  ;   yes- copy pointer 
- ldx index+1 
- sta lowtr 
- stx lowtr+1 
-; bra AutoScrollprint ; print the line & exit 
+ dez   ;count 
+ bne 10$ 
+ ply   ;remember sprite # 
+ rts   ;done this frame 
  
- .page 
-AutoScrollprint 
- ldy #2   ; get line number to print 
- jsr indlow 
- tax 
- iny 
- jsr indlow 
- jsr p1line  ; print the number & the line 
-; bra AutoScrolldone ;Normal exit 
- 
-AutoScrolldone 
- jsr _primm  ;kill special Editor modes 
-   .byte esc,esc,0 
- ldx point  ;restore cursor position 
- ldy point+1 
- clc 
- jsr _plot 
- rmb1 helper  ;remove LINGET flag 
- pla   ;restore character 
- clc   ;return to Editor, with flag we handled character 
- rts 
- 
-AutoSearch 
- ldy #0   ;search for any line number on screen in leftmost column 
- clc 
- jsr _plot  ; move to beginning of next line 
-; bcs AutoScrollpop ;  exit if no more lines 
- bcs 30$   ;  no more lines- fake one   [910716] 
- sec 
- jsr _plot  ;  else check if wrapped line 
- bcs 10$   ;   it's wrapped- move up one line 
- lda _pnt 
- adc _screen_left ;(.c=0) 
- sta txtptr  ; copy screen address of logical line to txtptr 
- lda _pnt+1 
- adc #0 
- sta txtptr+1 
- ldy #0   ; get first character on this line in window 
- lda (txtptr),y 
-; jsr indtxt  ;    (I did not want to limit search to the first column, 
- cmp #'9'+1  ;     but it was way too slow searching the entire screen) 
- bcs 10$   ;  it's not a number 
- cmp #'0' 
- bcs 20$   ;  it's a digit 0-9, continue 
- 
-10$ bbs7 form,15$  ; not on this line- move to next line 
- dex   ;  move up one line 
-   .byte $89 
-15$ inx   ;  move down one line 
- bra AutoSearch  ;loop until we find a numeric digit or run out of lines 
- 
-20$ clc   ;found a digit, get entire number into linnum & rts 
- bra linget 
- 
-30$ lda #$ff  ;no line found, fake end of program   [910716] 
- sta linnum+1 
- rts 
- 
- .ifgt *-$7f00 
- .messg ***ROM OVERFLOW: $7F00 
- .endif 
-;.end 
- .page 
- .subttl  GRAPHIC Interface 
- 
- * = $af00  ;      [911001] 
- 
-;***************************************************************** 
-; SCREEN DEF      define a screen 
-; SCREEN SET  set draw, view screen 
-; SCREEN CLR  clear a screen 
-; SCREEN OPEN  open a screen 
-; SCREEN CLOSE  close a screen 
-;***************************************************************** 
- 
-Screen 
- cmp #open_token  ;else dispatch per secondary token... 
- beq ScreenOpen 
- cmp #close_token 
- beq ScreenClose 
- cmp #def_token 
- beq ScreenDef 
- cmp #clr_token 
- beq ScreenClr 
- 
- jsr chkesc  ;      [910930] 
-; cmp #esc_command_token 
-; bne 10$ 
-; jsr chrget  ; get past escape token 
- cmp #set_token 
- beq ScreenSet 
-10$ bra snerr  ; report syntax error 
- 
- .page 
-CheckGraphicMode 
- bit $1f4b  ;Check draw screen allocation   [910711] 
- bmi NoGraphicArea 
- rts   ; ok 
- 
- 
-NoGraphicArea 
- ldx #errng  ; bad- no graphic area???? 
- bra error 
- 
- 
-RestoreTextScreen  ;      [910404] 
- lda #$ff  ;      [910930] 
- sta GKI__parm1  ;leave drawscreen as is 
- sta GKI__parm2  ;set viewscreen to text 
- jmp ($800e)  ;kg65.screen 
- 
-; lda vic+49  ;Check graphic screen allocation 
-; and #%00010000 
-; beq 99$   ; we're in text mode 
-;; bit $1f43 
-;; bmi NoGraphicArea 
-; 
-; sei 
-; lda #$80 
-; bit _mode  ;40/80 mode, 0=80 128=40 
-; bmi 10$ 
-; 
-; tsb vic+49  ; 80 
-; lda #1 
-; trb vic+22  ;  fix x-scroll register 
-; bra 99$ 
-; 
-;10$ trb vic+49  ; 40 
-; lda #1 
-; tsb vic+22  ;  fix x-scroll register 
-; 
-;99$ cli 
-;; lda #0 
-;; sta _graphm  ;text mode???? 
-; rts 
- 
- .page 
-;***************************************************************** 
-; SCNCLR  clear a text or graphic screen 
-; 
-;  Syntax : SCNCLR  [ColorReg] 
-; 
-; if [ColorReg] not specified, clears text screen 
-; else clears the graphic screen with given value. 
-;***************************************************************** 
- 
-ScreenClr 
- jsr chrget  ;eat token & fall into SCNCLR 
  

@@ -1,83 +1,27 @@
-rpalette 
- jsr CheckGraphicMode ;verify screen open 
- jsr PushParms  ;Save graphics parameters 
+movspr_angle 
+; jsr swapxy  ;swap y and a (eventually) : y ==> x 
+; tay   ;        a ==> y 
+; txa   ;        x ==> a 
+ pha 
+ tya 
+ ply 
  
- jsr conint  ;get screen# in .x 
- cpx #4 
- bcs 10$   ; illegal screen# 
- stx GKI__parm1 
+ jsr gtang1  ;get angle values 
+; ldx #xdest-vwork 
+; jsr scalxy  ;scale lengths 
+ ldx #xdest-vwork 
+ clc 
  
- jsr combyt  ;get color# in .x ????check for legal color# 
- stx GKI__parm2 
- 
- jsr ($8034)  ;get RGB components of color# in PARM3,4,5 
- bcs 10$   ; something is wrong???? 
- 
- jsr combyt  ;get r,g,b component# 
- cpx #3 
-10$ bcs fcerr  ; illegal value 
- 
- ldy GKI__parm3,x  ;get r,g,b value 
- jsr sngflt  ;float 1 byte arg in .y 
- 
- jsr chkcls  ;check for closing paren 
- jsr PopParms  ;restore graphics parameters 
- rts 
- 
- .page 
-PushParms   ;      [910820] 
- ply   ;Grab return address 
- plz 
- 
- phw linnum  ;Save 'poker' value 
- 
- ldx #17-1 
-10$ lda GKI__parm1,x  ;Save Graphics parameters 
- pha   ; [eg: CHAR x,y,1,1,2,str$(PIXEL(x,y))] 
- dex 
- bpl 10$ 
- 
- phz   ;Restore return address 
- phy 
- rts 
- 
- 
-PopParms   ;      [910820] 
- ply   ;Grab return address 
- plz 
- 
- ldx #0 
-10$ pla   ;Restore Graphics parameters 
- sta GKI__parm1,x 
+60$ jsr angmlt  ;multiply lengths*angles for x and y 
+ sta vwork,x 
+ tya 
+ sta vwork+1,x 
  inx 
- cpx #17 
- bcc 10$ 
+ inx 
+ cpx #ydest-vwork 
+ beq 60$   ; loop to do y-position 
  
- pla   ;Restore 'poker' value 
- sta linnum+1 
- pla 
- sta linnum 
+ ror numcnt  ;shift in carry to set msb 
+ bra movspr_position ; go place sprite 
  
- phz   ;Restore return address 
- phy 
- rts 
- 
-;.end 
- .page 
- .subttl RSPRITE Function 
- 
-;****************************************************************** 
-;* RSPRITE - Return sprite information 
-;* 
-;* Syntax : RSPRITE (sprite_number, argument) 
-;* 
-;* Where  : sprite_number = [0..7] 
-;*   argument = [0..5] 
-;*   0 : enabled?   (y(1)/n(0)) 
-;*   1 : color?     (0-15) 
-;*   2 : priority over background? (y(1)/n(0)) 
-;*   3 : expand in x direction? (y(1)/n(0)) 
-;*   4 : expand in Y direction? (y(1)/n(0)) 
-;*   5 : multicolor sprite?  (y(1)/n(0)) 
-;****************************************************************** 
  

@@ -1,57 +1,47 @@
-cursor cmp #on_token  ;Check for ON | OFF 
- clc 
- beq 20$   ; turn cursor on (.c=0) 
- cmp #esc_command_token 
- bne 1$   ; (might be a function) 
- jsr chkesc 
- cmp #off_token  ; turn cursor off (.c=1) 
- beq 20$ 
- bra snerr 
+movspr_irq 
+ lda vic+21  ;any sprites active?    [910212] 
+ beq music_irq  ; no- skip ahead 
  
-1$ pha   ;Evaluate cursor position parameters 
- sec 
- jsr _plot  ; get current cursor position & save it 
- stx srow 
- sty column 
+ ldy #7   ;check each of 8 sprites 
+10$ lda vic+21  ; is this sprite is enabled? 
+ and sbits,y 
+ beq 40$   ;  sprite not enabled 
  
- ldx column  ; get new column, default=current column 
- pla 
- cmp #',' 
- beq 10$   ;  not given, use default 
- jsr getbyt 
-10$ stx column 
- ldx srow   ; get new row, default=current row 
- jsr optbyt 
-; stx srow 
- ldy column 
- clc 
- jsr _plot  ; set new cursor position 
- bcs fcerr  ;  error if bad position 
+ ldx sproff,y  ; get offset to sprite info from a table 
+ lda sprite_data,x ; is this sprite moving (speed >0 )? 
+ beq 40$   ;  sprite not moving 
+ bpl 15$   ;  sprite moving, no destination 
+ bsr movspr_to_irq ;  sprite moving to a destination [910809] 
+ bra 40$ 
  
- jsr optzer  ;Get new cursor type   ???? assumes screen output 
- bcc 30$   ; not given, exit 
- lda #esc 
- jsr _bsout  ; use escape sequence to set 
- txa 
- and #1 
- eor #1   ;      [910808] 
- clc 
- adc #'E'  ; 0=F=flash, 1=E=solid 
- jmp _bsout  ;set it and exit 
+15$ sta sprite_data+1,x ;set counter 
+20$ tya   ;convert sprite# to a VIC register pointer 
+ asl a 
+ tay 
+ lda sprite_data+2,x ;get angle sign 
+ dec a   ;subtract 1 for cosine 
+ inx 
+ inx 
+ iny 
+ jsr sprsub  ;update y position 
+ dex 
+ dex 
+ dey 
+ lda sprite_data+2,x 
+ jsr sprsub  ;update x position 
+ php 
+ tya 
+ lsr a   ;restore index (.Y=sprite pointer) 
+ tay 
+ plp 
+ bcc 30$   ;skip if no overflow 
+ lda vic+16  ;get x position msb bits ???vic_save 
+ eor sbits,y  ;invert bit 
+ sta vic+16  ;    ???vic_save 
+30$ dec sprite_data+1,x 
+ bne 20$   ; loop until counter done 
  
-20$ jsr _cursor  ;Turn cursor ON or OFF per .c 
- 
- jsr chrget  ;eat token, get next character 
- beq 30$   ; eol- exit 
- jsr chkcom  ; else, must be comma 
- bra 1$   ;  it is- go evaluate position 
- 
-30$ rts   ; eol 
- 
+40$ dey   ;check next sprite 
+ bpl 10$   ; loop until done moving all sprites 
+ bra music_irq  ; then continue with next IRQ task 
  .page 
-;************************************************************************ 
-;*   RCURSOR Returns in variable list current cursor position * 
-;*         * 
-;*   Syntax: RCURSOR [column [,row] ]    * 
-;************************************************************************ 
- 

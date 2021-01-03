@@ -1,15 +1,19 @@
-mvdone clc   ;update frespc pointer 
- adc frespc 
- sta frespc 
- bcc 10$ 
- inc frespc+1 
-10$ rts 
+rleft2 txa 
+rleft3 pha   ;save length 
+ jsr strspa  ;get space 
+ lda dscpnt 
+ ldy dscpnt+1 
+ jsr fretmp 
+ ply 
+ pla 
+ clc 
+ adc index  ;compute where to copy 
+ sta index 
+ bcc 1$ 
+ inc index+1 
+1$ tya 
+ jsr movdo  ;go move it 
+ bra putnew 
  
- .page 
-; FRETMP is passed a string descriptor pntr in (a,y).  A check is made to see 
-; if the string descriptor points to the last temporary descriptor allocated by 
-; putnew.  If so, the temporary is freed up by the updating of (temppt).  If a 
-; string is freed up, a further check sees if it was the last one created and if 
-; so, (fretop) is updated to reflect the fact that the space is no longer in use. 
-; The address of the actual string is returned in (x,y) and its length in (a). 
+ 
  

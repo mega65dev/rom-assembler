@@ -1,18 +1,43 @@
-ini jsr frefac ;free temp descriptor 
- sta hulp ;length string 
- ldx #$0a ;printed in hulp 
- lda #0 
- 
-10$ sta swe,x ;init working registers 
+prcha ldy #0 
+chx txa 
+ beq cpef ;branch if no blanks 
  dex 
- bpl 10$ 
- stx flag ;comma flag =ff 
- stx point ;point pointer=ff 
- stx dolr ;dollar flag=ff 
- tax  ;x=y=0 
- tay 
- rts 
  
- .page 
-; Using- round number 
+oblk lda #' ' ;output a blank 
+ bra outc ;always 
+ 
+ 
+cpef cpy hulp ;end of string reached? 
+ bcs oblk ;output blank if yes 
+ jsr indin1_ram1 ;lda (index),y 
+ iny 
+ 
+outc jsr cdout ;output character 
+ bne chx  ;branch if not ready 
+ bra reay 
+ 
+ 
+ 
+conv jsr fout ;convert mfp to decimal 
+ 
+ ldy #$ff ;build descriptor for fout string 
+10$ iny  ;how big IS it? 
+ lda fbuffr,y 
+ bne 10$ 
+ tya 
+ jsr strspa ;jsr getspa,stx dsctmp+1,sty dsctmp+2,sta dsctmp,rts 
+ 
+ phx 
+ ldy #0 
+ ldx #dsctmp+1 
+20$ lda fbuffr,y 
+ beq 30$ 
+ jsr sta_far_ram1 ;sta (dsctmp+1),y 
+ iny 
+ bne 20$ 
+ 
+30$ plx 
+ jsr putnew 
+ jsr ini  ;init counters and flags 
+ jsr fform ;output one formatted number 
  

@@ -1,47 +1,45 @@
-on2 jsr on 
- bra del2 
+concat jsr dospar  ;parse the line 
+ jsr chk4 
+ ldy #fconc  ;offset 
+ lda #12   ;length 
+ jsr trans  ;send command 
+ bra print_dos_error ;if any 
  
  
-unit2 jsr unit ;do unit# parsing 
- bra del2 ;always 
- 
-name2 lda #2  ;name2 allowed only once 
- jsr newnam 
- sta dosf2l 
- stx dosf2a 
- sty dosf2a+1 
- 
- lda #2  ;set filename2 flag & 
-del2 tsb parsts ;set flag in status 
- jsr chrgot 
- beq done ;done on <cr>/<> 
- cmp #',' 
- beq parse2 
- cmp #on_token ;"on" token 
- beq on2 
- cmp #'U' 
- beq unit2 
- bra snerr 
  
  
-on jsr chrget 
- cmp #'B' 
- beq dbank 
- cmp #'U' 
+; RENAME rdddfn=sdsfn 
+ 
+rename lda #$e4  ;set error flags 
+ jsr dosprs  ;parse the line 
+ jsr chk5 
+ ldy #fren  ;offset 
+ lda #8   ;length 
+ jsr trans  ;send command 
+ bra print_dos_error ;if any 
+ 
+ 
+ .page 
+; BACKUP D<destination_drive>=D<source_drive> 
+; 
+; where destination|source_drive is [0...9] 
+ 
+backup lda #$c7  ;set error flags 
+ jsr dosprs  ;parse the line 
+ and #$30  ;required parameters 
+ cmp #$30 
  bne snerr 
- 
- 
-unit jsr gtbytc ;getval 
- cpx #31 
- bcs err_ild ;error if >30 
- cpx #1  ;drive 1 = use system default drive  [910221] 
- bne 10$ 
- ldx _default_drive 
- bra 20$ 
-10$ cpx #4 
- bcc err_ild ;error if <4 
-20$ stx dosfa 
- lda #$08 ;set parser's unit flag 
+ jsr are_you_sure 
+ beq 10$   ;if run mode or not 'yes' 
  rts 
  
+10$ jsr dclall  ;close disk 
+ ldy #fbak 
+ lda #4   ;length 
+ jsr trans  ;send command 
+ bra print_dos_error ;if any 
+ 
+ 
+ .page 
+; Trans subroutine 
  

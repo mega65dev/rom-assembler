@@ -1,44 +1,20 @@
-range beq 10$   ;a terminator from chrgot? 
- bcc 10$   ;a number? 
- cmp #minus_token ;a dash? 
- bne 40$   ;if it's not a dash, error (C128-03 fix; FAB) 
- ldy #1 
- jsr indtxt  ;let's peek, and see what follows the dash! 
- beq 40$   ;uh-oh! it's of the form 'delete -' - error 
- cmp #':'  ;the other terminator 
- beq 40$   ;..still bad 
- sec   ;set up for linget 
+fix_links   ;<<<<<<<<<<<<<<<<<<<<<<<<<<< entry from renumber 
  
-10$ jsr linget  ;get first # 
- jsr FindLine  ;find it & set ptrs 
- jsr chrgot  ;get last char 
- beq 20$   ;skip done 
- cmp #minus_token ;a dash? 
- bne 40$   ; no- syntax error 
- jsr chrget  ; yes- skip dash 
- jsr linget  ;get second # 
- bne 40$   ; error- wasn't a number 
+ jsr link_program ;relink program 
+ lda index1 
+ ldx index1+1 
+ clc 
+ adc #2 
+ bcc 10$ 
+ inx 
+10$ sta text_top  ;set eot pointer 
+ stx text_top+1 
+ rts   ;C128-04 fix: was 'jmp ready' (FAB) 
  
-20$ lda endchr  ;was a # input? 
- bne 30$   ;yes 
- lda #$ff  ;no - make max 
- sta linnum 
- sta linnum+1 
-30$ rts 
- 
- 
-40$ bra snerr  ;syntax error 
- 
-;.end 
  .page 
- .subttl  FIND  CHANGE 
- 
-; FIND   "string"                    [,line_range] 
-; CHANGE "oldstring" TO "newstring"  [,line_range] 
-; 
-; where <"> delimiter can be any character, but only 
-; double-quotes will prevent tokenization of strings. 
-; 
-; N.B.: I am assuming that lines cannot be greater than 255 chars, as is 
-; the case where the line was entered "normally", that is, using LINGET. 
+;******************************** 
+;* 
+;*    Input Range Parameters 
+;* 
+;******************************** 
  

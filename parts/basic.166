@@ -1,88 +1,12 @@
-multrt rts 
- 
- .page 
-; Unpack a ROM constant into the FAC 
- 
-romupk sta index1 
- sty index1+1 
- ldy #4 
- lda (index1),y ;it's in ROM, so ok to use ind 
- sta arglo 
+movtop eor #$ff  ;comp and add 
+ sec 
+ adc grbtop 
+ ldy grbtop+1 
+ bcs 1$ 
  dey 
- lda (index1),y 
- sta argmo 
- dey 
- lda (index1),y 
- sta argmoh 
- dey 
- lda (index1),y 
- sta argsgn 
- eor facsgn 
- sta arisgn 
- lda argsgn 
- ora #$80 
- sta argho 
- dey 
- lda (index1),y 
- sta argexp 
- lda facexp ;sets code of facexp 
+1$ sta grbtop 
+ sty grbtop+1 
  rts 
  
- .page 
-; Unpack a RAM constant into the FAC 
- 
-conupk sta index1 
- sty index1+1 
- 
-; lda mmu_config_reg 
-; pha   ;preserve caller's memory config???? 
- 
- ldy #4 
- jsr indin1_ram1 
- sta arglo 
- dey 
- jsr indin1_ram1 
- sta argmo 
- dey 
- jsr indin1_ram1 
- sta argmoh 
- dey 
- jsr indin1_ram1 
- sta argsgn 
- eor facsgn 
- sta arisgn 
- lda argsgn 
- ora #$80 
- sta argho 
- dey 
- jsr indin1_ram1 
- sta argexp 
- 
-; pla 
-; sta mmu_config_reg ;restore caller's memory config???? 
- 
- lda facexp ;set codes of facexp 
- rts 
- 
- .page 
-; Check special cases and add exponents for FMULT, FDIV 
- 
-muldiv 
- lda argexp ;exp of arg=0? 
-mldexp beq zeremv ;so we get zero exponent 
- clc 
- adc facexp ;result is in (a) 
- bcc 10$  ;find (c) xor (n) 
- bmi overr ;overflow if bits match 
- clc 
-   .byte $2c 
- 
-10$ bpl zeremv ;underflow 
- adc #$80 ;add bias 
- sta facexp 
- beq zeroml ;zero the rest of it 
- lda arisgn 
- sta facsgn ;arisgn is result's sign 
- rts  ;done 
  
  

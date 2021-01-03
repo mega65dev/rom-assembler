@@ -1,164 +1,47 @@
-rdrt0 dex  ;case cdd=sd 
-rdrt1 bra sdp1 ;get next symbol 
+on2 jsr on 
+ bra del2 
  
- .page 
-; Syntax checker DOS write 
  
-chk1 and #$e6 ;for HEADER, DLOAD, SCRATCH, TYPE, LIST 
+unit2 jsr unit ;do unit# parsing 
+ bra del2 ;always 
+ 
+name2 lda #2  ;name2 allowed only once 
+ jsr newnam 
+ sta dosf2l 
+ stx dosf2a 
+ sty dosf2a+1 
+ 
+ lda #2  ;set filename2 flag & 
+del2 tsb parsts ;set flag in status 
+ jsr chrgot 
+ beq done ;done on <cr>/<> 
+ cmp #',' 
+ beq parse2 
+ cmp #on_token ;"on" token 
+ beq on2 
+ cmp #'U' 
+ beq unit2 
+ bra snerr 
+ 
+ 
+on jsr chrget 
+ cmp #'B' 
+ beq dbank 
+ cmp #'U' 
  bne snerr 
  
-chk2 lda parsts ;for DSAVE 
- and #1 
- cmp #1  ;check required parameters 
- bne snerr ;error if 1 missing 
- lda parsts ;reload for return 
+ 
+unit jsr gtbytc ;getval 
+ cpx #31 
+ bcs err_ild ;error if >30 
+ cpx #1  ;drive 1 = use system default drive  [910221] 
+ bne 10$ 
+ ldx _default_drive 
+ bra 20$ 
+10$ cpx #4 
+ bcc err_ild ;error if <4 
+20$ stx dosfa 
+ lda #$08 ;set parser's unit flag 
  rts 
  
- 
-chk3 and #$e7 ;for COLLECT 
- bne snerr ;check optional parameters 
- rts 
- 
- 
-chk4 and #$c4 ;for COPY, CONCAT 
- bne snerr ;check optional parameters 
- lda parsts 
-chk5 and #3  ;for RENAME 
- cmp #3  ;check required parameters 
- bne snerr 
- lda parsts ;reload for return 
- rts 
- 
- 
-chk6 and #5  ;for APPEND, DOPEN 
- cmp #5  ;check required parameters 
- bne snerr 
- lda parsts ;reload for rts 
- rts 
- 
-;.end 
- .page 
- .subttl  DOS 4 
- 
-; Allocate DS$ if nesessary, but use old DS$ string otherwise 
-; Called by DS$ and DS 
- 
-Check_DS   ;chkds. 
- lda dsdesc 
- beq Read_DS_1  ;branch if DS$ is not in memory 
- rts   ;else return & use old one 
- 
- 
-; Allocate DS$ if necessary & Read DOS error channel 
- 
-Read_DS    ;errchl. 
- lda dsdesc  ;has DS$ space been allocated? 
- bne Read_DS_2  ; yes 
- 
-Read_DS_1 
- lda #40   ; no- get 40 char string 
- sta dsdesc 
- jsr getspa  ;allocate space for DS$ 
- stx dsdesc+1  ; low address of string 
- sty dsdesc+2  ; high   "    "    " 
- ldx #dsdesc+1  ;set up string back pointer to dsdesc 
- ldy #40 
- lda #<dsdesc 
- jsr sta_far_ram1 ; sta (dsdesc+1),y 
- iny 
- lda #>dsdesc 
- jsr sta_far_ram1 ; sta (dsdesc+1),y 
- 
-Read_DS_2 
- ldx dosfa  ;fa 
- cpx #2 
- bcs 10$   ; if =0 or 1 use default  [910429] 
- ldx _default_drive ; (was dosffn)   [900710] 
- stx dosfa 
-10$ lda #doslfn  ;la (reserved la) 
- ldy #$6f  ;sa (command channel) 
- jsr _setlfs 
- lda #0   ;no name (so no setbank) 
- jsr _setnam 
- jsr _open  ;get command channel 
- ldx #doslfn 
- jsr _chkin 
- bcs 40$   ; a problem (file already open??) 
- 
- ldy #$ff 
-20$ iny   ;read disk error message 
- jsr _basin 
- cmp #cr 
- beq 30$   ; if eol 
- ldx #dsdesc+1 
- jsr sta_far_ram1 ; sta (dsdesc+1),y copy to DS$ 
- cpy #40 
- bcc 20$   ; loop unless too long 
- 
-30$ lda #0   ;errend. 
- ldx #dsdesc+1  ;terminate DS$ with a null 
- jsr sta_far_ram1 ;sta (dsdesc+1),y 
- 
- jsr _clrch  ;shut down command channel 
- lda #doslfn 
- sec   ; not a real close 
- jmp _close  ; close it and rts 
- 
-40$ pha   ;errbad. 
- jsr 30$ 
- jsr Clear_DS  ;flag 'no DS available' 
- plx   ;get error 
- bra error 
- 
- .page 
-; Clear_DS subroutine - forget current DS$ message, if any 
-; 
- 
-Clear_DS   ;oldclr. 
- lda dsdesc  ;check for allocation 
- beq 10$   ;   branch if not allocated 
- 
- phy   ;mark current DS$ string as garbage 
- phx 
-; lda #40   ;   standard DS$ allocation 
- tay 
- ldx #dsdesc+1 
- jsr sta_far_ram1 ;sta (dsdesc+1),y length of garbage 
- iny 
- lda #$ff 
- jsr sta_far_ram1 ;sta (dsdesc+1),y garbage flagged 
- inc a 
- sta dsdesc  ;(0)    kill DS$ 
- plx 
- ply 
- 
-10$ rts 
- 
- .page 
-; Read DOS error message, but don't care what it is.  Want to stop disk LED blink. 
-; 
- 
-Suck_DS 
- ldx dosfa  ;fa 
- lda #doslfn  ;la (reserved la) 
- ldy #$6f  ;sa (command channel) 
- jsr _setlfs 
- lda #0   ;no name (so no setbank) 
- jsr _setnam 
- jsr _open  ;get command channel 
- ldx #doslfn 
- jsr _chkin 
- bcs 20$   ; skip input if problem 
- 
-10$ jsr _basin  ;read disk error message 
- cmp #cr 
- bne 10$   ; loop until eol 
- 
-20$ jsr _clrch  ;shut down command channel 
- lda #doslfn 
- sec   ; not a real close 
- jmp _close  ; close it 
- 
- .page 
-; R-U-sure subroutine 
  

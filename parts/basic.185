@@ -1,46 +1,55 @@
-autoboot 
- lda #0   ;Select internal drive 
- sta fdc 
-10$ bit fdc+2  ; busywait 
- bmi 10$ 
- lda fdc+3  ;See if a diskette is present 
- and #$08 
- beq 30$   ; exit with no action taken if not 
+polyx sta polypt ;retain polynomial pointer for later 
+ sty polypt+1 
+ jsr mov1f ;save FAC in factmp (y=0 upon return) 
+ lda #tempf1 
+ jsr fmult ;compute x^2. 
+ jsr poly1 ;compute p(x^2). 
+ lda #<tempf1 
+ ldy #>tempf1 
+ bra fmult ;multiply by FAC again 
  
- lda #$e6  ;set up parameters for DOS parser like BLOAD 
- ldx #$fc 
- jsr dosprx  ;let the parser init DOS stuff 
  
- ldy #$ff 
-20$ iny   ;Copy filename from ROM into buffer 
- lda autoboot_filename,y 
- sta savram,y 
- bne 20$   ; null terminated 
- sty dosf1l  ; length not counting terminator 
+; Polynomial Evaluator 
+; 
+; Pointer to degree is in (a,y). 
+; Compute:  c0+c1*x+c2*x^2+c3*x^3+c4*x^4...+c(n-1)*x^(n-1)+c(n)*x^n 
+;  which is roughly (LOG(2)^n)/LOG(EXP(1))/n! 
  
- lda #%01000001  ;set flag for load indicating autoboot 
- sta runmod  ;set flag for load not to go to ready 
- jsr dload_boot  ;skip parser & load it 
  
- lda #0   ; clear autoboot flags 
- sta runmod 
- phx   ; save end address 
- phy 
- jsr _readst  ;get status report, but check it later 
- pha 
- jsr Suck_DS  ;clear any DOS errors (to kill error LED) 
- pla   ;now check I/O status 
- ply 
- plx 
- and #$bf  ; EOI is okay 
- bne 30$   ; outside problems 
- bcs 30$   ; inside problems 
+poly sta polypt 
+ sty polypt+1 
  
- stx text_top  ;success- set end address & run it 
- sty text_top+1 
- cli 
- bra run_a_program 
+poly1 jsr mov2f ;save FAC (rounds, .y=0) 
+ lda (polypt),y 
+ sta degree 
+ inw polypt 
+ lda polypt 
+ ldy polypt+1 
  
-30$ rts   ;failure- go_ready 
+10$ jsr rommlt 
+ lda polypt ;get current pointer 
+ ldy polypt+1 
+ clc 
+ adc #5 
+ bcc 20$ 
+ iny 
+20$ sta polypt 
+ sty polypt+1 
+ jsr romadd ;add in constant 
+ lda #<tempf2 ;multiply the original FAC 
+ ldy #>tempf2 
+ dec degree ;done? 
+ bne 10$ 
+ rts  ;yes 
+ 
+;.end 
+ .page 
+ .subttl Floating Point Math Package (TRIG) 
+ 
+; Sine, Cosine, and Tangent Functions. 
+ 
+ 
+ 
+; Cosine function cos(x)=sin(x+pi/2) 
  
  

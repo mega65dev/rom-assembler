@@ -1,36 +1,34 @@
-rrts rts 
+eoa lda point ;decimal found? 
+ bpl 20$  ;yes... 
+ stx point ;no...add point 
  
- .page 
-; Using- alg: delete leading zeros of no 
+20$ jsr anaf ;analyze format 
+ lda vf 
+ cmp #$ff 
+ beq 40$  ;field overflow 
+ lda fesp ;exponent in field 
+ beq cff  ;convert to f format if not 
+ lda uexp ;exponent in number? 
+ bne 30$  ;yes... 
+ ldx enr 
+ jsr et2  ;add exponent to number 
+ dec fbuffr+2,x 
+ inx 
+ stx uexp 
+ jsr alg  ;delete leading zeros 
+ beq hup  ;all zero 
  
-alg ldy point ;start with a .? 
- beq szer ;yes... 
+30$ ldy posp ;+ or - in format? 
+ bne sswe ;yes... 
+ ldy sno  ;+? 
+ bmi sswe ;yes... 
+ lda vf 
  
-cho ldy bnr 
-cmo lda fbuffr,y ;start with a 0? 
- cmp #'0' 
- rts 
+40$ beq errf ;no room for sign 
+ dec vf  ;reserve room 
+ bne 50$ 
+ lda nf  ;one #? 
+ beq errf ;yes...error 
  
- 
-nbr inc point ;adjust point 
- jsr eado ;and exponent 
- inc bnr  ;and pointer to begin of no 
- cpy enr  ;end of number? 
- beq rrts ;yes... 
- iny 
- 
-szer jsr cmo  ;zero in no? 
- beq nbr  ;yes... 
- rts  ;no... 
- 
- 
-; Using- chout: print number 
- 
-chout lda dolr ;dollar flag set? 
- bmi 10$  ;no... 
- inc z_p_temp_1 ;make room for $ 
- 
-10$ ldx bnr  ;start of # 
- dex 
- ldy begfd ;begin of field 
+50$ inc swe 
  

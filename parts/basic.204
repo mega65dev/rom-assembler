@@ -1,43 +1,89 @@
-ispl1 lda sno  ;positive? 
- bmi bout ;yes...out blank or * 
-ispl lda sno  ;output sgn 
- bra out 
+errf lda #'*' ;format error 
+stout jsr cdout ;fill field with stars 
+ bne stout 
+ rts 
  
  
-zerot lda z_p_temp_1 ;# of zeros 
- bne zerot1 
- cpx enr  ;end of # reached? 
- beq zout ;yes...output zero 
+ahp tay  ;output no if swe=0 
+ beq hup 
+ldvn lda vn 
+ bne hup  ;vn<>0 
+ dec swe  ;add extra 0 
+ inc z_p_temp_1 ;before decimal point 
+ bra hup 
  
-telx inx 
- lda fbuffr,x ;get digit 
-   .byte $2c ;skip 
+ .page 
+; Using- shift decimal point 
  
-zout lda #'0' ;output zero 
+shpn sec 
+ lda vf 
+ sbc vn 
+ beq rdy  ;format o.k 
+ ldy point 
+ bcc pntl ;vf<vn 
+ sta hulp 
  
-outs lsr flag ;clear comma flag 
+incy cpy enr  ;end of no reached? 
+ beq ity 
+ bcs nos1 ;yes... 
  
-out jsr cdout ;output character 
- beq rrts 
- bra afrm ;not ready... 
+ity iny 
+nos1 inc vn 
+nos4 jsr eado ;adjust exponent 
+ dec hulp ;ready? 
+ bne incy ;no... 
+ beq poit 
+ 
+pntl eor #$ff 
+ adc #1 
+ sta hulp ;=vn-vf 
+ 
+decy cpy bnr  ;begin of no? 
+ beq inz  ;yes... 
+ dey 
+ dec vn 
+ bra inz2 
  
  
-zerot1 dec z_p_temp_1 ;count leading zeros 
- lda dolr ;$ flag set? 
- bmi zout ;no...output zero 
+inz inc z_p_temp_1 ;add leading zeros 
+inz2 lda #$80 
+nos3 jsr eadj ;adjust exponent 
+ dec hulp ;ready? 
+ bne decy ;no... 
  
- jsr indfrm ;take a peek at the next character in the format string 
- cmp #',' ;if it's a comma, we got problems 
- bne 10$  ;...branch if no comma & resume normal processing 
+poit sty point ;decimal point pointer 
+rdy rts 
  
- lda blfd ; here's the "$,999.99" bug fix: 
- jsr cdout ; print a 'fill' character instead of the '$' 
- iny  ; and increment format string pointer past comma 
+ .page 
+; Using- adjust exponent 
  
-10$ sec  ;resume normal processing 
- ror dolr ;clear the dollar flag & go on to print '$' 
-; sta sw_rom_ram0 ;???? 
- lda pumony 
- bra outs ;output money symbol 
+sexp bne retrn ;no over/underflow 
+ eor #$09 ;.a is 0 or 9 
+ sta fbuffr,x ;digit back in exp 
+ dex  ;= 0 or 9 
+ cpx uexp 
+ rts 
  
+ 
+eado lda #0 
+eadj ldx uexp 
+ inx 
+ bit etof ;e-to-f flag on? 
+ bmi 20$  ;yes... 
+ eor usgn 
+ beq 20$  ;++ or -- 
+ 
+10$ jsr tag3 ;inc exp, overflow? 
+ jsr sexp ;digit 0 if yes 
+ bcs 10$  ;try second digit 
+ bra overr ;exp>99 
+ 
+20$ lda fbuffr,x 
+ dec fbuffr,x ;decrement exp 
+ cmp #'0' ;underflow on digit? 
+ jsr sexp ;set digit=9 if yes... 
+ bcs 20$  ;try 2nd digit 
+ bit etof ;flag off? 
+ bpl et3  ;yes... 
+ sty point ;decimal point pointer 
  

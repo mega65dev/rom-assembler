@@ -1,21 +1,35 @@
-rid lda dosdid ;include id 
- sta dosstr,x 
- inx 
- lda dosdid+1 
- bra sdp5 ;always 
+drv1 lda #$10 
+ jsr prmrpt ;check for repeated parameter 
+ jsr gtbytc ;getval 
+ cpx #10 
+ bcs fcerr ;illegal drv# if >9 [allow 0: to 9: ?????] 
+ stx dosds1 
+ stx dosds2 
+ lda #$10 
+ bra del1 
  
  
-rwrt lda dosrcl ;check for L or W 
- beq 10$  ;zero then write 
- lda #'L' 
- bra sdp5 ;always 
+ident lda #$80 ;set ID flag 
+ tsb dosflags 
+ bne snerr ; repeated parameter 
+ jsr chrget ;get next character 
+ cmp #'(' ; c65: allow I(ID$) syntax  [900710] 
+ bne 10$ 
+ jsr frmstr ; get ID from var 
+ cmp #2 
+ bcc err_mfn ; if length < 2, error 
+ ldy #0 
+ jsr indin1_ram1 ;  else grab first two characters 
+ sta dosdid 
+ iny 
+ jsr indin1_ram1 
+ sta dosdid+1 
+ bra delim1 ;continue 
  
-10$ lda #'S' ;send W,S 
- sta dosrcl 
- lda #'W' 
- bra sdp5 ;always 
+10$ sta dosdid ;m(txtptr => dosdid 
+ jsr chrget 
+ sta dosdid+1 
+ jsr chrget ;continue 
+ bra delim2 
  
- 
- 
-; Move record number 
  

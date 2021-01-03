@@ -1,91 +1,74 @@
-volrts 
- rts 
+envelope 
+ jsr getbyt  ;get envelope number 
+ cpx #10 
+ bcs fcerr  ;exit - invalid tone number 
+ stx tonnum  ;save number 
+ lda atktab,x  ;get attack/decay rates 
+ sta tonval 
+ lda sustab,x  ;get sustain/release rates 
+ sta tonval+1 
+ lda wavtab,x  ;get waveform and filter 
+ sta tonval+2 
  
-;.end 
- .page 
- .subttl  VOLUME 
+ ldx #0 
+20$ stx parcnt 
+ jsr optbyt  ;get parameter - attack or sustain 
+ bcc 30$   ;skip if no input 
+ txa 
+ asl a 
+ asl a   ;shift to upper nibble 
+ asl a 
+ asl a 
+ sta nibble  ;save it 
+ ldx parcnt 
+ lda tonval,x  ;get current value 
+ and #$0f  ;mask it out 
+ ora nibble  ;add new value 
+ sta tonval,x  ;save it 
  
-;*************************************************************** 
-;* 
-;*  VOLUME - set volume of SID chips 
-;* 
-;* Syntax : VOLUME [right] [,left] 
-;* 
-;* Where  : vol in 0..15 
-;* 
-;*************************************************************** 
+30$ jsr optbyt  ;get decay or release rate 
+ bcc 40$   ;skip if no input 
+ txa 
+ and #$0f  ;use only lower nibble 
+ sta nibble  ;save it 
+ ldx parcnt 
+ lda tonval,x  ;get current value 
+ and #$f0  ;mask it out 
+ ora nibble  ;add new value 
+ sta tonval,x  ;save it 
  
-volume beq snerr  ;stereo parameters    [910612] 
- cmp #',' 
- beq 10$   ;left volume only 
-; jsr getbyt  ;right volume in .x 
-; cpx #16 
-; bcs fcerr  ;too large 
- jsr getnyb  ;      [910930] 
- stx z_p_temp_1  ;a temp (sorry fred) 
+40$ ldx parcnt 
+ inx 
+ cpx #1 
+ beq 20$   ;loop to do sustain/release rates 
+ jsr optbyt  ;get waveform 
+ bcc 90$   ;skip if no value 
+ lda #$15  ;assume ring modulation 
+ cpx #4 
+ beq 80$   ;skip if correct 
+ bcs fcerr  ;error if >4 
+ lda sbits+4,x  ;get waveform bit 
+ ora #1   ;set gate bit 
  
-; The way this is done must work with 'PLAY' without too much conflict. 
-; So, along with setting the SID 'volume' reg, we'll also set up PLAY's 
-; record of current volume as well. 
+80$ sta tonval+2  ;save waveform 
  
- lda filters1+3 
- and #$f0 
- ora z_p_temp_1 
- sta filters1+3 
+90$ jsr optwrd  ;is there a pulse width arg? 
+ bcc 110$  ;nope, done 
  
-; lda filters1+4  ;???? why     [910612] 
-; and #$f0 
-; ora z_p_temp_1 
-; sta filters1+4 
+ tax   ;save msb 
+ lda tonval+2  ;get waveform 
+ and #$40 
+ beq 110$  ;skip if not pulse waveform 
+ txa 
+ ldx tonnum  ;get envelope number 
+ sta pulshi,x  ;save high byte of pulse width 
+ tya 
+ sta pulslw,x  ;save low byte 
  
-; jsr put_io_in_map 
-; jsr go_slow  ;      [910716] 4567R7A 
- sta sid1+24 
-; jsr go_fast  ;      [910716] 4567R7A 
- jsr chrgot 
- beq volrts 
- 
-10$ jsr optbyt  ;get optional left parameter   [910612] 
- bcc snerr  ; comma but no value not given?? 
- jsr chknyb  ;      [910930] 
-; cpx #16 
-; bcs fcerr  ;too large 
- stx z_p_temp_1  ;a temp (sorry fred) 
- 
- lda filters2+3 
- and #$f0 
- ora z_p_temp_1 
- sta filters2+3 
- 
-; lda filters2+4  ;???? why     [910612] 
-; and #$f0 
-; ora z_p_temp_1 
-; sta filters2+4 
- 
-; jsr put_io_in_map 
-; jsr go_slow  ;      [910716] 4567R7A 
- sta sid2+24 
-; jsr go_fast  ;      [910716] 4567R7A 
- rts 
- 
-;.end 
- .page 
- .subttl  SOUND 
- 
-;***************************************************************************** 
-;* 
-;*  SOUND - Produce sound effects 
-;* 
-;* Syntax : SOUND v, f, d [,[dir] [,[m] [,[s] [,[w] [,p] ]]]] 
-;* 
-;* Where : v   = voice    (1..6) 
-;*  f   = frequency    (0..65535) 
-;*  d   = duration    (0..32767 jiffys) 
-;*  dir = step direction  (0(up) ,1(down) or 2(oscillate)) default=0 
-;*  m   = minimum frequency  (if sweep is used) (0..65535) default=0 
-;*  s   = step value for effects  (0..32767) default=0 
-;*  w   = waveform  (0=triangle,1=saw,2=square,3=noise) default=2 
-;*  p   = pulse width  (0..4095) default=2048 (50% duty cycle) 
-;* 
-;***************************************************************************** 
- 
+110$ ldx tonnum 
+ lda tonval  ;set inputted values 
+ sta atktab,x 
+ lda tonval+1 
+ sta sustab,x 
+ lda tonval+2 
+ sta wavtab,x 

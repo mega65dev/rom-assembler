@@ -1,20 +1,125 @@
-loadiff 
+CheckGraphicMode 
+ bit $1f4b  ;Check draw screen allocation   [910711] 
+ bmi NoGraphicArea 
+ rts   ; ok 
+ 
+ 
+NoGraphicArea 
+ ldx #errng  ; bad- no graphic area???? 
+ bra error 
+ 
+ 
+RestoreTextScreen  ;      [910404] 
+ lda #$ff  ;      [910930] 
+ sta GKI__parm1  ;leave drawscreen as is 
+ sta GKI__parm2  ;set viewscreen to text 
+ jmp ($800e)  ;kg65.screen 
+ 
+; lda vic+49  ;Check graphic screen allocation 
+; and #%00010000 
+; beq 99$   ; we're in text mode 
+;; bit $1f43 
+;; bmi NoGraphicArea 
+; 
+; sei 
+; lda #$80 
+; bit _mode  ;40/80 mode, 0=80 128=40 
+; bmi 10$ 
+; 
+; tsb vic+49  ; 80 
+; lda #1 
+; trb vic+22  ;  fix x-scroll register 
+; bra 99$ 
+; 
+;10$ trb vic+49  ; 40 
+; lda #1 
+; tsb vic+22  ;  fix x-scroll register 
+; 
+;99$ cli 
+;; lda #0 
+;; sta _graphm  ;text mode???? 
+; rts 
+ 
+ .page 
+;***************************************************************** 
+; SCNCLR  clear a text or graphic screen 
+; 
+;  Syntax : SCNCLR  [ColorReg] 
+; 
+; if [ColorReg] not specified, clears text screen 
+; else clears the graphic screen with given value. 
+;***************************************************************** 
+ 
+ScreenClr 
+ jsr chrget  ;eat token & fall into SCNCLR 
+ 
+scnclr 
+ bne c65.screenclear ;have a parameter, go clear graphic screen 
+ 
+ lda #$93 
+ jmp _bsout  ;no parameter, clear text screen 
+; rts 
+ 
+ 
+ 
+;***************************************************************** 
+;* SCREEN CLR  clear a graphic screen 
+;* 
+;*  Syntax : SCREEN CLR  color_reg# 
+;* 
+;*           parm1 = color reg#  0-255 
+;***************************************************************** 
+ 
+c65.screenclear 
+ jsr getbyt  ;get color register # (range 0-255)????? 
+    ;limit to range allowed by current screen def? 
+ stx GKI__parm1 
  jsr CheckGraphicMode 
- lda #$e6  ;parse:  filename [,U#] [,D#] 
- jsr dosprs  ; (like dopen:  0 0 0 *  * 0 0 1 ) 
- jsr chk1  ;check parameters 
- lda #0 
- sta dossa  ;setup as dload would (0 = load channel) 
- jsr find_la  ;find an available la to use (cannot use reserved one) 
- ldy #fopn 
- ldx #4 
- jsr open_file  ;open the file 
- bcs 10$   ; exit if error 
+ jmp ($800c)  ;bra screenclear 
  
- ldx dosla 
-; stx GKI__parm1 
- jsr _chkin  ;get input channel 
-10$ bcs list_err  ; exit if error 
+ .page 
+;***************************************************************** 
+;* SCREEN SET  specify draw & view screens 
+;* 
+;*  Syntax : SCREEN SET  [DrawScreen] [,ViewScreen] 
+;* 
+;*           parm1 = draw screen # 0-3, 255=don't change    [910711] 
+;*           parm2 = view screen # 0-3, 255=text 
+;***************************************************************** 
  
- jsr ($802a)  ;Load it 
+ScreenSet 
+ jsr chrget  ;advance past token 
+ 
+c65.screen 
+; beq snerr  ;missing args??      [911017] 
+ ldx #255  ;       [911028] 
+ cmp #',' 
+ beq 10$   ; options byte only 
+ 
+ jsr getbyt  ;get draw screen# in .x 
+; cpx #4   ;       [910711] 
+; bcs 20$   ;  out of range error???? (255=leave alone)  [910930] 
+10$ stx GKI__parm1 
+ 
+ ldx $1f69  ;current viewscreen     [911017] 
+ jsr optbyt  ;eat a comma, get view screen# in .x 
+; cpx #4   ; 
+;20$ bcs fcerr  ;  out of range error???? (255=text)   [910930] 
+ stx GKI__parm2 
+ 
+ jsr ($800e)  ;kg65.screen 
+ bcs NoGraphicArea 
+ rts 
+ 
+ .page 
+;***************************************************************** 
+;* SCREEN DEF  define a graphic screen 
+;* 
+;*  Syntax : SCREEN DEF  screen#, width, height, depth 
+;* 
+;*           parm1 = screen#           0-3    [910711] 
+;*           parm2 = width             0=320, 1=640, 2=1280 
+;*           parm3 = height            0=200, 1=400 
+;*           parm4 = depth             1-8 bitplanes (2-256 colors) 
+;***************************************************************** 
  

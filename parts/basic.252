@@ -1,99 +1,58 @@
-rmouse lda #0   ;Init 
- sta count  ; variable count = 0 
- dec a 
- ldx #6-1 
-10$ sta grapnt,x  ; positions/buttons = -1 
- dex 
+collision_irq 
+; sei 
+ lda _vicIRQ  ;check VIC IRQ flags 
+ and #%00001110  ; mask all but lp, s/s, and s/bgnd flags 
+ beq 40$   ; exit if none set 
+ trb _vicIRQ  ; else reset flags we're going to handle 
+ lsr a   ;shift out raster interrupt bit (not used) 
+ 
+; Test for 3 types of collision interrupts : sprite/sprite, sprite/bgnd, & light pen 
+ 
+ ldy #1   ;loop for sprite/bgnd and sprite/sprite collision check 
+10$ lsr a 
+ bcc 30$   ;bit not set ==> not source of interrupt 
+ 
+ pha 
+ lda vic+30,y  ;accumulate collision data (resets register) 
+ ora collisions,y 
+ sta collisions,y 
+ 
+ lda intval  ;allowable interrupts 
+ cpy #0   ;examine selected bit 
+ beq 20$ 
+ lsr a 
+20$ lsr a 
+ bcc 25$   ;BASIC doesn't want this interrupt 
+ lda #$ff 
+ sta int_trip_flag,y ;turn on trip flag 
+ 
+25$ pla 
+ 
+30$ dey 
  bpl 10$ 
  
- lda _mouse_enable ;Is there a mouse in the house? 
- and #%11000000 
- beq 50$   ; no, exit 
- pha   ; yes, save port assigns for later 
- sei 
- ldy _mouse_pointer ;Where is it?  Get pointer to sprite 
- lda vic,y  ;Get X position    ???vic_save 
- sta grapnt  ; lsb 
- lda sbits,y 
- and vic+16  ; msb    ???vic_save 
- beq 20$ 
- lda #1   ;  convert to 0 or 1 
-20$ sta grapnt+1 
- iny   ;Get Y position 
- lda vic,y  ; lsb    ???vic_save 
- sta grapnt+2 
- lda #0   ; msb (fake it) 
- sta grapnt+3 
- 
- sta grapnt+4  ;Init button status 
- sta grapnt+5 
- ldz d1pra  ;Set up port & read buttons 
- lda #$ff  ; save kybd output lines (IRQ already disabled) 
- sta d1pra  ; set to not read any kybd inputs 
- 
- ldy #0   ; which port? 
- plx   ;  recall port assignments 
-30$ txa 
- asl a   ;  .c=1 if this one 
- tax 
- bcc 40$   ;  not this one 
- lda d1pra,y  ; read it (logical port is opposite physical port) 
- and #%00010001  ;  want left, right buttons only 
- eor #%00010001  ;  (invert, since low means button down) 
- tsb grapnt+4 
- and #%00010000  ;  shift left button to msb 
- beq 40$ 
- smb7 grapnt+4 
-40$ iny   ; next port 
- cpy #2 
- bcc 30$ 
- 
- lda #%01111110  ; clean up 
- trb grapnt+4  ;  fix button register 
- stz d1pra  ;  restore port for Kernel 
- cli 
- 
-; At this point, we have snapshot the current mouse status. 
-; Now pass requested info along in a manner very similar to RREG... 
- 
-50$ jsr chrgot  ;Get a variable name from variable list 
- beq 90$   ; eol- exit 
- cmp #','  ; 
- beq 70$   ; null- skip this arg 
- jsr ptrget  ;Get pointer to target variable 
- sta forpnt  ; set up so we can share LET code 
- sty forpnt+1 
- lda valtyp  ; what kind of variable name did ptrget find? 
- bne chkerr  ;  string- type mismatch error 
- 
-60$ ldx count  ;Make assignment 
- ldy grapnt,x  ; low byte 
- lda grapnt+1,x  ; high byte 
- jsr givayf  ; float it 
- lda intflg  ; set flags for type of var (int/float) 
- jsr qintgr  ; use part of LET to do the work 
- 
-70$ inc count  ;Next assignment 
- inc count 
- ldx count 
- cpx #6   ; there are 3 possible 
- bcs 90$   ;  done all 3, exit 
- jsr chrgot  ; check terminator 
- beq 90$   ;  eol- exit 
- jsr chkcom  ; check delimiter 
- bra 50$   ; loop until done 
- 
-90$ rts 
- 
-;.end 
  .page 
- .subttl   CURSOR 
+; Check light pen latch 
  
-;***************************************************************** 
-;*   CURSOR [ON|OFF,] [column] [,row [,style] ] 
-;* 
-;*   where: column,row = x,y logical screen position 
-;*  style      = flashing (0) or solid (1) 
-;*  ON,OFF     = to turn the cursor on or off 
-;***************************************************************** 
+ lsr a 
+ bcc 40$   ;LightPen latch not valid 
+ 
+ ldx vic+49  ;4567R7 bug- must read LP_latches in Slow mode???? 
+ lda #%01000000  ;      [910618] 
+ trb vic+49 
+ ldy vic+19  ;save latched x position 
+ sty lightpen_xpos 
+ ldy vic+20  ;save latched y position 
+ sty lightpen_ypos 
+ stx vic+49  ;restore speed     [910618] 
+ 
+ lda intval  ;is BASIC interested in our little find? 
+ and #4 
+ beq 40$   ; no, move on to next IRQ task 
+ lda #$ff 
+ sta int_trip_flag+2 ; yes- let BASIC know we caught one 
+ 
+40$ 
+ .page 
+; Update moving sprites 
  

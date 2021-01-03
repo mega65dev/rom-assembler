@@ -1,47 +1,58 @@
-incord 
- stx vtemp4  ;save offset to destination 
- jsr cordsb  ;get 2-byte x-parameter 
- jsr chrgot 
- cmp #',' 
- beq docord  ;skip ahead if have comma 
+sprsav jsr savinp        ;evaluate 1st expression 
+ bcs 20$    ;skip if source is a string 
+ sta forpnt 
+ sty forpnt+1      ;save sprite address 
+ ldy #62 
  
- cmp #';'  ;check for semi-colon 
- bne snerr  ; missing angle param- show syntax message 
- jsr chrget       ;skip over ' ;' 
- jsr getwrd       ;get 2-byte angle in a,y 
- sta z_p_temp_1  ;swap a,y 
- tya 
- ldy z_p_temp_1 
- jsr gtang1       ;get sine & cosine values for the angle 
- ldx vtemp4 
- lda vwork,x 
- sta vwork+2,x    ;move length to y-parameter 
- lda vwork+1,x 
- sta vwork+3,x 
-; jsr scalxy       ;scale the values 
- lda #$0e 
- sta vtemp5 
- clc 
- ldx vtemp4 
+10$ lda (forpnt),y   ;move sprite def to save area 
+ sta savram,y 
+ dey 
+ bpl 10$ 
  
-10$ jsr angmlt       ;multiply length * angle 
- sta vwork,x      ;save angle result 
- tya 
- sta vwork+1,x 
- ldy #xpos-vwork 
- lsr vtemp5 
- bcc 20$ 
- ldy #ypos-vwork 
+ iny    ;(0) 
+ sty savram+64     ;save sprite column length 
+ sty savram+66     ;save sprite row length 
+ lda #23 
+ sta savram+63 
+ lda #20 
+ sta savram+65 
+ ldx #<savram      ;set ptr to start of sprite def 
+ ldy #>savram 
+ stx strng1   ;** 
+ sty strng1+1   ;** 
  
-20$ jsr dotwo  ;add/subtract value to current position 
- sta vwork,x 
- tya   ;save result in destination 
- sta vwork+1,x 
- inx 
- inx 
- lsr vtemp5 
- bne 10$   ;do y-coordinate 
- clc 
- rts 
+ lda #67           ;set sprite length including lengths 
+ jsr strlit_1   ;**get string space, copy savram to it 
+ jsr desc_free   ;**free up temp descriptor 
  
- .page 
+20$ stx savsiz        ;save source length 
+ sta savsiz+1 
+ sty savsiz+2      ;save source start address 
+ 
+ jsr chkcom        ;check for a comma 
+ lda txtptr        ;save basic text pointer 
+ sta sprtmp_1 
+ lda txtptr+1 
+ sta sprtmp_2 
+ jsr savinp        ;get next destination parameter 
+ bcs savs50        ;skip if string 
+ 
+ sta grapnt 
+ sty grapnt+1      ;save sprite address 
+ lda savsiz+1 
+ sta forpnt        ;get source address 
+ lda savsiz+2 
+ sta forpnt+1 
+ ldy #0 
+40$ cpy savsiz        ;test index vs source length 
+ beq 45$    ;exit if source depleted 
+ lda #forpnt   ;move source byte to sprite 
+ jsr lda_far_ram1  ; (from ram bank 1) 
+; sta sw_rom_ram0 
+ sta (grapnt),y   ; (to sprite area in bank 0)???? 
+ iny 
+ cpy #63 
+ bne 40$ 
+45$ rts 
+ 
+ 

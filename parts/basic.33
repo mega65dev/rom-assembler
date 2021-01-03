@@ -1,57 +1,60 @@
-linget ldx #0   ;enter with CHRGET flags set 
- stx endchr  ;flags line # input 
- stx linnum  ;init line # to 0 
- stx linnum+1 
+FindLine 
+ lda txttab ;init pointer to beginning of program 
+ ldx txttab+1 
  
-10$ bcs 40$   ;it's not a digit, do rts 
-15$ inc endchr  ;indicate line # input 
- sbc #$2f  ;'0'-1 since .c=0 
- sta charac  ;save for later 
- lda linnum+1 
- sta index 
- cmp #25   ;line number will be < 64000? 
- bcc 20$   ; yes, continue 
- bbs1 helper,40$  ; no, if called by AutoScroll it's okay 
- bra snerr  ;     else syntax error 
+FindLink 
+ sta lowtr ;current position in program 
+ stx lowtr+1 
+ ldy #1 
+ jsr indlow ;end of program (null link)? 
+ beq 3$  ; yes, exit with .c=0 (not found) 
+ iny 
+ iny 
+ jsr indlow ;get line number of this line (high byte first) 
+; sta syntmp 
+; lda linnum+1 ;is this the line we're looking for? 
+; cmp syntmp 
+; bcc 4$  ; no- too high, so the line does not exist, exit 
+; beq 1$ 
+; dey  ; no- too low, so get link to next line 
+; bra 2$ 
+ cmp linnum+1 ;is this the line we're looking for?   [910925] 
+ beq 1$  ; maybe 
+ bcs 3$  ; no- too high, so the line does not exist, exit with .c=0 
+ dey  ; no- too low, so get link to next line 
+ bra 2$ 
  
-20$ lda linnum 
- asl a   ;multiply by 10 
- rol index 
- asl a 
- rol index 
- adc linnum 
- sta linnum 
- lda index 
- adc linnum+1 
- sta linnum+1 
- asl linnum 
- rol linnum+1 
- lda linnum 
- adc charac  ;add in digit 
- sta linnum 
- bcc 30$ 
- inc linnum+1 
-30$ 
-; jsr chrget  ;ALLOW SPACES to terminate number  [910620] 
-; bra 10$ 
- inw txtptr  ;get next character from text 
- ldy #0   ;re-get current character from text 
- jsr indtxt  ; lda (txtptr),y from RAM0 
- cmp #' '  ; space=eol    [910708] 
- beq 50$ 
- cmp #':'  ; 
- bcs 40$   ; eol 
- sec 
- sbc #'0'  ; alpha or numeric? 
- sec 
- sbc #$d0 
- bcc 15$   ;  numeric 
-40$ rts   ;exit 
+1$ dey  ; maybe- have to check low byte 
+ jsr indlow 
+; sta syntmp 
+; lda linnum 
+; cmp syntmp 
+; bcc 4$  ; no- too high, exit 
+; beq 4$  ; yes- got it, exit 
+ cmp linnum ;is this the line we're looking for?   [910925] 
+ beq 4$  ; yes- got it, exit with .c=1 
+ bcs 3$  ; no- too high, so the line does not exist, exit with .c=0 
  
-50$ jsr chargt  ;terminating character is a space, eat it just this once 
- bra chrtst  ; return with flags set appropriately (esp. for 'range') 
+2$ dey  ;get link to next line 
+ jsr indlow 
+ tax 
+ dey 
+ jsr indlow 
+ bra FindLink ; continue looking 
+ 
+ 
+3$ clc  ;exit, line not found (.c=0) 
+4$ rts  ;exit, line found (.c=1) 
  
 ;.end 
  .page 
- .subttl LIST 
+ .subttl LinGet 
+ 
+; LINGET  Reads a line # from the current txtptr position 
+;   and stores it in linnum  (valid range is 0-63999). 
+; 
+;   On exit txtptr is pointing to the terminating char 
+;   which is in .a with condition codes set. 
+;   Endchr will be =0 if no digit input, else >0.  Use it 
+;   to distinguish between line # 0 & null input. 
  

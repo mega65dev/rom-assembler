@@ -1,17 +1,13 @@
-else cmp #esc_command_token ;is this of the form "ELSE b-block"? 
- bne 10$  ;no, must be an escape command 
- iny  ;might be, look at escape token 
+un_quote  ;txtptr points to a '"'. look for closing '"', or EOL 
+ ldy #0 
+10$ inw txtptr 
  jsr indtxt 
- cmp #begin_token 
- bne 10$  ;no, justa plain-old "ELSE statement" 
- jsr find_bend ;yes, it is a b-block. skip over the b-block. 
-10$ bra rem 
+ beq 30$  ;EOL, get out here with .z set and a '00' in .a 
+ cmp #'"' 
+ bne 10$  ;keep looking until quote 
+ jmp chrget ;got closing quote, get byte after quote, set flags 
  
+30$ rts 
  
-;.end 
  .page 
- .subttl ON...GOTO  ON...GOSUB 
  
-;********************************************************* 
-;* ON expression {GOTO | GOSUB} line_number 
-;********************************************************* 

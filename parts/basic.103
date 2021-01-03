@@ -1,52 +1,107 @@
-play_rts 
+LoadERR 
+ ldx #erload  ;Load Error 
+ sec 
+   .byte $89 
+ 
+LoadEOF 
+ clc 
+ bra list_err  ;release channel, close file, return to main 
+ 
+ .page 
+;************************************************************************ 
+;   Key_Save  Save function key definitions (from disk)   [900725] 
+;************************************************************************ 
+ 
+Key_Save 
+ jsr GetSaveChannel ;       [910930] 
+ lda #highds  ;set starting & ending addresses 
+ ldy #>_pky_lengths ; start address & pointer to it 
+ ldx #<_pky_lengths 
+ sty highds+1 
+ stx highds 
+ iny   ; end address = start address + 256 + 1 
+ inx 
+ bra savenb  ;       [910925] 
+; jsr _savesp  ;save it 
+;; clc   ; return no error  ????why not  [910404] 
+; bra exit_disk_op ; but if direct mode print DOS error  [910404] 
+ 
+ 
+ 
+GetSaveChannel   ;Used by KeySave and SpriteSave    [910930] 
+ jsr chrget  ;eat SAVE token 
+ lda #$66  ;parse:  filename [,U#] [,D#] 
+ jsr dosprs  ;parse options 
+ jsr chk2  ;check required parameters 
+ 
+ ldy #fopn  ;DOS table offset 
+ lda #4   ; length 
+ jsr sendp 
+ lda #sys_bank  ;set banks ???? buffer in system bank ???? 
+ ldx #sys_bank 
+ jmp _setbank 
+ 
+;.end 
+ .page 
+ .subttl  BANK 
+ 
+;************************************************************************ 
+;*  Set Memory Bank for PEEK,POKE,WAIT,BLOAD,BSAVE and SYS,BOOT Commands 
+;* 
+;*  Syntax: BANK DATA  n  for PEEK,POKE,WAIT,BLOAD,BSAVE 
+;*  BANK SYS  [a,x,y,z] for SYS,BOOT Commands 
+;* 
+;* where   n=  %11111111  to access I/O area (System MAP) 
+;*      %0xxxxxxx to use physical bank n 
+;* 
+;* or      a,x,y,z  describe precise configuration for MAPper 
+;*    if omitted, the System MAP is to be used. 
+;* 
+;* The DATA option is to access data,  i.e., LDA/STA_far 
+;* The SYS  option is to execute code, i.e., JMP/JSR_far 
+;* 
+;*  Idea: BANK SCREEN n  when REC is finalized???? 
+;************************************************************************ 
+ 
+bank jsr getbyt ;get bank number in .x 
+ stx current_bank 
  rts 
  
+ 
+;.end 
  .page 
-play_one_character 
- cmp #' '  ;spaces are a 'no-op' 
- beq play_rts 
+ .subttl  PLAY 
  
-5$ cmp #'A'  ;note name a-g? 
- bcc 10$ 
- cmp #'H' 
- bcc play_note  ;yes...play it 
+; C65 Music Interpreter 
+; 
+; Syntax : PLAY "music_string" 
+; 
+; Where : music_string is a string of characters composed of: 
+; 
+; A..G   : notes 
+; W,H,Q,I,S : set note lengths to whole,half,quarter,eighth,sixteenth 
+; U   : set volume level   (0-9) 
+; O   : set octave    (0-6) 
+; T   : set current envelope  (0-9) 
+; V   : select voice to play  (1-6: 1-3 right, 4-6 left) 
+; X   : filter    (0-1: 0=off, 1=on) 
+; M   : measure 
+; R   : rest 
+; .   : dot 
+; #   : sharp 
+; $   : flat 
  
-10$ ldx #4   ;test for notes,'w,h,q,i,s' 
-20$ cmp notes,x 
- beq set_note_length 
- dex 
- bpl 20$ 
  
- cmp #'R'  ;rest? 
- beq play_rest 
- cmp #'.'  ;dotted note? 
- beq play_dot 
+play jsr frmstr  ;frmevl,frestr,return w/ .A=len, (index)=>string 
+; sta sw_rom_ram0  ;???? 
+ sta z_p_temp_1  ;save number of characters 
+ jsr clear_play_flags ;set 'dot' and 'sharp' to 0. return with Acc=0 
+ sta hulp  ;zero counter 
  
- ldx #5   ;test for v,o,t,x,u,m commands 
-30$ cmp mutabl,x 
- beq play_command 
- dex 
- bpl 30$   ;test all 5 characters in table 
- 
- cmp #'#'  ;sharp? 
- beq play_sharp 
- cmp #'$'  ;flat? 
- beq play_flat 
- 
- .page 
-; Must be a digit here for Octave, Voice, envelope (T), filter (X), or volume (U) 
- 
- sec 
- sbc #'0'  ;mask nybble 
- cmp #10   ;must be in range 0..9 
- bcs play_bad_value 
- 
- asl flag  ;octave, voice, envelope, filter, or volume? 
- bcs set_voice 
- asl flag  ;octave, envelope, filter, or volume? 
- bcs set_octave 
- asl flag  ;envelope, filter, or volume? 
- bcs set_envelope 
- asl flag  ;filter or volume? 
- bcc set_volume 
- 
+10$ ldy hulp 
+ cpy z_p_temp_1 
+ beq play_rts  ;done! 
+ jsr indin1_ram1 
+ jsr play_one_character 
+ inc hulp 
+ bne 10$   ;always 

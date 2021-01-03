@@ -1,33 +1,55 @@
-poke jsr getnum 
-1$ txa   ;set up value to store for Kernel 'stash' routine 
- ldy #0   ;..and index 
- sei   ;to allow poking IRQ vector, etc.  [910612] 
- bit current_bank 
- bmi 10$   ;(anything >1Meg means NOMAP) 
- 
- phz 
- ldx #poker  ;..and address 
- ldz current_bank ;..finally, get the bank number 
- jsr _sta_far  ;sta (poker),y 
- plz 
-   .byte $2c 
- 
-10$ sta (poker),y  ;NoMap 
- 
-20$ jsr chrgot  ;eol? 
- beq 30$   ;   yes 
- inw poker  ;   no- increment address 
-; lda poker  ; check for segment wrap (FFFF->0000) [910911] 
-; ora poker+1 
- beq omerr  ;      [910916] 
- jsr optbyt  ;       & get next [,byte] 
- bcs 1$ 
- 
-30$ cli   ;      [910612] 
+ReadSystemClock 
+ jsr _ReadTime  ;get packed BCD, y=hrs, x=min, a=sec, z=tenths 
+    ; (assumes system clock was set properly!) 
+ stz time  ; tenths  0-9 
+ sta time+1  ; seconds  0-59 
+ stx time+2  ; minutes  0-59 
+ sty time+3  ; hours  0-59 
  rts 
  
- 
-;.end 
  .page 
- .subttl  ERR$ 
+; Unsigned Integer Multiply: Time * Factor  -> Tenths_of_Seconds 
+;     A   *  (B,C)  ->      (D,E,F) 
+ 
+TimeMultiply 
+ lda time,x  ;convert packed BCD to binary 
+ and #$0f 
+ sta facho 
+ lda time,x  ; 10x = 8x + 2x 
+ and #$f0 
+ lsr a   ;  msd x 8 
+ sta time,x 
+ lsr a 
+ lsr a   ;  msd x 2 
+ clc 
+ adc facho  ;  lsd 
+ adc time,x 
+ sta time,x  ;  can't overflow ($99->153) 
+ 
+ txa   ;make a word pointer from byte pointer 
+ asl a 
+ tay 
+ lda TimeFactor-2,y ;multiplicand = TimeFactor,y  (2 bytes) 
+ sta multiplicand ;multiplier = Time,x x (1 byte) 
+ lda TimeFactor-1,y ;                              ----------- 
+ sta multiplicand+1 
+ lda #0   ;product lo   (3 bytes) 
+ sta product+1  ;  mid 
+ sta product+2  ;  hi 
+ 
+ ldy #16   ;16-bit multiplicand 
+10$ asl a 
+ row product+1 
+ row multiplicand ;multiplier * multiplicand -> product 
+ bcc 20$ 
+ clc 
+ adc time,x 
+ bcc 20$ 
+ inw product+1  ;(does no error check, since using time factors 
+20$ dey   ; in ROM and maximum time multiplier of 59 there 
+ bne 10$   ; is no danger of overflow) 
+ 
+; sta product 
+ rts   ;(.X is preserved) 
+ 
  

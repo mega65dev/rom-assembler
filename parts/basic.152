@@ -1,88 +1,46 @@
-putnew ldx temppt  ;pointer to first free temp 
- cpx #tempst+strsiz+strsiz+strsiz 
- beq sterr  ;string temporary error 
- 
- lda dsctmp  ;length 
- sta 0,x 
- lda dsctmp+1  ;pointer to string lo 
- sta 1,x 
- lda dsctmp+2  ;   hi 
- sta 2,x 
- 
- ldy #0   ;pointer to temp. descriptor 
- stx facmo  ;   lo 
- sty facmo+1  ;   hi 
- sty facov 
- dey   ;($ff) 
- sty valtyp  ;type is string 
- stx lastpt  ;set pointer to last-used temp 
- 
- inx 
- inx 
- inx   ;point further 
- stx temppt  ;save pointer to next temp, if any 
- rts   ;all done 
- 
- .page 
-; The following routine concatenates two strings.  At this point, the FAC 
-; contains the first one and (txtptr) points to the + sign. 
- 
-cat lda faclo  ;push high order onto stack 
- pha 
- lda facmo  ;and the low 
- pha 
- jsr eval  ;can come back here since operator is known 
- jsr chkstr  ;must be string 
- pla 
- sta strng1  ;get high order of old descriptor 
- pla 
- sta strng1+1 
+strd jsr chknum  ;arg has to be numeric 
  ldy #0 
- jsr indst1_ram1  ;get length of old string 
- sta syntmp 
- jsr indfmo 
- clc 
- adc syntmp 
- bcs errlen  ;result >255, error "long string" 
- 
- jsr strini  ;sizeok.  initialize string 
- jsr movins  ;move it 
- lda dscpnt  ;get pointer to second 
- ldy dscpnt+1 
- jsr fretmp  ;free it 
- jsr movdo  ;move second string 
- lda strng1 
- ldy strng1+1 
- jsr fretmp 
- jsr putnew 
- bra tstop  ;"cat" reenters frmevl from tstop 
- 
- .page 
-movins ldy #0   ;get address of string 
- jsr indst1_ram1 
- pha 
- iny 
- jsr indst1_ram1 
- tax 
- iny 
- jsr indst1_ram1 
- tay 
+ jsr foutc  ;do its output 
+ pla 
  pla 
  
-movstr stx index  ;adr in (x,y), len in a 
- sty index+1 
+timstr lda #<lofbuf 
+ ldy #>lofbuf 
+ bra strlit 
  
-movdo tay 
- beq mvdone 
  
- pha 
+; CHR$() creates a string which contains as its only character the PETSCII 
+; equivalent of the integer argument (#) which must be < 256. 
+ 
+chrd jsr conint  ;get integer in range 
  phx 
- ldx #frespc 
-10$ dey 
- jsr indin1_ram1 
- jsr sta_far_ram1 ;sta (frespc),y 
- tya 
- bne 10$ 
- plx 
+ lda #1   ;one-character string 
+ jsr strspa  ;get space for string 
+ ldy #0 
  pla 
+; phx   ;set up string bank 
+ ldx #dsctmp+1 
+ jsr sta_far_ram1 ;sta (dsctmp+1),y 
+; plx 
  
+chrd1 pla   ;get rid of "chknum" return address 
+ pla 
+ bra putnew  ;setup FAC to point to desc 
+ .page 
+ 
+; The following is the LEFT$($,#) function.  It takes the leftmost # characters 
+; of the string.  If # > len of the string, it returns the whole string. 
+ 
+leftd jsr pream  ;test parameters 
+ pha   ;# arg 
+ jsr inddpt  ;string len 
+ sta syntmp 
+ pla 
+ cmp syntmp 
+ tya   ;that's all there is to LEFT$ 
+ 
+rleft bcc 1$ 
+ jsr inddpt 
+ tax   ;put length into x 
+ tya   ;zero (a), the offset 
+1$ pha   ;save offset 

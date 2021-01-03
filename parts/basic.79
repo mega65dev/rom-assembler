@@ -1,50 +1,45 @@
-form_line 
- jsr n1_reset 
-find_it 
- jsr chargt_x2  ;new line, skip over link 
- bne 70$   ;if we get to end-of-text without finding the 
- ldx #err_ref  ;line # then 'unresolved reference' error 
- lda forpnt 
- sta curlin  ;fake error routine into saying 'in line xxxxx' 
- lda forpnt+1 
- sta curlin+1 
- bra error 
+p3code 
+ inx 
+ lda fbuffr+1,x  ;get character from number 
+ beq 30$   ;end of number 
  
-70$ jsr chargt  ;get line number low 
- sta highds  ;highds = current line# in loop 
- cmp linnum 
- bne 100$ 
- jsr chargt  ;get line number high 
- sta highds+1 
- cmp linnum+1 
- bne 110$ 
- sec   ;if linnum < start#, no remapping 
- sbc hightr+1 
- bcc 80$ 
- bne 90$ 
- lda linnum 
- sbc hightr 
- bcs 90$ 
- 
-80$ lda linnum  ;use same line# 
- sta facho+1 
- lda linnum+1 
- sta facho 
- 
-90$ ldx #$90  ;make replacement string 
+ pha   ;save digit from new number 
+ jsr chargt  ;get digit from old number 
+ cmp #':'  ;command terminator or letter? 
+ bcs 10$ 
+ cmp #' '  ;space? (fix for goto10 :rem) 
+ beq 10$ 
  sec 
- jsr floatc 
- bra fout 
+ sbc #'0'  ;number? 
+ sec 
+ sbc #$d0 
+ bcc 20$   ;digit...move on 
+ 
+10$ jsr move_init  ;other char...move up 
+ jsr moveup 
+ inw text_top 
+ 
+20$ pla 
+ phx 
+ ldy #0 
+ jsr sta_far_txt  ;put new digit in new number (bleed-thru) 
+ plx 
+ bra p3code 
  
  
-100$ jsr chargt 
- sta highds+1  ;(** 01/27/84 fix) 
+30$ jsr chrget 
+ bcs iline_20  ;old stuff after # is other char 
  
-110$ jsr line_add  ;scan to end of line 
- bra find_it  ;always 
+40$ jsr move_init  ;digit...move down 
+ jsr movedown 
+ dew text_top 
+ jsr chrgot 
+ bcc 40$   ;still digits... 
+ 
+ bra iline_20  ;branch always 
  
  .page 
-;*************************** N1_RESET ********************************** 
+;*************************** FORM_LINE ********************************* 
  
-; Copies n1 (new renumber origin) into facho & sets (txtptr) = (txttab)-1 
+; Remaps the destination line if it is greater than n3 
  

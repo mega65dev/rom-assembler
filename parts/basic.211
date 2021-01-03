@@ -1,29 +1,18 @@
-dir ldx #doslfn 
- jsr _chkin 
- bcs dcat11  ; if problem?? 
- jsr _readst  ; check status 
- bne dcat11  ; exit if bad status 
- jsr crdo  ;output new line 
- ldy #3   ;loop counter 
+pndd lda swe  ;# of blanks 
+ beq zerot 
+ dec swe  ;count ! 
  
-dcat3 sty t3   ;save counter 
+5$ bne bout ;out blank or * 
+ lda posp ;+ or - in field? 
+ bmi 5$  ;yes...out blank or * 
  
-10$ jsr _basin  ;get char 
- sta t4 
- jsr _basin  ;get char 
- sta t4+1 
- jsr _readst  ; check status 
- bne dcat11  ; exit if eof or bad status 
- dec t3 
- bne 10$   ;if not done 
+10$ jsr indfrm 
+ cmp #',' ;comma? 
+ bne ispl1 ;no...out sign 
+ lda blfd ;yes... 
+ jsr cdout ;out blank or * 
+ iny 
+ bra 10$ 
  
-; Output blocks number 
  
- ldx t4 
- lda t4+1 
- jsr linprt  ;output number 
- lda #' ' 
- jsr _bsout  ;output a space 
- 
-; Get name & output it 
  

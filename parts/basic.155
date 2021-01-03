@@ -1,48 +1,54 @@
-fretms cpy lastpt+1  ;last entry to temp? 
- bne frerts 
- cmp lastpt 
- bne frerts 
- sta temppt 
- sbc #strsiz  ;point to lst one 
- sta lastpt  ;update temp pointer 
- ldy #0   ;also clears zflg so we do rest of fretmp 
-frerts rts   ;all done 
+pream jsr chkcls  ;param list should end 
+ ply 
+ pla 
+ sta jmper+1  ;get return address 
+ pla   ;get rid of fingo's jsr ret addr 
+ pla 
+ plx   ;get length 
+ pla 
+ sta dscpnt 
+ pla 
+ sta dscpnt+1 
+ lda jmper+1 
+ pha 
+ phy 
+ ldy #0 
+ txa 
+ rts 
+ 
+ 
+ 
+; The function LEN$() returns the length of the string passed as an argument. 
+ 
+len bsr len1 
+ bra sngflt 
+ 
+len1 jsr frestr  ;free up string 
+ ldx #0 
+ stx valtyp  ;force numeric 
+ tay   ;set condition codes 
+ rts   ;done 
+ 
+ 
+ 
+ 
+ 
+; The following is the ASC$() function.  It returns an integer which is the 
+; decimal equivalent of the PETSCII string argument. 
+ 
+asc jsr len1 
+ beq 1$   ;it was null (zero length) 
+ ldy #0 
+ jsr indin1_ram1  ;get 1st character 
+ tay 
+1$ bra sngflt 
  
 ;.end 
  .page 
- .subttl Garbage Collection 
- 
-;  Get space for a string, perhaps forcing garbage collection. 
-; 
-;  Entry:  a = # of chars 
-;  Exit:   (x,y) pointer to space, otherwise 
-;          blows off to 'out of string space' error 
-;          (also preserves .a and sets frespc= y,x = -> at space.) 
+ .subttl String Routines 
  
  
-getspa lsr garbfl ;signal no garbage collection yet 
  
-tryag2 tax  ;save in x also 
- beq getrts ;length of 0 no go... 
- pha  ;save a (length) on stack 
- lda fretop ;lo byte 
- sec  ;for subtract 
- sbc #2  ;minus 2 (link bytes) 
- ldy fretop+1 
- bcs 10$ 
- dey 
-10$ sta index1 ;save for later 
- sty index1+1 
- txa 
- eor #$ff 
- sec 
- adc index1 
- bcs 20$ 
- dey 
-20$ cpy strend+1 
- bcc garbag 
- bne strfre 
- cmp strend 
- bcc garbag ;clean up 
+; STRINI gets string space for the creation of a string and creates 
+; a descriptor for it in DSCTMP. 
  
- .page 

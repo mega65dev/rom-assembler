@@ -1,9 +1,8 @@
-notfns tsx  ;check who's calling???? 
- lda $102,x ;sniff processor stack 
- cmp #>pointer_ret 
- beq ldzr ;special case if called by pointer function 
+isletc cmp #'A' 
+ bcc 1$  ;if less than "a", return 
+ sbc #'Z'+1 ;$5a + 1 
+ sec 
+ sbc #$a5 ;reset carry if (a) .gt. "z". 
+1$ rts 
  
-20$ = isvret-1 
- cmp #>20$ ;is eval calling???? 
- bne notevl ;no, carry on 
  

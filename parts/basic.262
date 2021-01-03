@@ -1,199 +1,39 @@
-c65.box 
- jsr CheckGraphicMode 
- jsr sadwrd  ; get x0 
- sty GKI__parm1 
- sta GKI__parm2 
+rcursor sec   ;      new [910228] 
+ jsr _plot  ;get current cursor position & save it 
+ stx srow 
+ sty column 
  
- jsr comsad  ; get y0 
- sty GKI__parm3 
- sta GKI__parm4 
+ ldx #0   ;just like RREG and RMOUSE... 
+ stx count 
+50$ jsr chrgot  ;Get a variable name from variable list 
+ beq 90$   ; eol- exit 
+ cmp #','  ; 
+ beq 70$   ; null- skip this arg 
+ jsr ptrget  ;Get pointer to target variable 
+ sta forpnt  ; set up so we can share LET code 
+ sty forpnt+1 
+ lda valtyp  ; what kind of variable name did ptrget find? 
+ bne chkerr  ;  string- type mismatch error 
  
- jsr comsad  ; get x1 
- sty GKI__parm5 
- sta GKI__parm6 
+60$ ldx count  ;Make assignment 
+ ldy column,x  ; low byte 
+ lda #0   ; high byte 
+ jsr givayf  ; float it 
+ lda intflg  ; set flags for type of var (int/float) 
+ jsr qintgr  ; use part of LET to do the work 
  
- jsr comsad  ; get y1 
- sty GKI__parm7 
- sta GKI__parm8 
+70$ inc count  ;Next assignment 
+ ldx count 
+ cpx #2   ; there are 2 possible 
+ bcs 90$   ;  done 2, exit 
+ jsr chrgot  ; check terminator 
+ beq 90$   ;  eol- exit 
+ jsr chkcom  ; check delimiter 
+ bra 50$   ; loop until done 
  
- jsr comsad  ; get x2 
- sty GKI__parm9 
- sta GKI__parm10 
+90$ rts 
  
- jsr comsad  ; get y2 
- sty GKI__parm11 
- sta GKI__parm12 
- 
- jsr comsad  ; get x3 
- sty GKI__parm13 
- sta GKI__parm14 
- 
- jsr comsad  ; get y3 
- sty GKI__parm15 
- sta GKI__parm16 
- 
- jsr optzer  ; get solid flag 
- stx GKI__parm17 
- 
- jmp ($801a)  ;bra box 
- 
+;.end 
  .page 
-;***************************************************************** 
-;* CIRCLE   draw a Circle 
-;* 
-;*  Syntax : CIRCLE  CenterX, CenterY, radius [,solid flag] 
-;* 
-;*         parm1 = center x lo 
-;*         parm2 = center x hi 
-;*         parm3 = center y lo 
-;*         parm4 = center y hi 
-;*         parm5 = radius lo 
-;*         parm6 = radius hi 
-;*         parm7 = solid flag 0=no, 1=yes 
-;***************************************************************** 
- 
-c65.circle 
- jsr CheckGraphicMode 
- jsr sadwrd  ; get center x 
- sty GKI__parm1 
- sta GKI__parm2 
- 
- jsr comsad  ; get center y 
- sty GKI__parm3 
- sta GKI__parm4 
- 
- jsr comsad  ; get radius 
- sty GKI__parm5 
- sta GKI__parm6 
- 
- jsr optzer  ; get solid flag 
- cpx #2 
- bcs fcerr 
- stx GKI__parm7 
- 
- jmp ($801c)  ;bra circle 
- 
- .page 
- .subttl  ELLIPSE 
- 
-;***************************************************************** 
-;* ELLIPSE   draw an Ellipse 
-;* 
-;*  Syntax : ELLIPSE  CenterX, CenterY, RadiusX,  RadiusY  [,solid flag] 
-;* 
-;*         parm1 = center x lo 
-;*         parm2 = center x hi 
-;*         parm3 = center y lo 
-;*         parm4 = center y hi 
-;*         parm5 = x radius lo 
-;*         parm6 = x radius hi 
-;*         parm7 = y radius lo 
-;*         parm8 = y radius hi 
-;*         parm9 = solid flag 0-1 
-;***************************************************************** 
- 
-c65.ellipse 
- jsr CheckGraphicMode 
- jsr sadwrd  ; get center x 
- sty GKI__parm1 
- sta GKI__parm2 
- 
- jsr comsad  ; get center y 
- sty GKI__parm3 
- sta GKI__parm4 
- 
- jsr comsad  ; get xradius 
- sty GKI__parm5 
- sta GKI__parm6 
- 
- jsr comsad  ; get yradius 
- sty GKI__parm7 
- sta GKI__parm8 
- 
- jsr optzer  ; get solid flag 
- cpx #2 
- bcs fcerr 
- stx GKI__parm9 
- 
- jmp ($8020)  ;bra ellipse 
- 
- .page 
- .subttl  POLYGON 
- 
-;***************************************************************** 
-;* POLYGON   draw a regular n-sided Polygon 
-;* 
-;*  POLYGON  X,Y, Xradius, Yradius, sides [,drawsides [,subtend [,angle [,solid] ]]] 
-;* 
-;*         parm1 = center x lo 
-;*         parm2 = center x hi 
-;*         parm3 = center y lo 
-;*         parm4 = center y hi 
-;*         parm5 = xradius lo 
-;*         parm6 = xradius hi 
-;*         parm7 = yradius lo 
-;*         parm8 = yradius hi 
-;*         parm9 = solid flag 0-1 
-;*         parm10 = sa lo (starting angle 0-360) 
-;*         parm11 = sa hi 
-;*         parm12 = # of sides to draw (1 to 127) 
-;*         parm13 = # of sides (3 to parm12) 
-;*         parm14 = subtend flag 0-1 
-;**************************************************************** 
- 
-c65.polygon   ;changed BASIC syntax to something more reasonable [910923] FAB 
- jsr CheckGraphicMode 
- jsr sadwrd  ;get center x 
- sty GKI__parm1 
- sta GKI__parm2 
- 
- jsr comsad  ;get center y 
- sty GKI__parm3 
- sta GKI__parm4 
- 
- jsr comwrd  ;get x radius 
- sty GKI__parm5 
- sta GKI__parm6 
- 
- jsr comwrd  ;get y radius 
- sty GKI__parm7 
- sta GKI__parm8 
- 
- jsr combyt  ;get number of sides 
- cpx #3 
- bcc 20$   ; too few 
- cpx #128 
-10$ bcs fcerr  ; too many 
- stx GKI__parm13 
- 
-; ldx GKI__parm13  ;get number of sides to draw (default=#sides) 
- jsr optbyt 
- cpx #1   ; must be at least 1 side 
-20$ bcc fcerr 
- stx GKI__parm12 
- dex 
- cpx GKI__parm13  ; draw sides must be <= #sides 
- bcs 10$ 
- 
- jsr optzer  ;get subtend flag 
-; cpx #2 
-; bcs 10$ 
- stx GKI__parm14 
- 
- jsr optwrd  ;get starting angle (default=0 degrees) 
- sty GKI__parm10  ; lo 
- sta GKI__parm11  ; hi 
- 
- jsr optzer  ;get solid flag 
-; cpx #2 
-; bcs 10$ 
- stx GKI__parm9 
- 
- jmp ($801e)  ;bra polygon 
- 
- .page 
- .subttl  SET multipurpose command 
- 
-;  SET  A multipurpose command initiator 
- 
+ .subttl  AutoScroll 
  

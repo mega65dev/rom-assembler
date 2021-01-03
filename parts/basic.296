@@ -1,54 +1,31 @@
-docord jsr chrget       ;skip over comma 
- inc vtemp4       ;point to y-destination 
- inc vtemp4 
- jsr cordsb       ;get y-paramter 
-; ldx vtemp4 
-; dex 
-; dex 
-; jsr scalxy       ;scale the values 
- ldy #ypos-vwork 
- ldx vtemp4 
- inx 
- inx 
+savs50 lda sprtmp_1   ;restore basic text pointer 
+ sta txtptr 
+ lda sprtmp_2 
+ sta txtptr+1 
+ jsr ptrget        ;get symbol table descriptor for string dest. 
+ sta forpnt 
+ sty forpnt+1      ;save symbol table address 
+ lda #<savsiz 
+ sta facmo         ;save descriptor address of source 
+ lda #>savsiz 
+ sta facmo+1 
+ bra inpcom        ;move source to dest, do rts (snerr if not eol) 
  
-docor1 dex 
- dex 
- lsr vtemp5 
- bcc docor2       ;skip if not relative 
- jsr addtwo       ;add to current position 
- sta vwork,x 
- tya 
- sta vwork+1,x 
- 
-docor2 ldy #xpos-vwork 
- cpx vtemp4 
- beq docor1       ;loop to do x-coordinate 
- clc 
- rts 
- 
-; 
-; CORDSB -- Get the next 2-byte parameter 
-; 
- 
-cordsb jsr chrgot       ;read character 
- cmp #plus_token      ;check if relative - plus sign 
- beq 10$   ;skip if yes 
- cmp #minus_token 
- beq 10$   ;skip if relative - minus sign 
- clc   ;.c=1 if relative coord, .c=0 if absolute 
-10$ rol vtemp5  ;save coord type for later 
- jsr frmnum 
- jsr getsad  ;get signed 2 byte coordinate (y,a), do rts 
- ldx vtemp4 
- sta vwork+1,x    ;save 2-byte parameter 
- tya 
- sta vwork,x 
- rts 
- 
-;.end 
  .page 
-;GRAPHICS11.SRC 
+savinp jsr frmevl        ;evaluate expression 
+ bbs7 valtyp,desc_free  ; exit if a string 
+ jsr conint   ;get one byte integer in .X 
+; dex    ;adjust sprite 1..8 to 0..7  [910220] 
+ cpx #8 
+ bcs fcerr   ; bad value 
+ txa    ;move sprite number to .A 
+ lsr a 
+ ror a 
+ ror a             ;get sprite address 
+ ldy #>sprite_base 
+ bcc 5$ 
+ iny 
+5$ clc               ;flag 'sprite' (as opposed to 'string') 
+ rts 
  
-;  ANGVAL  -- Table of angle values on 10 degree boundaries 
-;  Values based as fraction of 65536 
  

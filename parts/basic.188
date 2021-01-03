@@ -1,37 +1,48 @@
-cld10    ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< entry from dload 
-; jsr put_io_in_map 
- lda verck 
- ldx txttab  ;.x and .y have alt... 
- ldy txttab+1  ;...load address 
+atn lda facsgn ;what is sign? 
+ pha  ;save for later 
+ bpl 10$ 
+ jsr negop ;if negative, negate FAC 
+   ;use arctan(x)=-arctan(-x) 
+10$ lda facexp 
+ pha  ;save this too for later 
+ cmp #$81 ;see if FAC >= 1.0 
+ bcc 20$  ;it is less than 1 
+ lda #<fone ;get pntr to 1.0 
+ ldy #>fone 
+ jsr romdiv ;compute reciprocal 
+   ;use aectan(x)=pi/2-arctan(1/x) 
+20$ lda #<atncon ;pointer to arctan constants 
+ ldy #>atncon 
+ jsr polyx 
+ pla 
+ cmp #$81 ;was original argument < 1? 
+ bcc 30$  ;yes 
+ lda #<pi2 
+ ldy #>pi2 
+ jsr romsub ;subtract arctan from pi/2 
  
-; Any changes to the following code must be duplicated at: 
-;  bload 
-;  save (exit_disk_op) 
+30$ pla  ;was original aurgument positive? 
+ bpl 40$  ;yes 
+ bra negop ;if negative, negate result 
  
-load_file 
- jsr _loadsp  ;load it 
- bbs0 runmod,cld20 ; skip error checks if autoboot (rts) 
- phx   ;save end address 
- phy 
- php   ; save kernel load status (.c) 
- pha   ; save kernel error # (.a) 
- jsr _readst  ; save I/O status byte 
- sta parsts 
- jsr print_dos_error ; report error msg if any only in direct mode 
- pla   ; restore error stuff 
- plp 
- bcc 30$   ; branch if no error (rts) 
- bbs7 runmod,20$  ; branch if run mode (erexit) 
- cmp #errfnf  ; is it 'file not found' catch-all? 
- bne 10$   ;  no  (erexit) 
- sta errnum  ;  yes- save error # for 'er' 
- ora #$80  ;   but no errdis 
-10$ sec 
-20$ bcs erexit  ; exit if kernel problem 
-30$ ply   ;restore end address 
- plx 
- lda verck 
- beq cld50  ;was load 
+40$ rts  ;all done 
  
-; Finish verify 
+;.end 
+ .page 
+ .subttl  BOOT 
+ 
+;**************************************************************************** 
+; BOOT  Boot has three modes of operation... 
+; 
+;   1. *B*LOAD a given binary file and SYS to its load address. 
+;   2. *D*LOAD a BASIC file named AUTOBOOT.C65* and RUN it. 
+;   3. BOOT SYS loads the home sector to $0400 and JMPs to it. 
+; 
+; For modes 1 & 2, syntax is the same as BLOAD.  Differentiate 
+; between the two modes via the presence of a filename.  All other 
+; parameters, such as drive and device numbers, are utilized in the 
+; normal manner.  For mode 3 there are no options.  It's intended 
+; to boot a new OS.  BASIC is turned off if it's successful.  If it 
+; fails, the run time stack & sprites might be corrupted. 
+;**************************************************************************** 
  

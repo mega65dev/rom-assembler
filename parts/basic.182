@@ -1,48 +1,92 @@
-atn lda facsgn ;what is sign? 
- pha  ;save for later 
- bpl 10$ 
- jsr negop ;if negative, negate FAC 
-   ;use arctan(x)=-arctan(-x) 
-10$ lda facexp 
- pha  ;save this too for later 
- cmp #$81 ;see if FAC >= 1.0 
- bcc 20$  ;it is less than 1 
- lda #<fone ;get pntr to 1.0 
- ldy #>fone 
- jsr romdiv ;compute reciprocal 
-   ;use aectan(x)=pi/2-arctan(1/x) 
-20$ lda #<atncon ;pointer to arctan constants 
- ldy #>atncon 
- jsr polyx 
- pla 
- cmp #$81 ;was original argument < 1? 
- bcc 30$  ;yes 
- lda #<pi2 
- ldy #>pi2 
- jsr romsub ;subtract arctan from pi/2 
+foutim ldx #$80 ;first pass through, accb has msb set 
+fout2 lda faclo 
+ clc 
+ adc foutbl+3,y 
+ sta faclo 
+ lda facmo 
+ adc foutbl+2,y 
+ sta facmo 
+ lda facmoh 
+ adc foutbl+1,y 
+ sta facmoh 
+ lda facho 
+ adc foutbl,y 
+ sta facho 
+ inx  ;it was done yet another time 
+ bcs 20$ 
+ bpl fout2 
+ bmi 30$ 
  
-30$ pla  ;was original aurgument positive? 
- bpl 40$  ;yes 
- bra negop ;if negative, negate result 
+20$ bmi fout2 
+30$ txa 
+ bcc 40$  ;can use (a) as is 
+ eor #$ff ;find 11.(a) 
+ adc #10  ;c is still on to complete negation, and will always be on after 
  
-40$ rts  ;all done 
+40$ adc #'0'-1 ;get a character to print 
+ iny 
+ iny 
+ iny 
+ iny 
+ sty fdecpt 
+ ldy fbufpt 
+ iny  ;point to place to store output 
+ tax 
+ and #$7f ;get rid of msb 
+ sta fbuffr-1,y 
+ dec deccnt 
+ bne 50$  ;not time for dp yet 
+ lda #'.' 
+ iny 
+ sta fbuffr-1,y ;store dp 
  
-;.end 
- .page 
- .subttl  BOOT 
+50$ sty fbufpt ;store pointer for later 
+ ldy fdecpt 
+ txa  ;complement accb 
+ eor #$ff ;complement acca 
+ and #$80 ;save only msb 
+ tax 
+ cpy #fdcend-foutbl 
+; beq 60$  ;for time converter ????   removed [901014] 
+; cpy #timend-foutbl 
+ bne fout2 ;continue with output 
  
-;**************************************************************************** 
-; BOOT  Boot has three modes of operation... 
-; 
-;   1. *B*LOAD a given binary file and SYS to its load address. 
-;   2. *D*LOAD a BASIC file named AUTOBOOT.C65* and RUN it. 
-;   3. BOOT SYS loads the home sector to $0400 and JMPs to it. 
-; 
-; For modes 1 & 2, syntax is the same as BLOAD.  Differentiate 
-; between the two modes via the presence of a filename.  All other 
-; parameters, such as drive and device numbers, are utilized in the 
-; normal manner.  For mode 3 there are no options.  It's intended 
-; to boot a new OS.  BASIC is turned off if it's successful.  If it 
-; fails, the run time stack & sprites might be corrupted. 
-;**************************************************************************** 
+60$ ldy fbufpt ;get back output pointer 
+70$ lda fbuffr-1,y ;remove trailing blanks 
+ dey 
+ cmp #'0' 
+ beq 70$ 
+ cmp #'.' 
+ beq 80$  ;ran into dp,  stop 
+ iny  ;something else, save it 
+ 
+80$ lda #'+' 
+ ldx tenexp 
+ beq fout17 ;no exponent to output 
+ bpl 90$ 
+ lda #0 
+ sec 
+ sbc tenexp 
+ tax 
+ lda #'-' ;exponent is negative 
+ 
+90$ sta fbuffr+1,y ;store sign of exponent 
+ lda #'E' 
+ sta fbuffr,y ;store the 'E' character 
+ txa 
+ 
+ ldx #'0'-1 
+ sec 
+100$ inx  ;move closer to output value 
+ sbc #10  ;subtract 10 
+ bcs 100$ ;not negative yet 
+ 
+ adc #'9'+1 ;get second output character 
+ sta fbuffr+3,y ;store high digit 
+ txa 
+ sta fbuffr+2,y ;store low digit 
+ lda #0  ;put in terminator 
+ sta fbuffr+4,y 
+ bra fout20 ;return 
+ 
  

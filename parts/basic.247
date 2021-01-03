@@ -1,39 +1,24 @@
-drwinc php 
- and #1   ;adjust .y for x or y position 
- beq 5$   ; 0=x 
- iny   ; 1=y 
-5$ plp 
- bmi 10$   ;enter with b7=negative, b6=positive, else zero 
- bvc 30$ 
+are_you_sure 
  
- lda vic,y  ;positive direction 
- inc a 
- sta vic,y 
- bra 20$ 
+ bbs7 runmod,response_fake ;branch if not direct mode 
  
-10$ lda vic,y  ;negative direction 
- dec a 
- sta vic,y 
- cmp #$ff 
+ jsr _primm   ;else prompt user for y/n answer 
+   .byte 'ARE YOU SURE? ', 0 
  
-20$ bne 30$   ;no wrap 
- tya 
- bit #1 
- bne 30$   ;wrap in y okay 
- lsr a 
- tay 
- lda sbits,y  ; wrap in x- toggle msb 
- eor vic+16 
- sta vic+16 
- tya 
- asl a 
- tay 
  
-30$ tya   ;restore y to sprite offset 
- and #$fe 
- tay 
+response_get 
+ jsr _clrch  ;clear channel for basin 
+ jsr _basin  ;next char 
+ pha   ;save first char of reply 
+ 
+10$ cmp #cr   ;eat chars until end of line 
+ beq 20$   ;if cr received, exit 
+ jsr _basin 
+ bne 10$   ;continue to ignore 
+ 
+20$ jsr _bsout  ;new line     [910212] FAB 
+ pla 
+ cmp #'Y'  ;z set means ans=y..... 
  rts 
  
- .page 
-; Play music, if in progress 
  

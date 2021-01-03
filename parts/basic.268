@@ -1,63 +1,37 @@
-exit_GKI_disk_op 
- php   ;preserve completion status 
- pha 
- jsr _clrch 
- lda dosla 
- jsr close_out  ;close channel 
+ScreenDef 
+ jsr chrget  ;advance past token 
  
- jsr is_stop_key_down ; weed out BREAK error 
- plx 
- plp 
- bcs error  ; must be I/O or file data error 
- rts   ; load was successful 
+c65.screendef 
+ jsr getbyt  ;get screen number 
+ cpx #4   ; range 0-3   [910711] 
+ bcs 10$ 
+ stx GKI__parm1  ; screen# 
+ 
+ jsr combyt  ;get width 
+ cpx #3   ; range 0-2 ???? 1280 mode ???? 
+ bcs 10$ 
+ stx GKI__parm2  ; width 
+ 
+ jsr combyt  ;get height 
+ cpx #2   ; range 0-1 
+ bcs 10$ 
+ stx GKI__parm3  ; height 
+ 
+ jsr combyt  ;get depth (# bitplanes) 
+ dex   ; convert 1-8 to 0-7 
+ cpx #8   ; range 0-7 
+10$ bcs fcerr  ;illegal quantity error 
+ stx GKI__parm4  ; depth 
+ 
+ jmp ($8006)  ;bra screendef 
  
  .page 
 ;***************************************************************** 
+;* SCREEN OPEN  open a graphic screen for viewing or drawing 
 ;* 
-;*   SAVEIFF "[@]filename" [,U#] [,D#]      [910930] FAB 
+;*  Syntax : SCREEN OPEN screen# 
 ;* 
+;*           parm1 = screen#      0-3    [910711] 
 ;***************************************************************** 
  
-saveiff 
- jsr CheckGraphicMode 
- lda #$66  ;set error flags 
- jsr dosprs  ;parse the line 
- jsr chk2  ;check required parameters 
- lda #1 
- sta dossa  ;setup as dsave would (1 = save channel) 
- jsr find_la  ;find an available la to use (cannot use reserved one) 
- ldy #fopn 
- ldx #4 
- jsr open_file  ;open the file 
- bcs 10$   ; exit if error 
- 
- ldx dosla 
-; stx GKI__parm1 
- jsr _chkout  ;get output channel 
-10$ bcs list_err  ; exit if error 
- 
- jsr ($803a)  ;Save it 
- bra exit_GKI_disk_op 
- 
-; php   ;preserve completion status 
-; pha 
-; jsr _clrch 
-; lda dosla 
-; jsr close_out  ;close channel 
-; 
-; jsr is_stop_key_down ; weed out BREAK error 
-; plx 
-; plp 
-; bcs error  ; must be I/O or file data error 
-; rts   ; load was successful 
- 
-;.end 
- .page 
- .subttl   VIEWPORT Commands 
- 
-;***************************************************************** 
-;*   VIEWPORT <CLR | DEF>  x, y, viewport_width, viewport_height 
-;* 
-;* assumes SCREEN already opened   910626 FAB 
-;***************************************************************** 
  

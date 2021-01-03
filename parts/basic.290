@@ -1,108 +1,87 @@
-rspmod .byte 21,39,27,29,23,28  ;VIC registers associated with arg# 
- 
-;.end 
- .page 
- .subttl RSPCOLOR Function 
- 
-;****************************************************************** 
-;* RSPCOLOR - return sprite multicolor reg's 
-;* 
-;* Syntax : RSPCOLOR (argument) 
-;* 
-;* Where  : argument = [1..2] 
-;*   1 : return multicolor #1 
-;*   2 : return multicolor #2 
-;****************************************************************** 
- 
-rspcolor 
- jsr chkcls ;check for closing paren 
- jsr conint ;get arg in .X 
- dex  ;adjust [1..2] to [0..1 
- cpx #2 
- bcs fcerr ;value error 
- 
-; jsr put_io_in_map 
- lda vic+37,x 
- and #$0f 
- tay 
-; iny  ;range 0-15     [910724] 
- bra sngflt ;float 1 byte arg in .Y 
- 
-;.end 
- .page 
- .subttl RSPPOS Function 
- 
-;****************************************************************** 
-;* RSPPOS - Return sprite location / speed data 
-;* 
-;* Syntax:  RSPPOS (sprite_number, argument) 
-;* 
-;* Where:   sprite_number = [0..7] 
-;*    argument = [0..2] 
-;*   0 : return X position 
-;*   1 : return Y position 
-;*   2 : return current speed 
-;****************************************************************** 
- 
-rsppos jsr conint ;get first arg, sprite #, in .X 
-; dex  ;adjust [1..8] to [0..7]   [910220] 
- cpx #8  ; (318018-03 mod; fab) 
- bcs 1$  ;value error 
- 
- phx  ;save sprite number 
-; jsr chkcom ;check for proper delimiter 
-; jsr getbyt ;do frmevl, get 1 byte arg (arg) in .X 
- jsr combyt ;      [910820] 
- jsr chkcls ;look for closing paren 
- cpx #3 
-1$ bcs fcerr ;value error 
- 
- ply  ;sprite number 
- cpx #2 
- bne 10$  ;branch if x or y position 
- 
- ldx sproff,y ;get offset into speed data 
- ldy sprite_data,x ;get speed data 
- bra sngflt ;go float 1 byte arg in .Y 
- 
-; Get msb of sprite position (in case this is for x position) 
- 
-10$ sei 
- lda sbits,y ;get bit mask for this sprite 
- and vic+16 ;      ???vic_save 
- beq 20$ 
- lda #1  ;change any non-zero to a '1' 
-20$ pha  ;save msb 
- 
- tya  ;y = sprite# * 2 
- asl a 
- tay 
- txa  ;see if this is y position 
- lsr a  ;.C = 0 for x pos'n, 1 for y pos'n 
- bcc 30$  ; branch if x pos'n 
- 
- iny  ;adjust pointer to point to y pos'n in register data 
- pla 
- lda #0  ;..and force 'msb' to be zero 
- pha 
- 
-30$ lda vic,y ;get correct location lsb   ???vic_save 
+movspr_to   ;setup for moving sprite to a particular position 
+    ;we have already positioned the sprite onscreen 
+ jsr chrgot  ;reget terminating character 
+ cmp #to_token 
+ beq 5$   ; not our call 
  cli 
+ rts 
+ 
+5$ smb7 op   ;it's for us- let everybody else know we're in charge 
+ jsr chrget       ;move to next non-space character 
+ clc 
+ jsr sprcor_1  ;go get & evaluate destination coordinate 
+ jsr movspr_1  ;returns with sprite# in .x, VIC sprite index in .y, 
+    ;P1 in VIC sprite regs, and P2 in x,ydest 
+ asl numcnt  ;Y: handle specific coordinate types 
+ bcc 20$   ; skip if absolute 
+ clc 
+ lda xdest+2  ;get y-coordinate 
+ bpl 10$   ; skip if normal coordinates 
+ eor #$ff 
+ sec   ; invert to subtract if angular 
+10$ adc vic+1,y  ;  add to current sprite y-value ???vic_save 
+ sta xdest+2  ;  save sprite destination y-position 
+ 
+20$ asl numcnt  ;X: handle specific coordinate types 
+ bpl 30$   ; skip if absolute 
+ clc 
+ lda xdest  ;get low byte of x-coordinate 
+ adc vic,y  ;add current sprite x-position  ???vic_save 
+ sta xdest  ;save sprite destination x-position 
+ bcc 30$ 
+ inc xdest+1 
+ 
+30$ phy 
+ jsr combyt  ;get speed parameter 
+ txa 
+ and #$3f  ; limit range (0-63) ???? 
+ ora #$80 
+ sta xcnt  ; save in temp. 
+ ply 
+ 
+ lda vic,y  ;copy current sprite pos'n to line vars 
+ sta xpos  ;in preparation for line calculations 
+ lda vic+1,y 
+ sta ypos 
+ lda #0 
+ sta xpos+1 
+ sta ypos+1 
+ tya 
+ lsr a 
  tay 
- pla  ;..and get msb, 
- bra nosflt ;..and go float 2 byte value in y,a 
- 
-;.end 
+ lda sbits,y 
+ and vic+16 
+ beq 40$ 
+ inc xpos+1 
+40$ 
  .page 
- .subttl BUMP Function 
- 
 ;****************************************************************** 
-;* BUMP - read sprite collision 
-;* 
-;* Syntax : BUMP (argument) 
-;* 
-;* Where  : argument = [1..2] 
-;*   1 : sprite/sprite collision 
-;*   2 : sprite/background collision 
+;  MOVSPR n, p1 TO p2 - move a sprite along line from p1 to p2 
+; 
+; The following is performed now: 
+; 
+;           absx    = abs(destx-posx) : absy = abs(desty-posy) 
+;           sgnx    = sgn(destx-posx) : sgny = sgn(desty-posy) 
+;                     ( sgn=(1,0,-1) if (+,0,-) ) 
+;           greatr  = index to the greatr of absx,absy 
+;           lesser  = index to the smaller of absx,absy 
+; 
+;           fct1    = 2*min(absx,absy) 
+;           fct2    = fct1 - 2*max(absx,absy) 
+;           error   = fct1 - max(absx,absy) 
+; 
+; The following is performed during IRQ: 
+; 
+;           for i:= 1 to max(absx,absy) do begin 
+;                 movspr n, posx, posy 
+;                 if error > 0 then begin 
+;                      pos(lesser):= pos(lesser) + sgn(lesser) 
+;                      error:= error + fct2 
+;                      end 
+;                      else error:= error + fct1 
+;                 pos(greatr):= pos(greatr) + sgn(greatr) 
+;           end; 
+; 
+; (modification of C128 Bresenham DrawLn algorithm 910808 F.Bowen) 
 ;****************************************************************** 
  

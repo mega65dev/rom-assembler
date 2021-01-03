@@ -1,39 +1,40 @@
-header_rts 
- clc 
- rts 
+too_many_files 
+ ldx #errtmf  ;too many files open 
+ bra error 
  
  .page 
-; SCRATCH sdfn  aliases: DELETE, ERASE 
+; Close disk file 
  
-scratch jsr dospar  ;parse the line 
- jsr chk1 
- jsr are_you_sure ;confirm if in direct mode 
- bne 30$   ; branch if 'no' response given 
+dclose lda #$f3  ;set error flags 
+ jsr dosprs  ;parse the line 
+ jsr Clear_DS 
+ bbr2 parsts,dclall ;any la given?  branch if not 
+ lda dosla 
+ bra close_out 
  
- ldy #fscr  ;offset 
- lda #4   ;length 
- bit dosflags  ;scratch or recover? 
- bvc 1$   ; scratch 
- ldy #frscr  ; recover 
- lda #6 
-1$ jsr trans  ;transmit scratch command 
- jsr Read_DS  ;read error channel & update DS$ 
+dclall lda dosfa  ;get disk # 
+; jsr put_io_in_map 
+ jmp _close_all  ;close all channels 
  
- bbs7 runmod,30$  ;branch if not direct mode 
- jsr crdo  ;output cr 
  
- ldy #0   ;display 'files scratched' DOS message 
-10$ lda #dsdesc+1 
- jsr lda_far_ram1 ; lda (dsdesc+1),y 
- beq 20$   ; if end of error message 
- jsr outch  ; print it 
- iny 
- bpl 10$   ; always (bpl=failsafe) 
  
-20$ jsr crdo  ; done 
+; DSAVE dfn 
  
-30$ rts 
+dsave bbr4 runmod,10$  ;PROGRAM or EDIT mode?    [910620] 
+ bra edit_save  ; edit 
+ 
+10$ lda #$66  ;set error flags 
+ jsr dosprs  ;parse the line 
+ jsr chk2  ;check required parameters 
+ ldy #fopn  ;table offset 
+ lda #4   ;..length, 
+ jsr sendp 
+ 
+ lda text_bank  ;default to text bank set up banks???? [910620] 
+ ldx #sys_bank  ;fname is in system space, bank0 
+ jsr _setbank 
+ bra savenp 
  
  .page 
-; RECORD- relative record access 
+; DVERIFY 
  

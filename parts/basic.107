@@ -1,35 +1,16 @@
-play_bad_value 
- jsr clear_flag 
- bra fcerr  ;illegal quantity 
- 
-play_dot 
- sta dnote 
+wait_for_all_quiet  ;Wait for all voices on this SID to be quiet [910626] 
+ ldy #3 
+ ldx voice 
+ cpx #3   ;determine left/right SID 
+ bcs 10$ 
+ ldy #0 
+10$ ldz #3   ;for each of 3 voices 
+20$ ldx times2,y 
+30$ bit voices+1,x  ; wait for voice to be inactive (IRQ) 
+ bpl 30$ 
+ iny   ; next voice 
+ dez 
+ bne 20$   ; until done 3 voices 
  rts 
- 
- 
- 
-set_note_length 
-; ldy #<beats  ;found note (.x), divide beats accordingly 
-; sty ntime 
-; ldy #>beats 
-; sty ntime+1 
- 
- bit _pal_ntsc  ;determine if PAL or NTSC system  [910724] 
- bmi 1$   ;...branch if PAL 
- ldz #<beats_ntsc ;(whole note 4/4 time = 2 sec) 
- ldy #>beats_ntsc 
- bra 2$ 
-1$ ldz #<beats_pal 
- ldy #>beats_pal 
-2$ stz ntime 
- sty ntime+1 
- 
-10$ dex 
- bmi 20$   ;finished dividing, exit 
- lsr ntime+1 
- ror ntime 
- bra 10$ 
- 
-20$ rts 
  
  .page 

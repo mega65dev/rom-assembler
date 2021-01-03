@@ -1,49 +1,233 @@
-finlog pha 
- jsr movaf  ;save it for later 
- pla 
- jsr float  ;float the value in (a) 
+mldvex lda facsgn ;get sign 
+ eor #$ff ;complement it 
+ bmi overr 
  
-faddt_c65   ;     [910402] 
+zeremv pla  ;get addr off stack 
+ pla 
+ bra zerofc ;underflow 
+ 
+ .page 
+; Multiply FAC by 10 
+ 
+mul10 jsr movaf ;copy FAC into ARG 
+ tax 
+ beq mul10r ;if (FAC)=0, got answer 
+ clc 
+ adc #2  ;augment exp by 2 
+ bcs overr ;overflow 
+ 
+finml6 ldx #0 
+ stx arisgn ;signs are same 
+ jsr faddc ;add together 
+ inc facexp ;multiply by two 
+ beq overr ;overflow 
+ 
+mul10r rts 
+ 
+ .page 
+div10 jsr movaf ;move FAC to ARG 
+ lda #<tenc 
+ ldy #>tenc ;point to constant of 10.0 
+ ldx #0  ;signs are both positive 
+ 
+fdivf stx arisgn 
+ jsr movfm ;put it into FAC 
+ bra fdivt 
+ 
+fdivt_c65  ;     [910402] 
  lda argsgn 
  eor facsgn 
- sta arisgn  ;resultant sign 
- ldx facexp  ;set signs on thing to add 
- bra faddt  ;add together and return 
+ sta arisgn ;resultant sign 
+ ldx facexp ;set signs on thing to divide 
+ bra fdivt ;go divide 
  
- .page 
-; Pack in the next digit of the exponent. 
-; Multiply the old exp by 10 and add in the next digit. 
-; (note: does not check for exp overflow) 
- 
-finedg lda tenexp  ;get exp so far 
- cmp #10   ;will result be >= 100? 
- bcc 5$ 
- lda #100 
- bbs7 expsgn,30$  ;if neg exp, no chk for overr 
- bra overr 
- 
-5$ asl a   ;max is 120 
- asl a   ;mult by 2 twice 
- clc   ;possible shift out of high 
- adc tenexp  ;like multiplying by five 
- asl a   ;and now by ten 
- clc 
- ldy #0 
- sta syntmp 
- 
- lda fin_bank  ;text or string bank? 
- bne 10$ 
- jsr indtxt  ; text 
- bra 20$ 
-10$ jsr indin1_ram1  ; string 
- 
-20$ adc syntmp 
+fdiv jsr conupk ;unpack constant 
+fdivt beq doverr ;can't divide by zero 
+ jsr round ;take FACOV into account in FAC 
+ lda #0  ;negate facexp 
  sec 
- sbc #'0' 
-30$ sta tenexp  ;save result 
- bra finec 
+ sbc facexp 
+ sta facexp 
+ jsr muldiv ;fix up exponents 
+ inc facexp ;scale it right 
+ beq overr ;overflow 
+ ldx #$fc ;set up procedure 
+ lda #1 
  
  .page 
-; Get a character from either text or string area, and set the flags 
-; in the manner performed by CHRGET. 
+divide   ;this is the best code in the whole pile 
+ ldy argho ;see what relation holds 
+ cpy facho 
+ bne savquo ;(c)=0,1. n(c=0)=0. 
+ ldy argmoh 
+ cpy facmoh 
+ bne savquo 
+ ldy argmo 
+ cpy facmo 
+ bne savquo 
+ ldy arglo 
+ cpy faclo 
+ 
+savquo php 
+ rol a  ;save result 
+ bcc qshft ;if not done, continue 
+ inx 
+ sta reslo,x 
+ beq ld100 
+ bpl divnrm ;note this req 1 no ram then access 
+ lda #1 
+ 
+qshft plp  ;return condition codes 
+ bcs divsub ;FAC <= ARG 
+ 
+shfarg asl arglo ;shift ARG one place left 
+ rol argmo 
+ rol argmoh 
+ rol argho 
+ bcs savquo ;save a result of one for this position and divide 
+ bmi divide ;if msb on, go decide whether to sub 
+ bpl savquo 
+ 
+ .page 
+divsub tay  ;notice c must be on here 
+ lda arglo 
+ sbc faclo 
+ sta arglo 
+ lda argmo 
+ sbc facmo 
+ sta argmo 
+ lda argmoh 
+ sbc facmoh 
+ sta argmoh 
+ lda argho 
+ sbc facho 
+ sta argho 
+ tya 
+ bra shfarg 
+ 
+ 
+ 
+ld100 lda #$40 ;only want two more bits 
+ bra qshft ;always branches 
+ 
+ 
+ 
+divnrm asl a  ;get last two bits into MSB and B6 
+ asl a 
+ asl a 
+ asl a 
+ asl a 
+ asl a 
+ sta facov 
+ plp 
+ 
+ 
+ .page 
+movfr lda resho ;move result to FAC 
+ sta facho 
+ lda resmoh 
+ sta facmoh 
+ lda resmo 
+ sta facmo 
+ lda reslo ;move lo and sign 
+ sta faclo 
+ bra normal ;all done 
+ 
+ 
+ 
+movfm sta index1 ;move memory into FAC from ROM (unpacked) 
+ sty index1+1 
+ ldy #4 
+ lda (index1),y 
+ sta faclo 
+ dey 
+ lda (index1),y 
+ sta facmo 
+ dey 
+ lda (index1),y 
+ sta facmoh 
+ dey 
+ lda (index1),y 
+ sta facsgn 
+ ora #$80 
+ sta facho 
+ dey 
+ lda (index1),y 
+ sta facexp 
+ sty facov 
+ rts 
+ 
+ .page 
+; Move number from FAC to memory 
+ 
+mov2f ldx #tempf2 ;move from FAC to temp FAC2 
+   .byte $2c 
+ 
+mov1f ldx #tempf1 ;move from FAC to temp FAC1 
+ 
+ ldy #0 
+movmf jsr round 
+ stx index1 
+ sty index1+1 
+ ldy #4 
+ lda faclo 
+ sta (index),y ;BasePage 
+ dey 
+ lda facmo 
+ sta (index),y ;BasePage 
+ dey 
+ lda facmoh 
+ sta (index),y ;BasePage 
+ dey 
+ lda facsgn ;include sign in ho 
+ ora #$7f 
+ and facho 
+ sta (index),y ;BasePage 
+ dey 
+ lda facexp 
+ sta (index),y ;BasePage 
+ sty facov ;zero it since rounded 
+ rts  ;(y)=0 
+ 
+ .page 
+movmf_ram1 
+ jsr round 
+ stx index1 
+ sty index1+1 
+ phx 
+ ldx #index 
+ ldy #4 
+ lda faclo 
+ jsr sta_far_ram1 ;sta (index),y 
+ dey 
+ lda facmo 
+ jsr sta_far_ram1 ;sta (index),y 
+ dey 
+ lda facmoh 
+ jsr sta_far_ram1 ;sta (index),y 
+ dey 
+ lda facsgn  ;include sign in ho 
+ ora #$7f 
+ and facho 
+ jsr sta_far_ram1 ;sta (index),y 
+ dey 
+ lda facexp 
+ jsr sta_far_ram1 ;sta (index),y 
+ sty facov  ;zero it since rounded 
+ plx 
+ rts   ;(y)=0 
+ 
+ .page 
+movfa lda argsgn 
+ 
+movfa1 sta facsgn 
+ 
+ ldx #5 
+1$ lda argexp-1,x 
+ sta facexp-1,x 
+ dex 
+ bne 1$ 
+ stx facov 
+ rts 
+ 
  

@@ -1,22 +1,40 @@
-rdcn lda poker 
- sta dosstr,x 
- lda poker+1 
- inx 
- bra sdp5 ;always 
+doffl lda #$02 ;check aux status 
+ jsr prxrpt 
+ jsr getoff ;get offset value 
+ sty dosofl 
+ sta dosofl+1 
+ lda #$02 
+dlimx1 ora parstx ;set aux status bits 
+ sta parstx 
+ bne delim1 ;try for next param 
  
  
-; Move file names 
+doffh lda #$04 
+ jsr prxrpt 
+ jsr getoff 
+ sty dosofh 
+ sta dosofh+1 
+ lda #$04 
+ bra dlimx1 ;set aux status 
  
-rsfn ldy dosf1l ;file name 1: get length 
- beq rdrt0 ;if null string 
  
- ldy #0  ;move name to dosstr 
-10$ lda savram,y 
- sta dosstr,x 
- inx 
+recover lda #$40 
+ tsb dosflags ;set 'recover' bit 
+ bne snerr ;if repeated parameter 
+ jsr chrget ;continue 
+ bra delim2 
+ 
+ 
+name1 lda #1  ;name1 allowed only once 
+ jsr newnam ;do name parsing 
+ sta dosf1l 
+ 
+ ldy #0 
+10$ jsr indin1_ram1 
+ sta savram,y ;copy name into buffer 
  iny 
  cpy dosf1l 
- bne 10$  ;if move not complete 
- bra rdrt1 ;always 
+ bcc 10$  ;...copy all of it 
+ lda #1  ;set name1 flag 
  
  

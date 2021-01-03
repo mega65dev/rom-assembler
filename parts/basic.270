@@ -1,73 +1,49 @@
-c65.copy 
-c65.cut 
-c65.paste 
- jmp bad_command 
+c65.setdpat 
+ jsr getbyt  ;get pattern type 
+ cpx #4+1  ;63+1       [911028] 
+10$ bcs fcerr  ; if out of range 
+ stx GKI__parm1 
+ txa 
+ bne 20$   ;if parm1 is 0 then get extra stuff 
  
- .page 
- .subttl  GENLOCK 
+ jsr combyt  ;get number of bytes 
+ cpx #5 
+ bcs 10$   ; too many bytes 
+ stx GKI__parm2 
+ stx z_p_temp_1  ; save for count 
  
-;***************************************************************** 
-;* GENLOCK  set/reset genlock mode & color registers 
-;* 
-;*  Syntax: GENLOCK <ON[,color#[,...]] | OFF[,color#,R,G,B]> 
-;***************************************************************** 
- 
-genlock sta GKI__parm1  ;save token as flag for set palette   [910107] 
- cmp #on_token 
+ jsr combyt  ;get byte 1 
+ stx GKI__parm3 
+ dec z_p_temp_1 
  beq 20$ 
- jsr chkesc 
- cmp #off_token 
- bne snerr 
-    ;TURN GENLOCK OFF 
- lda vic+49  ;any interlaced bitplanes on? 
- and #%00011001 
- cmp #%00011001 
- beq 10$   ; yes, leave interlace mode on 
+ bmi fcerr  ; too few bytes 
  
- lda #%00000001 
- trb vic+49  ; no, turn interlace off 
-10$ lda #%00000010 
- trb vic+48  ;  reset external sync mode 
-; beq 12$   ;       [910114] 
-; lda vic+63  ;       [910111] 
-; inc a   ;  adjust vert. position (chip bug ????) 
-; inc a   ;  (to be handled by a custom C65 genlock board) 
-; inc a 
-; sta vic+63 
+ jsr combyt  ;get byte 2 
+ stx GKI__parm4 
+ dec z_p_temp_1 
+ beq 20$ 
  
-12$ jsr chrget  ;eat token 
- jsr optbyt  ;get (optional) color reg# in .X 
- stx GKI__parm2  ; save it 
- bcs set_palette  ;  if present, go do it & exit 
-15$ rts   ;  if not present (eol), exit 
+ jsr combyt  ;get byte 3 
+ stx GKI__parm5 
+ dec z_p_temp_1 
+ beq 20$ 
  
+ jsr combyt  ;get byte 4 
+ stx GKI__parm6 
  
-20$ lda #%00000001  ;TURN GENLOCK ON 
- tsb vic+49  ;  set interlace mode 
- asl a 
- tsb vic+48  ;  set external sync mode 
-; bne 22$   ;       [910114] 
-; lda vic+63  ;       [910111] 
-; dec a   ;  adjust vert. position (chip bug ????) 
-; dec a   ;  (to be handled by a custom C65 genlock board) 
-; dec a 
-; sta vic+63 
- 
-22$ jsr chrget  ;eat token 
-25$ jsr optbyt  ;get (optional) color reg# in .X 
- bcc 15$   ; if not present (eol), exit 
- lda #%00010000  ; if present, set FGBG bit in red palette 
- sta _red,x 
- bra 25$   ; loop 
+20$ jmp ($8016)  ;bra setdpat 
  
  .page 
- .subttl  COLOR Control 
- 
 ;***************************************************************** 
-;* COLOR       <ON | OFF> Enable|Disable SW & HW color 
-;* FOREGROUND  color# Set Foreground color (text) 
-;* HIGHLIGHT   color# Set Highlight color (text) 
-;* BACKGROUND  color# Set VIC Background color 
-;* BORDER      color# Set VIC Border color 
+;* PALETTE   set palette colors 
+;* 
+;*  Syntax : PALETTE {screen|COLOR}, color_index, red, green, blue 
+;*           PALETTE RESTORE 
+;* 
+;*           parm1 = screen  0-3     [910711] 
+;*           parm2 = color_index 0-255 
+;*           parm3 = red           0-31 (b0-3 red, b4=fgbg)  [910520] 
+;*           parm4 = green         0-15 
+;*           parm5 = blue          0-15 
 ;***************************************************************** 
  

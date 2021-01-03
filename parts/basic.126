@@ -1,109 +1,28 @@
-bltlp jsr indhtr_ram1  ;lda (hightr),y 
- phx 
- ldx #highds 
- jsr sta_far_ram1 ;sta (highds),y 
- plx 
- 
-moren1 dey 
- bne bltlp 
- jsr indhtr_ram1  ;lda (hightr),y 
- phx 
- ldx #highds 
- jsr sta_far_ram1 ;sta (highds),y 
- plx 
- 
-decblt dec hightr+1 
- dec highds+1 
- dex 
- bne moren1 
- rts 
- 
-;.end 
- .page 
- .subttl Array Routines 
- 
-; The format of arrays in core: 
-; 
-; Descriptor: low  byte = first character 
-;   high byte = second character (msb is string flag) 
-; Length of array in memory in bytes (includes everything). 
-; Number of dimensions. 
-; For each dimension starting with the first a list (2 bytes each) 
-; of the max indice+1. 
-; The values. 
- 
- 
-is_array 
- lda dimflg 
- ora intflg 
- pha  ;save DIMFLG for recursion 
- lda valtyp 
- pha  ;save VALTYP for recursion 
- ldy #0  ;set number of dimensions to zero 
- 
-10$ phy  ;save number of dims 
- lda varnam+1 
- pha 
- lda varnam 
- pha  ;save looks 
- jsr intidx ;evaluate indice into facmo&lo 
- pla 
- sta varnam 
- pla 
- sta varnam+1 ;get back all...we're home 
- ply  ;(# of units) 
- tsx 
- lda 258,x 
- pha  ;push DIMFLG and VALTYP further 
- lda 257,x 
- pha 
- lda indice ;put indice onto stack 
- sta 258,x ;under DIMFLG and VALTYP 
- lda indice+1 
- sta 257,x 
- iny  ;y counts # of subscripts 
- sty count ;protect y from chrget 
- jsr chrgot ;get terminating character 
- ldy count 
- cmp #',' ;more subscripts? 
- beq 10$  ;yes 
- 
- 
- jsr chkcls ;must be closed paren 
- pla 
- sta valtyp ;get VALTYP and 
- pla 
- sta intflg 
- and #$7f 
- sta dimflg ;DIMFLG off stack 
- ldx arytab ;place to start search 
- lda arytab+1 
- 
- 
-20$ stx lowtr 
- sta lowtr+1 
- cmp strend+1 ;end of arrays? 
- bne 30$ 
- cpx strend 
- beq notfdd ;a fine thing! no array! 
- 
-30$ ldy #0 
- jsr indlow_ram1 ;get high of name from array bank (ram1) 
- iny 
- cmp varnam ;compare high orders. 
- bne 40$  ;no way is it this. get the bite outta here 
- jsr indlow_ram1 
- cmp varnam+1 ;low orders? 
- beq gotary ;well here it is 
- 
-40$ iny 
- jsr indlow_ram1 ;get length 
- clc 
- adc lowtr 
+bltu jsr reason 
+ sta strend 
+ sty strend+1 
+ sec 
+ lda hightr 
+ sbc lowtr 
+ sta index 
+ tay 
+ lda hightr+1 
+ sbc lowtr+1 
  tax 
- iny 
- jsr indlow_ram1 
- adc lowtr+1 
- bcc 20$  ;always branches 
- 
+ inx 
+ tya 
+ beq decblt 
+ lda hightr 
+ sec 
+ sbc index 
+ sta hightr 
+ bcs 10$ 
+ dec hightr+1 
+ sec 
+10$ lda highds 
+ sbc index 
+ sta highds 
+ bcs moren1 
+ dec highds+1 
+ bcc moren1 
  

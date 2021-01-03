@@ -1,31 +1,27 @@
-savs50 lda sprtmp_1   ;restore basic text pointer 
- sta txtptr 
- lda sprtmp_2 
- sta txtptr+1 
- jsr ptrget        ;get symbol table descriptor for string dest. 
- sta forpnt 
- sty forpnt+1      ;save symbol table address 
- lda #<savsiz 
- sta facmo         ;save descriptor address of source 
- lda #>savsiz 
- sta facmo+1 
- bra inpcom        ;move source to dest, do rts (snerr if not eol) 
- 
- .page 
-savinp jsr frmevl        ;evaluate expression 
- bbs7 valtyp,desc_free  ; exit if a string 
- jsr conint   ;get one byte integer in .X 
-; dex    ;adjust sprite 1..8 to 0..7  [910220] 
- cpx #8 
- bcs fcerr   ; bad value 
- txa    ;move sprite number to .A 
- lsr a 
- ror a 
- ror a             ;get sprite address 
- ldy #>sprite_base 
- bcc 5$ 
- iny 
-5$ clc               ;flag 'sprite' (as opposed to 'string') 
+foreground 
+ jsr getnyb  ;Set text foreground color 
+ stx _color 
  rts 
+ 
+ 
+ 
+highlight 
+ beq snerr  ;missing args??     [911017] 
+ cmp #',' 
+ beq 10$   ; options byte only 
+ 
+ jsr getbyt  ;Set text highlight color 
+ stx highlight_color 
+ 
+10$ jsr optzer  ;set options:     [911001] 
+ bcc 20$   ; comma but no value not given?? 
+ txa 
+ and #3   ; 0= error msgs only 
+ asl a   ; 1= REMs 
+ asl a   ; 2= tokens 
+ asl a 
+ sta helper 
+20$ rts 
+ 
  
  

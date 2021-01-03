@@ -1,80 +1,83 @@
-joytab .byte 4,2,3,0,6,8,7,0,5,1,0 
+val jsr len1  ;get length 
+ beq zerofc  ;return 0 if len=0 
+ 
+; Use text to fp number code by faking a new text poiner 
+ 
+val_1 clc   ;///jump table entry.  convert PETSCII to floating point 
+ adc index1 
+ sta strng2  ;add length to index1 and put in strng2 
+ lda index1+1 
+ adc #0 
+ sta strng2+1 
+ 
+ ldy #0 
+ lda #strng2 
+ jsr lda_far_ram1 ;replace character after string with $00 (fake EOL) 
+ pha   ;save old character 
+ tya   ; (.A=0) 
+ ldx #strng2 
+ jsr sta_far_ram1 ;sta (strng2),y ;..and put in null 
+ jsr fin_chrget_2 ;get character pointed to and set flags.(sorta like chrgot) 
+ ldx #1   ;flag 'bank 1' 
+ jsr fin   ;go do evaluation 
+ pla   ;get saved character 
+ phx 
+ ldx #strng2 
+ ldy #0 
+ jsr sta_far_ram1 ;sta (strng2),y ;restore zeroed-out character 
+ plx 
+ rts 
  
 ;.end 
  .page 
- .subttl  POT  LPEN 
+ .subttl  DEC 
  
-;*********************************************************** 
-; POT(n)  --  Read paddles 
-; 
-;    n = 1 : paddle-1 - X-position 
-;  2 : paddle-1 - Y-position 
-;  3 : paddle-2 - X-position 
-;  4 : paddle-2 - Y-position 
-; 
-;     result >= 256 --  trigger set 
-;*********************************************************** 
+; DEC convert a hex string representing a 2-byte integer into decimal. 
  
-pot jsr chkcls ;look for closing paren 
- jsr conint ;get 1-byte arg in .x 
+dcml jsr len1  ;find length of string 
+ sta index2  ;len ret. in a 
+ ldy #0 
+ sty index2+1  ;zero char counter 
+ sty strng2+1  ;zero out value 
+ sty strng2 
+ 
+10$ cpy index2  ;evaluated all characters? 
+ beq 50$   ;branch if so 
+ jsr indin1_ram1  ;get next character from string 
+ iny 
+ cmp #' '  ;ignore spaces 
+ beq 10$ 
+ inc index2+1 
+ ldx index2+1 
+ cpx #5 
+ bcs decbad  ;can't have more than 4 characters 
+ 
+ cmp #'0' 
+ bcc decbad  ;bad if < 0 
+ cmp #':'  ;'9'+1 
+ bcc 30$   ;ok if  = 0-9 
+ cmp #'A' 
+ bcc decbad  ;bad if > 9  and < A 
+ cmp #'G' 
+ bcs decbad  ;bad if > F 
+ 
+ sbc #7   ;adjust if A-F  (.c is clr) 
+30$ sbc #$2f  ;adjust to $00..$0f (.c is set) 
+ asl a   ;shift low nibble to high 
+ asl a 
+ asl a 
+ asl a 
+ 
+ ldx #4   ;mult. old val. by 16, add new 
+40$ asl a 
+ rol strng2 
+ rol strng2+1 
  dex 
- cpx #4 
- bcs fcerr ;value error 
- 
-; jsr put_io_in_map 
- txa  ;convert arg (0-3) into paddle enables 
- lsr a  ; .c= X/Y   .a= port 1/2 
- tax 
- lda sbits+6,x 
- tax  ;(CIA paddle port, $40/$80) 
- lda #0 
- rol a 
- tay  ;(SID x/y offset,  $00/$01) 
- 
- stx pot_temp_1 ;save which port 
- php  ;save IRQ enable while we 
- sei  ;disable IRQ to inhibit keyboard scan 
- lda d1pra 
- pha  ;save kybd output lines 
- stx d1pra ;turn on correct paddle 
- 
- jsr go_slow 
- ldx #0 
-30$ inx  ;delay to let pot be read by SID 
- bne 30$ 
- 
-40$ lda sid1+25,y ;read pot 
- cmp sid1+25,y ;debounce 
  bne 40$ 
- sta pot_temp_2 ;save pot value 
- jsr go_fast 
+ bra 10$ 
  
- ldx #0  ;set index to d1pra 
- bit pot_temp_1 ;test if pot-0,1 or pot-2,3 
- bmi 50$  ;skip if pot 2,3 
- inx  ;index to d1prb 
-50$ lda #04  ;use joy line-2 
- dey  ;test if pot-x or pot-y 
- bmi 60$  ;skip if pot-x 
- asl a  ;use joy line-3 
-60$ ldy #$ff 
- sty d1pra ;disable keybd inputs 
- iny  ;set to zero for no trigger 
- and d1pra,x ;test if trigger set 
- bne 70$  ;skip if not trigger 
- iny  ;return value >255 for trigger 
-70$ pla 
- sta d1pra ;restore keybd lines 
- tya 
- ldy pot_temp_2 ;restore pot value 
- plp  ;restore status 
- bra nosflt ;output 2-byte result 
+50$ ldy strng2  ;get lsb of value, 
+ lda strng2+1  ;& msb, 
+ bra nosflt  ;go float 2 byte unsigned integer 
  
- .page 
-;************************************************************* 
-;  LPEN(n)  --  Read light pen 
-; 
-; n = 0 x position 
-;     1 y position 
-;************************************************************* 
  

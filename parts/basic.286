@@ -1,97 +1,42 @@
-rcolor jsr conint       ;evaluate integer argument, put in .X 
-; jsr put_io_in_map 
+Sprite_Save   ;Just like Key_Save     [911001] 
+ jsr GetSaveChannel 
+ lda #highds  ;set starting & ending addresses 
+ ldy #>sprite_base ; start address & pointer to it 
+ ldx #<sprite_base 
+ sty highds+1 
+ stx highds 
+ iny   ; end address = start address + 512 + 1 
+ iny 
+ inx 
+ bra savenb  ;       [910925] 
  
- cpx #4 
- bcs fcerr  ; illegal qty 
- txa 
- asl a   ;make into word pointer 
- tax 
- lda color_source,x ;get address of source 
- sta grapnt 
- lda color_source+1,x 
- sta grapnt+1 
- ldy #0 
- lda (grapnt),y  ;read source (aways system space or I/O????) 
- and #$0f  ; mask unused bits 
- tay 
-; iny   ; make color match keytops 
- bra sngflt       ;float 1 byte in .Y 
  
-color_source 
- .word  vic+33,_color,highlight_color,vic+32 
+ 
+Sprite_Load 
+ jsr GetLoadChannel ;get a channel      [911001] 
+ ldy #>sprite_base 
+ lda #<sprite_base 
+ jsr LoadBlock  ; load first block 
+ inc highds+1 
+ jsr LoadBlockNext ; load second block 
+ bra list_err  ;release channel, close file, return to main 
  
  .page 
- .subttl Graphic Functions 
- 
-; Return graphic screen status & parameters      [910826] 
-; RGRAPHIC (screen, param) where param = 0 open (1), closed (0), or invalid (>1) 
-;            1 width  (0=320, 1=640, 2=1280) 
-;            2 height (0=200, 1=400) 
-;            3 depth (1-8 bitplanes) 
-;            4 bitplanes used  (bitmask) 
-;            5 bank A blocks used (bitmask) 
-;            6 bank B blocks used (bitmask) 
-;            7 drawscreen # (0-3) 
-;            8 viewscreen # (0-3) 
-;            9 drawmodes  (bitmask) 
-;           10 pattern type  (bitmask) 
+;  Set or clear a bit in a VIC register 
 ; 
-; Requires a kludge, because RGR used to be a normal 1-arg function in the C128 
-; but now it takes two args. 
+; .X = 1 to set, 0 to clear 
+; .Y = register in VIC to operate opon 
  
-rgraphic 
-; jsr CheckGraphicMode ;verify screen open 
- pla   ;remove token from stack 
- jsr PushParms  ;preserve Graphics parameters & LINNUM  [910820] 
- 
- jsr chkopn  ;check for open paren 
- jsr getbyt  ;get screen # in .X 
- stx GKI__parm1 
- jsr combyt  ;get param # in .X 
- cpx #10+1  ;      [911028] 
- bcs 1$   ; illegal param # 
- phx 
- jsr chkcls  ;check for closing parens 
- 
- jsr ($8038)  ;read screen params 
-1$ bcs fcerr  ; bad input???? 
- 
- lda GKI__parm2 
- plx   ;get back desired param # 
- dex 
- bpl 10$ 
- eor #$80  ; make 0=closed, 1=open, >1=invalid 
- lsr a 
- lsr a 
- bra 12$   ; return screen open status 
- 
-10$ dex 
- bpl 20$ 
-12$ lsr a 
-15$ lsr a 
- lsr a 
- lsr a 
- and #3 
- bra 40$   ; return width, height 
- 
-20$ dex 
- bpl 25$ 
- and #8 
- bra 15$ 
-25$ dex 
- bpl 30$ 
- and #7   ; return depth 
- inc a   ;  make depth 1-8 
- bra 40$ 
- 
-30$ lda GKI__parm3,x  ; return bp bask, banks, etc. 
-40$ tay 
- jsr sngflt  ;float 1 byte arg in .y 
- 
- jsr PopParms  ;restore Graphics parameters & LINNUM 
+sprbit txa 
+ lsr a   ;put lsb in .C (0 clear, 1 set sprite bit) 
+ bne fcerr  ;only 0 or 1, please. 
+; jsr put_io_in_map 
+ ldx z_p_temp_1  ;get sprite number 
+ lda sbits,x 
+ ora vic,y 
+ bcs 10$ 
+ eor sbits,x 
+10$ sta vic,y 
  rts 
  
- .page 
-; Return the color of a given X,Y pixel location on the drawscreen  [910801] 
-;  PIXEL (x,y) 
  

@@ -1,7 +1,50 @@
-qdata bmi datlop  ;branch if READ 
- lda channl  ;else it's INPUT 
- bne 10$ 
- jsr outqst  ;console input, so display '? ' prompt 
+read rmb7 op   ;flag READ vs. LREAD    [910102] 
+ ldx datptr  ;get last data location 
+ ldy datptr+1 
+ lda #$98  ; initiator= read 
+   .byte $2c 
  
-10$ jsr PromptedInput ;get another line 
+inpcon lda #0   ; initiator= input 
+inpco1 sta input_flag  ;$98=read, $40=get, $00=input 
  
+; In the processing of DATA and READ statements, one pointer points to the data 
+; (i.e., the numbers being fetched) and another points to the list of variables. 
+; 
+; The pointer into the data always starts pointing to a terminator- a ",", ":", or EOL. 
+; At this point TXTPTR points to list of variables and (x,y) points to data or input line. 
+ 
+ stx inpptr  ;pointer to data 
+ sty inpptr+1 
+ 
+inloop jsr ptrget  ;get a pointer to the variable 
+ sta forpnt  ;store its address 
+ sty forpnt+1 
+ 
+ ldx #1 
+1$ lda txtptr,x  ;move variable list pointer to 'vartxt' 
+ sta vartxt,x 
+ lda inpptr,x  ;move data line pointer to 'txtptr' 
+ sta txtptr,x 
+ dex 
+ bpl 1$ 
+ 
+ jsr chrgot  ;get first data byte 
+ bne datbk1  ; not null, so we got something 
+ bit input_flag  ;READ($98), GET($40), or INPUT($00)? 
+ bvc qdata  ; branch if READ or INPUT 
+ lda z_p_temp_1  ;GET or GETKEY? 
+ cmp #key_token 
+ bne 3$   ; branch if GET 
+ 
+2$ jsr cgetl  ;GETKEY 
+ tax   ;test if null 
+ beq 2$   ;it is null, keep scanning 
+ bne 4$   ;got a key, go put it in var 
+ 
+3$ jsr cgetl  ;get a key if pressed, otherwise gets a zero 
+4$ sta buf 
+ ldx #<buf_txtptr 
+ ldy #>buf_txtptr 
+ bra datbk 
+ 
+ .page 

@@ -1,36 +1,31 @@
-music_irq 
- ldx #0 
-100$ ldy voices+1,x 
- bmi 110$  ;skip if not active 
+response_fake 
+ lda #0   ;...or not in direct mode 
+ rts 
  
- lda voices,x 
- sec 
- sbc tempo_rate  ;decrement current value by current tempo 
- sta voices,x 
- bcs 110$ 
- tya   ;lda voices+1,x 
- sbc #0 
- sta voices+1,x 
- bcs 110$  ;ok, no underflow 
- 
- txa 
- lsr a   ;get offset to waveform 
- tay 
- lda waveform,y  ;get waveform 
- and #$fe  ;mask out gate bit 
- pha 
- lda SID_offset,y ;get offset to correct oscillator 
- tay 
- pla 
-; jsr go_slow  ;      [910716] 4567R7A 
- sta sid1+4,y  ;turn off sound 
-; jsr go_fast  ;      [910716] 4567R7A 
- 
-110$ inx 
- inx 
- cpx #6+6  ;      [910612] 
- bcc 100$  ;loop for 6 voices 
-    ;then continue with next IRQ task 
+;.end 
  .page 
-; Test if SOUND command wants anything 
+ .subttl  General Purpose Subroutines 
+ 
+;***************************************************************** 
+;  OPTWRD - get an optional, unsigned 2-byte value in y,a. 
+; 
+;      case 1 : pointer at end of line: 
+;   return a=y=0, clear c to flag 'default' 
+;      case 2 : pointer is at comma, next non-blank is also a comma: 
+;   return a=y=0, clear c to flag 'default' 
+;      case 3 : pointer is at comma, next non-blank is not a comma: 
+;   get word in y,a, set c to flag 'non-default' 
+;***************************************************************** 
+ 
+optwrd jsr chrgot 
+ beq 10$ 
+ jsr chkcom 
+ cmp #',' 
+ beq 10$ 
+ jsr getwrd 
+ sec 
+ rts 
+ 
+10$ lda #0 
+ tay 
  

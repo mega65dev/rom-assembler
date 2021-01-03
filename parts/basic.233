@@ -1,38 +1,150 @@
-dbank lda #$01 ;repeated param? 
- jsr prxrpt 
- jsr gtbytc ;getval 
-; cpx #16  ;bank too large? 
-; bcs fcerr ;illegal qty 
- stx dosbnk 
- lda #$01 
- tsb parstx ;set bnk bit in aux status 
- lda #0  ;.a=std status wrd, no bits to set 
+trans jsr sendp  ;build string to output 
+ jsr _clrch 
+ ldx #sys_bank  ;name is in system space, bank0 ????  [910620] 
+ txa 
+ jsr _setbank 
+ jsr _open  ;send it... 
+ php   ;save error status (.c) 
+ pha   ;save error code (if any) 
+ lda dosla 
+ sec 
+ jsr _close  ;special close... 
+ pla   ;pop error 
+ plp   ;pop error status 
+ bcs erexit  ;...branch if there was an error opening 
  rts 
  
+;.end 
+ .page 
+ .subttl  DOS 2 
  
-newnam 
- pha  ;save nam1,2 for subdir check later  [901115] 
- jsr prmrpt ;check for repeated parameter 
- jsr frmstr 
- tax  ;save length of string 
- beq err_mfn ;if length = 0 
- ldy #0 
- jsr indin1_ram1 
- cmp #'@' ;Replace file convention? 
- bne 10$  ; no 
- lda #$80 ; yes- check for repeated param 
- jsr prmrpt 
- smb7 parsts ;  set "@" flag 
- dex  ;  decrement length 
- inw index1 ;  increment past "@" 
- bra lenchk 
+; This is the DOS parser routine which looks at lines passed to it and 
+; verifies that the syntax is proper.  -mgm 7/23/79- 
+; 
+; Entry  (dosprs) 
+; a = parsts bit which must be zero. 
+; 
+; Exit  a = parsts as follows 
+; 
+;    --------------------------------- 
+;    | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 | 
+;    --------------------------------- 
+;      ^   ^   ^   ^   ^   ^   ^   ^ 
+;      |   |   |   |   |   |   |   |_____ fn1 set for the first filename 
+;      |   |   |   |   |   |   |_______ fn2 set for second filename 
+;      |   |   |   |   |   |_________ la set when #lfn parsed 
+;      |   |   |   |   |___________ fa set for device number 
+;      |   |   |   |_____________ d1 set for first disk unit 
+;      |   |   |_______________ d2 set for second disk unit 
+;      |   |_________________ dosrcl set for record size 
+;      |___________________ @ set when @ encountered 
+; 
+; The following are the vaild bit patterns for parsts after parsing for the 
+; various keywords: 
+; 
+;       7 6 5 4  3 2 1 0 
+; 
+;     header  0 0 0 *  * 0 0 1 
+;     collect 0 0 0 *  * 0 0 0 
+;     dclear  0 0 0 *  * 0 0 0 
+;     backup  0 0 1 1  * 0 0 0 
+;     copy    0 0 1 1  * 0 0 0 
+;      or..   0 0 * *  * 0 1 1 
+;     concat  0 0 * *  * 0 1 1 
+;     bsave   * 0 0 *  * 0 0 1 
+;     dsave   * 0 0 *  * 0 0 1 
+;     bload   0 0 0 *  * 0 0 1 
+;     dload   0 0 0 *  * 0 0 1 
+;     dverify 0 0 0 *  * 0 0 1 
+;     catalog 0 0 0 *  * 0 0 * 
+;     rename  0 0 0 *  * 0 1 1 
+;     append  0 0 0 *  * 1 0 1 
+;     scratch 0 0 0 *  * 0 0 1 
+;     dopen   * * 0 *  * 1 0 1 
+;     dclose  0 0 0 0  * * 0 0 
+;             ^ ^ ^ ^  ^ ^ ^ ^ 
+;             @ l d d  f l f f 
+;             r r 2 1  a a n n 
+;             p e          2 1 
+;             l l 
+; 
+;      "0" bits are required to be clear 
+;      "1" bits are required to be set 
+;      "*" bits are optional parameters 
+ .page 
+; Entry (dosprs): 
+;  parstx shall be set to prevent any auxiliary options to be specified. 
+; 
+; Entry (dosprx): 
+;  .x = parstx bits which must be zero. 
+; 
+; Exit:  .x = parstx as follows: 
+; 
+;     --------------------------------- 
+;     | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 | 
+;     --------------------------------- 
+;       ^   ^   ^   ^   ^   ^   ^   ^____ bnk is set for bank option 
+;       |   |   |   |   |   |   | ______ offl set for 1st address 
+;       |   |   |   |   |   |_________ offh set for 2nd address 
+;       |   |   |   |   |___________ unused 
+;       |   |   |   |_____________ unused 
+;       |   |   |_______________ unused 
+;       |   |_________________ unused 
+;       |___________________ unused 
+; 
+; The following are the valid bit patterns for parstx after parsing for the 
+; various keywords.  These options are allowed for load/save commands only. 
+; 
+;    7 6 5 4  3 2 1 0 
+; 
+;   bsave   0 0 0 0  0 1 1 * 
+;   bload   0 0 0 0  0 0 * * 
+;   bverify 0 0 0 0  0 0 * * 
+;   [auto]boot 0 0 0 0  0 0 * * 
+;    ^ ^ ^ ^  ^ ^ ^ ^ 
+;    ? ? ? ?  ? o o b 
+;        f f n 
+;        h l k 
+; 
+;      "0" bits are required to be clear 
+;      "1" bits are required to be set 
+;      "*" bits are optional parameters 
  
-10$ cmp #'/' ;Subdirectory (partition)?   [901115] 
- bne lenchk ; no 
- pla  ; yes- recall nam1 or nam2 
- tsb dosflags ;  set appropriate '/' flag (.a=1 or 2) 
- dex  ;  decrement length 
- inw index1 ;  increment past "@" 
-   .byte $89 
+dostbl .word $ffff,$ffff  ;default start/end address 
+ .byte doslfn,dosffn,$6f  ;default la/fa/sa 
  
+ .page 
+dospar lda #0   ;DOS Parser 
+ 
+dosprs    ;special error flag entry 
+ ldx #$ff  ;no aux options! 
+ 
+dosprx    ;spec aux error flag entry 
+ pha   ;save error flags 
+ phx 
+ lda #0 
+ sta parsts  ;reset parser status/option words 
+ sta parstx 
+ 
+ ldx #dosspc  ;clear DOS scratch area   [900522] 
+10$ sta xcnt-1,x 
+ dex   ; no filenames, null lengths 
+ bne 10$ 
+ 
+ ldx #dossa-dosofl ;set some defaults from table 
+20$ lda dostbl,x 
+ sta dosofl,x  ; start/end adr = $FFFF, la/fa/sa 
+ dex 
+ bpl 20$ 
+ 
+ ldx _default_drive ;set default device   [900522] 
+ stx dosfa 
+ ldx current_bank ;set current bank 
+ stx dosbnk 
+ 
+ jsr chrgot  ;get next character from command string 
+ bne parse1  ; if eol stick with defaults, else begin parsing 
+ 
+ 
+; Done parsing, check for errors, return if everything okay 
  

@@ -1,0 +1,19 @@
+incor2    ;enter here for optional argument 
+ jsr chrgot  ;end of line? 
+ beq 10$   ;yes, use defaults 
+ jsr chkcom 
+ cmp #','  ;is there really an arg? 
+ bne incord  ;yes, let'er rip 
+ 
+10$ ldy #0   ;set default pos = current pos 
+20$ lda xpos,y 
+ sta vwork,x 
+ inx 
+ iny 
+ cpy #4 
+ bcc 20$ 
+ rts 
+ 
+ .page 
+;incor3    ;enter here for non-optional arg preceded by a comma 
+; jsr chkcom 

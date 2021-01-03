@@ -1,110 +1,51 @@
-zerofc lda #0  ;not needed by NORMAL, but by others 
-zerof1 sta facexp ;number must be zero 
-zeroml sta facsgn ;make sign positive 
-zerrts rts  ;all done 
+chkgrb cpy fretop+1  ;end of strings? 
+ bcc 50$ 
+ bne 10$   ;if not equal 
+ cmp fretop 
+ beq 50$ 
+ bcc 50$ 
+ 
+10$ bit highds  ;check flag 
+ bmi 20$   ;if empty string found 
+ lda #2   ;skip pointers past 
+ jsr movtop  ;move top pointer 
+ 
+20$ lda #2   ;skip pointers past 
+ jsr movpnt  ;move pointers 
+ ldy #1 
+ jsr indgrb  ;garbage? 
+ cmp #$ff 
+ beq 40$   ;yes 
+ 
+30$ jsr indgrb  ;to link bytes 
+ sta index1,y 
+ dey 
+ bpl 30$   ;if two bytes not moved 
+40$ rts 
  
  
-fadd2 adc oldov 
- sta facov 
- lda faclo 
- adc arglo 
- sta faclo 
- lda facmo 
- adc argmo 
- sta facmo 
- lda facmoh 
- adc argmoh 
- sta facmoh 
- lda facho 
- adc argho 
- sta facho 
- bra squeez ;go round if signs same 
+50$ ldx temppt  ;ptr to temp. strings 
  
+60$ cpx #tempst  ;any out there? 
+ beq 70$   ;no 
+ jsr slr1  ;setup ptr (tempf2) to temp. string's bkptr. 
+ beq 60$   ; (skip if null string!) 
+ phx 
+ ldx #tempf2 
+ ldy #0   ;.a = string length 
+ jsr sta_far_ram1 ;sta (tempf2),y ;remove backpointer built at garba2 
+ iny 
+ lda #$ff 
+ jsr sta_far_ram1 ;sta (tempf2),y ;and mark as garbage 
+ plx 
+ bra 60$   ;always 
  
-norm2 adc #1  ;decrement shift counter 
- asl facov ;shift all left one bit 
- rol faclo 
- rol facmo 
- rol facmoh 
- rol facho 
+70$ pla   ;throw away return address 
+ pla 
+ lda frespc  ;fix fretop and frespc 
+ ldy frespc+1 
+ sta fretop 
+ sty fretop+1 
+ rts 
  
-norm1 bpl norm2 ;if msb=0 shift again 
- sec 
- sbc facexp 
- bcs zerofc 
- eor #$ff 
- adc #1  ;complement 
- sta facexp 
- 
-squeez bcc rndrts ;bits to shift? 
-rndshf inc facexp 
- beq overr 
- ror facho 
- ror facmoh 
- ror facmo 
- ror faclo 
- ror facov 
-rndrts rts  ;all done adding 
- 
- 
-negfac lda facsgn 
- eor #$ff ;complement FAC entirely 
- sta facsgn 
- 
-negfch lda facho 
- eor #$ff ;complement just the number 
- sta facho 
- lda facmoh 
- eor #$ff 
- sta facmoh 
- lda facmo 
- eor #$ff 
- sta facmo 
- lda faclo 
- eor #$ff 
- sta faclo 
- lda facov 
- eor #$ff 
- sta facov 
- inc facov 
- bne incfrt 
- 
-incfac inc faclo 
- bne incfrt 
- inc facmo 
- bne incfrt ;if no carry, return 
- inc facmoh 
- bne incfrt 
- inc facho ;carry complement 
-incfrt rts 
- 
- 
-; SHIFTR shifts (x+1:x+3) (-a) bits right.  Shifts bits to start with 
-; if possible. 
- 
-mulshf ldx #resho-1 ;entry point for multiplier 
-shftr2 ldy 4,x  ;shift bits first 
- sty facov 
- ldy 3,x 
- sty 4,x 
- ldy 2,x  ;get mo 
- sty 3,x  ;store lo 
- ldy 1,x  ;get ho 
- sty 2,x  ;store mo 
- ldy bits 
- sty 1,x  ;store ho 
- 
-shiftr adc #8 
- bmi shftr2 
- beq shftr2 
- sbc #8  ;c can be either 1,0 and it works! 
- tay 
- lda facov 
- bcs shftrt ;equiv to beq here 
- 
-shftr3 asl 1,x 
- bcc 10$ 
- inc 1,x 
-10$ ror 1,x 
- ror 1,x  ;yes, two of them 
- 
+ .page 

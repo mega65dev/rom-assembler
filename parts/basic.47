@@ -1,13 +1,58 @@
-un_quote  ;txtptr points to a '"'. look for closing '"', or EOL 
- ldy #0 
-10$ inw txtptr 
+find_bend  ;... subroutine to find end of current b-block 
+ jsr chrget 
+ bne 20$ 
+ 
+; End of statement.. set up next 
+ 
+10$ cmp #':' ;is this EOL? 
+ beq find_bend ;no, keep looking 
+ 
+15$ bbr7 runmod,99$ ;EOL: branch if direct mode, 'block terminator not found' error 
+ 
+ ldy #2 
+ jsr indtxt ;end of text? 
+ beq 99$  ;yes, msb of next stmt pointer = 0. error 
+ 
+ iny 
  jsr indtxt 
- beq 30$  ;EOL, get out here with .z set and a '00' in .a 
- cmp #'"' 
- bne 10$  ;keep looking until quote 
- jmp chrget ;got closing quote, get byte after quote, set flags 
+ sta curlin ;set up next line of text 
+ iny 
+ jsr indtxt 
+ sta curlin+1 
+ tya 
+ clc 
+ adc txtptr 
+ sta txtptr 
+ bcc find_bend 
+ inc txtptr+1 
+ bra find_bend ;always 
  
-30$ rts 
+20$ cmp #'"' 
+ bne 30$ 
+ jsr un_quote ;look for terminating quote, or EOL 
+ beq 10$  ;EOL or ':' after closing quote 
+ bne find_bend ;..else normal char, keep looking 
  
- .page 
+30$ cmp #rem_token ;REM? 
+ bne 35$  ; no 
+ jsr rem  ; yes, trash this line 
+ bra 15$  ;      and go test for end of text 
+ 
+35$ cmp #esc_command_token ;is this a BEND? 
+ bne find_bend ;can't be, has to be an escape 
+ 
+ jsr chrget ;skip over esc token 
+ cmp #bend_token 
+ beq 40$  ;this is what we came for, bye! 
+ 
+ cmp #begin_token ;not a BEND. is it a BEGIN? 
+ bne find_bend ;it's just a normal, stick-in-the-mud char. keep looking. 
+ 
+ jsr find_bend ;oh-oh, recursion. Dr. Ja-Ja warned me about this. 
+ bra find_bend 
+ 
+40$ rts 
+ 
+99$ ldx #err_no_bend 
+ bra error 
  

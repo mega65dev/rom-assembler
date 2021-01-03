@@ -1,73 +1,332 @@
-gonprc pla   ;get rid of rts addr. 
- pla 
- bra negprc  ;do negation 
+fast 
+ bne snerr  ;no args      [910410] 
+; jsr put_io_in_map 
+ lda #%01000000 
+ tsb vic+49  ;set FAST (4MHz?) mode 
+ rts 
+ 
+ 
+ 
+;*********************************************************************** 
+; 
+;    SLOW - put the system in SLOW (1 MHz) mode. 
+; 
+;*********************************************************************** 
+ 
+slow 
+ bne snerr  ;no args      [910410] 
+; jsr put_io_in_map 
+ lda #%01000000 
+ trb vic+49 
+ rts 
  
 ;.end 
  .page 
- .subttl Variable Assignment 
+ .subttl Check Value Types 
  
-is_variable 
- jsr ptrget  ;parse variable name, put name in varnam 
+; These routines check for certain VALTYP.   (c) is not preserved. 
  
-isvret sta facmo  ;save pointer to variable 
- sty facmo+1 
- ldx varnam 
- ldy varnam+1 
- lda valtyp 
- beq is_numeric  ;branch if numeric 
  
+ 
+frmnum jsr frmevl 
+ 
+chknum clc 
+   .byte $89 
+ 
+chkstr sec 
+ 
+chkval 
+; bbs7 valtyp,docstr ;cannot do this- return status +/-/= needed! 
+ bit valtyp 
+ bmi docstr 
+ bcs chkerr 
+chkok rts 
+ 
+docstr bcs chkok 
+ 
+chkerr ldx #errtm 
+   .byte $2c 
+ 
+sterr ldx #errst 
+ bra error 
+ 
+;.end 
+ .page 
+ .subttl Formula Evaluator 
+ 
+; Formula Evaluator Routine 
+; 
+; The formula evaluator starts with (txtptr) pointing to the first character 
+; in the formula.  At the end (txtptr) points to the terminator. 
+; The result is left in the FAC.  On return (a) does not reflect the terminator. 
+; 
+; The formula evaluator uses the operator (optab) to determine precedence and 
+; dispatch addresses for each operator. 
+; A temporary result on the stack has the following format: 
+; 
+;     * The address of the operator routine. 
+;     * The floating point temporary result. 
+;     * The precedence of the operator. 
+ 
+ 
+frmevl dew txtptr  ;txtptr points to 1st char. in formula 
+ ldx #0   ;dummy precedence = 0 
+   .byte $89 
+ 
+lpoper pha   ;save precedence 
+ phx 
+ tsx   ;confirm enough system stack available (recursive calls) 
+ cpx #<sysstk+44  ;bottom of stack + room for error handling 
+ bcc sterr  ; formula too complex 
+ jsr eval 
  lda #0 
- sta facov 
- cpx #'T'  ;TI$ is a special case. look for it 
- bne isvds  ; no- go test for DS$ 
- cpy #'I'+$80  ;shifted I? 
- bne ds_rts  ; no- and it's not DS$ either 
+ sta opmask 
  
-; Variable name is TI$.  To see if this is 'the' TI$ and not an 
-; array TI$(), test to see if it has a pointer to the zero in "ROM". 
-; If it is an array item, its pointer will be to a real value, or 
-; a real zero.  If it isn't an array item, its pointer will point 
-; to a dummy zero in "ROM". 
- 
- lda facmo+1 
- cmp #>zero 
- bne ds_rts  ;not TI$, not DS$ 
- lda facmo 
-  cmp #<zero 
- bne ds_rts 
- bra Get_TI_String ;the one and only TI$ 
+tstop jsr chrgot  ;last char 
+loprel sec   ;prepare to subtract 
+ sbc #greater_token ;is current character a relation? 
+ bcc endrel  ;no, relations all through 
+ cmp #less_token-greater_token+1 
+ bcs endrel  ;really relational?  no, just big 
+ cmp #1   ;reset carry for zero only 
+ rol a   ;0 to 1, 1 to 2, 2 to 4 
+ eor #1 
+ eor opmask  ;bring in the old bits 
+ cmp opmask  ;make sure that the new mask is bigger 
+ bcc snerr  ;syntax error, because two of the same 
+ sta opmask  ;save mask 
+ jsr chrget 
+ bra loprel  ;get the next candidate 
  
  .page 
-isvds cpx #'D'  ;is this DS$? 
- bne ds_rts  ; no 
- cpy #'S'+$80  ;shifted S? 
- bne ds_rts  ; no 
+endrel ldx opmask  ;were there any? 
+ bne finrel  ;yes, handle as special op 
+ bcs qop   ;not an operator 
+ adc #greater_token-plus_token 
+ bcc qop   ;not an operator 
+ adc valtyp  ;(c)=1 
+ beq cat   ;only if (a)=0 and VALTYP=$FF (a string) 
  
- jsr Check_DS  ; yes- check DS$ allocation, 
-    ;  and get it if not in memory 
- ldy #$ff 
-10$ iny   ;copy DS$ to a temp. 
- lda #dsdesc+1  ; must first determine how big it is 
- jsr lda_far_ram1 ; lda (dsdesc+1),y 
- bne 10$   ; loop until terminating null found 
+ adc #$ff  ;get back original (a) 
+ sta index1 
+ asl a   ;multiply by two 
+ adc index1  ;by three 
+ tay   ;set up for later 
  
- tya   ; length of string required 
- jsr strini  ; get temp. string space & descriptor 
+qprec pla   ;get previous precedence 
+ cmp optab,y  ;is old precedence greater or equal? 
+ bcs qchnum  ;yes, go operate 
+ jsr chknum  ;can't be string here 
+ 
+doprec pha   ;save old precedence 
+ 
+negprc jsr dopre1  ;save a return for op 
+ pla   ;pull off previous precedence 
+ ldy opptr  ;get pointer to op 
+ bpl qprec1  ;that's a real operator 
+ tax   ;done? 
+ beq qopgo  ;done! 
+ bra pulstk 
+ 
+ .page 
+finrel lsr valtyp  ;get value type into (c) 
+ txa 
+ rol a   ;put VALTYP into low order bit of mask 
+ dew txtptr  ;decrement text pointer 
+ ldy #ptdorl-optab ;make (y) point at operator entry 
+ sta opmask  ;save the operation mask 
+ bra qprec  ;branch always 
+ 
+ 
+qprec1    ;note b7(VALTYP)=0 so CHKNUM call is ok 
+ cmp optab,y  ;last precedence is greater? 
+ bcs pulstk  ;yes, go operate 
+ bcc doprec  ;no, save argument and get other operand 
+ 
+ 
+dopre1 lda optab+2,y 
+ pha   ;disp addr goes on stack 
+ lda optab+1,y 
+ pha 
+ jsr pushf1  ;save FAC on stack unpacked, precedence in (x) 
+ lda opmask  ;(a) may be mask for rel 
+ bra lpoper 
+ 
+ .page 
+pushf1    ;save FAC on stack unpacked 
+ pla   ;first grab return address off stack 
+ sta index1 
+ pla 
+ sta index1+1 
+ inw index1 
+ 
+ ldx optab,y  ;precedence 
+ ldy facsgn 
+ phy 
+ jsr round  ;put rounded FAC on stack 
+ lda faclo 
+ pha 
+ lda facmo 
+ pha 
+ lda facmoh 
+ pha 
+ lda facho 
+ pha 
+ lda facexp 
+ pha 
+ jmp (index1)  ;return 
+ 
+ 
+pullf1    ;retrieve FAC from stack unpacked  [910402] 
+ pla   ;first grab return address off stack 
+ sta index1 
+ pla 
+ sta index1+1 
+ inw index1 
+ 
+ lda #0   ;it's been rounded 
+ sta facov 
+ pla 
+ sta facexp 
+ pla 
+ sta facho 
+ pla 
+ sta facmoh 
+ pla 
+ sta facmo 
+ pla 
+ sta faclo 
+ pla 
+ sta facsgn 
+ jmp (index1)  ;return 
+ 
+ .page 
+qop ldy #255 
+ pla   ;get high precedence of last op 
+qopgo beq qoprts  ;done! 
+ 
+qchnum cmp #100  ;relational operator? 
+ beq unpstk  ;yes, don't check operand 
+ jsr chknum  ;must be number 
+ 
+unpstk sty opptr  ;save operator's pointer for next time 
+pulstk pla   ;get mask for rel op if it is one 
+ lsr a   ;setup .c for dorel's chkval 
+ sta domask  ;save for "docmp" 
+ pla   ;unpack stack into arg 
+ sta argexp 
+ pla 
+ sta argho 
+ pla 
+ sta argmoh 
+ pla 
+ sta argmo 
+ pla 
+ sta arglo 
+ pla 
+ sta argsgn 
+ eor facsgn  ;get probable result sign 
+ sta arisgn  ;sign used by add, sub, mul, div 
+ 
+qoprts lda facexp  ;get it and set codes 
+ rts   ;return 
+ .page 
+eval jmp (ieval) 
+ 
+neval lda #0   ;assume numeric 
+ sta valtyp 
+ 
+eval0 jsr chrget  ;get a character 
+ bcs eval2 
+eval1 ldx #0   ;flag 'bank 0' (text bank) 
+ bra fin   ;it is a number 
+ 
+eval2 jsr isletc  ;variable name? 
+ bcs is_variable  ;yes. 
+ cmp #pi   ;pi? 
+ bne qdot 
+ lda #<pival 
+ ldy #>pival 
+ jsr movfm  ;put value in for p1. 
+ jmp chrget 
+ 
+ 
+qdot cmp #'.'  ;constant? 
+ beq eval1 
+ cmp #minus_token ;negation? 
+ beq domin  ;yes. 
+ cmp #plus_token 
+ beq eval0 
+ cmp #'"'  ;string? 
+ bne eval3 
+ 
+strtxt lda txtptr 
+ ldy txtptr+1 
+ adc #0   ;c=1 
+ bcc strtx2 
+ iny 
+strtx2 jsr strlit  ;process string 
+ 
+st2txt ldx strng2 
+ ldy strng2+1 
+ stx txtptr 
+ sty txtptr+1 
+ rts 
+ 
+ .page 
+eval3 cmp #not_token  ;not? 
+ bne eval4 
+ ldy #24 
+ bne gonprc  ;branch always 
+ 
+ 
+notop jsr ayint  ;integerize 
+ lda faclo  ;get argument 
+ eor #$ff 
  tay 
- beq 30$   ; (don't bother copying if length is 0) 
+ lda facmo 
+ eor #$ff 
  
- phx 
+givayf jsr stoint  ;integer to float routine 
+ bra floats 
  
- ldx #dsctmp+1  ;???? was ldx #frespc 
-20$ lda #dsdesc+1  ;copy DS$ into temp 
- dey 
- jsr lda_far_ram1 ; lda (dsdesc+1),y 
- jsr sta_far_ram1 ; sta (dsctmp+1),y 
- tya 
- bne 20$ 
- plx 
- lda dsdesc  ;a=length     [901014] FAB 
- jsr mvdone  ;???? (does nothing on C128 - bug or oversight?) 
  
-30$ bra putnew 
+eval4 cmp #fn_token   ;user defined function? 
+ beq fndoer   ; yes 
+ cmp #first_function_token ;function name? 
+ bcs isfun   ; yes 
+     ; (functions are the highest numbered 
+     ; tokens so no need to check further) 
+ .page 
+parchk jsr chkopn  ;only thing left is formula in parens 
+ jsr frmevl  ;a formula in parens 
+ 
+chkcls lda #')'  ;close paren? 
+   .byte $2c 
+ 
+chkopn lda #'('  ;open paren? 
+   .byte $2c 
+ 
+chkcom lda #','  ;comma? 
+ 
+ 
+; SYNCHR looks at the current character to make sure it is the specific 
+; thing loaded into (a) just before the call to SYNCHR.  If not, it calls 
+; the "syntax error" routine.  Otherwise it gobbles the next char and returns. 
+; 
+; (a)=new char and TXTPTR is advanced by CHRGET. 
+ 
+ 
+synchr ldy #0 
+ sta syntmp 
+ jsr indtxt 
+ cmp syntmp 
+ bne snerr 
+ jmp chrget  ;ok 
+ 
+ 
+ 
+domin 
+10$ =negtab-optab  ;negoff 
+ ldy #10$  ;precedence below '-' 
  

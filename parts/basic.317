@@ -1,0 +1,127 @@
+basic_nmi   ;     removed [910826] 
+; lda nmi_wrap_flag ;filter out wrapped NMI calls   [910523] audio 
+; beq 1$   ; it's ok 
+; rts   ; exit- we're already handling one interrupt 
+; 
+;1$ inc nmi_wrap_flag ;shut the door to NMI 
+; 
+;basic_nmi_end 
+; dec nmi_wrap_flag ;open the door to NMI 
+ rts 
+ 
+ .ifgt *-$c000 
+ .messg ***ROM OVERFLOW: $C000 
+ .endif 
+;.end 
+ .page 
+ .subttl C65 BASIC Jump Table 
+ 
+ * = $7f00 
+ 
+ 
+; Format Conversions     [6] 
+ 
+ bra ayint ;convert floating point to integer 
+ bra givayf ;convert integer to floating point 
+ bra fout ;convert floating point to PETSCII string 
+ bra val_1 ;convert PETSCII string to floating point 
+ bra getadr ;convert floating point to an address 
+ bra floatc ;convert address to floating point 
+ 
+; Math Functions     [24] 
+ 
+ bra fsub ;MEM - FACC 
+ bra fsubt ;ARG - FACC 
+ bra fadd ;MEM + FACC 
+ bra faddt_c65 ;ARG - FACC      [910402] 
+ bra fmult ;MEM * FACC 
+ bra fmultt_c65 ;ARG * FACC      [910402] 
+ bra fdiv ;MEM / FACC 
+ bra fdivt_c65 ;ARG / FACC      [910402] 
+ bra log  ;compute natural log of FACC 
+ bra int  ;perform BASIC INT() on FACC 
+ bra sqr  ;compute square root of FACC 
+ bra negop ;negate FACC 
+ bra fpwr ;raise ARG to the MEM power 
+ bra fpwrt ;raise ARG to the FACC power 
+ bra exp  ;compute EXP of FACC 
+ bra cos  ;compute COS of FACC 
+ bra sin  ;compute SIN of FACC 
+ bra tan  ;compute TAN of FACC 
+ bra atn  ;compute ATN of FACC 
+ bra round ;round FACC 
+ bra abs  ;absolute value of FACC 
+ bra sign ;test sign of FACC 
+ bra fcomp ;compare FACC with MEM 
+ bra rnd_0 ;generate random floating point number 
+ 
+; Movement      [22] 
+ 
+ bra conupk ;move RAM MEM to ARG 
+ bra romupk ;move ROM MEM to ARG 
+ bra movfrm ;move RAM MEM to FACC 
+ bra movfm ;move ROM MEM to FACC 
+ bra movmf ;move FACC to MEM 
+ bra movfa ;move ARG to FACC 
+ bra movaf ;move FACC to ARG 
+ 
+; bra optab ;????not executable 
+; bra drawln 
+; bra gplot 
+; bra cirsub 
+ bra run 
+ bra runc 
+ bra clearc ;       [910410] 
+ bra new 
+ bra link_program 
+ bra crunch 
+ bra FindLine 
+ bra newstt 
+ bra eval 
+ bra frmevl 
+ bra run_a_program 
+ bra setexc 
+ bra linget 
+ bra garba2 
+ bra execute_a_line 
+ 
+; Temporaries for C65 development (???? used by graphics) [12] 
+ 
+ bra chrget 
+ bra chrgot 
+ bra chkcom 
+ bra frmnum 
+ bra getadr 
+ bra getnum 
+ bra getbyt 
+ bra plsv 
+ 
+ bra lda_far_ram0  ;lda (.x),y from BASIC text bank [910716] 
+ bra lda_far_ram1  ;lda (.x),y from BASIC variable bank [910716] 
+ bra sta_far_ram0  ;sta (.x),y to   BASIC text bank [910716] 
+ bra sta_far_ram1  ;sta (.x),y to   BASIC variable bank [910716] 
+ 
+ .page 
+; Graphic Kernel Call. (Temporary for C65 development ????) 
+; 
+;  syntax:  GRAPHIC command# [,args] 
+; 
+; Basically this is a modified C64-type SYS command, minus the address. 
+; In the final C65 system, this will represent the ML interface, not the 
+; BASIC 10.0 interface which is implemented here in the development system. 
+ 
+ 
+graphic 
+ cmp #clr_token  ;GRAPHIC CLR (graphic system initialize) 
+ bne 10$   ; no 
+ jsr chrget  ; yes advance past token 
+ jmp ($8000)  ;  go initialize graphic kernel 
+ 
+10$ 
+; tax 
+; bmi snerr  ;Syntax error if any other secondary token 
+; 
+; 
+ jmp (graphic_vector) ;Else, call the Graphics Kernel's Parser... 
+; 
+; 

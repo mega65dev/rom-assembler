@@ -1,28 +1,40 @@
-play_command 
- cmp #'M'  ;measure? 
- beq 10$ 
+play_note 
+ sec 
+ sbc #'A' 
+ tax 
+ lda scalen,x  ;note #0-11 
+ tax 
+ lda #6 
+ sec 
+ sbc octave 
+ tay 
+ txa 
+ clc 
+ adc sharp 
+ bpl 10$   ;added sharp or nat 
+ lda #11   ;underflow 
+ iny   ;bump octave down 
+10$ cmp #12   ;overflow? 
+ bcc 20$   ;no... 
+ lda #0 
+ dey   ;bump octave up 
+20$ tax 
+ lda scalel,x 
+ sta pitch 
  
- lda rbits,x  ;all others, set flag for next number 
- sta flag 
- rts 
+ bit _pal_ntsc  ;determine if PAL or NTSC system 
+ bmi 25$   ;...branch if PAL 
+ lda scaleh,x  ;continue as before patch 
+ bra 30$ 
  
-; Wait for msb of all 3 voice counters to underflow 
+25$ lda scalelp,x  ;load from PAL tables 
+ sta pitch 
+ lda scalehp,x 
  
-;10$ ldy #5 
-;20$ lda voices,y 
-; bpl 20$ 
-; dey 
-; dey 
-; bpl 20$ 
-; rts 
+30$ dey 
+ bmi play_note_1  ;go play note 
+ lsr a 
+ ror pitch 
+ bra 30$ 
  
-10$ ldy #5   ;      [910626] 
-20$ ldx times2,y 
-30$ bit voices+1,x  ; wait for voice to be inactive (IRQ) 
- bpl 30$ 
- dey   ; next voice 
- bpl 20$   ; until done 6 voices 
- rts 
- 
- 
- 
+ .page 

@@ -1,23 +1,24 @@
-lsloop lda _pky_buffer,y ;print key definition 
- iny 
- pha   ;save character 
- phx   ;save position in output string 
+Key_List 
+ ldx #0   ;display all key definitions 
+ ldy #0 
  
- ldx #4   ;check for special (non-printable) characters 
-50$ cmp keychr-1,x 
- beq list_special ; yes, display it as 'CHR$(...)' 
- dex 
- bne 50$ 
+lstky1 inx   ;get key number = 1-16 
+ lda _pky_lengths-1,x ;get key size 
+ beq lstest  ;skip if key not defined 
+ sta keysiz  ;save size 
+ stx z_p_temp_1  ;save key number 
  
- plx   ;restore position 
- cpx #8 
- bcc 60$   ;1st time thru- display leading quote 
- bne 70$   ;previous was a character- no additions needed 
- lda #'+'  ;add since previous was quote or return 
+ phy 
+ ldx #3 
+20$ lda preamb,x  ;print key preamble: 
  jsr _bsout 
-60$ lda #'"' 
- jsr _bsout  ;add leading quote 
-70$ pla   ;restore character 
- jsr _bsout  ;display it 
- ldx #9   ;mark normal character 
+ dex   ; 'KEY ' 
+ bpl 20$ 
+ ldx z_p_temp_1  ; key number 
+ lda #0 
+ jsr linprt 
+ lda #',' 
+ jsr _bsout  ; comma 
  
+ ply 
+ ldx #7   ;(length of 'keydat' string) 

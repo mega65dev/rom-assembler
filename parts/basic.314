@@ -1,0 +1,71 @@
+edit_load_done 
+ lda #0   ;EOF: terminate memory with a pair of nulls 
+ tay 
+ jsr sta_far_in1 
+ iny 
+ jsr sta_far_in1 
+ inw index 
+ inw index 
+ ldx index  ;set top 
+ ldy index+1 
+ stx text_top 
+ sty text_top+1 
+ bra link_program ;relink & RTS 
+ 
+ .page 
+edit_save 
+ lda #$e6  ;parse:  filename [,U#] [,D#] 
+ jsr dosprs  ; (like dopen:      0 0 0 *  * 0 0 1 ) 
+ jsr chk1  ;check parameters 
+ jsr find_la  ;find an available LA 
+ jsr find_sa  ;find an available SA 
+ ldy #fsavseq 
+ ldx #8 
+ jsr open_file  ;open the file 
+ bcs list_err  ; exit if error 
+ ldx dosla 
+ jsr _chkout  ;get output channel 
+ bcs 30$   ; error 
+ 
+ lda txttab  ;save address 
+ ldx txttab+1 
+ sta index 
+ stx index+1 
+ 
+10$ jsr _stop  ;check stop key 
+ beq 30$   ; exit if down 
+ jsr _readst  ;check channel status 
+ bne 30$   ; exit if eof or error???? 
+ 
+ ldy #3   ;save a line, starting past links & line# 
+20$ iny   ;bump buffer pointer 
+; cpy #buflen  ;check buffer (160 max. input buffer size to edit) 
+; beq ??$   ; split long lines into two???? 
+ jsr indin1 
+ tax   ;save character for eol check 
+ bne 21$ 
+ lda #cr   ; eol: substitute CR ???? allow some other terminator 
+21$ jsr _bsout  ;write file data 
+ txa 
+ bne 20$   ;loop until eol 
+ 
+ iny   ;advance text index to start of next line 
+ tya 
+ clc 
+ adc index 
+ sta index 
+ bcc 26$ 
+ inc index+1 
+ 
+26$ ldy #0   ;check for EOF: a pair of null links 
+ jsr indin1 
+ bne 10$ 
+ iny 
+ jsr indin1 
+ bne 10$   ; loop until end of text 
+ 
+30$ bra list_exit  ;release channel, close file, exit 
+ 
+;.end 
+ .page 
+ .subttl  ETC. 

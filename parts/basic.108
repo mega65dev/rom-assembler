@@ -1,40 +1,35 @@
-play_note 
- sec 
- sbc #'A' 
- tax 
- lda scalen,x  ;note #0-11 
- tax 
- lda #6 
- sec 
- sbc octave 
- tay 
- txa 
- clc 
- adc sharp 
- bpl 10$   ;added sharp or nat 
- lda #11   ;underflow 
- iny   ;bump octave down 
-10$ cmp #12   ;overflow? 
- bcc 20$   ;no... 
- lda #0 
- dey   ;bump octave up 
-20$ tax 
- lda scalel,x 
- sta pitch 
+play_bad_value 
+ jsr clear_flag 
+ bra fcerr  ;illegal quantity 
  
- bit _pal_ntsc  ;determine if PAL or NTSC system 
- bmi 25$   ;...branch if PAL 
- lda scaleh,x  ;continue as before patch 
- bra 30$ 
+play_dot 
+ sta dnote 
+ rts 
  
-25$ lda scalelp,x  ;load from PAL tables 
- sta pitch 
- lda scalehp,x 
  
-30$ dey 
- bmi play_note_1  ;go play note 
- lsr a 
- ror pitch 
- bra 30$ 
+ 
+set_note_length 
+; ldy #<beats  ;found note (.x), divide beats accordingly 
+; sty ntime 
+; ldy #>beats 
+; sty ntime+1 
+ 
+ bit _pal_ntsc  ;determine if PAL or NTSC system  [910724] 
+ bmi 1$   ;...branch if PAL 
+ ldz #<beats_ntsc ;(whole note 4/4 time = 2 sec) 
+ ldy #>beats_ntsc 
+ bra 2$ 
+1$ ldz #<beats_pal 
+ ldy #>beats_pal 
+2$ stz ntime 
+ sty ntime+1 
+ 
+10$ dex 
+ bmi 20$   ;finished dividing, exit 
+ lsr ntime+1 
+ ror ntime 
+ bra 10$ 
+ 
+20$ rts 
  
  .page 

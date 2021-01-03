@@ -1,32 +1,36 @@
-find_loop 
- ldy #0   ;move to next line (copy link bytes to lowtr) 
- jsr indlow 
- tax 
- iny 
- jsr indlow 
- stx lowtr 
- sta lowtr+1 
+find 
+ rmb7 op   ;FIND flag 
+   .byte $2c 
  
-find_loop_1 
- ldy #1 
- jsr indlow  ;check link 
- bne 10$   ; not null- continue 
- dey 
- jsr indlow 
- beq find_exit  ; null- exit 
+change 
+ smb7 op   ;CHANGE flag 
+ rmb6 op   ;reset change-all mode 
+ jsr errind  ;report error if not in direct mode 
  
-10$ ldy #2 
- jsr indlow  ;check line number 
- tax 
- iny 
- jsr indlow 
- cmp linnum+1 
- bne 20$ 
- cpx linnum 
- beq 30$   ; line is <= last line requested, continue 
-20$ bcs find_exit  ; line is >  last line requested, exit 
+ jsr chrgot  ;get delimeter 
+ ldx #0   ;evaluate string args 
+ jsr delimit_string ; string1 
+ lda fstr1+2 
+ beq fcerr  ;  error if string1 null 
+ bbr7 op,10$  ;branch if no string2 
+ jsr chrget  ; pick up required 'to' token 
+ cmp #to_token 
+ bne snerr  ;  error if missing 
+ jsr chrget 
+ beq snerr  ;  error if eol 
+ ldx #3 
+ jsr delimit_string ; string2 
  
-30$ ldx #3   ;set initial position - 1 (past link & line#) 
- stx fndpnt 
+10$ jsr chrget  ;line number range given? 
+ beq 20$   ; no, eol 
+ jsr chkcom  ; yes, pick up required comma 
+20$ jsr range  ;set up line number range (lowtr,linnum) 
+ jsr tto   ;save txtptr for restoration when done 
+ rmb7 helper  ;clear 'help' flag for 'p1line' 
+ lda helper 
+ pha 
+ rmb4 helper  ;temporarily disable token highlighting 
+ smb5 helper  ;set   'find' flag for 'p1line' 
+ bra find_loop_1  ;begin 
  
  .page 

@@ -1,52 +1,97 @@
-movspr_normal   ;      [910122] 
- sty xdest+2  ;save second coordinate (y,a) 
- sta xdest+3 
-; ldx #xdest-vwork 
-; jsr scalxy  ;scale the coordinates 
+verify_cmd .byte 'U0>V' ;Verify on/off command 
  
+;.end 
+ .page 
+ .subttl  CHAR 
  
-movspr_position 
- sei   ;      [910123] 
- lda z_p_temp_1  ;get sprite number 
- tax   ;use as an index 
- asl a 
- tay   ;get sprite-number * 2 as another index 
+;***************************************************************** 
+;* CHAR   draw a character string 
+;* 
+;*  Syntax : CHAR column, row, height, width, direction, "string" [,charsetadr [,bank]] 
+;* 
+;* parm1  = column# 
+;* parm2  = row lo 
+;* parm3  = row hi 
+;* parm4  = height 
+;* parm5  = width 
+;* parm6  = direction 
+;* parm7  = len of string 
+;* parm8  = lo addr of string 
+;* parm9  = hi addr of string 
+;* parm10 = lo addr of character set $29800 default 
+;* parm11 = hi addr of character set 
+;* parm12 = bank of character set   [910912] 
+;**************************************************************** 
  
- bbr7 op,10$ 
- rts   ;>>>exit here if movspr_to call   [910808] 
+c65.char 
+ jsr CheckGraphicMode 
+ jsr getbyt  ; get column 
+ stx GKI__parm1 
  
-10$ lda xdest+2  ;get y-coordinate 
- asl numcnt  ;test if relative 
- bcc 80$   ;skip if absolute 
- clc 
- bpl 75$   ;skip if normal coordinates 
- eor #$ff 
- sec   ;invert to subtract if angular 
-75$ adc vic+1,y  ;add to current sprite y-value  ???vic_save 
+ jsr comsad  ; get row 
+ sty GKI__parm2 
+ sta GKI__parm3 
  
-80$ sta vic+1,y  ;save new sprite y-position  ???vic_save 
- lda xdest  ;get low byte of x-coordinate 
- asl numcnt  ;test if relative 
- bpl 95$   ;skip if absolute 
- clc 
- adc vic,y  ;add current sprite x-position  ???vic_save 
- sta vic,y  ;save sprite x-position   ???vic_save 
- bcs 90$   ;skip if carry 
- inc xdest+1  ;invert lsb 
+ jsr combyt  ; get height 
+ stx GKI__parm4 
  
-90$ lda vic+16  ;get x-position msb bits  ???vic_save 
- bra 98$   ;test if need to invert msb bit 
+ jsr combyt  ; get width 
+ stx GKI__parm5 
  
-95$ sta vic,y  ;save new sprite x-position  ???vic_save 
- lda vic+16  ;     ???vic_save 
- ora sbits,x  ;set x-position msb bit 
+ jsr combyt  ; get direction 
+ stx GKI__parm6 
  
-98$ lsr xdest+1  ;match to lsb of x-coordinate high byte 
- bcs 100$  ;skip if should be set 
- eor sbits,x  ;reset bit 
+ jsr chkcom 
+ jsr frmevl  ;evaluate the string 
+ jsr chkstr  ; type mismatch error if not string 
+ ldy #0 
+ jsr indfmo  ; pointer to string descriptor is left in the fac by frmevl 
+ sta GKI__parm7  ; length  ???? check for null string ???? 
+ pha 
+ iny 
+ jsr indfmo 
+ sta GKI__parm8  ; adrlo 
+ iny 
+ jsr indfmo 
+ sta GKI__parm9  ; adrhi 
+ jsr frefac  ;       [910917] 
+ pla 
+ jsr getspa 
  
-100$ sta vic+16  ;save position msb bits   ???vic_save 
-; cli 
-;110$ rts   ; mouse or movspr_to 
+ jsr optwrd  ;get charset address (????bank) 
+ bcs 10$   ; given 
+ ldy #<$9800  ; not given- use ROM as default   [910207] FAB 
+ lda #>$9800  ;  ???? uc/lc or graphic set ???? 
+10$ sty GKI__parm10  ; lo 
+ sta GKI__parm11  ; hi 
+ ldx #2   ; default to ROM bank 2    [910912] FAB 
+ jsr optbyt 
+ stx GKI__parm12 
+ 
+ lda GKI__parm7  ;???? check for null string ???? 
+ beq 40$ 
+ jmp ($802c)  ;bra kg65.char 
+ 
+40$ rts 
  
  .page 
+ .subttl  PAINT 
+ 
+;***************************************************************** 
+;* PAINT   fill a graphic area with color 
+;* 
+;*  Syntax : PAINT x, y [,mode [,color]] 
+;* 
+;* parm1  = x lo 
+;* parm2  = x lo 
+;* parm3  = y lo 
+;* parm4  = y hi 
+;* parm5  = mode 
+;* parm6  = color 
+;* 
+;* fill color is pen-A 
+; mode 0: fill region defined by color at x,y (default) new modes [910916] FAB 
+; mode 1: fill region using given color as boundary 
+; mode 2: fill connected region 
+;**************************************************************** 
+ 

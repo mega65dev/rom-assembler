@@ -1,43 +1,37 @@
-prcha ldy #0 
-chx txa 
- beq cpef ;branch if no blanks 
- dex 
+cld10    ;<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< entry from dload 
+; jsr put_io_in_map 
+ lda verck 
+ ldx txttab  ;.x and .y have alt... 
+ ldy txttab+1  ;...load address 
  
-oblk lda #' ' ;output a blank 
- bra outc ;always 
+; Any changes to the following code must be duplicated at: 
+;  bload 
+;  save (exit_disk_op) 
  
+load_file 
+ jsr _loadsp  ;load it 
+ bbs0 runmod,cld20 ; skip error checks if autoboot (rts) 
+ phx   ;save end address 
+ phy 
+ php   ; save kernel load status (.c) 
+ pha   ; save kernel error # (.a) 
+ jsr _readst  ; save I/O status byte 
+ sta parsts 
+ jsr print_dos_error ; report error msg if any only in direct mode 
+ pla   ; restore error stuff 
+ plp 
+ bcc 30$   ; branch if no error (rts) 
+ bbs7 runmod,20$  ; branch if run mode (erexit) 
+ cmp #errfnf  ; is it 'file not found' catch-all? 
+ bne 10$   ;  no  (erexit) 
+ sta errnum  ;  yes- save error # for 'er' 
+ ora #$80  ;   but no errdis 
+10$ sec 
+20$ bcs erexit  ; exit if kernel problem 
+30$ ply   ;restore end address 
+ plx 
+ lda verck 
+ beq cld50  ;was load 
  
-cpef cpy hulp ;end of string reached? 
- bcs oblk ;output blank if yes 
- jsr indin1_ram1 ;lda (index),y 
- iny 
- 
-outc jsr cdout ;output character 
- bne chx  ;branch if not ready 
- bra reay 
- 
- 
- 
-conv jsr fout ;convert mfp to decimal 
- 
- ldy #$ff ;build descriptor for fout string 
-10$ iny  ;how big IS it? 
- lda fbuffr,y 
- bne 10$ 
- tya 
- jsr strspa ;jsr getspa,stx dsctmp+1,sty dsctmp+2,sta dsctmp,rts 
- 
- phx 
- ldy #0 
- ldx #dsctmp+1 
-20$ lda fbuffr,y 
- beq 30$ 
- jsr sta_far_ram1 ;sta (dsctmp+1),y 
- iny 
- bne 20$ 
- 
-30$ plx 
- jsr putnew 
- jsr ini  ;init counters and flags 
- jsr fform ;output one formatted number 
+; Finish verify 
  

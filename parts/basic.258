@@ -1,49 +1,61 @@
-c65.setdpat 
- jsr getbyt  ;get pattern type 
- cpx #4+1  ;63+1       [911028] 
-10$ bcs fcerr  ; if out of range 
- stx GKI__parm1 
- txa 
- bne 20$   ;if parm1 is 0 then get extra stuff 
+negate_step 
+ lda sound_step_lo,y 
+ eor #$ff 
+ clc 
+ adc #1 
+ sta sound_step_lo,y 
+ lda sound_step_hi,y 
+ eor #$ff 
+ adc #0 
+ sta sound_step_hi,y 
+ rts 
  
- jsr combyt  ;get number of bytes 
- cpx #5 
- bcs 10$   ; too many bytes 
- stx GKI__parm2 
- stx z_p_temp_1  ; save for count 
- 
- jsr combyt  ;get byte 1 
- stx GKI__parm3 
- dec z_p_temp_1 
- beq 20$ 
- bmi fcerr  ; too few bytes 
- 
- jsr combyt  ;get byte 2 
- stx GKI__parm4 
- dec z_p_temp_1 
- beq 20$ 
- 
- jsr combyt  ;get byte 3 
- stx GKI__parm5 
- dec z_p_temp_1 
- beq 20$ 
- 
- jsr combyt  ;get byte 4 
- stx GKI__parm6 
- 
-20$ jmp ($8016)  ;bra setdpat 
  
  .page 
-;***************************************************************** 
-;* PALETTE   set palette colors 
+; Here is where BASIC_IRQ exits 
+ 
+basic_irq_end 
+ dec irq_wrap_flag ;open the door to IRQ 
+ cli 
+ rts 
+ 
+ .page 
+; Update sprite position subroutine 
+ 
+sprsub pha   ;save angle phase 
+ clc 
+ lda sprite_data+3,x ;add low bytes 
+ adc sprite_data+7,x 
+ sta sprite_data+7,x 
+ lda sprite_data+4,x ;add high bytes 
+ adc sprite_data+8,x 
+ sta sprite_data+8,x 
+ pla   ;get angle sign 
+ bcc 30$   ;skip if no carry - do not update position 
+ lsr a 
+ lsr a   ;test if positive or negative 
+ lda vic,y  ;    ???vic_save 
+ bcs 10$   ;skip if negative 
+ adc #1   ;increment position 
+ bra 20$ 
+ 
+10$ sbc #1   ;decrement position 
+ cmp #$ff  ;set carry if underflow 
+20$ sta vic,y  ;decrement position  ???vic_save 
+30$ rts 
+ 
+;.end 
+ .page 
+ .subttl  MOUSE 
+ 
+;*********************************************************************** 
+;*   MOUSE  ON  [,[port] [,[sprite] [,[hotspot] [,X/Yposition] ]]] 
+;*   MOUSE  OFF 
+;*    where: port     = (1...3) for joyport 1, 2, or either (both) 
+;*  sprite   = (0...7) sprite pointer 
+;*  hotspot  = x,y offset in sprite, default 0,0 
+;*  position = normal, relative, or angluar coordinates 
 ;* 
-;*  Syntax : PALETTE {screen|COLOR}, color_index, red, green, blue 
-;*           PALETTE RESTORE 
-;* 
-;*           parm1 = screen  0-3     [910711] 
-;*           parm2 = color_index 0-255 
-;*           parm3 = red           0-31 (b0-3 red, b4=fgbg)  [910520] 
-;*           parm4 = green         0-15 
-;*           parm5 = blue          0-15 
-;***************************************************************** 
+;*      (defaults to sprite 0, port 2, last hotspot & position) 
+;*********************************************************************** 
  

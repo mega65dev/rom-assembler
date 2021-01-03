@@ -1,73 +1,39 @@
-scnclr 
- bne c65.screenclear ;have a parameter, go clear graphic screen 
+drwinc php 
+ and #1   ;adjust .y for x or y position 
+ beq 5$   ; 0=x 
+ iny   ; 1=y 
+5$ plp 
+ bmi 10$   ;enter with b7=negative, b6=positive, else zero 
+ bvc 30$ 
  
- lda #$93 
- jmp _bsout  ;no parameter, clear text screen 
-; rts 
+ lda vic,y  ;positive direction 
+ inc a 
+ sta vic,y 
+ bra 20$ 
  
+10$ lda vic,y  ;negative direction 
+ dec a 
+ sta vic,y 
+ cmp #$ff 
  
+20$ bne 30$   ;no wrap 
+ tya 
+ bit #1 
+ bne 30$   ;wrap in y okay 
+ lsr a 
+ tay 
+ lda sbits,y  ; wrap in x- toggle msb 
+ eor vic+16 
+ sta vic+16 
+ tya 
+ asl a 
+ tay 
  
-;***************************************************************** 
-;* SCREEN CLR  clear a graphic screen 
-;* 
-;*  Syntax : SCREEN CLR  color_reg# 
-;* 
-;*           parm1 = color reg#  0-255 
-;***************************************************************** 
- 
-c65.screenclear 
- jsr getbyt  ;get color register # (range 0-255)????? 
-    ;limit to range allowed by current screen def? 
- stx GKI__parm1 
- jsr CheckGraphicMode 
- jmp ($800c)  ;bra screenclear 
- 
- .page 
-;***************************************************************** 
-;* SCREEN SET  specify draw & view screens 
-;* 
-;*  Syntax : SCREEN SET  [DrawScreen] [,ViewScreen] 
-;* 
-;*           parm1 = draw screen # 0-3, 255=don't change    [910711] 
-;*           parm2 = view screen # 0-3, 255=text 
-;***************************************************************** 
- 
-ScreenSet 
- jsr chrget  ;advance past token 
- 
-c65.screen 
-; beq snerr  ;missing args??      [911017] 
- ldx #255  ;       [911028] 
- cmp #',' 
- beq 10$   ; options byte only 
- 
- jsr getbyt  ;get draw screen# in .x 
-; cpx #4   ;       [910711] 
-; bcs 20$   ;  out of range error???? (255=leave alone)  [910930] 
-10$ stx GKI__parm1 
- 
- ldx $1f69  ;current viewscreen     [911017] 
- jsr optbyt  ;eat a comma, get view screen# in .x 
-; cpx #4   ; 
-;20$ bcs fcerr  ;  out of range error???? (255=text)   [910930] 
- stx GKI__parm2 
- 
- jsr ($800e)  ;kg65.screen 
- bcs NoGraphicArea 
+30$ tya   ;restore y to sprite offset 
+ and #$fe 
+ tay 
  rts 
  
  .page 
-;***************************************************************** 
-;* SCREEN DEF  define a graphic screen 
-;* 
-;*  Syntax : SCREEN DEF  screen#, width, height, depth 
-;* 
-;*           parm1 = screen#           0-3    [910711] 
-;*           parm2 = width             0=320, 1=640, 2=1280 
-;*           parm3 = height            0=200, 1=400 
-;*           parm4 = depth             1-8 bitplanes (2-256 colors) 
-;***************************************************************** 
- 
-ScreenDef 
- jsr chrget  ;advance past token 
+; Play music, if in progress 
  

@@ -1,99 +1,46 @@
-paoc15 jsr frmstr  ;do frmevl, frestr. return with len in a, index =~string 
- jsr getspa  ;????fixes old PET bug- load"string",val(chr$(56)) [910917] 
-; ldx index1 
-; ldy index1+1 
- jsr _setnam  ;bank always set at plsv 
-    ;fall into dschk     [900801] 
+autoboot 
+ lda #0   ;Select internal drive 
+ sta fdc 
+10$ bit fdc+2  ; busywait 
+ bmi 10$ 
+ lda fdc+3  ;See if a diskette is present 
+ and #$08 
+ beq 30$   ; exit with no action taken if not 
  
+ lda #$e6  ;set up parameters for DOS parser like BLOAD 
+ ldx #$fc 
+ jsr dosprx  ;let the parser init DOS stuff 
  
+ ldy #$ff 
+20$ iny   ;Copy filename from ROM into buffer 
+ lda autoboot_filename,y 
+ sta savram,y 
+ bne 20$   ; null terminated 
+ sty dosf1l  ; length not counting terminator 
  
-dschk php   ;check if current device >=8, and clear DS if so 
+ lda #%01000001  ;set flag for load indicating autoboot 
+ sta runmod  ;set flag for load not to go to ready 
+ jsr dload_boot  ;skip parser & load it 
+ 
+ lda #0   ; clear autoboot flags 
+ sta runmod 
+ phx   ; save end address 
+ phy 
+ jsr _readst  ;get status report, but check it later 
  pha 
- lda _fa 
- cmp #1 
- bne 10$ 
- lda _default_drive 
- sta _fa 
-10$ cmp #8   ;????     [900807] 
- bcc 20$ 
- sta dosfa  ;also make last DOS device = current device 
- jsr Clear_DS 
-20$ pla 
- plp 
- rts 
+ jsr Suck_DS  ;clear any DOS errors (to kill error LED) 
+ pla   ;now check I/O status 
+ ply 
+ plx 
+ and #$bf  ; EOI is okay 
+ bne 30$   ; outside problems 
+ bcs 30$   ; inside problems 
  
- .page 
-;k_readst 
-; jsr put_io_in_map 
-; jmp _readst 
+ stx text_top  ;success- set end address & run it 
+ sty text_top+1 
+ cli 
+ bra run_a_program 
  
+30$ rts   ;failure- go_ready 
  
- 
-;k_setlfs 
-; jsr put_io_in_map 
-; jmp _setlfs 
- 
- 
- 
-;k_setnam 
-; jsr put_io_in_map 
-; jmp _setnam 
- 
- 
- 
-;k_basin 
-; jsr put_io_in_map 
-; jmp _basin 
- 
- 
-;k_bsout 
-; jsr put_io_in_map 
-; jmp _bsout 
- 
- 
-;k_clrch 
-; jsr put_io_in_map 
-; jmp _clrch 
- 
- 
- 
-;k_close 
-; jsr put_io_in_map 
-; jmp _close 
- 
- 
- 
-;k_clall 
-; jsr put_io_in_map 
-; jmp _clall 
- 
- 
- 
-;k_primm 
-; jsr put_io_in_map 
-; jmp _primm 
- 
- 
-;k_setbank 
-; jsr put_io_in_map 
-; jmp _setbank 
-; rts 
- 
- 
-;k_plot 
-; sta sw_rom_ram0  ;???? 
-; jmp _plot 
- 
- 
-;k_stop 
-; jsr put_io_in_map 
-; jmp _stop 
- 
-;.end 
- .page 
- .subttl  PRINT USING 
-; Print Using - Formatted print routine 
-; 
-; Entered by cmd, print, or print# 
-; Syntax:  PRINT USING"****";a;b;c 
  

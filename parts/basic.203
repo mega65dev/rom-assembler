@@ -1,49 +1,48 @@
-afrm jsr indfrm 
- iny 
- cmp #',' ;comma? 
- bne punt ;no... 
- bit flag ;comma flag on? 
- bmi bout ;yes, do a fill char 
-; sta sw_rom_ram0 ;???? 
- lda pucoma 
- bra out  ;no,...output a comma char 
+sswe jsr shpn ;shift decimal point 
+ jsr uround ;round number 
+ jsr shpn ;shift again if necessary 
+ 
+hup bra chout ;output number 
  
  
-bout lda blfd 
- bra out 
  
+cff ldy uexp ;exponent in no? 
+ beq 20$  ;no... 
+ sta hulp ;delete exponent 
+ sec  ;adjust decimal point 
+ ror etof ;set e-to-f flag 
+ ldy point 
+ lda usgn ;exec nos3 or nos4 
+ bpl 10$  ;depends on sign of exp 
+ jsr nos3 
+ bra 30$ 
  
-punt cmp #'.' ;decimal point? 
- bne afplus 
-; sta sw_rom_ram0 ;???? 
- lda pudot ;yes... 
- bra out 
+10$ jsr nos4 
  
+20$ ldy point ;at start of no? 
+ beq 30$  ;yes... 
+ jsr cho  ;no = 0 ? 
+ beq 40$  ;yes...no round 
  
-afplus cmp #'+' ;plus? 
- beq ispl ;yes... 
- cmp #'-' ;minus? 
- beq ispl1 ;yes... 
- cmp #'^' ;up arrow? 
- bne pndd ;no... 
- lda #'E' 
- jsr cdout 
- ldy uexp 
- jsr cmo  ;first dig of exp zero? 
- bne 10$  ;no... 
- iny 
- jsr cmo  ;second digit? 
- beq 20$  ;yes 
+30$ jsr uround 
+ bra 50$ 
  
-10$ lda #'-' 
- bit usgn 
- bmi 30$ 
+40$ dec vn  ;adjust...no was 0 
+50$ sec 
+ lda vf 
+ sbc vn 
+ bcc errf ;no fit...error 
+ sta swe  ;save difference 
+ ldy posp ;+ or -? 
+ bne ahp  ;yes... 
+ ldy sno  ;get sign 
+ bmi ahp  ;positive... 
+ tay 
+ beq errf ;no room for sign 
+ dey 
+ bne ldvn ;swe<>1 
+ lda nf 
+ ora vn  ;both zero? 
+ bne hup  ;no... 
  
-20$ lda #'+' 
-30$ jsr cdout ;output sign exp 
- ldx uexp 
- lda fbuffr,x 
- jsr cdout ;output first dig exp 
- ldy endfd 
- bra telx 
  

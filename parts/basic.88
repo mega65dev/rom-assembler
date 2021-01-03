@@ -1,121 +1,34 @@
-print_line 
- jsr crdo  ;get a new display line 
- lda fstr1+2  ;length of string to highlight 
- sta find_count 
- ldy #2 
- jsr indlow  ;get ms byte of line number 
- tax 
- iny 
- jsr indlow  ;get ls byte 
- jsr p1line  ;print #, space, and the line of code 
- bbr7 op,find_loop_2 ;Find op? branch if so and continue search 
+find_loop_2 
+ jsr _stop  ;check stop key 
+ beq find_break  ; exit if down 
  
- .page 
-; Change operation 
-; Query the user and replace string1 with string2 if he wants to. 
-; Options are  'Y' (yes),  '*' (do all),  'CR' (quit),  anything else means no. 
- 
-change_line 
- bbs6 op,100$  ;branch if change-all mode set 
- jsr _primm  ;prompt & get response 
-   .byte cr,' CHANGE? ',0 
- jsr response_get 
- cmp #'Y' 
- beq 100$  ; yes, change it 
- cmp #cr 
- beq find_exit  ; cr only, abort entire operation 
- cmp #'*' 
- bne find_loop_2  ; *, change all.  else don't change 
- smb6 op 
- 
-; Replace string1 with string2.  Requires moving text up/down beginning at 
-; LOWTR+FNDPNT+(LEN(string1)-LEN(string2)) through TEXT_TOP and copying 
-; string1 into text beginning at LOWTR+FNDPNT for LEN(string2) characters. 
- 
-100$ lda text_top  ;setup upper address of text to move (index2) 
- sta index2 
- lda text_top+1  ; TEXT_TOP 
- sta index2+1 
- 
- clc   ;setup lower address of text to move (index1) 
- lda fndpnt 
- adc lowtr 
- sta index1  ; LOWTR+FNDPNT 
- lda #0 
- sta argmo  ; count hi 
- adc lowtr+1 
- sta index1+1 
- 
- sec   ;calc number of chars to insert/delete 
- lda fstr1+2  ; LEN(string1)-LEN(string2) 
- sbc fstr2+2 
- beq 20$   ; branch if string1 = string2 (no move) 
- bpl 10$   ; branch if string1 > string2 (delete) 
-    ; else      string1 < string2 (insert) 
- 
- neg a   ;Move memory up to make room for larger string2 
- sta count 
- ldy #0   ; first check for line too long 
- jsr indlow 
- adc count 
- taz 
- iny 
- jsr indlow  ;  (link+#chr)-line_sa must be <256 
- adc #0 
- tay 
- sec 
- tza 
- sbc lowtr 
- tya 
- sbc lowtr+1 
- bne errlen  ;  error, line > 255 characters 
- 
- clc   ; now check for sufficient memory 
- ldy text_top+1 
- lda count 
- adc text_top 
- bcc 1$ 
- iny 
-1$ cpy max_mem_0+1 
- bcc 2$   ; result is less than top-of-memory: ok 
- bne omerr  ;  msb >  top, overflow 
- cmp max_mem_0  ; msb's the same, test lsb's 
- bcs omerr  ;  lsb >= top, overflow 
-2$ sta text_top 
- sty text_top+1  ;set new top of text pointer 
- jsr moveup  ;make room 
- bra 20$   ;go copy string2 into area 
- 
-10$ sta count  ;Move memory down for smaller string2 
- ldy text_top+1 
- lda text_top 
- sec 
- sbc count 
- bcs 11$ 
- dey 
-11$ sta text_top 
- sty text_top+1  ;set new top of text pointer 
- jsr movedown  ;squish out excess space 
- 
-20$ lda fstr2+2  ;Copy string2 into text 
- beq 40$   ; branch if null, nothing to copy 
- sta find_count  ; how many characters to copy 
- ldx #lowtr 
- ldy fndpnt  ; index into text 
- ldz #0   ; index into string2 
-30$ lda (fstr2),z  ;    ind okay- buffer 
- jsr sta_far_ram0 ;do the copy 
- iny 
- inz 
- dec find_count 
- bne 30$ 
- 
-40$ jsr link_program ;relink program 
+ ldx fndpnt  ;duh, where are we? 
  clc 
- lda fndpnt  ;place find position after new text 
- adc fstr2+2 
- dec a 
- sta fndpnt 
- bra find_loop_2  ;and resume searching 
+ txa   ; program: 
+ adc lowtr  ;   txtptr = line start + position in line 
+ sta txtptr 
+ lda #0 
+ adc lowtr+1 
+ sta txtptr+1  ; search string: 
+ ldz #0   ;   at the beginning 
  
- .page 
+40$ jsr chargt  ;get next character from text 
+ beq find_loop  ; eol (no match this line) 
+ inx   ; bump pointer to next character 
+ cmp (fstr1),z  ;character match?  ind okay- buffer 
+ bne 40$   ; no 
+ stx fndpnt  ; yes- save next position 
+ 
+50$ inz   ;bump position in search string 
+ cpz fstr1+2  ;string match? 
+ bcs print_line  ; yes 
+ jsr chargt 
+ beq find_loop  ; no- eol 
+ cmp (fstr1),z  ;    ind okay- buffer 
+ bne find_loop_2  ; no- rewind to beginning of search string 
+ beq 50$   ; maybe- still more chars to compare 
+ 
+ 
+; Print the line of text at LOWTR, highlighting the section of code 
+; beginning at LOWTR+FNDPNT and running for FIND_COUNT characters. 
+ 

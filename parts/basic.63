@@ -1,61 +1,52 @@
-dma    ;params are not longer optional-  [910520] F018A 
- jsr getbyt  ;get command 
-1$ bcc 10$ 
- txa   ;      [910102] 
- and #%00000100  ; 
- bne fcerr  ; (disallow chained DMA lists) 
- stx dma2_cmd 
+dim3 jsr chkcom ;must be a comma 
  
-10$ jsr comwrd  ;get length 
-; bcc 20$ 
- sty dma2_cnt_lo 
- sta dma2_cnt_hi 
- 
-20$ jsr comwrd  ;get source address & bank 
-; bcc 30$ 
- sty dma2_src_lo 
- sta dma2_src_hi 
-30$ jsr combyt 
-; bcc 40$ 
- stx dma2_src_bank 
- 
-40$ jsr comwrd  ;get destination address & bank 
-; bcc 50$ 
- sty dma2_dest_lo 
- sta dma2_dest_hi 
-50$ jsr combyt 
-; bcc 60$ 
- stx dma2_dest_bank 
- 
-60$ jsr optzer  ;get subcmd, default=0    [910520] F018A 
-; bcc 65$ 
- stx dma2_subcmd 
- 
-65$ jsr optzer  ;get mod lo/hi, default=0   [910102] 
-; bcc 70$ 
- stx dma2_mod_lo 
-70$ jsr optzer 
-; bcc 80$ 
- stx dma2_mod_hi 
- 
-80$ ldy #0   ;dma_list (bank 0) 
- ldx #>dma2_cmd 
- lda #<dma2_cmd 
- sty dma_ctlr+2  ;dma_list bank 
- stx dma_ctlr+1  ;dma_list hi 
- sta dma_ctlr  ;dma_list lo & trigger 
-85$ bit dma_ctlr+3  ;check status (in case IRQ enabled)  [910103] 
- bmi 85$   ; busy 
- 
- jsr chrgot  ;eol? 
- beq 90$   ;   yes 
- jsr optbyt  ;   no- continue after getting comma & next cmd byte 
- bra 1$ 
- 
-90$ rts 
+dim tax  ;make .x non-zero (.a must be non-zero to work correctly) 
+ jsr ptrgt1 
+ jsr chrgot ;get last character 
+ bne dim3 
+ rts 
  
 ;.end 
  .page 
- .subttl  TRON  TROFF 
+ .subttl SYS 
+ 
+sys jsr getwrd ;convert arg to integer value 
+ lda linnum ;set up arg's for call to 'long jsr' 
+ sta _pclo 
+ lda linnum+1 
+ sta _pchi 
+ lda current_bank 
+ sta _bank 
+ 
+ jsr optbyt ;(optional) .A reg arg 
+ bcc 10$ 
+ stx _a_reg 
+ 
+10$ jsr optbyt ;(optional) .X reg arg 
+ bcc 20$ 
+ stx _x_reg 
+ 
+20$ jsr optbyt ;(optional) .Y reg arg 
+ bcc 30$ 
+ stx _y_reg 
+ 
+25$ jsr optbyt ;(optional) .Z reg arg 
+ bcc 30$ 
+ stx _z_reg 
+ 
+30$ jsr optbyt ;(optional) .S reg arg 
+ bcc 40$ 
+ stx _s_reg 
+ 
+40$ jmp _jsr_far ;far, far away 
+   ;If returns, Kernel will update _reg's for us 
+ 
+;.end 
+ .page 
+ .subttl DMA 
+ 
+; DMA - Set up for DMA operation (FETCH/STASH/SWAP) 
+; 
+;  Syntax:  DMA  command,length,source(l/h/b),destination(l/h/b)[,subcmd,mod(l/h)] [,...] 
  
  

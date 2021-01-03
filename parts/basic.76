@@ -1,21 +1,13 @@
-hop_1 jsr chrget  ;got a 'go', look for 'to' 
- beq next_line  ;end of line, abort 
- cmp #to_token 
- beq iline_10  ;got it! go to fix number routine 
- bra next_char  ;no 'to', keep looking 
+not_quote 
+ tax   ;end of line? 
+ beq next_line  ;yes... 
+ bpl next_char  ;not a token... 
  
-; Look for 'COLLISION'.  This is an escape command. *c128 fix* ????????? 
+ ldx #8   ;check special token list 
+30$ cmp testwd-1,x 
+ beq iline_10  ;a match... 
+ dex 
+ bne 30$   ;continue until zero 
  
-chk_escape 
- cmp #esc_command_token 
- bne next_char 
- jsr chrget 
- beq hop_1  ;end of line ,abort 
- cmp #collision_token 
- bne next_char 
-40$ jsr chrget  ;got it! skip over first argument 
- beq hop_1  ;end of line, abort 
- cmp #',' 
- bne 40$   ;not there yet 
- 
- 
+ cmp #go_token  ;wasn't in the token list. check for 'go to' 
+ bne chk_escape  ;not 'go', go check for 'collision' *c128 fix* 

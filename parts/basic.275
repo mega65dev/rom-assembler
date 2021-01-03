@@ -1,79 +1,57 @@
-get_sprite_number 
- jsr getbyt 
-; dex        [910221] 
- cpx #8 
- bcs fcerr 
- stx z_p_temp_1 
- rts 
+c65.set 
+ cmp #verify_token ;SET VERIFY <ON | OFF>  new [910429] 
+ beq verify_mode 
+ cmp #def_token  ;SET DEF unit 
+ bne 10$ 
+ jsr getdisknum_1 
+ stx _default_drive 
+ stx dosfa  ;Make last DOS device = current device 
+ bra Clear_DS 
  
-;.end 
+ 
+ 
+10$ jsr chkesc  ;Must be ESCape token 
+ cmp #disk_token  ; ok so far 
+ bne bad_command  ;  unknown command 
+ 
+ 
+ 
+ 
+ jsr getdisknum_1 ;SET DISK # [<,|TO> #] 
+ stx dosfa  ; got current disk unit # 
+ 
+ jsr chrgot  ; check delimiter (comma, 'TO', or eos) 
+ beq Clear_DS  ;  eos- just change DOS' current drive [910417] 
+ cmp #','  ;  not eos, must be comma or 'TO' 
+ beq 20$ 
+ cmp #to_token 
+ bne snerr 
+ 
+20$ jsr getdisknum_1 ; skip delimiter 
+ stx dosds2  ; got new disk unit # 
+ 
+ 
  .page 
- .subttl MOVSPR Command 
+;  Open disk command channel & pass it 'renumber' command 
  
-;**************************************************************** 
-; Move Sprite.  Position sprite and optionally animate it. 
-; 
-;   MOVSPR n, [ p | x#y ]   or   MOVSPR n, p1 TO p2, speed 
-; 
-;  n = Sprite number (0-7) 
-; p = (x,y) coordinate. 
-;  Relative and angular distances  are relative to 
-;  current sprite position and scaled if scaling is on. 
-; x#y = Constant movement at an angle-x with speed-y. 
-;**************************************************************** 
+ jsr dclall  ;Close any open files???? 
  
-movspr lda #0   ;flag 'movspr' initial coord   [910808] 
- sta op   ;(0=movspr, $80=movspr_to, $7f=mouse) 
- jsr get_sprite_number ;get sprite # 
- jsr sprcor  ;get first coordinate (y,a) 
-movspr_1   ;entry to eval destination coordinate  [910808] 
- bit numcnt  ; test coordinate type 
- bvs snerr  ;  syntax error 
- sty xdest  ; save coordinate value 
- sty xdest+2 
- sta xdest+1 
- sta xdest+3 
- 
- jsr sprcor  ;get second coordinate (y,a) 
- bit numcnt  ; test coordinate type & dispatch accordingly 
- bvc movspr_normal ;  normal coordinates 
- bmi movspr_angle ;  angular coordinates 
- 
- bit op   ;  angle#speed, test if allowed 
- bmi snerr  ;   ng- movspr_to call 
- phy   ;   ok- save speed value 
- ldy #xdest-vwork 
- jsr getang  ;get angle of movement 
- ldx z_p_temp_1  ;get sprite number 
- ldy sproff,x  ;get offset to speed data 
- lda #0 
- sta sprite_data,y ;turn off sprite speed 
- iny 
- 
- ldx #3 
-20$ lsr sinval,x 
+ ldx #6-1 
+30$ lda disk_renum_cmd,x ; move command to RAM, setup for open 
+ sta savram,x 
  dex 
- ror sinval,x 
- dex 
- bpl 20$ 
+ bpl 30$ 
+ lda dosds2 
+ ora #32   ;  make new # a talk/listen address 
+ sta savram+6 
+ lda dosds2 
+ ora #64 
+ sta savram+7 
  
-30$ sei 
- inx   ;x=0 
- lda angsgn,x  ;move angle data to speed data 
- iny 
- sta sprite_data,y 
- cpx #4 
- bne 30$ 
+ lda #8   ;  command string length 
+ jsr SendDiskCmd  ;Send command 
+ lda dosds2 
+ sta dosfa  ;Make last DOS device = current device 
+ bra close_out_1  ; common error check & exit path ???? 
  
- lda #0   ;clear speed angle counts 
-40$ iny 
- sta sprite_data,y 
- dex 
- bne 40$ 
- 
- pla   ;restore speed value 
- and #$3f  ; limit range (0-63) ????  [910806] 
- sta sprite_data-10,y  ; start sprite movement 
- cli 
- rts 
  

@@ -1,26 +1,56 @@
-dclear jsr dospar  ;parse the line 
- ldy #finit  ;set code 
- lda #2 
- jsr trans  ;send command 
- jsr print_dos_error ;if any 
- bra dclall 
+dload_boot   ;<<<<<<<<<<<<<<<<<< entry for BOOT'AUTOBOOT.C65' 
+ lda #0 
+ sta dossa  ;set relocate flag 
+ ldy #fopn  ;table offset 
+ lda #4   ;..length 
+ jsr sendp 
  
+ lda text_bank  ;set up banks ???? want text_bank ????  [910620] 
+ ldx #sys_bank  ;fname is in system space, bank0 
+ jsr _setbank 
  
+ bra cld10  ;finish load, using 'LOAD' code. 
  
+ .page 
+; BSAVE 
  
-; COLLECT v<drive#> 
+bsave lda #$66  ;std error flag 
+ ldx #$f8  ;auxiliary error flag (allow bank, start & end address) 
+ jsr dosprx  ;parse options 
+ jsr chk2  ;check required parameters 
  
-collect jsr dospar  ;parse the line 
- jsr chk3  ;check optional parameters 
- jsr _clall  ;close all files 
- ldy #fcoll  ;tabld offset 
- lda #1   ;length 
- bbr4 parsts,10$ 
- inc a   ;include drive 
-10$ jsr trans  ;send command 
- bra print_dos_error ;if any 
+ lda parstx  ;check for starting & ending addresses 
+ and #6 
+ cmp #6 
+ bne snerr  ;..if not present, syntax error 
+ 
+ lda dosofh+1  ;check that ea>sa 
+ cmp dosofl+1 
+ bcc fcerr  ;...error 
+ bne 20$ 
+ lda dosofh 
+ cmp dosofl 
+ bcc fcerr  ;...error 
+ beq fcerr 
+ 
+20$ ldy #fopn  ;table offset 
+ lda #4   ;..length 
+ jsr sendp 
+ 
+ lda dosbnk  ;get requested bank 
+ ldx #sys_bank  ;..and name will be in system bank 
+ jsr _setbank  ;..and go set up bank 
+ 
+ ldx dosofl  ;start addr 
+ ldy dosofl+1 
+ lda #highds  ;..and a pointer to start address 
+ stx highds 
+ sty highds+1 
+ ldx dosofh  ;end addr 
+ ldy dosofh+1 
+ bra savenb 
  
  
  .page 
-; COPY cdddfn=sdsfn 
+; DVERIFY 
  

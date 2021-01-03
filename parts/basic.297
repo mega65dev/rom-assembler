@@ -1,58 +1,67 @@
-angval 
- .byte $00,$00    ;sine 00 degrees -  .0000 
- .byte $2c,$71    ;sine 10 degrees -  .1736 
- .byte $57,$8d    ;sine 20 degrees -  .3420 
- .byte $80,$00    ;sine 30 degrees -  .5000 
- .byte $a4,$8f    ;sine 40 degrees -  .6428 
- .byte $c4,$19    ;sine 50 degrees -  .7660 
- .byte $dd,$b2    ;sine 60 degrees -  .8660 
- .byte $f0,$90    ;sine 70 degrees -  .9397 
- .byte $fc,$1c    ;sine 80 degrees -  .9848 
- .byte $ff,$ff    ;sine 90 degrees - 1.0000 
- 
-;  INCVAL  -- Table of incremental values between 10 degrees 
-;  Values based on fraction of 65536 
- 
-incval 
- .byte $04,$72    ; 01 - 09 degrees -  .01739 
- .byte $04,$50    ; 11 - 19 degrees -  .01692 
- .byte $04,$0b    ; 21 - 29 degrees -  .01592 
- .byte $03,$a8    ; 31 - 39 degrees -  .01443 
- .byte $03,$28    ; 41 - 49 degrees -  .01252 
- .byte $02,$90    ; 51 - 59 degrees -  .01023 
- .byte $01,$e3    ; 61 - 69 degrees -  .00762 
- .byte $01,$28    ; 71 - 79 degrees -  .00477 
- .byte $00,$63    ; 81 - 89 degrees -  .00179 
+desc_free    ;free temporary descriptor, set up pointers to string. 
+ lda facmo   ;get address of temp descriptor 
+ ldy facmo+1 
+ jsr fretms 
+ ldy #0    ;get len, addr of string 
+ jsr indfmo 
+ tax 
+ iny 
+ jsr indfmo 
+ pha 
+ iny 
+ jsr indfmo 
+ tay 
+ pla 
+ sec    ;flag 'string found' 
+ rts    ;return w/ x=len, (a,y)==> string 
  
 ;.end 
  .page 
- .subttl  EDIT Mode 
+ .subttl COLLISION Command 
  
-; Edit mode is simply a poor man's word processor.  Text is entered normally 
-; as if the user were typing in a program, but tokenization is turned off. 
-; This affects only that text which follows a line number.  CRUNCH and QPLOP 
-; test for this mode, and deal with the text accordingly.  RUN, GOTO, etc. 
-; test for this mode and error-out if it's enabled.  LOADing a text file 
-; will automatically add line numbers, SAVEing a text file will remove them. 
+;***************************************************************** 
+; COLLISION Command 
 ; 
-; Syntax:  EDIT < ON | OFF > 
+; Syntax:  COLLISION n [,address] 
 ; 
-; F. Bowen        [910620] 
+; Where:   n= 1 ==> sprite / sprite 
+;   2 ==> sprite / background 
+;   3 ==> light pen 
+; 
+; Address ==> BASIC line number to trap to on interrupt 
+;      (no address ==> disable trapping) 
+;***************************************************************** 
  
-edit jsr errind  ;direct mode only command 
- cmp #on_token 
- bne 10$ 
- lda #%00010000  ;EDIT ON 
- bra 30$   ; (this kills trace mode, too) 
+collision 
+ jsr getbyt  ;get type in .X 
+ dex   ;adjust 1..3 to 0..2 
+ cpx #3 
+ bcs fcerr  ;value error 
  
-10$ jsr chkesc  ;     [910930] 
-; cmp #esc_command_token 
-; bne 20$ 
-; jsr chrget 
- cmp #off_token 
-20$ bne snerr 
- lda #0   ;EDIT OFF 
-30$ sta runmod 
- jmp chrget  ; exit 
+ phx   ;save collision type 
+ jsr optwrd  ;get address (line number) in .Y,.A (optional) 
+ plx 
+; php   ;save .C (.C == 1 ==> real value) 
+ sta int_adr_hi,x ;save address given 
+ sty int_adr_lo,x 
  
+ lda intval  ;this records valid interrupts 
+ ora sbits,x  ;set correct bit 
+; plp 
+ bcs 10$   ;..unless this is a 'clear', 
+ eor sbits,x  ;..in which case we'll reset bit 
+10$ sta intval 
+ rts 
+ 
+;.end 
+ .page 
+ .subttl  RCOLOR Function 
+ 
+;************************************************************************ 
+;  RCOLOR (source)  --  return current color assigned to source 
+;   0  :  Background color 
+;   1  :  Foreground color 
+;   2  :  Highlight color 
+;   3  :  Border color 
+;************************************************************************ 
  

@@ -1,152 +1,138 @@
-testwd 
- .byte goto_token,run_token,gosub_token,then_token 
- .byte restore_token,resume_token,trap_token,else_token 
+cont_rts 
+ rts 
  
-renumber 
- jsr errind  ;allowed only in direct mode 
+;.end 
+ .page 
+ .subttl  RUN 
+;*********************************************************** 
+;* 
+;* RUN Command 
+;* 
+;* RUN [line_number] 
+;* RUN filename [[ON] Ddrive_number[,Uunit_number]] 
+;* 
+;* Entry:  RUN_A_PROGRAM sets up, links, and executes 
+;*  a program previously loaded into RAM. 
+;* 
+;*********************************************************** 
  
-; Set up default values for n1, n2, and n3 
- 
- lda #0   ;line #10... 
- ldx #10 
- stx renum_tmp_1  ;default renum origin (n1) 
- sta renum_tmp_1+1 
- stx renum_tmp_2  ;default increment (n2) 
- sta renum_tmp_2+1 
- sta hightr  ;default start line # (n3) 
- sta hightr+1 
- 
- jsr chrgot  ;any parameters? 
- beq ren_pass_1  ;no... 
+run bbs4 runmod,edit_err ;      [910620] 
+ beq run$10  ;branch if no arguments 
+ bcc run$20  ;branch if number (i.e., RUN line_number) 
  
  
-; Check for new starting line number (n1) 
+; Here if of the form "RUN file_name" 
  
- jsr linget  ;check for a number 
- lda endchr  ;was there one? 
- beq renum_10  ;no...use default 
- lda linnum 
- ldx linnum+1 
- sta renum_tmp_1 
- stx renum_tmp_1+1 
+ smb6 runmod  ;set flag for load not to go to ready 
+ jsr dload  ;use DLOAD's parser, and load the program 
+ bcs erexit  ; if problem loading   [900801] 
  
-; Check for new increment 
+run_a_program 
+ jsr crdo  ;      [911010] 
+ jsr fix_links  ;re-link the program 
+ jsr setexc  ;set various run modes 
+ jsr runc 
+ bra newstt  ;start executing 
  
-renum_10 
- jsr optwrd  ;an increment given? 
- bcc renum_30  ;no...use default 
  
- sty renum_tmp_2 
- sta renum_tmp_2+1 
- ora renum_tmp_2  ;increment must be >0 
- beq fcerr  ;illegal quantity error 
+; Here if of the form "RUN" 
  
-; Check for starting line number 
+run$10 jsr setexc  ;set various run codes 
+ bra runc  ;..and start executing 
  
-renum_30 
- jsr optwrd  ;starting line number given? 
- bcc ren_pass_1  ;no... 
  
- sty hightr 
+; Here if of the form "RUN line_number" 
+ 
+run$20 jsr clearc  ;first trash all variables 
+ jsr chrgot 
+ jsr goto  ;set up to execute from new line number 
+ jsr setexc  ;..and do a little housekeeping, 
+ bra newstt  ;..otherwise it's business as usual 
+ 
+;.end 
+ .page 
+ .subttl  RESTORE 
+;********************************************************************* 
+;* 
+;* RESTORE Command 
+;* 
+;* Reset pointers to next DATA statement.  Allows optional argument 
+;* specifying a specific line number, otherwise the default is the 
+;* beginning of text area. 
+;* 
+;********************************************************************* 
+ 
+restor 
+ beq restore$1 ;branch if no argument...use default 
+ jsr getwrd ;get 2 byte argument (???? no check for real number means a var legal) 
  sty linnum 
- sta hightr+1 
  sta linnum+1 
- jsr FindLine  ;test for illegal renumber range 
- lda lowtr  ;(n1 must be >= n3) 
- ldx lowtr+1 
- sta highds  ;pointer to first statement to renumber 
- stx highds+1 
- lda renum_tmp_1 
- ldx renum_tmp_1+1 
- sta linnum 
- stx linnum+1 
- jsr FindLine  ;lowtr = ptr to 1st stmt to be overlapped 
+ jsr FindLine ;get pointer to specified line 
+ bcc userr ;error if not found 
+ 
+ lda lowtr ;decrement 2 byte pointer, and save it 
+ ldy lowtr+1 
+ bra restore$2 ;always 
+ 
+ 
+restore$1  ;entry from FLOAD 
  sec 
- lda lowtr  ;can't be smaller 
- sbc highds 
- lda lowtr+1 
- sbc highds+1 
- bcc fcerr  ;bad... 
+ lda txttab 
+ ldy txttab+1 
  
+restore$2 
+ sbc #1 
+ bcs 1$ 
+ dey 
+1$ sta datptr 
+ sty datptr+1 
+ rts 
+ 
+;.end 
  .page 
+ .subttl  RENUMBER 
 ;*********************************************************************** 
-;**************  R E N U M B E R    P A S S    O N E  ****************** 
-;*********************************************************************** 
- 
-; Pass 1 makes sure that the renumbered program will not have any line numbers 
-; greater than 63999 (however, nothing is actually renumbered in this pass). 
- 
-ren_pass_1 
- jsr tto   ;save txtptr for restoration when done 
- jsr n1_reset  ;put n1 in FAC, reset txtptr 
- jsr chargt  ;skip low link 
- iny   ;(.y=1) 
- jsr indtxt  ;skip high link 
- beq ren_pass_2  ;end of program => begin pass 2 (assumes txttab > 0) 
- 
-r_pass1_10 
- iny   ;(.y=2) 
- jsr indtxt  ;line number low 
- sec 
- sbc hightr  ;in line range which is to be renumbered? 
- iny   ;(.y=3) 
- jsr indtxt  ;line number high 
- sbc hightr+1 
- bcs r_pass1_20  ;yes => fake renumbering 
- jsr set_next  ;goto next line 
- bne r_pass1_10  ;if z=0 then not end-of-text => keep going 
- beq ren_pass_2  ; else end 
- 
-r_pass1_20 
- jsr set_next  ;goto next line 
- beq ren_pass_2  ;if z=1 then end-of-text => exit 
- jsr new_num  ;create next line number 
- bcs r_pass1_30  ;if c=1 then it wrapped => error 
- cmp #>63999  ;can't have lines > 63999 
- bcc r_pass1_20  ;if c=0 then ok 
- 
-r_pass1_30   ;renumbering will generate an illegal line # 
- ldx #err_too_large ;'line number too large' error 
- bra error 
- 
-set_next 
- ldy #0   ;set for next BASIC line 
- jsr indtxt  ;low link 
- tax 
- iny   ;(.y=1) 
- jsr indtxt  ;high link 
- beq set_end  ;if z=1 then end of program => exit 
- stx txtptr 
- sta txtptr+1 
-set_end rts 
- 
- .page 
-;*********************************************************************** 
-;**************  R E N U M B E R    P A S S    T W O  ****************** 
+; 
+; RENUMBER Command 
+; 
+; Syntax:  RENUMBER [n1 [,[n2] ,n3]] 
+; 
+;  n1 = new start line number, default 10 
+;  n2 = line increment, default 10 
+;  n3 = start line, default first 
+; 
+; - Syntax error may occur for missing commas or bad line numbers. 
+; - Illegal quantity error for line increment of 0 or for bad range. 
+; - Overflow error if increment wraps line number during renumber, 
+;  line number too large error if renumbering would force line 
+;  numbers greater than 63999. 
+; - Out of memory error if the renumbered program would be too large. 
+; - Unresolved reference error if an imbedded line number references 
+;  a line which does not exist. 
+; 
+; Otherwise returns to "ready" mode upon completion. 
+; 
 ;*********************************************************************** 
  
-; Pass 2 checks if the renumbered program will be too long and also 
+ 
+; Before any data is changed in any way, two preliminary passes are 
+; made to insure no errors would occur during the actual renumbering 
+; process (as detailed below). 
+; 
+; Pass 1 makes sure that the renumbered program would have no line 
+; numbers greater than 63999 (nothing is actually renumbered; the 
+; statement table is not modified). 
+; 
+; Pass 2 checks if the renumbered program would be too long and also 
 ; checks for non-existant line number destinations. 
+; 
+; Pass 3 examines the entire statement table first for imbedded line 
+; numbers (branches) to fix. This is done by looking for keywords (GOTO, 
+; GOSUB, THEN, RUN) which are usually followed by line numbers. The old 
+; line number is mapped to a new value and the string representing the 
+; new branch label replaces the original text. 
+; 
+; Pass 4 then replaces the statement number bytes by their final values. 
+; and the table is relinked. 
  
-ren_pass_2 
- bbr4 runmod,10$  ;skip pass two and three if plain text (edit mode) [910620] 
- jsr n1_reset  ; yes- just setup up starting line # and reset txtptr 
- bra ren_pass_4  ;      then renumber just the text's line numbers 
- 
-10$ lda #$01  ;set flag for 'pass 2' 
- sta z_p_temp_1 
- lda text_top  ;copy top-of-text pointer for later use 
- ldx text_top+1  ;(we don't want to change original here) 
- sta fndpnt 
- stx fndpnt+1 
- jsr imbed_lines  ;search for imbedded lines (but don't change) 
- 
- 
- 
-;*********************************************************************** 
-;************  R E N U M B E R    P A S S    T H R E E  **************** 
-;*********************************************************************** 
- 
-; Pass 3 actually renumbers the imbedded destination line numbers 
-; which follow goto, gosub, trap, etc. 
  

@@ -1,56 +1,60 @@
-strini 
- ldx facmo ;get facmo to store in dscpnt 
- ldy facmo+1 
- stx dscpnt ;retain the descriptor pointer 
- sty dscpnt+1 
+rnd jsr sign  ;get sign into .a 
  
-strspa jsr getspa ;get string space 
- stx dsctmp+1 ;save location 
- sty dsctmp+2 
- sta dsctmp ;save length 
- rts  ;done 
- 
- .page 
-; STRLT2 takes the string literal whose first character is pointed to by 
-; (xreg)+1 and builds a descriptor for it.  The descriptor is initially 
-; built in DSCTMP, but PUTNEW transfers it into a temporary and leaves a 
-; pointer to the temporary in FACMO & FACLO.  The characters other than the 
-; zero that terminates the string should be set up in CHARAC and ENDCHR. 
-; If the terminator is a quote, the quote is skipped over.  Leading quotes 
-; should be skipped before call.  On return, the character after the string 
-; literal is pointed to by (strng2). 
+rnd_0 bmi 20$   ;/// entry from jump table 
+ bne 10$ 
  
  
-strlit ldx #'"' ;assume string ends on quote 
- stx charac 
- stx endchr 
+; Get value from hardware 
  
-strlt2 sta strng1 ;save pointer to string 
- sty strng1+1 
- sta dsctmp+1 ;in case no strcpy 
- sty dsctmp+2 
- 
- ldy #255 ;initialize character count 
-strget iny 
- jsr indst1 ;get character 
- beq 20$  ;if zero 
- cmp charac ;this terminator? 
- beq 10$  ;yes 
- cmp endchr 
- bne strget ;look further 
- 
-10$ cmp #'"' ;strfin.  quote? 
- beq 30$ 
- 
-20$ clc 
-30$ sty dsctmp ;no, back up. retain count 
- tya 
- adc strng1 ;wishing to set (txtptr) 
- sta strng2 
- ldx strng1+1 
- bcc 40$ 
- inx 
-40$ stx strng2+1 
- tya 
+ jsr go_slow  ;Use CIA#1 timer B & SID#2 pot X & Y for seeds  [910314] 
+ lda sid2+25  ; go slow to read POT-X 
+ asl a 
+ asl a 
+ asl a 
+ asl a 
+ ora sid2+26  ; and POT-Y 
+ eor vic+18  ;   ???? should be okay- we're in Slow mode 
+ sta facmoh 
+ jsr go_fast  ; restore speed 
+ lda d1pra+6  ; timer B is free-running 
+ sta facmo 
+ lda d1pra+7 
+ sta faclo 
+ eor facho 
+ adc facmoh 
+ eor facmo 
+ adc faclo 
+ sta facho 
+ bra 30$ 
  
  .page 
+10$ lda #<rndx  ;get last one into FAC 
+ ldy #>rndx 
+ jsr movfm 
+ lda #<rmulc 
+ ldy #>rmulc  ;FAC was zero.  restore last one 
+ jsr rommlt  ;multiply by random constant 
+ lda #<raddc 
+ ldy #>raddc 
+ jsr romadd  ;add random constant 
+ 
+20$ ldx faclo 
+ lda facho 
+ sta faclo 
+ stx facho  ;reverse hi and lo 
+ ldx facmoh 
+ lda facmo 
+ sta facmoh 
+ stx facmo 
+ 
+30$ lda #0   ;strnex.  make number positive 
+ sta facsgn 
+ lda facexp  ;put exp where it will 
+ sta facov  ;be shifted in by normal 
+ lda #$80 
+ sta facexp  ;make result between 0 and 1 
+ jsr normal  ;normalize 
+ ldx #<rndx 
+ ldy #>rndx 
+ bra movmf  ;put new one into memory 
+ 

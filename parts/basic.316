@@ -1,0 +1,34 @@
+Sprite_CLR 
+ jsr chkeos  ;eat CLR token, check eos   [910717] new 
+Sprite_CLR_1 
+ php 
+ sei 
+ lda #0 
+ sta vic+21  ;Turn off all sprites 
+ sta vic+23  ;Unexpand them     [910828] 
+ sta vic+27  ;Sprite priority 
+ sta vic+28  ;Hires sprites 
+ sta vic+29 
+ 
+ ldx #init_as_0  ;Init sprite tables 
+40$ sta sprite_data,x 
+ dex 
+ bpl 40$ 
+ 
+ lda #sprite_base/64+7 ;Set up sprite pointers 
+ ldy #7 
+10$ bbr7 _mode,20$ 
+ sta sprite_ptrs_40,y ;40 col screen 
+ bra 30$ 
+20$ sta sprite_ptrs_80,y ;80 col screen 
+30$ dec a 
+ dey 
+ bpl 10$ 
+ 
+ plp 
+; rts 
+ 
+;.end 
+ .page 
+ .subttl BASIC NMI Handler 
+ 

@@ -1,19 +1,10 @@
-if_false 
- jsr chrgot ;is there a b-block? 
- cmp #esc_command_token 
- bne 20$  ;no, must be an escape command 
- iny  ;might be, look at escape token 
- jsr indtxt 
- cmp #begin_token 
- bne 20$  ;branch if not 
- jsr find_bend ;skip to end of b-block 
+if jsr frmevl ;evaluate the conditional expression 
+ jsr chrgot ;re-get current character 
+ cmp #goto_token ;is terminating character a GOTO? 
+ beq 10$  ; yes 
+ lda #then_token ; no, it must be THEN 
+ jsr synchr 
  
-20$ jsr data ;may be 'else' clause. first skip over 'then' clause.. 
- ldy #0 
- jsr indtxt ;..and see if end of stmt or end of line 
- beq rem  ;end of line, no 'else'. go to next line 
- jsr chrget ;another statement on this line.. is it 'else'? 
- cmp #else_token 
- bne 20$  ;no, keep looking on this line 
- jsr chrget ;yes! skip over token and execute clause (below) 
+10$ lda facexp ;test truth value of argument 
+ bne if_true ; branch if true 
  

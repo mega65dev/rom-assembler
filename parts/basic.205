@@ -1,18 +1,39 @@
-pndd lda swe  ;# of blanks 
- beq zerot 
- dec swe  ;count ! 
- 
-5$ bne bout ;out blank or * 
- lda posp ;+ or - in field? 
- bmi 5$  ;yes...out blank or * 
- 
-10$ jsr indfrm 
- cmp #',' ;comma? 
- bne ispl1 ;no...out sign 
- lda blfd ;yes... 
- jsr cdout ;out blank or * 
- iny 
- bra 10$ 
+retrn pla 
+ pla 
+ rts  ;return to fform/main 
  
  
+et3 lda usgn 
+ eor #$80 ;reverse sign exp 
+et2 sta usgn 
+ lda #'0' 
+ sta fbuffr+1,x ;exp<0 here 
+ lda #'1' 
+ sta fbuffr+2,x 
+ rts 
+ 
+ 
+tag3 lda fbuffr,x ;get digit of exp 
+ inc fbuffr,x ;increment digit 
+ cmp #'9' ;overflow 
+ rts  ;return .z set 
+ 
+ .page 
+; Using- ansub: load format field char in .a 
+ 
+ansub clc 
+ iny  ;begin format? 
+ beq 10$  ;yes... 
+ cpy lfor ;end? 
+ bcc 20$  ;no... 
+ 
+10$ ldy z_p_temp_1 ;<>0? 
+ bne retrn ;yes... 
+ 
+20$ jsr indfrm 
+ inc cform ;pointer to field 
+ rts 
+ 
+ 
+;  Using- ini: init counters and flags 
  

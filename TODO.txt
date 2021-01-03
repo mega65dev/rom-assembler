@@ -1,0 +1,3 @@
+Handle .byte and possibly .word
+Fix other things up
+Assemble it and see what happens :)

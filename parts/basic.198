@@ -1,89 +1,34 @@
-errf lda #'*' ;format error 
-stout jsr cdout ;fill field with stars 
- bne stout 
- rts 
+pudefs .byte ' ,.$' ;default:  fill, comma, dec pnt, money symbol 
  
+using ldx #$ff 
+ stx endfd 
+ jsr chrget 
+ jsr frmevl ;evaluate format string 
+ jsr chkstr ;must be string type... 
  
-ahp tay  ;output no if swe=0 
- beq hup 
-ldvn lda vn 
- bne hup  ;vn<>0 
- dec swe  ;add extra 0 
- inc z_p_temp_1 ;before decimal point 
- bra hup 
+ lda facmo ;save temp descriptor 
+ pha 
+ lda facmo+1 
+ pha 
  
- .page 
-; Using- shift decimal point 
- 
-shpn sec 
- lda vf 
- sbc vn 
- beq rdy  ;format o.k 
- ldy point 
- bcc pntl ;vf<vn 
- sta hulp 
- 
-incy cpy enr  ;end of no reached? 
- beq ity 
- bcs nos1 ;yes... 
- 
-ity iny 
-nos1 inc vn 
-nos4 jsr eado ;adjust exponent 
- dec hulp ;ready? 
- bne incy ;no... 
- beq poit 
- 
-pntl eor #$ff 
- adc #1 
- sta hulp ;=vn-vf 
- 
-decy cpy bnr  ;begin of no? 
- beq inz  ;yes... 
+ ldy #2  ;move (facmo),1&2 to form,form+1 
+10$ jsr indfmo 
  dey 
- dec vn 
- bra inz2 
+ sta form,y 
+ bne 10$ 
+ 
+ jsr indfmo ;get length 
+ sta lfor 
+ tay 
+ beq 99$  ;syntax error if length is zero 
+ 
+20$ dey 
+ jsr indfrm 
+ cmp #'#' ;at least one # in format? 
+ beq 30$  ;yes... 
+ tya  ;no...end of format 
+ bne 20$  ;no... 
+99$ bra snerr ;yes...syntax error 
  
  
-inz inc z_p_temp_1 ;add leading zeros 
-inz2 lda #$80 
-nos3 jsr eadj ;adjust exponent 
- dec hulp ;ready? 
- bne decy ;no... 
- 
-poit sty point ;decimal point pointer 
-rdy rts 
- 
- .page 
-; Using- adjust exponent 
- 
-sexp bne retrn ;no over/underflow 
- eor #$09 ;.a is 0 or 9 
- sta fbuffr,x ;digit back in exp 
- dex  ;= 0 or 9 
- cpx uexp 
- rts 
- 
- 
-eado lda #0 
-eadj ldx uexp 
- inx 
- bit etof ;e-to-f flag on? 
- bmi 20$  ;yes... 
- eor usgn 
- beq 20$  ;++ or -- 
- 
-10$ jsr tag3 ;inc exp, overflow? 
- jsr sexp ;digit 0 if yes 
- bcs 10$  ;try second digit 
- bra overr ;exp>99 
- 
-20$ lda fbuffr,x 
- dec fbuffr,x ;decrement exp 
- cmp #'0' ;underflow on digit? 
- jsr sexp ;set digit=9 if yes... 
- bcs 20$  ;try 2nd digit 
- bit etof ;flag off? 
- bpl et3  ;yes... 
- sty point ;decimal point pointer 
- 
+30$ lda #';' 

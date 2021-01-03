@@ -1,205 +1,80 @@
-rmulc  .byte @230,@65,@104,@172,0 
-raddc  .byte @150,@50,@261,@106,0 
+joytab .byte 4,2,3,0,6,8,7,0,5,1,0 
  
 ;.end 
  .page 
- .subttl Math Package (CODE12) 
+ .subttl  POT  LPEN 
  
-n32768 .byte $90,$80,0,0,0 
- 
- 
-flpint jsr ayint 
- lda facmo 
- ldy  faclo 
- rts 
- 
- 
-intidx jsr chrget 
- jsr frmevl ;get a number 
- 
- 
-posint jsr chknum 
- lda facsgn 
- bmi nonono ;if negative, blow him out 
- 
- 
-ayint lda facexp 
- cmp #$90 ;FAC > 32767? 
- bcc qintgo 
- lda #<n32768 ;get address of -32768 
- ldy #>n32768 
- jsr fcomp ;see if FAC=((x)) 
- 
-nonono bne fcerr ;no, FAC is too big 
-qintgo bra qint ;go shove it 
- .page 
- 
-; Float an unsigned double byte integer 
-; Entry:  MSB in (a), LSB in (y) 
- 
-nosflt jsr stoint 
- sec  ;sign is positive 
- bra floatc 
- 
- 
- 
-pos sec 
- jsr _plot ;get tab pos in .y 
- 
-sngflt lda #0 
- bra givayf ;float it 
- 
- 
- 
-stoint ldx #0  ;move int to fac & compute proper exponents 
- stx valtyp 
- sta facho 
- sty facho+1 
- ldx #$90 
-storts rts 
- 
- 
- 
-; See if we are in direct mode, and complain if so. 
- 
-errdir bbs7 runmod,storts ;goto error if not in run mode 
- 
- ldx #errid  ;input direct error code 
-   .byte $2c 
- 
-errguf ldx #erruf 
- bra error 
- 
- 
-errind bbr7 runmod,storts ;goto error if not in direct mode 
- ldx #erroid 
- bra error 
- 
-;.end 
- .page 
- .subttl User Defined Function 
- 
-; User Defined Function Code 
+;*********************************************************** 
+; POT(n)  --  Read paddles 
 ; 
-; Note only single arguments are allowed to functions, and functions must 
-; be of the single line form: 
+;    n = 1 : paddle-1 - X-position 
+;  2 : paddle-1 - Y-position 
+;  3 : paddle-2 - X-position 
+;  4 : paddle-2 - Y-position 
 ; 
-;  DEF FNA(x)=x~2 + x-2 
-; 
-; No strings may be involved with these functions. 
-; 
-; Idea: create a simple variable entry whose first character has the MSB set. 
-; The value will be: 
-; 
-;  A text pointer to the formula 
-;  A pointer to the argument variable 
+;     result >= 256 --  trigger set 
+;*********************************************************** 
  
-def jsr getfnm  ;get a pointer to the function 
- jsr errdir 
- jsr chkopn  ;must have a ( 
- lda #$80 
- sta subflg  ;prohibit subscripted & integer variables 
- jsr ptrget  ;get pointer to argument 
- jsr chknum  ;is it a number? 
- jsr chkcls  ;must have ) 
- lda #equal_token ;followed by = 
- jsr synchr 
- pha 
- lda varpnt+1 
- pha 
- lda varpnt 
- pha 
- lda txtptr+1 
- pha 
- lda txtptr 
- pha 
- jsr data 
- bra deffin 
+pot jsr chkcls ;look for closing paren 
+ jsr conint ;get 1-byte arg in .x 
+ dex 
+ cpx #4 
+ bcs fcerr ;value error 
  
- .page 
-; Subroutine to get a pointer to a function name 
- 
-getfnm lda #fn_token ;must start with fn 
- jsr synchr 
- ora #$80 ;put function bit on 
- sta subflg ; (disallows array & integer variables) 
- jsr ptrgt2 ;get pointer to function or create anew 
- sta defpnt 
- sty defpnt+1 
- bra chknum ;make sure it's not a string, and return 
- 
- 
-fndoer jsr getfnm ;get the function's name 
- lda defpnt+1 
- pha 
- lda defpnt 
- pha 
- jsr parchk ;evaluate parameter 
- jsr chknum 
- pla 
- sta defpnt 
- pla 
- sta defpnt+1 
- ldy #2 
- jsr inddef ;get pointer to the variable 
- sta varpnt ;save variable pointer 
+; jsr put_io_in_map 
+ txa  ;convert arg (0-3) into paddle enables 
+ lsr a  ; .c= X/Y   .a= port 1/2 
  tax 
- iny 
- jsr inddef 
- beq errguf 
- sta varpnt+1 
- iny  ;since def uses only 4 
+ lda sbits+6,x 
+ tax  ;(CIA paddle port, $40/$80) 
+ lda #0 
+ rol a 
+ tay  ;(SID x/y offset,  $00/$01) 
+ 
+ stx pot_temp_1 ;save which port 
+ php  ;save IRQ enable while we 
+ sei  ;disable IRQ to inhibit keyboard scan 
+ lda d1pra 
+ pha  ;save kybd output lines 
+ stx d1pra ;turn on correct paddle 
+ 
+ jsr go_slow 
+ ldx #0 
+30$ inx  ;delay to let pot be read by SID 
+ bne 30$ 
+ 
+40$ lda sid1+25,y ;read pot 
+ cmp sid1+25,y ;debounce 
+ bne 40$ 
+ sta pot_temp_2 ;save pot value 
+ jsr go_fast 
+ 
+ ldx #0  ;set index to d1pra 
+ bit pot_temp_1 ;test if pot-0,1 or pot-2,3 
+ bmi 50$  ;skip if pot 2,3 
+ inx  ;index to d1prb 
+50$ lda #04  ;use joy line-2 
+ dey  ;test if pot-x or pot-y 
+ bmi 60$  ;skip if pot-x 
+ asl a  ;use joy line-3 
+60$ ldy #$ff 
+ sty d1pra ;disable keybd inputs 
+ iny  ;set to zero for no trigger 
+ and d1pra,x ;test if trigger set 
+ bne 70$  ;skip if not trigger 
+ iny  ;return value >255 for trigger 
+70$ pla 
+ sta d1pra ;restore keybd lines 
+ tya 
+ ldy pot_temp_2 ;restore pot value 
+ plp  ;restore status 
+ bra nosflt ;output 2-byte result 
  
  .page 
-defstf lda #varpnt 
- jsr lda_far_ram1 
- pha   ;push it all on the stack, since we might be recursing 
- dey 
- bpl defstf 
- ldy varpnt+1 
- 
- jsr movmf_ram1  ;put current FAC into our argument variable 
- lda txtptr+1  ;save variable pointer 
- pha 
- lda txtptr 
- pha 
- jsr inddef  ;get pointer to function 
- sta txtptr 
- iny 
- jsr inddef 
- sta txtptr+1 
- lda varpnt+1  ;save variable pointer 
- pha 
- lda varpnt 
- pha 
- jsr frmnum  ;evaluate variable, and check numeric 
- pla 
- sta defpnt 
- pla 
- sta defpnt+1 
- jsr chrgot 
- bne snerr  ;it didn't terminate, syntax error 
- 
- pla   ;restore text pointer 
- sta txtptr 
- pla 
- sta txtptr+1 
- 
-deffin ldy #0 
-1$ pla   ;get old arg value off stack, 
- phx 
- ldx #defpnt 
- jsr sta_far_ram1 ;sta (defpnt),y ;and put it back in variable 
- plx 
- iny 
- cpy #5 
- bne 1$ 
- rts 
- 
-;.end 
- .page 
- .subttl MID$  LEFT$  RIGHT$  ASC  STR$  LEN 
- 
-; The STR$() function takes a number and gives a string with 
-; the characters the output of the number would have given. 
+;************************************************************* 
+;  LPEN(n)  --  Read light pen 
+; 
+; n = 0 x position 
+;     1 y position 
+;************************************************************* 
  

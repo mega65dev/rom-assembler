@@ -1,37 +1,21 @@
-color cmp #','  ;optional first arg 
- beq 20$ 
- cmp #on_token  ;SOFTWARE (Editor) color mode 
- beq 10$ 
- jsr chkesc 
- cmp #off_token 
-5$ bne snerr 
+c65.setpalette 
+ cmp #restore_token ;restore palette? 
+ bne 10$   ; no 
+ jsr chrget  ; yes- advance past Restore token 
+ jmp _palette_init 
  
- ldy #'['  ;OFF (color & attributes) 
-   .byte $2c 
-10$ ldy #']'  ;ON 
- lda #esc 
- jsr _bsout  ;do it 
- tya 
- jsr _bsout 
- jsr chrget  ;eat token 
- beq 40$   ; eol- exit 
+10$ cmp #color_token ;set physical color register? 
+ bne 20$   ; no- set logical color register 
+ sta GKI__parm1 
+ jsr chrget  ; yes- advance past Color token 
+ jsr getbyt 
+ bra 30$ 
  
-20$ jsr chkcom  ; else must be comma, eat & get next 
-; jsr chrgot  ;      [910930] 
- cmp #on_token  ;HARDWARE (Vic) color mode 
- beq 30$ 
- jsr chkesc 
- cmp #off_token 
- bne 5$ 
+20$ jsr getbyt  ;get screen# 
+ cpx #4   ;      [910711] 
+ bcs fcerr 
+ stx GKI__parm1 
  
- lda #%00000010  ;OFF (monochrome) 
- tsb vic+49 
- bra 35$ 
+ jsr combyt  ;get color reg # 
+30$ stx GKI__parm2  ; (GKI will check for out of range????) 
  
-30$ lda #%00000010  ;ON 
- trb vic+49 
-35$ bra chrget  ;exit after eating last token 
- 
-40$ rts   ;exit after encountering eol 
- 
- .page 

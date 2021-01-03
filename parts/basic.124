@@ -1,13 +1,24 @@
-finptr lda lowtr 
+dvarts lda #strsiz 
  clc 
- adc #2 
- ldy lowtr+1 
- bcc 10$ 
- iny 
-10$ sta varpnt 
- sty varpnt+1 
- rts 
+ adc index1 
+ sta index1 
+ bcc aryget 
+ inc index1+1 
+ bra aryget  ;branch always 
  
  
- 
+arydon phx 
+ ldx #lowtr 
+ ldy #0 
+ lda varnam 
+ jsr sta_far_ram1 ;sta (lowtr),y 
+ iny   ;.y=1 
+ lda varnam+1 
+ jsr sta_far_ram1 ;sta (lowtr),y 
+ lda #0 
+10$ iny 
+ jsr sta_far_ram1 ;sta (lowtr),y 
+ cpy #6 
+ bne 10$ 
+ plx 
  

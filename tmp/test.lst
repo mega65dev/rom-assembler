@@ -123,12 +123,12 @@
    121                          column_width     = 10                                     ; print comma spacing
    122                          
    123                          beats_pal        = 1200                                   ; whole note (4/4 time = 2sec.)    [910724]
-   124                          beats_ntsc       = 1440                                   ;
+   124                          beats_ntsc       = 1440                                   ; 
    125                          
    126                          lf               = $0a                                    ; line feed
    127                          cr               = $0d                                    ; carriage return
    128                          esc              = $1b                                    ; escape
-   129                          pi               = $ff
+   129                          pi               = $ff                                    
    130                          
    131                          basbgn           = $2000                                  ; bottom of BASIC text bank
    132                          baswrk           = basbgn+1                               ; where BASIC text starts
@@ -148,25 +148,25 @@
    146                          sid2             = $d420                                  ; (left)
    147                          
    148                          d1_6526          = $dc00                                  ; Ports, peripheral control
-   149                          d1pra            = d1_6526
-   150                          d2_6526          = $dd00
-   151                          d2pra            = d2_6526
+   149                          d1pra            = d1_6526                                
+   150                          d2_6526          = $dd00                                  
+   151                          d2pra            = d2_6526                                
    152                          
    153                          dma_ctlr         = $d700                                  ; DMA Controller
    154                          
    155                          ; .page
    156                          ;  BASIC base page storage
    157                          
-   158                          * = $0000
+   158                                           * = $0000                                
    159                          
-   160  0000 0000               !fill 2                                  ; '4510' registers (not used in C65 mode)
+   160  0000 0000                                !fill 2                                  ; '4510' registers (not used in C65 mode)
    161  0002 00                 srchtk           !fill 1                                  ; token 'search' looks for (run-time stack) / SYS 'bank#'
    162                          
-   163                          * = $000a                                ; skip over SYS address, status, a/x/y/z registers
+   163                                           * = $000a                                ; skip over SYS address, status, a/x/y/z registers
    164                          
    165                          integr                                                    ; used by math routines (this & following location)
-   166  000a 00                 charac           !fill 1
-   167  000b 00                 endchr           !fill 1
+   166  000a 00                 charac           !fill 1                                  
+   167  000b 00                 endchr           !fill 1                                  
    168  000c 00                 verck            !fill 1                                  ; LOAD/VERIFY flag
    169  000d 00                 count            !fill 1                                  ; temp used all over
    170  000e 00                 dimflg           !fill 1                                  ; DIM flag used by variable search
@@ -176,8 +176,8 @@
    174  0011 00                 dores            !fill 1                                  ; b7: P1LINE quote flag
    175  0012 00                 subflg           !fill 1                                  ; b7: subscript flag (set to disallow subscripts() & integers%)
    176  0013 00                 input_flag       !fill 1                                  ; READ($98), GET($40), or INPUT($00)
-   177                          domask
-   178  0014 00                 tansgn           !fill 1
+   177                          domask                                                    
+   178  0014 00                 tansgn           !fill 1                                  
    179  0015 00                 channl           !fill 1                                  ; active I/O channel
    180                          poker                                                     ; temp used all over
    181  0016 0000               linnum           !fill 2                                  ; line number
@@ -186,18 +186,18 @@
    184  0019 0000               lastpt           !fill 2                                  ; pointer to last used temporary string
    185  001b 0000000000000000...tempst           !fill 9                                  ; temporary descriptor pointers (3 at 3 bytes each)
    186                          
-   187                          index
-   188  0024 0000               index1           !fill 2
-   189  0026 0000               index2           !fill 2
+   187                          index                                                     
+   188  0024 0000               index1           !fill 2                                  
+   189  0026 0000               index2           !fill 2                                  
    190                          
    191                          multiplicand                                              ; 2 bytes wide, for unsigned integer multiply
-   192  0028 00                 resho            !fill 1
-   193  0029 00                 resmoh           !fill 1
+   192  0028 00                 resho            !fill 1                                  
+   193  0029 00                 resmoh           !fill 1                                  
    194                          product                                                   ; 3 bytes wide, for unsigned integer multiply
-   195                          addend
-   196  002a 00                 resmo            !fill 1
-   197  002b 00                 reslo            !fill 1
-   198  002c 00                 !fill 1
+   195                          addend                                                    
+   196  002a 00                 resmo            !fill 1                                  
+   197  002b 00                 reslo            !fill 1                                  
+   198  002c 00                                  !fill 1                                  
    199  002d 0000               txttab           !fill 2                                  ; where BASIC program begins   (text_bank)
    200  002f 0000               vartab           !fill 2                                  ; where variable descriptors begin  (var_bank)
    201  0031 0000               arytab           !fill 2                                  ; where array table begins   (var_bank)
@@ -205,27 +205,27 @@
    203  0035 0000               fretop           !fill 2                                  ; bottom of string storage   (var_bank)
    204  0037 0000               frespc           !fill 2                                  ; where temporary strings begin   (var_bank)
    205  0039 0000               max_mem_1        !fill 2                                  ; highest address available to BASIC in RAM 1 (var_bank)
-   206  003b 0000               curlin           !fill 2
+   206  003b 0000               curlin           !fill 2                                  
    207  003d 0000               txtptr           !fill 2                                  ; pointer to BASIC text used by CHRGET, etc.
    208                          form                                                      ; used by print using
    209  003f 0000               fndpnt           !fill 2                                  ; pointer to item found by search
-   210  0041 0000               datlin           !fill 2
-   211  0043 0000               datptr           !fill 2
-   212  0045 0000               inpptr           !fill 2
-   213  0047 0000               varnam           !fill 2
-   214                          fdecpt
-   215  0049 0000               varpnt           !fill 2
-   216                          lstpnt
-   217                          andmsk
-   218  004b 0000               forpnt           !fill 2
-   219                          eormsk           =forpnt+1
-   220                          vartxt
-   221  004d 0000               opptr            !fill 2
-   222  004f 00                 opmask           !fill 1
-   223                          grbpnt
-   224                          tempf3
-   225  0050 0000               defpnt           !fill 2
-   226  0052 0000               dscpnt           !fill 2
+   210  0041 0000               datlin           !fill 2                                  
+   211  0043 0000               datptr           !fill 2                                  
+   212  0045 0000               inpptr           !fill 2                                  
+   213  0047 0000               varnam           !fill 2                                  
+   214                          fdecpt                                                    
+   215  0049 0000               varpnt           !fill 2                                  
+   216                          lstpnt                                                    
+   217                          andmsk                                                    
+   218  004b 0000               forpnt           !fill 2                                  
+   219                          eormsk           =forpnt+1                                
+   220                          vartxt                                                    
+   221  004d 0000               opptr            !fill 2                                  
+   222  004f 00                 opmask           !fill 1                                  
+   223                          grbpnt                                                    
+   224                          tempf3                                                    
+   225  0050 0000               defpnt           !fill 2                                  
+   226  0052 0000               dscpnt           !fill 2                                  
    227                          token_saver                                               ; temp used by P1LINE/HELPSB (was spare????) [910628]
    228  0054 00                 trmpos           !fill 1                                  ; temp used by SPC(), TAB()   [910628]
    229                          
@@ -238,56 +238,56 @@
    236                          ;  b0: token in progress
    237                          
    238  0056 00                 jmper            !fill 1                                  ; 3 locations used by Function handler
-   239  0057 00                 !fill 1                                  ;
-   240  0058 00                 oldov            !fill 1                                  ;
+   239  0057 00                                  !fill 1                                  ; 
+   240  0058 00                 oldov            !fill 1                                  ; 
    241                          
    242  0059 00                 tempf1           !fill 1                                  ; used by math routines
    243                          ptarg1           =tempf1                                  ; multiply defined for INSTR thru FACexp
    244                          ptarg2           =tempf1+2                                ; (also used by Monitor Utility, thru lowtr)
-   245                          str1             =tempf1+4
-   246                          str2             =tempf1+7
-   247                          positn           =tempf1+10
-   248                          match            =tempf1+11
+   245                          str1             =tempf1+4                                
+   246                          str2             =tempf1+7                                
+   247                          positn           =tempf1+10                               
+   248                          match            =tempf1+11                               
    249                          
-   250                          arypnt
-   251  005a 0000               highds           !fill 2
-   252  005c 0000               hightr           !fill 2
+   250                          arypnt                                                    
+   251  005a 0000               highds           !fill 2                                  
+   252  005c 0000               hightr           !fill 2                                  
    253                          
    254  005e 00                 tempf2           !fill 1                                  ; used by math routines
-   255  005f 0000               deccnt           !fill 2
-   256                          tenexp           = deccnt+1
-   257                          grbtop
-   258                          dptflg
-   259  0061 00                 lowtr            !fill 1
-   260  0062 00                 expsgn           !fill 1
+   255  005f 0000               deccnt           !fill 2                                  
+   256                          tenexp           = deccnt+1                               
+   257                          grbtop                                                    
+   258                          dptflg                                                    
+   259  0061 00                 lowtr            !fill 1                                  
+   260  0062 00                 expsgn           !fill 1                                  
    261                          
    262                          fac                                                       ; Floating point accumulator (primary) FAC1
-   263                          dsctmp
-   264  0063 00                 facexp           !fill 1
-   265  0064 00                 facho            !fill 1
-   266  0065 00                 facmoh           !fill 1
-   267                          indice
-   268  0066 00                 facmo            !fill 1
-   269  0067 00                 faclo            !fill 1
-   270  0068 00                 facsgn           !fill 1
-   271                          degree
-   272  0069 00                 sgnflg           !fill 1
+   263                          dsctmp                                                    
+   264  0063 00                 facexp           !fill 1                                  
+   265  0064 00                 facho            !fill 1                                  
+   266  0065 00                 facmoh           !fill 1                                  
+   267                          indice                                                    
+   268  0066 00                 facmo            !fill 1                                  
+   269  0067 00                 faclo            !fill 1                                  
+   270  0068 00                 facsgn           !fill 1                                  
+   271                          degree                                                    
+   272  0069 00                 sgnflg           !fill 1                                  
    273                          
    274  006a 00                 argexp           !fill 1                                  ; Floating point accumulator (secondary) FAC2
-   275  006b 00                 argho            !fill 1
-   276  006c 00                 argmoh           !fill 1
-   277  006d 00                 argmo            !fill 1
-   278  006e 00                 arglo            !fill 1
-   279  006f 00                 argsgn           !fill 1
+   275  006b 00                 argho            !fill 1                                  
+   276  006c 00                 argmoh           !fill 1                                  
+   277  006d 00                 argmo            !fill 1                                  
+   278  006e 00                 arglo            !fill 1                                  
+   279  006f 00                 argsgn           !fill 1                                  
    280                          
-   281                          strng1
-   282  0070 00                 arisgn           !fill 1
-   283  0071 00                 facov            !fill 1
+   281                          strng1                                                    
+   282  0070 00                 arisgn           !fill 1                                  
+   283  0071 00                 facov            !fill 1                                  
    284                          
-   285                          strng2
-   286                          polypt
-   287                          curtol
-   288  0072 0000               fbufpt           !fill 2
+   285                          strng2                                                    
+   286                          polypt                                                    
+   287                          curtol                                                    
+   288  0072 0000               fbufpt           !fill 2                                  
    289                          
    290  0074 0000               autinc           !fill 2                                  ; incremental value for AUTO (0=off)
    291                          
@@ -297,7 +297,7 @@
    295                          ;MID$= temporary
    296                          
    297                          hulp                                                      ; counter
-   298  0077 00                 keysiz           !fill 1
+   298  0077 00                 keysiz           !fill 1                                  
    299                          
    300  0078 00                 syntmp           !fill 1                                  ; used as temp all over the place
    301  0079 000000             dsdesc           !fill 3                                  ; descriptor for DS$
@@ -319,64 +319,64 @@
    317                          
    318                          time                                                      ; temporaries for TI, TI$, SLEEP (4 bytes)
    319                          grapnt                                                    ; used by SPRSAV, RMOUSE, RCOLOR
-   320                          op
+   320                          op                                                        
    321  0087 00                 column           !fill 1                                  ; temporaries for FIND/CHANGE, [L]INPUT, [L]READ, CURSOR
-   322                          srow
-   323  0088 000000             fstr1            !fill 3                                  ;
-   324  008b 000000             fstr2            !fill 3                                  ;
+   322                          srow                                                      
+   323  0088 000000             fstr1            !fill 3                                  ; 
+   324  008b 000000             fstr2            !fill 3                                  ; 
    325                          
    326                          ; .page
-   327                          * = $00ff
+   327                                           * = $00ff                                
    328                          
-   329  00ff 00                 lofbuf           !fill 1
+   329  00ff 00                 lofbuf           !fill 1                                  
    330  0100 0000000000000000...fbuffr           !fill 16                                 ; MathPack builds numbers here, USING, RENUMBER
    331                          
    332                          ;  Kernel MAP configurations & DMA lists
    333                          
-   334  0110 0000000000000000...!fill 16+36                              ; (4 configs + 3 DMA lists)
+   334  0110 0000000000000000...                 !fill 16+36                              ; (4 configs + 3 DMA lists)
    335                          
    336                          ;  BASIC DMA lists  (2 @ 12bytes each = 24 bytes)
    337                          
    338  0144 00                 dma1_cmd         !fill 1                                  ; This list is used by BASIC OS
-   339  0145 00                 dma1_cnt_lo      !fill 1
-   340  0146 00                 dma1_cnt_hi      !fill 1
-   341  0147 00                 dma1_src_lo      !fill 1
-   342  0148 00                 dma1_src_hi      !fill 1
-   343  0149 00                 dma1_src_bank    !fill 1
-   344  014a 00                 dma1_dest_lo     !fill 1
-   345  014b 00                 dma1_dest_hi     !fill 1
-   346  014c 00                 dma1_dest_bank   !fill 1
+   339  0145 00                 dma1_cnt_lo      !fill 1                                  
+   340  0146 00                 dma1_cnt_hi      !fill 1                                  
+   341  0147 00                 dma1_src_lo      !fill 1                                  
+   342  0148 00                 dma1_src_hi      !fill 1                                  
+   343  0149 00                 dma1_src_bank    !fill 1                                  
+   344  014a 00                 dma1_dest_lo     !fill 1                                  
+   345  014b 00                 dma1_dest_hi     !fill 1                                  
+   346  014c 00                 dma1_dest_bank   !fill 1                                  
    347  014d 00                 dma1_subcmd      !fill 1                                  ; (from here on not supported until F018A) [910520] F018A
-   348  014e 00                 dma1_mod_lo      !fill 1
-   349  014f 00                 dma1_mod_hi      !fill 1
+   348  014e 00                 dma1_mod_lo      !fill 1                                  
+   349  014f 00                 dma1_mod_hi      !fill 1                                  
    350                          
    351  0150 00                 dma2_cmd         !fill 1                                  ; This list is used by DMA command & Graphics
-   352  0151 00                 dma2_cnt_lo      !fill 1
-   353  0152 00                 dma2_cnt_hi      !fill 1
-   354  0153 00                 dma2_src_lo      !fill 1
-   355  0154 00                 dma2_src_hi      !fill 1
-   356  0155 00                 dma2_src_bank    !fill 1
-   357  0156 00                 dma2_dest_lo     !fill 1
-   358  0157 00                 dma2_dest_hi     !fill 1
-   359  0158 00                 dma2_dest_bank   !fill 1
+   352  0151 00                 dma2_cnt_lo      !fill 1                                  
+   353  0152 00                 dma2_cnt_hi      !fill 1                                  
+   354  0153 00                 dma2_src_lo      !fill 1                                  
+   355  0154 00                 dma2_src_hi      !fill 1                                  
+   356  0155 00                 dma2_src_bank    !fill 1                                  
+   357  0156 00                 dma2_dest_lo     !fill 1                                  
+   358  0157 00                 dma2_dest_hi     !fill 1                                  
+   359  0158 00                 dma2_dest_bank   !fill 1                                  
    360  0159 00                 dma2_subcmd      !fill 1                                  ; (from here on not supported until F018A) [910520] F018A
-   361  015a 00                 dma2_mod_lo      !fill 1
-   362  015b 00                 dma2_mod_hi      !fill 1
+   361  015a 00                 dma2_mod_lo      !fill 1                                  
+   362  015b 00                 dma2_mod_hi      !fill 1                                  
    363                          
-   364  015c 00                 !fill 1                                  ; Kernel's dma_byte
+   364  015c 00                                  !fill 1                                  ; Kernel's dma_byte
    365                          
    366                          sysstk                                                    ; bottom of system stack
    367                          stkend           = $1fb                                   ; top of system stack
    368                          
    369                          ; .page
-   370                          * = $0200
+   370                                           * = $0200                                
    371                          
    372                          buflen           = 161                                    ; input buffer size (2 80-column lines + 1)
    373  0200 0000000000000000...buf              !fill buflen                             ; BASIC/Monitor line input buffer
-   374                          buf_txtptr       = buf-1
+   374                          buf_txtptr       = buf-1                                  
    375                          
    376                          ; .page
-   377                          * = $02c0
+   377                                           * = $02c0                                
    378                          ; BASIC RAM code  (RAM code not needed- following moved to ROM)
    379                          ;
    380                          ; chrget *=*+42  ;get byte from text bank after incrementing TXTPTR
@@ -408,10 +408,10 @@
    406  02dc 00                 intval           !fill 1                                  ; BASIC interrupts enabled (via collision command)
    407  02dd 000000             int_trip_flag    !fill 3                                  ; flags which interrupts occurred
    408  02e0 000000             int_adr_lo       !fill 3                                  ; where to go for each type of collision (line number)
-   409  02e3 000000             int_adr_hi       !fill 3                                  ;
+   409  02e3 000000             int_adr_hi       !fill 3                                  ; 
    410  02e6 0000               collisions       !fill 2                                  ; sprite collisions, s/s and s/bgnd, recorded during IRQ
    411  02e8 00                 lightpen_xpos    !fill 1                                  ; lightpen position recorded during IRQ
-   412  02e9 00                 lightpen_ypos    !fill 1
+   412  02e9 00                 lightpen_ypos    !fill 1                                  
    413                          
    414                          ; dejavu *=*+1  ;'cold' or 'warm' reset status (must be in page 5!)????
    415                          
@@ -421,11 +421,11 @@
    419                          ; .page
    420                          ; BASIC indirect vectors
    421                          
-   422                          * = $02f7
+   422                                           * = $02f7                                
    423                          
    424  02f7 000000             usrpok           !fill 3                                  ; USR vector (must be set by application)
    425                          
-   426                          vectors_begin
+   426                          vectors_begin                                             
    427  02fa 0000               iAutoScroll      !fill 2                                  ; AutoScroll vector
    428  02fc 0000               esc_fn_vec       !fill 2                                  ; Escape Function vector
    429  02fe 0000               graphic_vector   !fill 2                                  ; Graphic Kernel vector (was 'bnkvec')
@@ -445,24 +445,24 @@
    443                          ; Remainder of this area reserved for Kernel indirects & Kernel RAM code
    444                          
    445                          ; .page
-   446                          * = $0400                                ; BASIC's run-time stack (2 pages)
+   446                                           * = $0400                                ; BASIC's run-time stack (2 pages)
    447                          stktop                                                    ; (also used by BOOT SYS and Monitor)
-   448                          stkbot           = $05ff
+   448                          stkbot           = $05ff                                  
    449                          
    450                          
-   451                          * = $0600                                ; Sprite definitions (2 pages, must be below $1000)
-   452                          sprite_base
+   451                                           * = $0600                                ; Sprite definitions (2 pages, must be below $1000)
+   452                          sprite_base                                               
    453                          
    454                          
-   455                          * = $0800
+   455                                           * = $0800                                
    456                          screen_start                                              ; Text display screen
-   457                          * = *+2000
+   457                                           * = *+2000                               
    458                          
-   459                          sprite_ptrs_40   = screen_start+$3f8
-   460                          sprite_ptrs_80   = screen_start+$7f8
+   459                          sprite_ptrs_40   = screen_start+$3f8                      
+   460                          sprite_ptrs_80   = screen_start+$7f8                      
    461                          
    462                          ; .page
-   463                          * = $1170                                ; previous to this used by Kernel
+   463                                           * = $1170                                ; previous to this used by Kernel
    464                          
    465  1170 0000               oldlin           !fill 2                                  ; BASIC storage
    466  1172 0000               oldtxt           !fill 2                                  ; BASIC storage
@@ -505,11 +505,11 @@
    503  1191 0000000000000000...savram           !fill 67                                 ; buffer used by MOVSPR, SPRDEF, SAVSPR, and DOS parser
    504                          
    505                          xabs             = savram                                 ; movspr_line calculations   [910809]
-   506                          yabs             = savram+2
-   507                          xsgn             = savram+4
-   508                          ysgn             = savram+6
-   509                          fct              = savram+8
-   510                          errval           = savram+12
+   506                          yabs             = savram+2                               
+   507                          xsgn             = savram+4                               
+   508                          ysgn             = savram+6                               
+   509                          fct              = savram+8                               
+   510                          errval           = savram+12                              
    511                          
    512                          ; .page
    513                          ; PRINT USING definitions & storage  (24 bytes)
@@ -627,8 +627,8 @@
    625  11f5 00                 vtemp1           !fill 1                                  ; used by sprite math stuff ????was base page
    626  11f6 00                 vtemp2           !fill 1                                  ; ????was base page
    627  11f7 00                 vtemp3           !fill 1                                  ; misc. graphic temp storage
-   628  11f8 00                 vtemp4           !fill 1
-   629  11f9 00                 vtemp5           !fill 1
+   628  11f8 00                 vtemp4           !fill 1                                  
+   629  11f9 00                 vtemp5           !fill 1                                  
    630                          
    631                          ; mvdflg *=*+1  ;flag if 10k hires allocated ???? this stuff was base page
    632                          ; colsel *=*+1  ;current color selected
@@ -674,10 +674,10 @@
    672                          ; Sprite stuff
    673                          
    674  11ff 00000000           savsiz           !fill 4                                  ; temp work locations for SSHAPE, SPRSAV, MOVSPR_TO
-   675                          lesser
+   675                          lesser                                                    
    676  1203 00                 sprtmp_1         !fill 1                                  ; temp for SPRSAV
-   677                          greatr
-   678  1204 00                 sprtmp_2         !fill 1
+   677                          greatr                                                    
+   678  1204 00                 sprtmp_2         !fill 1                                  
    679                          
    680  1205 0000000000000000...sprite_data      !fill 88                                 ; speed/direction tables for 8 sprites, 11 bytes each
    681                          ;   move ang/dist move line
@@ -689,7 +689,7 @@
    687                          ;  7,8 total-X  fct2
    688                          ;  9,10 total-Y  error
    689                          
-   690                          init_as_0        = *-sprite_data-1
+   690                          init_as_0        = *-sprite_data-1                        
    691                          
    692                          ; vic_save *=*+21  ;copy of VIC reg's, used to update chip during retrace
    693                          
@@ -704,12 +704,12 @@
    702  1269 000000000000       waveform         !fill 6                                  ; Waveforms for each voice   [910612] stereo
    703                          
    704  126f 00                 voice            !fill 1                                  ; Play note parameters
-   705  1270 00                 octave           !fill 1
-   706  1271 00                 sharp            !fill 1
-   707  1272 00                 dnote            !fill 1
+   705  1270 00                 octave           !fill 1                                  
+   706  1271 00                 sharp            !fill 1                                  
+   707  1272 00                 dnote            !fill 1                                  
    708  1273 00                 tempo_rate       !fill 1                                  ; duration of whole note 4/4 time = 24/rate
-   709  1274 0000               pitch            !fill 2
-   710  1276 0000               ntime            !fill 2
+   709  1274 0000               pitch            !fill 2                                  
+   710  1276 0000               ntime            !fill 2                                  
    711                          
    712  1278 00000000           filters1         !fill 4                                  ; Volume & Filter parameters   [910612] was 5
    713  127c 00000000           filters2         !fill 4                                  ; [910612] stereo
@@ -717,13 +717,13 @@
    715  1284 00                 fltflg           !fill 1                                  ; temp
    716                          
    717  1285 00                 tonnum           !fill 1                                  ; Tune Envelope stuff
-   718  1286 000000             tonval           !fill 3
+   718  1286 000000             tonval           !fill 3                                  
    719                          
    720  1289 0000000000000000...atktab           !fill 10                                 ; Tune Envelopes
-   721  1293 0000000000000000...sustab           !fill 10
-   722  129d 0000000000000000...wavtab           !fill 10
-   723  12a7 0000000000000000...pulslw           !fill 10
-   724  12b1 0000000000000000...pulshi           !fill 10
+   721  1293 0000000000000000...sustab           !fill 10                                 
+   722  129d 0000000000000000...wavtab           !fill 10                                 
+   723  12a7 0000000000000000...pulslw           !fill 10                                 
+   724  12b1 0000000000000000...pulshi           !fill 10                                 
    725                          
    726  12bb 00                 parcnt           !fill 1                                  ; temp: envelope
    727  12bc 00                 nibble           !fill 1                                  ; temp: envelope, filter
@@ -731,7 +731,7 @@
    729                          ; .page
    730                          ; SOUND command stuff
    731                          
-   732  12bd 00                 sound_voice      !fill 1
+   732  12bd 00                 sound_voice      !fill 1                                  
    733  12be 000000000000       sound_time_lo    !fill 3+3                                ; [910612] stereo
    734  12c4 000000000000       sound_time_hi    !fill 3+3                                ; [910612] stereo
    735  12ca 000000000000       sound_max_lo     !fill 3+3                                ; [910612] stereo
@@ -745,76 +745,76 @@
    743  12fa 000000000000       sound_freq_hi    !fill 3+3                                ; [910612] stereo
    744                          
    745                          ;above must end before $1300
-   746                          * = $1160
+   746                                           * = $1160                                
    747                          ;below must end before $1170
    748                          
-   749  1160 00                 temp_time_lo     !fill 1
-   750  1161 00                 temp_time_hi     !fill 1
-   751  1162 00                 temp_max_lo      !fill 1
-   752  1163 00                 temp_max_hi      !fill 1
-   753  1164 00                 temp_min_lo      !fill 1
-   754  1165 00                 temp_min_hi      !fill 1
-   755  1166 00                 temp_direction   !fill 1
-   756  1167 00                 temp_step_lo     !fill 1
-   757  1168 00                 temp_step_hi     !fill 1
-   758  1169 00                 temp_freq_lo     !fill 1
-   759  116a 00                 temp_freq_hi     !fill 1
-   760  116b 00                 temp_pulse_lo    !fill 1
-   761  116c 00                 temp_pulse_hi    !fill 1
-   762  116d 00                 temp_waveform    !fill 1
+   749  1160 00                 temp_time_lo     !fill 1                                  
+   750  1161 00                 temp_time_hi     !fill 1                                  
+   751  1162 00                 temp_max_lo      !fill 1                                  
+   752  1163 00                 temp_max_hi      !fill 1                                  
+   753  1164 00                 temp_min_lo      !fill 1                                  
+   754  1165 00                 temp_min_hi      !fill 1                                  
+   755  1166 00                 temp_direction   !fill 1                                  
+   756  1167 00                 temp_step_lo     !fill 1                                  
+   757  1168 00                 temp_step_hi     !fill 1                                  
+   758  1169 00                 temp_freq_lo     !fill 1                                  
+   759  116a 00                 temp_freq_hi     !fill 1                                  
+   760  116b 00                 temp_pulse_lo    !fill 1                                  
+   761  116c 00                 temp_pulse_hi    !fill 1                                  
+   762  116d 00                 temp_waveform    !fill 1                                  
    763                          
    764  116e 00                 pot_temp_1       !fill 1                                  ; temporaries for 'POT' function
-   765  116f 00                 pot_temp_2       !fill 1
+   765  116f 00                 pot_temp_2       !fill 1                                  
    766                          
    767                          ; .page
-   768                          * = $1300
+   768                                           * = $1300                                
    769                          
    770  1300 0000000000000000...dosstr           !fill 256                                ; DOS input/output string buffer
    771                          
    772                          ; .page
-   773                          * = $1f00                                ; Graphics Kernel Interface
+   773                                           * = $1f00                                ; Graphics Kernel Interface
    774                          
    775  1f00 00                 GKI__parm1       !fill 1                                  ; ml interface parm values
-   776  1f01 00                 GKI__parm2       !fill 1
-   777  1f02 00                 GKI__parm3       !fill 1
-   778  1f03 00                 GKI__parm4       !fill 1
-   779  1f04 00                 GKI__parm5       !fill 1
-   780  1f05 00                 GKI__parm6       !fill 1
-   781  1f06 00                 GKI__parm7       !fill 1
-   782  1f07 00                 GKI__parm8       !fill 1
-   783  1f08 00                 GKI__parm9       !fill 1
-   784  1f09 00                 GKI__parm10      !fill 1
-   785  1f0a 00                 GKI__parm11      !fill 1
-   786  1f0b 00                 GKI__parm12      !fill 1
-   787  1f0c 00                 GKI__parm13      !fill 1
-   788  1f0d 00                 GKI__parm14      !fill 1
-   789  1f0e 00                 GKI__parm15      !fill 1
-   790  1f0f 00                 GKI__parm16      !fill 1
-   791  1f10 00                 GKI__parm17      !fill 1
+   776  1f01 00                 GKI__parm2       !fill 1                                  
+   777  1f02 00                 GKI__parm3       !fill 1                                  
+   778  1f03 00                 GKI__parm4       !fill 1                                  
+   779  1f04 00                 GKI__parm5       !fill 1                                  
+   780  1f05 00                 GKI__parm6       !fill 1                                  
+   781  1f06 00                 GKI__parm7       !fill 1                                  
+   782  1f07 00                 GKI__parm8       !fill 1                                  
+   783  1f08 00                 GKI__parm9       !fill 1                                  
+   784  1f09 00                 GKI__parm10      !fill 1                                  
+   785  1f0a 00                 GKI__parm11      !fill 1                                  
+   786  1f0b 00                 GKI__parm12      !fill 1                                  
+   787  1f0c 00                 GKI__parm13      !fill 1                                  
+   788  1f0d 00                 GKI__parm14      !fill 1                                  
+   789  1f0e 00                 GKI__parm15      !fill 1                                  
+   790  1f0f 00                 GKI__parm16      !fill 1                                  
+   791  1f10 00                 GKI__parm17      !fill 1                                  
    792                          
    793  1f11 00                 GKI__subparm1    !fill 1                                  ; subroutine parm values
-   794  1f12 00                 GKI__subparm2    !fill 1
-   795  1f13 00                 GKI__subparm3    !fill 1
-   796  1f14 00                 GKI__subparm4    !fill 1
-   797  1f15 00                 GKI__subparm5    !fill 1
+   794  1f12 00                 GKI__subparm2    !fill 1                                  
+   795  1f13 00                 GKI__subparm3    !fill 1                                  
+   796  1f14 00                 GKI__subparm4    !fill 1                                  
+   797  1f15 00                 GKI__subparm5    !fill 1                                  
    798                          
    799  1f16 00                 GKI__temp1       !fill 1                                  ; local variables within subroutines
-   800  1f17 00                 GKI__temp2       !fill 1
-   801  1f18 00                 GKI__temp3       !fill 1
-   802  1f19 00                 GKI__temp4       !fill 1
-   803  1f1a 00                 GKI__temp5       !fill 1
-   804  1f1b 00                 GKI__temp6       !fill 1
-   805  1f1c 00                 GKI__temp7       !fill 1
-   806  1f1d 00                 GKI__temp8       !fill 1
-   807  1f1e 00                 GKI__temp9       !fill 1
-   808  1f1f 00                 GKI__temp10      !fill 1
-   809  1f20 00                 GKI__temp11      !fill 1
-   810  1f21 00                 GKI__temp12      !fill 1
-   811  1f22 00                 GKI__temp13      !fill 1
-   812  1f23 00                 GKI__temp14      !fill 1
-   813  1f24 00                 GKI__temp15      !fill 1
-   814  1f25 00                 GKI__temp16      !fill 1
-   815  1f26 00                 GKI__temp17      !fill 1
+   800  1f17 00                 GKI__temp2       !fill 1                                  
+   801  1f18 00                 GKI__temp3       !fill 1                                  
+   802  1f19 00                 GKI__temp4       !fill 1                                  
+   803  1f1a 00                 GKI__temp5       !fill 1                                  
+   804  1f1b 00                 GKI__temp6       !fill 1                                  
+   805  1f1c 00                 GKI__temp7       !fill 1                                  
+   806  1f1d 00                 GKI__temp8       !fill 1                                  
+   807  1f1e 00                 GKI__temp9       !fill 1                                  
+   808  1f1f 00                 GKI__temp10      !fill 1                                  
+   809  1f20 00                 GKI__temp11      !fill 1                                  
+   810  1f21 00                 GKI__temp12      !fill 1                                  
+   811  1f22 00                 GKI__temp13      !fill 1                                  
+   812  1f23 00                 GKI__temp14      !fill 1                                  
+   813  1f24 00                 GKI__temp15      !fill 1                                  
+   814  1f25 00                 GKI__temp16      !fill 1                                  
+   815  1f26 00                 GKI__temp17      !fill 1                                  
    816                          
    817                          ;.end
    818                          ; .page
@@ -822,15 +822,15 @@
    820                          
    821                          ; Addresses of OS parameters referenced by BASIC:
    822                          
-   823                          _6510_data_reg   = $01
+   823                          _6510_data_reg   = $01                                    
    824                          _bank            = $02                                    ; reg's for Kernel xxx_FAR routines (used by SYS)
-   825                          _pchi            = $03
-   826                          _pclo            = $04
-   827                          _s_reg           = $05
-   828                          _a_reg           = $06
-   829                          _x_reg           = $07
-   830                          _y_reg           = $08
-   831                          _z_reg           = $09
+   825                          _pchi            = $03                                    
+   826                          _pclo            = $04                                    
+   827                          _s_reg           = $05                                    
+   828                          _a_reg           = $06                                    
+   829                          _x_reg           = $07                                    
+   830                          _y_reg           = $08                                    
+   831                          _z_reg           = $09                                    
    832                          
    833                          _vicIRQ          = $a0                                    ; VIC IRQ flag register at time of IRQ
    834                          _starting_addr   = $ac                                    ; address BLOAD loaded to
@@ -843,9 +843,9 @@
    841                          _pnt             = $e0                                    ; Editor screen address at cursor
    842                          
    843                          _screen_bottom   = $e4                                    ; these describe the current window
-   844                          _screen_top      = $e5
-   845                          _screen_left     = $e6
-   846                          _screen_right    = $e7
+   844                          _screen_top      = $e5                                    
+   845                          _screen_left     = $e6                                    
+   846                          _screen_right    = $e7                                    
    847                          
    848                          _color           = $f1                                    ; text color      [910722]
    849                          _autoinsert      = $f6                                    ; enable/disable auto insert mode
@@ -874,15 +874,15 @@
    872                          ; Addresses of I/O areas referenced by BASIC:
    873                          
    874                          _red             = $d100                                  ; VIC palette (I/O block)
-   875                          _green           = $d200
-   876                          _blue            = $d300
+   875                          _green           = $d200                                  
+   876                          _blue            = $d300                                  
    877                          
    878                          ; Addresses of Kernel entry points referenced by BASIC:
    879                          
-   880                          _print           = $e00c
+   880                          _print           = $e00c                                  
    881                          _mouse           = $e01b                                  ; [910122]
-   882                          _set_window      = $e02d
-   883                          _palette_init    = $e027
+   882                          _set_window      = $e02d                                  
+   883                          _palette_init    = $e027                                  
    884                          _cursor          = $e030                                  ; [910228]
    885                          ;_ldtb2 = $e033
    886                          ;_ldtb1 = $e04c
@@ -904,26 +904,26 @@
    902                          _cmp_far         = $ff7a                                  ; compare a byte to any bank
    903                          _primm           = $ff7d                                  ; print immediate
    904                          
-   905                          _setmsg          = $ff90
-   906                          _readst          = $ffb7
-   907                          _setlfs          = $ffba
-   908                          _setnam          = $ffbd
-   909                          _open            = $ffc0
-   910                          _close           = $ffc3
-   911                          _chkin           = $ffc6
-   912                          _chkout          = $ffc9
-   913                          _clrch           = $ffcc
-   914                          _basin           = $ffcf
-   915                          _bsout           = $ffd2
-   916                          _loadsp          = $ffd5
-   917                          _savesp          = $ffd8
-   918                          _SetTime         = $ffdb
-   919                          _ReadTime        = $ffde
-   920                          _stop            = $ffe1
-   921                          _getin           = $ffe4
-   922                          _clall           = $ffe7
-   923                          _screen_org      = $ffed
-   924                          _plot            = $fff0
+   905                          _setmsg          = $ff90                                  
+   906                          _readst          = $ffb7                                  
+   907                          _setlfs          = $ffba                                  
+   908                          _setnam          = $ffbd                                  
+   909                          _open            = $ffc0                                  
+   910                          _close           = $ffc3                                  
+   911                          _chkin           = $ffc6                                  
+   912                          _chkout          = $ffc9                                  
+   913                          _clrch           = $ffcc                                  
+   914                          _basin           = $ffcf                                  
+   915                          _bsout           = $ffd2                                  
+   916                          _loadsp          = $ffd5                                  
+   917                          _savesp          = $ffd8                                  
+   918                          _SetTime         = $ffdb                                  
+   919                          _ReadTime        = $ffde                                  
+   920                          _stop            = $ffe1                                  
+   921                          _getin           = $ffe4                                  
+   922                          _clall           = $ffe7                                  
+   923                          _screen_org      = $ffed                                  
+   924                          _plot            = $fff0                                  
    925                          
    926                          ;.end
    927                          ; .page

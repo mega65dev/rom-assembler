@@ -1,58 +1,57 @@
-c65.line 
- cmp #input_token ;special check for 'line input#'  [910103] 
- beq linputn  ; yes 
- cmp #input_token+1 ;special check for 'line input' 
- beq linput  ; yes 
+cursor cmp #on_token  ;Check for ON | OFF 
+ clc 
+ beq 20$   ; turn cursor on (.c=0) 
+ cmp #esc_command_token 
+ bne 1$   ; (might be a function) 
+ jsr chkesc 
+ cmp #off_token  ; turn cursor off (.c=1) 
+ beq 20$ 
+ bra snerr 
  
- jsr CheckGraphicMode 
- jsr sadwrd  ;get x0 
- sty GKI__parm1 
- sta GKI__parm2 
- sty GKI__parm5  ;      [910228] 
- sta GKI__parm6 
+1$ pha   ;Evaluate cursor position parameters 
+ sec 
+ jsr _plot  ; get current cursor position & save it 
+ stx srow 
+ sty column 
  
- jsr comsad  ; get y0 
- sty GKI__parm3 
- sta GKI__parm4 
- sty GKI__parm7  ;      [910228] 
- sta GKI__parm8 
+ ldx column  ; get new column, default=current column 
+ pla 
+ cmp #',' 
+ beq 10$   ;  not given, use default 
+ jsr getbyt 
+10$ stx column 
+ ldx srow   ; get new row, default=current row 
+ jsr optbyt 
+; stx srow 
+ ldy column 
+ clc 
+ jsr _plot  ; set new cursor position 
+ bcs fcerr  ;  error if bad position 
  
- jsr optsad  ; get x1     [910228] 
- bcc 10$   ; use x0 
-1$ sty GKI__parm5 
- sta GKI__parm6 
+ jsr optzer  ;Get new cursor type   ???? assumes screen output 
+ bcc 30$   ; not given, exit 
+ lda #esc 
+ jsr _bsout  ; use escape sequence to set 
+ txa 
+ and #1 
+ eor #1   ;      [910808] 
+ clc 
+ adc #'E'  ; 0=F=flash, 1=E=solid 
+ jmp _bsout  ;set it and exit 
  
-10$ jsr optsad  ; get y1     [910228] 
- bcc 20$   ; use y0 
- sty GKI__parm7 
- sta GKI__parm8 
+20$ jsr _cursor  ;Turn cursor ON or OFF per .c 
  
-20$ jsr ($8018)  ;draw a line from x0,y0 to x1,y1 
+ jsr chrget  ;eat token, get next character 
+ beq 30$   ; eol- exit 
+ jsr chkcom  ; else, must be comma 
+ bra 1$   ;  it is- go evaluate position 
  
- ldx #3 
-30$ lda GKI__parm5,x  ;copy x1,y1 to x0,y0 
- sta GKI__parm1,x 
- dex 
- bpl 30$ 
- 
- jsr optsad  ;more? 
- bcs 1$   ; yes, continue 
- rts 
+30$ rts   ; eol 
  
  .page 
-;***************************************************************** 
-;* BOX   draw a 4-sided figure 
-;* 
-;*  Syntax :  BOX x0,y0, x1,y1, x2,y2, x3,y3 [,solid flag] 
-;* 
-;* parm1,2   = x0  (lo/hi) 
-;* parm3,4   = y0 
-;* parm5,6   = x1 
-;* parm7,8   = y1 
-;* parm9,10  = x2 
-;* parm11,12 = y2 
-;* parm13,14 = x3 
-;* parm15,16 = y3 
-;* parm17    = solid flag 
-;***************************************************************** 
+;************************************************************************ 
+;*   RCURSOR Returns in variable list current cursor position * 
+;*         * 
+;*   Syntax: RCURSOR [column [,row] ]    * 
+;************************************************************************ 
  

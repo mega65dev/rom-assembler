@@ -1,60 +1,38 @@
-rnd jsr sign  ;get sign into .a 
+joy jsr conint  ;get 1 byte arg in x 
+ dex 
+ cpx #2   ;make sure arg. is valid 
+ bcs fcerr  ;>1, error 
  
-rnd_0 bmi 20$   ;/// entry from jump table 
+ txa 
+ eor #1   ;invert to match legends on case 
+ tax 
+ php   ;save status 
+ 
+; jsr put_io_in_map 
+ sei   ;disable IRQ to inhibit kybd 
+ lda d1pra 
+ pha   ;save kybd output lines 
+ ldy #$ff 
+ sty d1pra  ;set to not read any kybd inputs 
+ 
+10$ lda d1pra,x  ;read joystick values 
+ cmp d1pra,x  ;debounce 
  bne 10$ 
  
- 
-; Get value from hardware 
- 
- jsr go_slow  ;Use CIA#1 timer B & SID#2 pot X & Y for seeds  [910314] 
- lda sid2+25  ; go slow to read POT-X 
- asl a 
- asl a 
- asl a 
- asl a 
- ora sid2+26  ; and POT-Y 
- eor vic+18  ;   ???? should be okay- we're in Slow mode 
- sta facmoh 
- jsr go_fast  ; restore speed 
- lda d1pra+6  ; timer B is free-running 
- sta facmo 
- lda d1pra+7 
- sta faclo 
- eor facho 
- adc facmoh 
- eor facmo 
- adc faclo 
- sta facho 
- bra 30$ 
- 
- .page 
-10$ lda #<rndx  ;get last one into FAC 
- ldy #>rndx 
- jsr movfm 
- lda #<rmulc 
- ldy #>rmulc  ;FAC was zero.  restore last one 
- jsr rommlt  ;multiply by random constant 
- lda #<raddc 
- ldy #>raddc 
- jsr romadd  ;add random constant 
- 
-20$ ldx faclo 
- lda facho 
- sta faclo 
- stx facho  ;reverse hi and lo 
- ldx facmoh 
- lda facmo 
- sta facmoh 
- stx facmo 
- 
-30$ lda #0   ;strnex.  make number positive 
- sta facsgn 
- lda facexp  ;put exp where it will 
- sta facov  ;be shifted in by normal 
- lda #$80 
- sta facexp  ;make result between 0 and 1 
- jsr normal  ;normalize 
- ldx #<rndx 
- ldy #>rndx 
- bra movmf  ;put new one into memory 
+ tax   ;save joystick values 
+ pla 
+ sta d1pra  ;reset kybd output lines 
+ txa   ;restore joystick values 
+ plp   ;restore status 
+ and #$0f  ;test which direction 
+ tay 
+ lda joytab-5,y  ;get direction indicator 
+ tay   ;save direction : 0-8 
+ txa   ;restore joystick value 
+ and #$10  ;test if button triggered 
+ bne 20$   ;skip if not 
+ tya 
+ ora #$80  ;show trigger depressed 
+ tay 
+20$ bra sngflt  ;float 1 byte arg in y. 
  

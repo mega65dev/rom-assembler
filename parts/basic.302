@@ -1,41 +1,39 @@
-graphic_kernel   ; ...via indirect 
- jmp ($8002) 
+PopParms   ;      [910820] 
+ ply   ;Grab return address 
+ plz 
  
+ ldx #0 
+10$ pla   ;Restore Graphics parameters 
+ sta GKI__parm1,x 
+ inx 
+ cpx #17 
+ bcc 10$ 
+ 
+ pla   ;Restore 'poker' value 
+ sta linnum+1 
+ pla 
+ sta linnum 
+ 
+ phz   ;Restore return address 
+ phy 
+ rts 
+ 
+;.end 
  .page 
-; C65 Graphic Kernel Jump Table      [910826] 
-; 
-; 8000 init   ;sets up graphic vars 
-; 8002 parser   ;GRAPHIC ML Parser???? 
-; 
-; 8004 kg65.start-1  ;0 commands 
-; 8006 kg65.screendef-1 ;1 
-; 8008 kg65.screenopen-1 ;2 
-; 800a kg65.screenclose-1 ;3 
-; 800c kg65.screenclear-1 ;4 
-; 800e kg65.screen-1  ;5 
-; 8010 kg65.setpen-1  ;6 
-; 8012 kg65.setpalette-1 ;7 
-; 8014 kg65.setdmode-1  ;8 
-; 8016 kg65.setdpat-1  ;9 
-; 8018 kg65.line-1  ;10 
-; 801a kg65.box-1  ;11 
-; 801c kg65.circle-1  ;12 
-; 801e kg65.polygon-1  ;13 
-; 8020 kg65.ellipse-1  ;14 
-; 8022 kg65.viewpclr-1  ;15 
-; 8024 kg65.copy-1  ;16 
-; 8026 kg65.cut-1  ;17 
-; 8028 kg65.paste-1  ;18 
-; 802a kg65.load-1  ;19 
-; 802c kg65.char-1  ;20 
-; 802e kg65.paint-1  ;21 
-; 8030 kg65.viewpdef-1  ;22 
-; 8032 kg65.f.pixel-1  ;23 
-; 8034 kg65.f.rpalette-1 ;24 
-; 8036 kg65.f.index2color-1 ;25 
-; 8038 kg65.f.rgraphic  ;26 
+ .subttl RSPRITE Function 
  
- .ifgt *-$8000 
- .messg ***ROM OVERFLOW: $8000 
- .endif 
- .end 
+;****************************************************************** 
+;* RSPRITE - Return sprite information 
+;* 
+;* Syntax : RSPRITE (sprite_number, argument) 
+;* 
+;* Where  : sprite_number = [0..7] 
+;*   argument = [0..5] 
+;*   0 : enabled?   (y(1)/n(0)) 
+;*   1 : color?     (0-15) 
+;*   2 : priority over background? (y(1)/n(0)) 
+;*   3 : expand in x direction? (y(1)/n(0)) 
+;*   4 : expand in Y direction? (y(1)/n(0)) 
+;*   5 : multicolor sprite?  (y(1)/n(0)) 
+;****************************************************************** 
+ 

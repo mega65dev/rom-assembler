@@ -1,39 +1,21 @@
-fre jsr conint ;get integer argument in .x 
- cpx #1  ;which bank? 
- beq 20$  ; go do bank one 
- cpx #2  ; go do expansion banks   [910107] 
- beq 30$  ; else it must be bank zero 
- bcs fcerr ;  any other is unpleasant to talk about 
+GetTimeDigit 
+ lda #0   ;default to '0' 
+ cpy count 
+ bcs 10$   ;exit if at end of string (carry set) 
  
- sec  ;FRE(text_bank) 
- lda max_mem_0 
- sbc text_top 
- tay  ; set up result for nosflt 
- lda max_mem_0+1 
- sbc text_top+1 
- bra 40$  ; assumes text_top < max_mem 
+ jsr indin1_ram1  ;else get a character from string 
+ iny   ;point to next character 
+ cmp #'.'  ;       [910103] 
+ beq 10$   ; terminator (period) (carry set) 
+ cmp #'0'  ;check character, only 0-9 allowed 
+ bcc fcerr  ; too small 
+ cmp #':' 
+ bcc 10$   ; just right  (carry clear) 
+ bne fcerr  ; too big 
+    ; falls through if colon (carry set) 
+ 
+10$ and #$0f  ;make BCD 
+ rts 
  
  
-20$ jsr garba2 ;FRE(var_bank) do garbage collect first 
- sec 
- lda fretop 
- sbc strend 
- tay 
- lda fretop+1 
- sbc strend+1 
- bra 40$ 
- 
-30$ ldy _expansion ;FRE(expansion banks)    [910107] 
- lda #0 
- 
-40$ bra nosflt ; go float the number (y,a)=(lo,hi) 
- 
-;.end 
- .page 
- .subttl  VAL 
- 
-; The VAL function takes a string and turns it into a number by interpreting 
-; the PETSCII digits etc.  Except for the problem that a terminator must be 
-; supplied by replacing the character beyond the string, VAL is merely a call 
-; to floating point input (FIN). 
  

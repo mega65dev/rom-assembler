@@ -1,57 +1,24 @@
-movspr_to_irq   ;      [910809] 
- phy   ;sprite # 
- and #$3f  ;speed factor 
- taz 
- tya   ;vic sprite index 
- asl a 
- tay 
+Suck_DS 
+ ldx dosfa  ;fa 
+ lda #doslfn  ;la (reserved la) 
+ ldy #$6f  ;sa (command channel) 
+ jsr _setlfs 
+ lda #0   ;no name (so no setbank) 
+ jsr _setnam 
+ jsr _open  ;get command channel 
+ ldx #doslfn 
+ jsr _chkin 
+ bcs 20$   ; skip input if problem 
  
-10$ sec   ;for i = 1 to abs(greatr) 
- lda sprite_data+1,x 
- sbc #1 
- sta sprite_data+1,x 
- bcs 20$ 
- lda sprite_data+2,x 
- sbc #0 
- sta sprite_data+2,x 
- bcs 20$ 
- lda #0 
- sta sprite_data,x ;done!  sprite is at its destination 
- ply   ;remember sprite # 
- rts 
+10$ jsr _basin  ;read disk error message 
+ cmp #cr 
+ bne 10$   ; loop until eol 
  
-20$ lda sprite_data+3,x ;ptr(lesser) 
- bit sprite_data+10,x 
- bmi 30$   ;if e > 0 
- bit sprite_data+3,x ; sgn(lesser) (b7=1=neg, b6=1=pos, else 0) 
- jsr drwinc  ; pos(lesser) = pos(lesser) + sgn(lesser) 
+20$ jsr _clrch  ;shut down command channel 
+ lda #doslfn 
+ sec   ; not a real close 
+ jmp _close  ; close it 
  
- lda sprite_data+4,x ;ptr(greater) 
-30$ lsr a   ;which f? 
- bcs 40$ 
- lda sprite_data+9,x ; e = e + f1 
- adc sprite_data+5,x 
- sta sprite_data+9,x 
- lda sprite_data+10,x 
- adc sprite_data+6,x 
- sta sprite_data+10,x 
- bra 50$ 
- 
-40$ clc 
- lda sprite_data+9,x ; e = e + f2 
- adc sprite_data+7,x 
- sta sprite_data+9,x 
- lda sprite_data+10,x 
- adc sprite_data+8,x 
- sta sprite_data+10,x 
- 
-50$ lda sprite_data+4,x ;ptr(greater) 
- bit sprite_data+4,x ;sgn(greater) (b7=1=neg, b6=1=pos, else 0) 
- jsr drwinc  ;pos(greater) = pos(greater) + sgn(greater) 
- 
- dez   ;count 
- bne 10$ 
- ply   ;remember sprite # 
- rts   ;done this frame 
- 
+ .page 
+; R-U-sure subroutine 
  

@@ -1,21 +1,48 @@
-slr1 dex   ;.x = ptr to temp. string descriptor 
- lda 0,x   ;msb of ptr to string 
- sta tempf2+1 
- dex 
- lda 0,x   ;lsb of ptr to string 
- sta tempf2 
- dex 
- lda 0,x   ;string length 
- pha   ;save for later test 
- clc 
- adc tempf2  ;want ptr to string's backpointer 
- sta tempf2 
- bcc 1$ 
- inc tempf2+1 
-1$ pla   ;.a=len & set z flag; .x=next desc. ptr 
- rts 
+fretms cpy lastpt+1  ;last entry to temp? 
+ bne frerts 
+ cmp lastpt 
+ bne frerts 
+ sta temppt 
+ sbc #strsiz  ;point to lst one 
+ sta lastpt  ;update temp pointer 
+ ldy #0   ;also clears zflg so we do rest of fretmp 
+frerts rts   ;all done 
  
 ;.end 
  .page 
- .subttl  Floating Point Math Package (CODE17) 
+ .subttl Garbage Collection 
  
+;  Get space for a string, perhaps forcing garbage collection. 
+; 
+;  Entry:  a = # of chars 
+;  Exit:   (x,y) pointer to space, otherwise 
+;          blows off to 'out of string space' error 
+;          (also preserves .a and sets frespc= y,x = -> at space.) 
+ 
+ 
+getspa lsr garbfl ;signal no garbage collection yet 
+ 
+tryag2 tax  ;save in x also 
+ beq getrts ;length of 0 no go... 
+ pha  ;save a (length) on stack 
+ lda fretop ;lo byte 
+ sec  ;for subtract 
+ sbc #2  ;minus 2 (link bytes) 
+ ldy fretop+1 
+ bcs 10$ 
+ dey 
+10$ sta index1 ;save for later 
+ sty index1+1 
+ txa 
+ eor #$ff 
+ sec 
+ adc index1 
+ bcs 20$ 
+ dey 
+20$ cpy strend+1 
+ bcc garbag 
+ bne strfre 
+ cmp strend 
+ bcc garbag ;clean up 
+ 
+ .page 

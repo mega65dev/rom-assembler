@@ -1,72 +1,88 @@
-qplus cmp #'+'  ;plus sign? 
- bne fin1  ;yes, skip it 
+multrt rts 
  
-finc jsr fin_chrget 
+ .page 
+; Unpack a ROM constant into the FAC 
  
-findgq bcc findig 
+romupk sta index1 
+ sty index1+1 
+ ldy #4 
+ lda (index1),y ;it's in ROM, so ok to use ind 
+ sta arglo 
+ dey 
+ lda (index1),y 
+ sta argmo 
+ dey 
+ lda (index1),y 
+ sta argmoh 
+ dey 
+ lda (index1),y 
+ sta argsgn 
+ eor facsgn 
+ sta arisgn 
+ lda argsgn 
+ ora #$80 
+ sta argho 
+ dey 
+ lda (index1),y 
+ sta argexp 
+ lda facexp ;sets code of facexp 
+ rts 
  
-fin1 cmp #'.'  ;the dp? 
- beq findp  ;no kidding 
- cmp #'E'  ;exponent follows 
- bne fine  ;no 
+ .page 
+; Unpack a RAM constant into the FAC 
  
- jsr fin_chrget  ;yes, get another, to check sign of exponent 
- bcc fnedg1  ;is it a digit. (easier than backing up pointer) 
- cmp #minus_token ;minus? 
- beq finec1  ;negate 
- cmp #'-'  ;minus sign? 
- beq finec1 
- cmp #plus_token  ;plus? 
- beq finec 
- cmp #'+'  ;plus sign? 
- beq finec 
- bra finec2 
+conupk sta index1 
+ sty index1+1 
  
-finec1 ror expsgn  ;turn it on 
+; lda mmu_config_reg 
+; pha   ;preserve caller's memory config???? 
  
-finec jsr fin_chrget  ;get another 
+ ldy #4 
+ jsr indin1_ram1 
+ sta arglo 
+ dey 
+ jsr indin1_ram1 
+ sta argmo 
+ dey 
+ jsr indin1_ram1 
+ sta argmoh 
+ dey 
+ jsr indin1_ram1 
+ sta argsgn 
+ eor facsgn 
+ sta arisgn 
+ lda argsgn 
+ ora #$80 
+ sta argho 
+ dey 
+ jsr indin1_ram1 
+ sta argexp 
  
-fnedg1 bcc finedg  ;it is a digit 
-finec2 bbr7 expsgn,fine 
- lda #0 
- sec 
- sbc tenexp 
- bra fine1 
+; pla 
+; sta mmu_config_reg ;restore caller's memory config???? 
  
-findp ror dptflg 
- bbr6 dptflg,finc 
+ lda facexp ;set codes of facexp 
+ rts 
  
-fine lda tenexp 
-fine1 sec 
- sbc deccnt  ;get number of places to shift 
- sta tenexp 
- beq finqng  ;negate? 
- bpl finmul  ;positive, so multiply 
+ .page 
+; Check special cases and add exponents for FMULT, FDIV 
  
-findiv jsr div10 
- inc tenexp  ;done? 
- bne findiv  ;no 
- bra finqng  ;yes 
+muldiv 
+ lda argexp ;exp of arg=0? 
+mldexp beq zeremv ;so we get zero exponent 
+ clc 
+ adc facexp ;result is in (a) 
+ bcc 10$  ;find (c) xor (n) 
+ bmi overr ;overflow if bits match 
+ clc 
+   .byte $2c 
  
- 
-finmul jsr mul10 
- dec tenexp  ;done? 
- bne finmul  ;no 
-finqng lda sgnflg 
- bmi negop  ;if negative, negate and return 
- rts   ;if positive, return 
- 
- 
- 
-findig pha 
- bbr7 dptflg,10$ 
- inc deccnt 
-10$ jsr mul10 
- pla   ;get it back 
- sec 
- sbc #'0' 
- jsr finlog  ;add it in 
- bra finc 
- 
+10$ bpl zeremv ;underflow 
+ adc #$80 ;add bias 
+ sta facexp 
+ beq zeroml ;zero the rest of it 
+ lda arisgn 
+ sta facsgn ;arisgn is result's sign 
+ rts  ;done 
  
  

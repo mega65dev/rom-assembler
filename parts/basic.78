@@ -1,45 +1,57 @@
-p3code 
- inx 
- lda fbuffr+1,x  ;get character from number 
- beq 30$   ;end of number 
+iline_10 
+ lda txtptr  ;save current txtptr 
+ sta oldlin 
+ lda txtptr+1 
+ sta oldlin+1 
+ jsr chrget 
+ bcs chk_quote  ;not a #... 
+ jsr linget  ;get line # from text 
+ jsr form_line  ;replace if this line # > n3 
+ lda oldlin  ;restore old txtptr 
+ sta txtptr 
+ lda oldlin+1 
+ sta txtptr+1 
  
- pha   ;save digit from new number 
- jsr chargt  ;get digit from old number 
- cmp #':'  ;command terminator or letter? 
- bcs 10$ 
- cmp #' '  ;space? (fix for goto10 :rem) 
- beq 10$ 
- sec 
- sbc #'0'  ;number? 
- sec 
- sbc #$d0 
- bcc 20$   ;digit...move on 
+ jsr chrget  ;skip over leading spaces 
+ dew txtptr  ;then backup (txtptr) by 1 
+ ldx #$ff 
+ lda z_p_temp_1  ;if this is pass2 then don't actually change 
+ beq p3code  ;if z=1 then pass3 => ok to change 
+ jsr p2code  ;renumber 'pass two': trial run to see if enough room 
+ jsr chrgot  ;re-get last character from BASIC text & rts 
  
-10$ jsr move_init  ;other char...move up 
- jsr moveup 
- inw text_top 
- 
-20$ pla 
- phx 
- ldy #0 
- jsr sta_far_txt  ;put new digit in new number (bleed-thru) 
- plx 
- bra p3code 
- 
- 
-30$ jsr chrget 
- bcs iline_20  ;old stuff after # is other char 
- 
-40$ jsr move_init  ;digit...move down 
- jsr movedown 
- dew text_top 
- jsr chrgot 
- bcc 40$   ;still digits... 
- 
- bra iline_20  ;branch always 
+iline_20 
+ cmp #','  ;comma from 'on'? 
+ beq iline_10  ;it is... 
+ bra chk_quote  ;no... 
  
  .page 
-;*************************** FORM_LINE ********************************* 
+;*********** This part of imbed_lines executed in pass 2 only ********** 
  
-; Remaps the destination line if it is greater than n3 
+p2code    ;updates text_top without actually changing lines 
+ inx 
+ lda fbuffr+1,x  ;get character from number 
+ beq 20$   ;end of number 
+ jsr chrget  ;get digit from old number 
+ bcc p2code  ;digit...move on 
+ 
+10$ inw fndpnt 
+ sec   ;have we run out of memory (theoretically)? 
+ lda fndpnt  ;(compare with limit-of-memory pointer) 
+ sbc max_mem_0 
+ lda fndpnt+1 
+ sbc max_mem_0+1 
+ bcs omerr  ;yes- out of memory error 
+ inx   ;no - next... 
+ lda fbuffr+1,x 
+ bne 10$ 
+15$ rts   ;no more 
+ 
+20$ jsr chrget 
+ bcs 15$   ;old stuff after # is other char 
+ dew fndpnt  ;digit...move down 
+ bra 20$   ;still digits... 
+ 
+ .page 
+;*********** This part of imbed_lines executed in pass 3 only ********** 
  

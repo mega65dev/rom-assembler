@@ -1,18 +1,19 @@
-if_true jsr chrgot 
- beq 20$  ;branch if end of statement 
- bcs 10$  ;branch if not a number 
- bra goto ;here if of the form 'THEN line#' 
- 
-10$ cmp #esc_command_token ;is this the beginning of a b-block? 
+if_false 
+ jsr chrgot ;is there a b-block? 
+ cmp #esc_command_token 
  bne 20$  ;no, must be an escape command 
  iny  ;might be, look at escape token 
  jsr indtxt 
  cmp #begin_token 
- bne 20$ 
- jsr chrget ;skip over 'BEGIN' if so... 
- jsr chrget ;..and the second token, as well. 
+ bne 20$  ;branch if not 
+ jsr find_bend ;skip to end of b-block 
  
-20$ jsr chrgot ;get back original character, & set up flags 
- bra xeqcm3 ;..and go execute whatever it is 
+20$ jsr data ;may be 'else' clause. first skip over 'then' clause.. 
+ ldy #0 
+ jsr indtxt ;..and see if end of stmt or end of line 
+ beq rem  ;end of line, no 'else'. go to next line 
+ jsr chrget ;another statement on this line.. is it 'else'? 
+ cmp #else_token 
+ bne 20$  ;no, keep looking on this line 
+ jsr chrget ;yes! skip over token and execute clause (below) 
  
- .page 

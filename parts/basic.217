@@ -1,18 +1,29 @@
-dverify lda #1   ;flag 'verify' 
-   .byte $2c 
+dir ldx #doslfn 
+ jsr _chkin 
+ bcs dcat11  ; if problem?? 
+ jsr _readst  ; check status 
+ bne dcat11  ; exit if bad status 
+ jsr crdo  ;output new line 
+ ldy #3   ;loop counter 
  
+dcat3 sty t3   ;save counter 
  
+10$ jsr _basin  ;get char 
+ sta t4 
+ jsr _basin  ;get char 
+ sta t4+1 
+ jsr _readst  ; check status 
+ bne dcat11  ; exit if eof or bad status 
+ dec t3 
+ bne 10$   ;if not done 
  
-; DLOAD dfn 
+; Output blocks number 
  
-dload lda #0 
- sta verck  ;set load flag (for verify check later) 
+ ldx t4 
+ lda t4+1 
+ jsr linprt  ;output number 
+ lda #' ' 
+ jsr _bsout  ;output a space 
  
- bbr4 runmod,10$  ;PROGRAM or EDIT mode?    [910620] 
- bra edit_load  ; edit 
- 
-10$ lda #$e6  ;set error flags 
- jsr dosprs  ;parse the line 
- jsr chk2  ;check required parameters 
- 
+; Get name & output it 
  
