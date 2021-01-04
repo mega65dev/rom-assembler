@@ -1,101 +1,101 @@
-background                                                 ;; @@b4fc 285
-                 jsr getnyb                               ; Set Vic background color ;; @@b4fc 285
-                 stx vic+33                                ;; @@b4ff 285
-                 rts                                       ;; @@b502 285
- ;; @@b503 285
- ;; @@b503 285
- ;; @@b503 285
-border                                                     ;; @@b503 285
-                 jsr getnyb                               ; Set Vic border color ;; @@b503 285
-                 stx vic+32                                ;; @@b506 285
-                 rts                                       ;; @@b509 285
- ;; @@b50a 285
-; .page ;; @@b50a 285
-getcomnyb                                                  ;; @@b50a 285
-                 jsr chkcom                               ; check for comma ;; @@b50a 285
-getnyb                                                     ;; @@b50d 285
-                 jsr getbyt                               ; Get a nybble, check range (0-15) ;; @@b50d 285
-chknyb                                                     ;; @@b510 285
-                 cpx #16                                   ;; @@b510 285
-                 +lbcs fcerr                               ;; @@b512 285
-                 rts                                       ;; @@b515 285
- ;; @@b516 285
- ;; @@b516 285
- ;; @@b516 285
-chkesc                                                    ; Check for escape token, error if not, else get next token ;; @@b516 285
-                 cmp #esc_command_token                    ;; @@b516 285
-                 +lbne snerr                               ;; @@b518 285
-                 jsr chrget                                ;; @@b51b 285
-                 +lbeq snerr                              ; eos? report error if so ;; @@b51e 285
-                 rts                                       ;; @@b521 285
- ;; @@b522 285
- ;; @@b522 285
- ;; @@b522 285
-chkeos                                                    ; Check for next byte = end of statement, error if not ;; @@b522 285
-                 jsr chrget                                ;; @@b522 285
-                 +lbne snerr                              ; eos? report error if not ;; @@b525 285
-                 rts                                       ;; @@b528 285
- ;; @@b529 285
- ;; @@b529 285
-;.end ;; @@b529 285
-; .page ;; @@b529 285
-; .subttl SPRITE Commands and Functions ;; @@b529 285
- ;; @@b529 285
-;************************************************************************************ ;; @@b529 285
-; SPRITE CLR ;; @@b529 285
-; SPRITE {LOAD|SAVE} "filename" [,Ddrive] [,Udevice] ;; @@b529 285
-; SPRITE sprite [,enable [,color [,priority [,xexp [,yexp [,resolution] ]]]]] ;; @@b529 285
-; ;; @@b529 285
-; where: sprite  :== sprite number (1-8) ;; @@b529 285
-;  enable  :== enable  (0=off, 1=on) ;; @@b529 285
-;  color  :== color  (0-15) ;; @@b529 285
-;  priority :== sprite/bgnd  (0=sprite, 1=bgnd) ;; @@b529 285
-;  xexp  :== expand x direction (0=no, 1=yes) ;; @@b529 285
-;  yexp  :== expand y direction (0=no, 1=yes) ;; @@b529 285
-;  resolution :== resolution  (0=hires, 1=multicolor) ;; @@b529 285
-;************************************************************************************ ;; @@b529 285
- ;; @@b529 285
-sprite           cmp #clr_token                           ; SPRITE CLR: init environment   [910717] ;; @@b529 285
-                 +lbeq Sprite_CLR                         ; yes ;; @@b52b 285
-                 cmp #save_token                          ; SPRITE SAVE: save sprite data   [911001] ;; @@b52e 285
-                 beq Sprite_Save                          ; yes ;; @@b530 285
-                 cmp #load_token                          ; SPRITE LOAD: load sprite data   [911001] ;; @@b532 285
-                 beq Sprite_Load                          ; yes ;; @@b534 285
- ;; @@b536 285
-                 jsr get_sprite_number                    ; get sprite number in z_p_temp_1 ;; @@b536 285
-                 jsr optbyt                               ; look for (optional) enable ;; @@b539 285
-                 bcc _local_1284_10                       ; none here, don't change ;; @@b53c 285
-                 ldy #21                                   ;; @@b53e 285
-                 jsr sprbit                               ; set/clear sprite bit ;; @@b540 285
- ;; @@b543 285
-_local_1284_10   jsr optbyt                               ; get (optional) color ;; @@b543 285
-                 bcc _local_1284_20                       ; branch if no arg ;; @@b546 285
-                 jsr chknyb                               ; [910109] ;; @@b548 285
-                 txa                                       ;; @@b54b 285
-                 ldx z_p_temp_1                           ; get back sprite number ;; @@b54c 285
-; jsr put_io_in_map ;; @@b54e 285
-                 sta vic+39,x                              ;; @@b54e 285
- ;; @@b551 285
-_local_1284_20   jsr optbyt                               ; look for (optional) priority ;; @@b551 285
-                 bcc _local_1284_30                        ;; @@b554 285
-                 ldy #27                                   ;; @@b556 285
-                 jsr sprbit                                ;; @@b558 285
- ;; @@b55b 285
-_local_1284_30   jsr optbyt                               ; look for (optional) x expansion ;; @@b55b 285
-                 bcc _local_1284_40                        ;; @@b55e 285
-                 ldy #29                                   ;; @@b560 285
-                 jsr sprbit                                ;; @@b562 285
- ;; @@b565 285
-_local_1284_40   jsr optbyt                               ; look for (optional) y expansion ;; @@b565 285
-                 bcc _local_1284_50                        ;; @@b568 285
-                 ldy #23                                   ;; @@b56a 285
-                 jsr sprbit                                ;; @@b56c 285
- ;; @@b56f 285
-_local_1284_50   jsr optbyt                               ; look for (optional) resolution ;; @@b56f 285
-                 bcc _local_1284_60                        ;; @@b572 285
-                 ldy #28                                   ;; @@b574 285
-                 jsr sprbit                                ;; @@b576 285
- ;; @@b579 285
-_local_1284_60   rts                                       ;; @@b579 285
- ;; @@b57a 285
-; .page ;; @@b57a 285
+background                                                
+                 jsr getnyb                               ; Set Vic background color
+                 stx vic+33                               
+                 rts                                      
+
+
+
+border                                                    
+                 jsr getnyb                               ; Set Vic border color
+                 stx vic+32                               
+                 rts                                      
+
+; .page
+getcomnyb                                                 
+                 jsr chkcom                               ; check for comma
+getnyb                                                    
+                 jsr getbyt                               ; Get a nybble, check range (0-15)
+chknyb                                                    
+                 cpx #16                                  
+                 +lbcs fcerr                              
+                 rts                                      
+
+
+
+chkesc                                                    ; Check for escape token, error if not, else get next token
+                 cmp #esc_command_token                   
+                 +lbne snerr                              
+                 jsr chrget                               
+                 +lbeq snerr                              ; eos? report error if so
+                 rts                                      
+
+
+
+chkeos                                                    ; Check for next byte = end of statement, error if not
+                 jsr chrget                               
+                 +lbne snerr                              ; eos? report error if not
+                 rts                                      
+
+
+;.end
+; .page
+; .subttl SPRITE Commands and Functions
+
+;************************************************************************************
+; SPRITE CLR
+; SPRITE {LOAD|SAVE} "filename" [,Ddrive] [,Udevice]
+; SPRITE sprite [,enable [,color [,priority [,xexp [,yexp [,resolution] ]]]]]
+;
+; where: sprite  :== sprite number (1-8)
+;  enable  :== enable  (0=off, 1=on)
+;  color  :== color  (0-15)
+;  priority :== sprite/bgnd  (0=sprite, 1=bgnd)
+;  xexp  :== expand x direction (0=no, 1=yes)
+;  yexp  :== expand y direction (0=no, 1=yes)
+;  resolution :== resolution  (0=hires, 1=multicolor)
+;************************************************************************************
+
+sprite           cmp #clr_token                           ; SPRITE CLR: init environment   [910717]
+                 +lbeq Sprite_CLR                         ; yes
+                 cmp #save_token                          ; SPRITE SAVE: save sprite data   [911001]
+                 beq Sprite_Save                          ; yes
+                 cmp #load_token                          ; SPRITE LOAD: load sprite data   [911001]
+                 beq Sprite_Load                          ; yes
+
+                 jsr get_sprite_number                    ; get sprite number in z_p_temp_1
+                 jsr optbyt                               ; look for (optional) enable
+                 bcc _local_1284_10                       ; none here, don't change
+                 ldy #21                                  
+                 jsr sprbit                               ; set/clear sprite bit
+
+_local_1284_10   jsr optbyt                               ; get (optional) color
+                 bcc _local_1284_20                       ; branch if no arg
+                 jsr chknyb                               ; [910109]
+                 txa                                      
+                 ldx z_p_temp_1                           ; get back sprite number
+; jsr put_io_in_map
+                 sta vic+39,x                             
+
+_local_1284_20   jsr optbyt                               ; look for (optional) priority
+                 bcc _local_1284_30                       
+                 ldy #27                                  
+                 jsr sprbit                               
+
+_local_1284_30   jsr optbyt                               ; look for (optional) x expansion
+                 bcc _local_1284_40                       
+                 ldy #29                                  
+                 jsr sprbit                               
+
+_local_1284_40   jsr optbyt                               ; look for (optional) y expansion
+                 bcc _local_1284_50                       
+                 ldy #23                                  
+                 jsr sprbit                               
+
+_local_1284_50   jsr optbyt                               ; look for (optional) resolution
+                 bcc _local_1284_60                       
+                 ldy #28                                  
+                 jsr sprbit                               
+
+_local_1284_60   rts                                      
+
+; .page

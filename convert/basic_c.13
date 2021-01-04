@@ -1,36 +1,36 @@
-xeqdir           jsr xeqcm3                                ;; @@2c0a 13
- ;; @@2c0d 13
-newstt           jsr is_stop_key_down                      ;; @@2c0d 13
-                 bbr7 runmod,_local_1012_10               ; branch if direct mode ;; @@2c10 13
- ;; @@2c13 13
-; In run mode...save txtptr for CONTinue command ;; @@2c13 13
- ;; @@2c13 13
-                 jsr tto                                  ; transfer txtptr to oldtxt ;; @@2c13 13
-                 tsx                                       ;; @@2c16 13
-                 stx oldstk                                ;; @@2c17 13
- ;; @@2c19 13
-_local_1012_10   ldy #0                                    ;; @@2c19 13
-                 jsr indtxt                               ; end of the line? ;; @@2c1b 13
-                 +lbne morsts                             ; no...out of statement ;; @@2c1e 13
- ;; @@2c21 13
-_local_1012_20   bit runmod                               ; in direct mode? ;; @@2c21 13
-                 +lbpl ready                              ; yes, go to ready ;; @@2c23 13
-                 ldy #2                                    ;; @@2c26 13
-                 jsr indtxt                               ; end of text? ;; @@2c28 13
-                 +lbeq ready                              ; yes...finished ;; @@2c2b 13
-                 iny                                      ; y=3 ;; @@2c2e 13
-                 jsr indtxt                               ; extract line# lo byte ;; @@2c2f 13
-                 sta curlin                                ;; @@2c32 13
-                 iny                                       ;; @@2c34 13
-                 jsr indtxt                               ; extract line # hi byte ;; @@2c35 13
-                 sta curlin+1                              ;; @@2c38 13
-                 tya                                      ; y=4 ;; @@2c3a 13
-                 clc                                       ;; @@2c3b 13
-                 adc txtptr                               ; point @ character before line start ;; @@2c3c 13
-                 sta txtptr                                ;; @@2c3e 13
-                 bcc _local_1012_30                        ;; @@2c40 13
-                 inc txtptr+1                              ;; @@2c42 13
-_local_1012_30   +lbra xeqcm                              ; execute new line ;; @@2c44 13
- ;; @@2c47 13
- ;; @@2c47 13
- ;; @@2c47 13
+xeqdir           jsr xeqcm3                               
+
+newstt           jsr is_stop_key_down                     
+                 bbr7 runmod,_local_1012_10               ; branch if direct mode
+
+; In run mode...save txtptr for CONTinue command
+
+                 jsr tto                                  ; transfer txtptr to oldtxt
+                 tsx                                      
+                 stx oldstk                               
+
+_local_1012_10   ldy #0                                   
+                 jsr indtxt                               ; end of the line?
+                 +lbne morsts                             ; no...out of statement
+
+_local_1012_20   bit runmod                               ; in direct mode?
+                 +lbpl ready                              ; yes, go to ready
+                 ldy #2                                   
+                 jsr indtxt                               ; end of text?
+                 +lbeq ready                              ; yes...finished
+                 iny                                      ; y=3
+                 jsr indtxt                               ; extract line# lo byte
+                 sta curlin                               
+                 iny                                      
+                 jsr indtxt                               ; extract line # hi byte
+                 sta curlin+1                             
+                 tya                                      ; y=4
+                 clc                                      
+                 adc txtptr                               ; point @ character before line start
+                 sta txtptr                               
+                 bcc _local_1012_30                       
+                 inc txtptr+1                             
+_local_1012_30   +lbra xeqcm                              ; execute new line
+
+
+

@@ -1,59 +1,59 @@
-Set_TI_String                                              ;; @@537d 131
-                 jsr frefac                               ; we won't need it ;; @@537d 131
-                 sta count                                ; save length ;; @@5380 131
- ;; @@5382 131
-                 ldy #0                                   ; our pointer into TI$ assignment ;; @@5382 131
-                 sty time                                 ; default time to zero, in case it's not fully specified ;; @@5384 131
-                 sty time+1                                ;; @@5386 131
-                 sty time+2                                ;; @@5388 131
-                 sty time+3                                ;; @@538a 131
- ;; @@538c 131
-                 ldx #3                                   ; parameter pointer (3=hr,2=min,1=sec,0=tenths) ;; @@538c 131
-_local_1130_10   jsr GetTimeDigit                         ; get first digit, convert to BCD ;; @@538e 131
-                 bcs _local_1130_20                       ; colon or eos ;; @@5391 131
-                 sta time,x                                ;; @@5393 131
-                 jsr GetTimeDigit                         ; get second digit, convert to BCD ;; @@5395 131
-                 bcs _local_1130_20                       ; colon or eos ;; @@5398 131
- ;; @@539a 131
-                 asl time,x                               ; move first digit to msd ;; @@539a 131
-                 asl time,x                                ;; @@539c 131
-                 asl time,x                                ;; @@539e 131
-                 asl time,x                                ;; @@53a0 131
-                 ora time,x                               ; combine with second digit ;; @@53a2 131
-                 sta time,x                               ; now we have a time element of packed BCD ;; @@53a4 131
- ;; @@53a6 131
-_local_1130_20   lda time,x                                ;; @@53a6 131
-                 cmp MaxTimeValues,x                      ; check for parameter too big ;; @@53a8 131
-                 +lbcs fcerr                              ; hr>23, min>59, sec>59, tenths>9 ;; @@53ab 131
- ;; @@53ae 131
-                 dex                                      ; check if done ;; @@53ae 131
-                 bmi _local_1130_30                       ; yes- all parameters accounted for ;; @@53af 131
-                 cpy count                                 ;; @@53b1 131
-                 bcs _local_1130_40                       ; yes- end of string ;; @@53b3 131
- ;; @@53b5 131
-                 jsr indin1_ram1                          ; check for optional colon (or period)   [910103] ;; @@53b5 131
-                 cmp #':'                                  ;; @@53b8 131
-                 beq _local_1130_25                        ;; @@53ba 131
-                 cmp #'.'                                  ;; @@53bc 131
-                 bne _local_1130_10                       ; not there ;; @@53be 131
-_local_1130_25   iny                                      ; it's there- skip over it ;; @@53c0 131
- ;; @@53c1 131
-                 bra _local_1130_10                       ; loop until done ;; @@53c1 131
- ;; @@53c3 131
- ;; @@53c3 131
-_local_1130_30   cpy count                                ; done ;; @@53c3 131
-                 +lbcc errlen                             ; error if string too long ;; @@53c5 131
- ;; @@53c8 131
-_local_1130_40   ldz time                                 ; tenths  0-9 ;; @@53c8 131
-                 lda time+1                               ; seconds 0-59 ;; @@53cb 131
-                 ldx time+2                               ; minutes 0-59 ;; @@53cd 131
-                 ldy time+3                               ; hours  0-23 ;; @@53cf 131
-                 jmp _SetTime                             ; Go set time & exit ;; @@53d1 131
- ;; @@53d4 131
-; .page ;; @@53d4 131
-; Get an ASCII digit, make sure it's in range 0-9 or a colon. ;; @@53d4 131
-; if no digit to get, default to '0' ;; @@53d4 131
-; ;; @@53d4 131
-; exit with .c=0 if okay  (.A contains BCD) ;; @@53d4 131
-;    .c=1 if colon or eos (.A invalid) ;; @@53d4 131
- ;; @@53d4 131
+Set_TI_String                                             
+                 jsr frefac                               ; we won't need it
+                 sta count                                ; save length
+
+                 ldy #0                                   ; our pointer into TI$ assignment
+                 sty time                                 ; default time to zero, in case it's not fully specified
+                 sty time+1                               
+                 sty time+2                               
+                 sty time+3                               
+
+                 ldx #3                                   ; parameter pointer (3=hr,2=min,1=sec,0=tenths)
+_local_1130_10   jsr GetTimeDigit                         ; get first digit, convert to BCD
+                 bcs _local_1130_20                       ; colon or eos
+                 sta time,x                               
+                 jsr GetTimeDigit                         ; get second digit, convert to BCD
+                 bcs _local_1130_20                       ; colon or eos
+
+                 asl time,x                               ; move first digit to msd
+                 asl time,x                               
+                 asl time,x                               
+                 asl time,x                               
+                 ora time,x                               ; combine with second digit
+                 sta time,x                               ; now we have a time element of packed BCD
+
+_local_1130_20   lda time,x                               
+                 cmp MaxTimeValues,x                      ; check for parameter too big
+                 +lbcs fcerr                              ; hr>23, min>59, sec>59, tenths>9
+
+                 dex                                      ; check if done
+                 bmi _local_1130_30                       ; yes- all parameters accounted for
+                 cpy count                                
+                 bcs _local_1130_40                       ; yes- end of string
+
+                 jsr indin1_ram1                          ; check for optional colon (or period)   [910103]
+                 cmp #':'                                 
+                 beq _local_1130_25                       
+                 cmp #'.'                                 
+                 bne _local_1130_10                       ; not there
+_local_1130_25   iny                                      ; it's there- skip over it
+
+                 bra _local_1130_10                       ; loop until done
+
+
+_local_1130_30   cpy count                                ; done
+                 +lbcc errlen                             ; error if string too long
+
+_local_1130_40   ldz time                                 ; tenths  0-9
+                 lda time+1                               ; seconds 0-59
+                 ldx time+2                               ; minutes 0-59
+                 ldy time+3                               ; hours  0-23
+                 jmp _SetTime                             ; Go set time & exit
+
+; .page
+; Get an ASCII digit, make sure it's in range 0-9 or a colon.
+; if no digit to get, default to '0'
+;
+; exit with .c=0 if okay  (.A contains BCD)
+;    .c=1 if colon or eos (.A invalid)
+

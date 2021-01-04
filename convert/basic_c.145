@@ -1,80 +1,80 @@
-joytab           !text 4,2,3,0,6,8,7,0,5,1,0               ;; @@56e8 145
- ;; @@56f3 145
-;.end ;; @@56f3 145
-; .page ;; @@56f3 145
-; .subttl  POT  LPEN ;; @@56f3 145
- ;; @@56f3 145
-;*********************************************************** ;; @@56f3 145
-; POT(n)  --  Read paddles ;; @@56f3 145
-; ;; @@56f3 145
-;    n = 1 : paddle-1 - X-position ;; @@56f3 145
-;  2 : paddle-1 - Y-position ;; @@56f3 145
-;  3 : paddle-2 - X-position ;; @@56f3 145
-;  4 : paddle-2 - Y-position ;; @@56f3 145
-; ;; @@56f3 145
-;     result >= 256 --  trigger set ;; @@56f3 145
-;*********************************************************** ;; @@56f3 145
- ;; @@56f3 145
-pot              jsr chkcls                               ; look for closing paren ;; @@56f3 145
-                 jsr conint                               ; get 1-byte arg in .x ;; @@56f6 145
-                 dex                                       ;; @@56f9 145
-                 cpx #4                                    ;; @@56fa 145
-                 +lbcs fcerr                              ; value error ;; @@56fc 145
- ;; @@56ff 145
-; jsr put_io_in_map ;; @@56ff 145
-                 txa                                      ; convert arg (0-3) into paddle enables ;; @@56ff 145
-                 lsr                                      ; .c= X/Y   .a= port 1/2 ;; @@5700 145
-                 tax                                       ;; @@5701 145
-                 lda sbits+6,x                             ;; @@5702 145
-                 tax                                      ; (CIA paddle port, $40/$80) ;; @@5705 145
-                 lda #0                                    ;; @@5706 145
-                 rol                                       ;; @@5708 145
-                 tay                                      ; (SID x/y offset,  $00/$01) ;; @@5709 145
- ;; @@570a 145
-                 stx pot_temp_1                           ; save which port ;; @@570a 145
-                 php                                      ; save IRQ enable while we ;; @@570d 145
-                 sei                                      ; disable IRQ to inhibit keyboard scan ;; @@570e 145
-                 lda d1pra                                 ;; @@570f 145
-                 pha                                      ; save kybd output lines ;; @@5712 145
-                 stx d1pra                                ; turn on correct paddle ;; @@5713 145
- ;; @@5716 145
-                 jsr go_slow                               ;; @@5716 145
-                 ldx #0                                    ;; @@5719 145
-_local_1144_30   inx                                      ; delay to let pot be read by SID ;; @@571b 145
-                 bne _local_1144_30                        ;; @@571c 145
- ;; @@571e 145
-_local_1144_40   lda sid1+25,y                            ; read pot ;; @@571e 145
-                 cmp sid1+25,y                            ; debounce ;; @@5721 145
-                 bne _local_1144_40                        ;; @@5724 145
-                 sta pot_temp_2                           ; save pot value ;; @@5726 145
-                 jsr go_fast                               ;; @@5729 145
- ;; @@572c 145
-                 ldx #0                                   ; set index to d1pra ;; @@572c 145
-                 bit pot_temp_1                           ; test if pot-0,1 or pot-2,3 ;; @@572e 145
-                 bmi _local_1144_50                       ; skip if pot 2,3 ;; @@5731 145
-                 inx                                      ; index to d1prb ;; @@5733 145
-_local_1144_50   lda #04                                  ; use joy line-2 ;; @@5734 145
-                 dey                                      ; test if pot-x or pot-y ;; @@5736 145
-                 bmi _local_1144_60                       ; skip if pot-x ;; @@5737 145
-                 asl                                      ; use joy line-3 ;; @@5739 145
-_local_1144_60   ldy #$ff                                  ;; @@573a 145
-                 sty d1pra                                ; disable keybd inputs ;; @@573c 145
-                 iny                                      ; set to zero for no trigger ;; @@573f 145
-                 and d1pra,x                              ; test if trigger set ;; @@5740 145
-                 bne _local_1144_70                       ; skip if not trigger ;; @@5743 145
-                 iny                                      ; return value >255 for trigger ;; @@5745 145
-_local_1144_70   pla                                       ;; @@5746 145
-                 sta d1pra                                ; restore keybd lines ;; @@5747 145
-                 tya                                       ;; @@574a 145
-                 ldy pot_temp_2                           ; restore pot value ;; @@574b 145
-                 plp                                      ; restore status ;; @@574e 145
-                 +lbra nosflt                             ; output 2-byte result ;; @@574f 145
- ;; @@5752 145
-; .page ;; @@5752 145
-;************************************************************* ;; @@5752 145
-;  LPEN(n)  --  Read light pen ;; @@5752 145
-; ;; @@5752 145
-; n = 0 x position ;; @@5752 145
-;     1 y position ;; @@5752 145
-;************************************************************* ;; @@5752 145
- ;; @@5752 145
+joytab           !text 4,2,3,0,6,8,7,0,5,1,0              
+
+;.end
+; .page
+; .subttl  POT  LPEN
+
+;***********************************************************
+; POT(n)  --  Read paddles
+;
+;    n = 1 : paddle-1 - X-position
+;  2 : paddle-1 - Y-position
+;  3 : paddle-2 - X-position
+;  4 : paddle-2 - Y-position
+;
+;     result >= 256 --  trigger set
+;***********************************************************
+
+pot              jsr chkcls                               ; look for closing paren
+                 jsr conint                               ; get 1-byte arg in .x
+                 dex                                      
+                 cpx #4                                   
+                 +lbcs fcerr                              ; value error
+
+; jsr put_io_in_map
+                 txa                                      ; convert arg (0-3) into paddle enables
+                 lsr                                      ; .c= X/Y   .a= port 1/2
+                 tax                                      
+                 lda sbits+6,x                            
+                 tax                                      ; (CIA paddle port, $40/$80)
+                 lda #0                                   
+                 rol                                      
+                 tay                                      ; (SID x/y offset,  $00/$01)
+
+                 stx pot_temp_1                           ; save which port
+                 php                                      ; save IRQ enable while we
+                 sei                                      ; disable IRQ to inhibit keyboard scan
+                 lda d1pra                                
+                 pha                                      ; save kybd output lines
+                 stx d1pra                                ; turn on correct paddle
+
+                 jsr go_slow                              
+                 ldx #0                                   
+_local_1144_30   inx                                      ; delay to let pot be read by SID
+                 bne _local_1144_30                       
+
+_local_1144_40   lda sid1+25,y                            ; read pot
+                 cmp sid1+25,y                            ; debounce
+                 bne _local_1144_40                       
+                 sta pot_temp_2                           ; save pot value
+                 jsr go_fast                              
+
+                 ldx #0                                   ; set index to d1pra
+                 bit pot_temp_1                           ; test if pot-0,1 or pot-2,3
+                 bmi _local_1144_50                       ; skip if pot 2,3
+                 inx                                      ; index to d1prb
+_local_1144_50   lda #04                                  ; use joy line-2
+                 dey                                      ; test if pot-x or pot-y
+                 bmi _local_1144_60                       ; skip if pot-x
+                 asl                                      ; use joy line-3
+_local_1144_60   ldy #$ff                                 
+                 sty d1pra                                ; disable keybd inputs
+                 iny                                      ; set to zero for no trigger
+                 and d1pra,x                              ; test if trigger set
+                 bne _local_1144_70                       ; skip if not trigger
+                 iny                                      ; return value >255 for trigger
+_local_1144_70   pla                                      
+                 sta d1pra                                ; restore keybd lines
+                 tya                                      
+                 ldy pot_temp_2                           ; restore pot value
+                 plp                                      ; restore status
+                 +lbra nosflt                             ; output 2-byte result
+
+; .page
+;*************************************************************
+;  LPEN(n)  --  Read light pen
+;
+; n = 0 x position
+;     1 y position
+;*************************************************************
+

@@ -1,24 +1,24 @@
-Clear_DS                                                  ; oldclr. ;; @@7882 245
-                 lda dsdesc                               ; check for allocation ;; @@7882 245
-                 beq _local_1244_10                       ; branch if not allocated ;; @@7884 245
- ;; @@7886 245
-                 phy                                      ; mark current DS$ string as garbage ;; @@7886 245
-                 phx                                       ;; @@7887 245
-; lda #40   ;   standard DS$ allocation ;; @@7888 245
-                 tay                                       ;; @@7888 245
-                 ldx #dsdesc+1                             ;; @@7889 245
-                 jsr sta_far_ram1                         ; sta (dsdesc+1),y length of garbage ;; @@788b 245
-                 iny                                       ;; @@788e 245
-                 lda #$ff                                  ;; @@788f 245
-                 jsr sta_far_ram1                         ; sta (dsdesc+1),y garbage flagged ;; @@7891 245
-                 inc                                       ;; @@7894 245
-                 sta dsdesc                               ; (0)    kill DS$ ;; @@7895 245
-                 plx                                       ;; @@7897 245
-                 ply                                       ;; @@7898 245
- ;; @@7899 245
-_local_1244_10   rts                                       ;; @@7899 245
- ;; @@789a 245
-; .page ;; @@789a 245
-; Read DOS error message, but don't care what it is.  Want to stop disk LED blink. ;; @@789a 245
-; ;; @@789a 245
- ;; @@789a 245
+Clear_DS                                                  ; oldclr.
+                 lda dsdesc                               ; check for allocation
+                 beq _local_1244_10                       ; branch if not allocated
+
+                 phy                                      ; mark current DS$ string as garbage
+                 phx                                      
+; lda #40   ;   standard DS$ allocation
+                 tay                                      
+                 ldx #dsdesc+1                            
+                 jsr sta_far_ram1                         ; sta (dsdesc+1),y length of garbage
+                 iny                                      
+                 lda #$ff                                 
+                 jsr sta_far_ram1                         ; sta (dsdesc+1),y garbage flagged
+                 inc                                      
+                 sta dsdesc                               ; (0)    kill DS$
+                 plx                                      
+                 ply                                      
+
+_local_1244_10   rts                                      
+
+; .page
+; Read DOS error message, but don't care what it is.  Want to stop disk LED blink.
+;
+

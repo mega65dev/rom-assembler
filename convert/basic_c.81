@@ -1,222 +1,222 @@
-n1_reset                                                   ;; @@4072 81
-                 lda renum_tmp_1                           ;; @@4072 81
-                 sta facho+1                               ;; @@4075 81
-                 lda renum_tmp_1+1                         ;; @@4077 81
-                 sta facho                                 ;; @@407a 81
-                 +lbra reset_txtptr                        ;; @@407c 81
- ;; @@407f 81
- ;; @@407f 81
-;*************************** LINE_ADD ********************************** ;; @@407f 81
- ;; @@407f 81
-; Adds n2 (new line increment) to line number stored in facho if the ;; @@407f 81
-; current line number (highds) >= n3 (line to start renumbering with). ;; @@407f 81
-; The line is then scanned. ;; @@407f 81
- ;; @@407f 81
-line_add                                                   ;; @@407f 81
-                 lda highds                               ; if line# >= start# then incr new# ;; @@407f 81
-                 sec                                       ;; @@4081 81
-                 sbc hightr                                ;; @@4082 81
-                 lda highds+1                              ;; @@4084 81
-                 sbc hightr+1                              ;; @@4086 81
-                 bcc scan_thru                             ;; @@4088 81
- ;; @@408a 81
-line_inc                                                   ;; @@408a 81
-                 jsr new_num                               ;; @@408a 81
- ;; @@408d 81
-scan_thru                                                  ;; @@408d 81
-                 jsr chargt                               ; scan to end of line ;; @@408d 81
-                 bne scan_thru                             ;; @@4090 81
-                 rts                                       ;; @@4092 81
- ;; @@4093 81
- ;; @@4093 81
-;**************************** NEW_NUM ********************************** ;; @@4093 81
- ;; @@4093 81
-; Adds n2 (the new line increment) to the line number stored in facho. ;; @@4093 81
- ;; @@4093 81
-new_num                                                    ;; @@4093 81
-                 lda facho+1                              ; increment new line# ;; @@4093 81
-                 clc                                       ;; @@4095 81
-                 adc renum_tmp_2                           ;; @@4096 81
-                 sta facho+1                               ;; @@4099 81
-                 lda facho                                 ;; @@409b 81
-                 adc renum_tmp_2+1                         ;; @@409d 81
-                 sta facho                                 ;; @@40a0 81
-                 rts                                       ;; @@40a2 81
- ;; @@40a3 81
- ;; @@40a3 81
-;********************** CHARGT & CHARGT_X2 ***************************** ;; @@40a3 81
- ;; @@40a3 81
-; Chargt simulates chrget but doesn't ignore spaces & carry has no ;; @@40a3 81
-; significance.  Chargt_x2 executes chargt twice. ;; @@40a3 81
-; Used by Renumber, Find/Change, etc. ;; @@40a3 81
- ;; @@40a3 81
-chargt_x2                                                  ;; @@40a3 81
-                 inw txtptr                               ; jsr chargt ;; @@40a3 81
-chargt                                                     ;; @@40a5 81
-                 ldy #0                                   ; increment txtptr ;; @@40a5 81
-                 inw txtptr                                ;; @@40a7 81
-                 +lbra indtxt                              ;; @@40a9 81
- ;; @@40ac 81
-; .page ;; @@40ac 81
-;*********************************************************************** ;; @@40ac 81
-;************************* MEMORY MOVE ROUTINES ************************ ;; @@40ac 81
-;*********************************************************************** ;; @@40ac 81
- ;; @@40ac 81
-;****************************** MOVEINIT ******************************* ;; @@40ac 81
- ;; @@40ac 81
-; Setup for Renumber memory move. ;; @@40ac 81
- ;; @@40ac 81
-move_init                                                  ;; @@40ac 81
-                 lda txtptr                               ; index1 = txtptr ;; @@40ac 81
-                 sta index1                                ;; @@40ae 81
-                 lda txtptr+1                              ;; @@40b0 81
-                 sta index1+1                              ;; @@40b2 81
- ;; @@40b4 81
-                 lda text_top                             ; index2 = text_top ;; @@40b4 81
-                 sta index2                                ;; @@40b6 81
-                 lda text_top+1                            ;; @@40b8 81
-                 sta index2+1                              ;; @@40ba 81
- ;; @@40bc 81
-                 lda #1                                   ; move 1 character ;; @@40bc 81
-                 sta count                                ; lo ;; @@40be 81
-                 dec                                       ;; @@40c0 81
-                 sta argmo                                ; hi ;; @@40c1 81
- ;; @@40c3 81
-                 rts                                       ;; @@40c3 81
- ;; @@40c4 81
-; .page ;; @@40c4 81
-;****************************** MOVEDOWN ******************************* ;; @@40c4 81
- ;; @@40c4 81
-; Move block of BASIC text from INDEX1+COUNT to INDEX2 down to INDEX1. ;; @@40c4 81
-; Used by commands Renumber, Find/Change. ;; @@40c4 81
- ;; @@40c4 81
-movedown                                                   ;; @@40c4 81
-                 sec                                      ; set up DMA list:   [900524] ;; @@40c4 81
-                 lda index2                                ;; @@40c5 81
-                 sbc index1                                ;; @@40c7 81
-                 sta dma1_cnt_lo                          ; cnt = index2-index1-count ;; @@40c9 81
-                 lda index2+1                              ;; @@40cc 81
-                 sbc index1+1                              ;; @@40ce 81
-                 sta dma1_cnt_hi                           ;; @@40d0 81
-                 sec                                       ;; @@40d3 81
-                 lda dma1_cnt_lo                           ;; @@40d4 81
-                 sbc count                                ; lo ;; @@40d7 81
-                 sta dma1_cnt_lo                           ;; @@40d9 81
-                 lda dma1_cnt_hi                           ;; @@40dc 81
-                 sbc argmo                                ; hi ;; @@40df 81
-                 sta dma1_cnt_hi                           ;; @@40e1 81
- ;; @@40e4 81
-                 clc                                       ;; @@40e4 81
-                 lda index1                                ;; @@40e5 81
-                 sta dma1_dest_lo                         ; dest = index1 ;; @@40e7 81
-                 adc count                                 ;; @@40ea 81
-                 sta dma1_src_lo                          ; src = index1+count ;; @@40ec 81
-                 lda index1+1                              ;; @@40ef 81
-                 sta dma1_dest_hi                          ;; @@40f1 81
-                 adc argmo                                 ;; @@40f4 81
-                 sta dma1_src_hi                           ;; @@40f6 81
- ;; @@40f9 81
-                 lda text_bank                            ; bank = BASIC text bank ;; @@40f9 81
-; and #%00001111  ;      [910520] F018A ;; @@40fb 81
-                 sta dma1_src_bank                         ;; @@40fb 81
-                 sta dma1_dest_bank                        ;; @@40fe 81
- ;; @@4101 81
-execute_DMA1                                              ; [910620] Edit ;; @@4101 81
-                 lda #0                                    ;; @@4101 81
-                 sta dma1_cmd                             ; command = copy from startpoint ;; @@4103 81
-                 sta dma1_subcmd                          ; [910520] F018A ;; @@4106 81
- ;; @@4109 81
-                 sta dma_ctlr+2                           ; dma_list bank ;; @@4109 81
-                 lda #>dma1_cmd                            ;; @@410c 81
-                 sta dma_ctlr+1                           ; dma_list hi ;; @@410e 81
-                 lda #<dma1_cmd                            ;; @@4111 81
-                 sta dma_ctlr                             ; dma_list lo & trigger ;; @@4113 81
-                 rts                                       ;; @@4116 81
- ;; @@4117 81
-; .page ;; @@4117 81
-;******************************* MOVEUP ******************************** ;; @@4117 81
- ;; @@4117 81
-; Move block of BASIC text from INDEX1 to INDEX2 up to INDEX2+COUNT. ;; @@4117 81
-; Used by commands Renumber, Find/Change. ;; @@4117 81
- ;; @@4117 81
-moveup                                                     ;; @@4117 81
-                 sec                                      ; set up DMA list:   [900524] ;; @@4117 81
-                 lda index2                                ;; @@4118 81
-                 sbc index1                                ;; @@411a 81
-                 sta dma1_cnt_lo                          ; cnt = index2-index1 ;; @@411c 81
-                 lda index2+1                              ;; @@411f 81
-                 sbc index1+1                              ;; @@4121 81
-                 sta dma1_cnt_hi                           ;; @@4123 81
- ;; @@4126 81
-                 dew index2                               ; (index2 = text_top = end+1) ;; @@4126 81
-                 clc                                       ;; @@4128 81
-                 lda index2                                ;; @@4129 81
-                 sta dma1_src_lo                          ; src = index2 ;; @@412b 81
-                 adc count                                 ;; @@412e 81
-                 sta dma1_dest_lo                         ; dest = index2+count ;; @@4130 81
-                 lda index2+1                              ;; @@4133 81
-                 sta dma1_src_hi                           ;; @@4135 81
-                 adc argmo                                 ;; @@4138 81
-                 sta dma1_dest_hi                          ;; @@413a 81
- ;; @@413d 81
-; lda dma_ctlr+3  ;dma controller version    [910520] F018A ;; @@413d 81
-; and #1 ;; @@413d 81
-; beq _local_1080_10   ; F018    removed [910808] F018B ;; @@413d 81
-                 lda #%00110000                           ; F018A,B ;; @@413d 81
-_local_1080_10   sta dma1_cmd                             ; command=copy, source=start   [910102] ;; @@413f 81
-; php ;; @@4142 81
-                 lda text_bank                            ; bank = BASIC text bank   [910520] F018A ;; @@4142 81
-; plp   ;version?    removed [910808] F018B ;; @@4144 81
-; bne _local_1080_20   ; F018A ;; @@4144 81
-; and #%00001111  ; F018     [910102] ;; @@4144 81
-; ora #%01000000  ;(copy source=endpoint)    [910102] ;; @@4144 81
-_local_1080_20   sta dma1_src_bank                        ; banks ;; @@4144 81
-                 sta dma1_dest_bank                        ;; @@4147 81
- ;; @@414a 81
-                 lda #0                                   ; [910219] ;; @@414a 81
-; sta dma1_cmd  ; command = copy, source=endpoint ;; @@414c 81
-                 sta dma1_subcmd                          ; [910520] F018A ;; @@414c 81
-; dec a   ;      [910219] ;; @@414f 81
-                 sta dma_ctlr+2                           ; dma_list bank ;; @@414f 81
-                 ldy #>dma1_cmd                           ; dma_list ;; @@4152 81
-                 lda #<dma1_cmd                            ;; @@4154 81
-                 sty dma_ctlr+1                           ; dma_list hi ;; @@4156 81
-                 sta dma_ctlr                             ; dma_list lo & trigger ;; @@4159 81
-                 rts                                       ;; @@415c 81
- ;; @@415d 81
-;.end ;; @@415d 81
-; .page ;; @@415d 81
-; .subttl  FOR ;; @@415d 81
-; FOR ;; @@415d 81
-; ;; @@415d 81
-; Push the following information on the run-time stack: ;; @@415d 81
-; ;; @@415d 81
-; (bottom)   highest memory ;; @@415d 81
-; ========================= ;; @@415d 81
-;  txtptr    address of next statement ;; @@415d 81
-;  txtptr+1 ;; @@415d 81
-;  ======== ;; @@415d 81
-;  curlin+1  current line number ;; @@415d 81
-;  curlin ;; @@415d 81
-;  ======== ;; @@415d 81
-;  to lo ;; @@415d 81
-;  to mo ;; @@415d 81
-;  to moh    'to' value ;; @@415d 81
-;  to ho ;; @@415d 81
-;  to exp ;; @@415d 81
-;  ======== ;; @@415d 81
-;  step sign ;; @@415d 81
-;  step lo ;; @@415d 81
-;  step mo ;; @@415d 81
-;  step moh  'step' value ;; @@415d 81
-;  step ho ;; @@415d 81
-;  step exp ;; @@415d 81
-;  ======== ;; @@415d 81
-;  forpnt+1  'for' variable pointer ;; @@415d 81
-;  forpnt ;; @@415d 81
-;  ======== ;; @@415d 81
-;  'for' token       <== (tos) top of stack pointer ;; @@415d 81
-; ============================ ;; @@415d 81
-; (top of stack)  lowest memory ;; @@415d 81
- ;; @@415d 81
- ;; @@415d 81
+n1_reset                                                  
+                 lda renum_tmp_1                          
+                 sta facho+1                              
+                 lda renum_tmp_1+1                        
+                 sta facho                                
+                 +lbra reset_txtptr                       
+
+
+;*************************** LINE_ADD **********************************
+
+; Adds n2 (new line increment) to line number stored in facho if the
+; current line number (highds) >= n3 (line to start renumbering with).
+; The line is then scanned.
+
+line_add                                                  
+                 lda highds                               ; if line# >= start# then incr new#
+                 sec                                      
+                 sbc hightr                               
+                 lda highds+1                             
+                 sbc hightr+1                             
+                 bcc scan_thru                            
+
+line_inc                                                  
+                 jsr new_num                              
+
+scan_thru                                                 
+                 jsr chargt                               ; scan to end of line
+                 bne scan_thru                            
+                 rts                                      
+
+
+;**************************** NEW_NUM **********************************
+
+; Adds n2 (the new line increment) to the line number stored in facho.
+
+new_num                                                   
+                 lda facho+1                              ; increment new line#
+                 clc                                      
+                 adc renum_tmp_2                          
+                 sta facho+1                              
+                 lda facho                                
+                 adc renum_tmp_2+1                        
+                 sta facho                                
+                 rts                                      
+
+
+;********************** CHARGT & CHARGT_X2 *****************************
+
+; Chargt simulates chrget but doesn't ignore spaces & carry has no
+; significance.  Chargt_x2 executes chargt twice.
+; Used by Renumber, Find/Change, etc.
+
+chargt_x2                                                 
+                 inw txtptr                               ; jsr chargt
+chargt                                                    
+                 ldy #0                                   ; increment txtptr
+                 inw txtptr                               
+                 +lbra indtxt                             
+
+; .page
+;***********************************************************************
+;************************* MEMORY MOVE ROUTINES ************************
+;***********************************************************************
+
+;****************************** MOVEINIT *******************************
+
+; Setup for Renumber memory move.
+
+move_init                                                 
+                 lda txtptr                               ; index1 = txtptr
+                 sta index1                               
+                 lda txtptr+1                             
+                 sta index1+1                             
+
+                 lda text_top                             ; index2 = text_top
+                 sta index2                               
+                 lda text_top+1                           
+                 sta index2+1                             
+
+                 lda #1                                   ; move 1 character
+                 sta count                                ; lo
+                 dec                                      
+                 sta argmo                                ; hi
+
+                 rts                                      
+
+; .page
+;****************************** MOVEDOWN *******************************
+
+; Move block of BASIC text from INDEX1+COUNT to INDEX2 down to INDEX1.
+; Used by commands Renumber, Find/Change.
+
+movedown                                                  
+                 sec                                      ; set up DMA list:   [900524]
+                 lda index2                               
+                 sbc index1                               
+                 sta dma1_cnt_lo                          ; cnt = index2-index1-count
+                 lda index2+1                             
+                 sbc index1+1                             
+                 sta dma1_cnt_hi                          
+                 sec                                      
+                 lda dma1_cnt_lo                          
+                 sbc count                                ; lo
+                 sta dma1_cnt_lo                          
+                 lda dma1_cnt_hi                          
+                 sbc argmo                                ; hi
+                 sta dma1_cnt_hi                          
+
+                 clc                                      
+                 lda index1                               
+                 sta dma1_dest_lo                         ; dest = index1
+                 adc count                                
+                 sta dma1_src_lo                          ; src = index1+count
+                 lda index1+1                             
+                 sta dma1_dest_hi                         
+                 adc argmo                                
+                 sta dma1_src_hi                          
+
+                 lda text_bank                            ; bank = BASIC text bank
+; and #%00001111  ;      [910520] F018A
+                 sta dma1_src_bank                        
+                 sta dma1_dest_bank                       
+
+execute_DMA1                                              ; [910620] Edit
+                 lda #0                                   
+                 sta dma1_cmd                             ; command = copy from startpoint
+                 sta dma1_subcmd                          ; [910520] F018A
+
+                 sta dma_ctlr+2                           ; dma_list bank
+                 lda #>dma1_cmd                           
+                 sta dma_ctlr+1                           ; dma_list hi
+                 lda #<dma1_cmd                           
+                 sta dma_ctlr                             ; dma_list lo & trigger
+                 rts                                      
+
+; .page
+;******************************* MOVEUP ********************************
+
+; Move block of BASIC text from INDEX1 to INDEX2 up to INDEX2+COUNT.
+; Used by commands Renumber, Find/Change.
+
+moveup                                                    
+                 sec                                      ; set up DMA list:   [900524]
+                 lda index2                               
+                 sbc index1                               
+                 sta dma1_cnt_lo                          ; cnt = index2-index1
+                 lda index2+1                             
+                 sbc index1+1                             
+                 sta dma1_cnt_hi                          
+
+                 dew index2                               ; (index2 = text_top = end+1)
+                 clc                                      
+                 lda index2                               
+                 sta dma1_src_lo                          ; src = index2
+                 adc count                                
+                 sta dma1_dest_lo                         ; dest = index2+count
+                 lda index2+1                             
+                 sta dma1_src_hi                          
+                 adc argmo                                
+                 sta dma1_dest_hi                         
+
+; lda dma_ctlr+3  ;dma controller version    [910520] F018A
+; and #1
+; beq _local_1080_10   ; F018    removed [910808] F018B
+                 lda #%00110000                           ; F018A,B
+_local_1080_10   sta dma1_cmd                             ; command=copy, source=start   [910102]
+; php
+                 lda text_bank                            ; bank = BASIC text bank   [910520] F018A
+; plp   ;version?    removed [910808] F018B
+; bne _local_1080_20   ; F018A
+; and #%00001111  ; F018     [910102]
+; ora #%01000000  ;(copy source=endpoint)    [910102]
+_local_1080_20   sta dma1_src_bank                        ; banks
+                 sta dma1_dest_bank                       
+
+                 lda #0                                   ; [910219]
+; sta dma1_cmd  ; command = copy, source=endpoint
+                 sta dma1_subcmd                          ; [910520] F018A
+; dec a   ;      [910219]
+                 sta dma_ctlr+2                           ; dma_list bank
+                 ldy #>dma1_cmd                           ; dma_list
+                 lda #<dma1_cmd                           
+                 sty dma_ctlr+1                           ; dma_list hi
+                 sta dma_ctlr                             ; dma_list lo & trigger
+                 rts                                      
+
+;.end
+; .page
+; .subttl  FOR
+; FOR
+;
+; Push the following information on the run-time stack:
+;
+; (bottom)   highest memory
+; =========================
+;  txtptr    address of next statement
+;  txtptr+1
+;  ========
+;  curlin+1  current line number
+;  curlin
+;  ========
+;  to lo
+;  to mo
+;  to moh    'to' value
+;  to ho
+;  to exp
+;  ========
+;  step sign
+;  step lo
+;  step mo
+;  step moh  'step' value
+;  step ho
+;  step exp
+;  ========
+;  forpnt+1  'for' variable pointer
+;  forpnt
+;  ========
+;  'for' token       <== (tos) top of stack pointer
+; ============================
+; (top of stack)  lowest memory
+
+

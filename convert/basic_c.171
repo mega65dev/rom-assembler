@@ -1,207 +1,207 @@
-rolshf           ror 2,x                                   ;; @@5efe 171
-                 ror 3,x                                   ;; @@5f00 171
-                 ror 4,x                                  ; one more time ;; @@5f02 171
-                 ror                                       ;; @@5f04 171
-                 iny                                       ;; @@5f05 171
-                 bne shftr3                               ; $$$ (most expensive!!!) ;; @@5f06 171
- ;; @@5f08 171
-shftrt           clc                                      ; clear output of FACOV ;; @@5f08 171
-                 rts                                       ;; @@5f09 171
- ;; @@5f0a 171
-;.end ;; @@5f0a 171
-; .page ;; @@5f0a 171
-; .subttl Floating Point Math Package (CODE19) ;; @@5f0a 171
- ;; @@5f0a 171
-; Constants used by LOG, EXP, TRIG, and others. ;; @@5f0a 171
- ;; @@5f0a 171
-fr4              !text 127,0,0,0,0                        ; 1/4 ;; @@5f0a 171
-neghlf           !text 128,128,0,0,0                      ; -0.5 ;; @@5f0f 171
-fhalf            !text 128,0,0,0,0                        ; 0.5 ;; @@5f14 171
-tenc             !text 132,32,0,0,0                       ; 10.0 ;; @@5f19 171
-pival            !text 130,73,15,218,161                  ; pi ;; @@5f1e 171
-pi2              !text 129,73,15,218,162                  ; pi/2 ;; @@5f23 171
-twopi            !text 131,73,15,218,162                  ; pi*2 ;; @@5f28 171
- ;; @@5f2d 171
-n0999            !text $9b,$3e,$bc,$1f,$fd                 ;; @@5f2d 171
-n9999            !text $9e,$6e,$6b,$27,$fd                 ;; @@5f32 171
-nmil             !text $9e,$6e,$6b,$28,$00                 ;; @@5f37 171
- ;; @@5f3c 171
-foutbl                                                    ; powers of 10 ;; @@5f3c 171
-                 !text 250,10,31,0                        ; -100,000,000 ;; @@5f3c 171
-                 !text 0,152,150,128                      ; 10,000,000 ;; @@5f40 171
-                 !text 255,240,189,192                    ; -1,000,000 ;; @@5f44 171
-                 !text 0,1,134,160                        ; 100,000 ;; @@5f48 171
-                 !text 255,255,216,240                    ; -10,000 ;; @@5f4c 171
-                 !text 0,0,3,232                          ; 1,000 ;; @@5f50 171
-                 !text 255,255,255,156                    ; -100 ;; @@5f54 171
-                 !text 0,0,0,10                           ; 10 ;; @@5f58 171
-                 !text 255,255,255,255                    ; -1 ;; @@5f5c 171
-fdcend                                                     ;; @@5f60 171
- ;; @@5f60 171
-; .byte @377,@337,@012,@200 ;-2,160,000 for time converter removed [901014] ;; @@5f60 171
-; .byte @000,@003,@113,@300 ;   216,000 ;; @@5f60 171
-; .byte @377,@377,@163,@140 ;   -36,000 ;; @@5f60 171
-; .byte @000,@000,@016,@020 ;     3,600 ;; @@5f60 171
-; .byte @377,@377,@375,@250 ;      -600 ;; @@5f60 171
-; .byte @000,@000,@000,@074 ;        60 ;; @@5f60 171
-;timend ;; @@5f60 171
- ;; @@5f60 171
-logcn2           !text 3                                  ; degree-1 ;; @@5f60 171
-                 !text 127,94,86,203,121                  ; 0.43425594188 ;; @@5f61 171
-                 !text 128,19,155,11,100                  ; 0.57658454134 ;; @@5f66 171
-                 !text 128,118,56,147,22                  ; 0.96180075921 ;; @@5f6b 171
-                 !text 130,56,170,59,32                   ; 2.8853900728 ;; @@5f70 171
- ;; @@5f75 171
-expcon           !text 7                                  ; degree-1 ;; @@5f75 171
-                 !text 113,52,88,62,86                    ; 0.000021498763697 ;; @@5f76 171
-                 !text 116,22,126,179,27                  ; 0.00014352314036 ;; @@5f7b 171
-                 !text 119,47,238,227,133                 ; 0.0013422634824 ;; @@5f80 171
-                 !text 122,29,132,28,42                   ; 0.0096140170199 ;; @@5f85 171
-                 !text 124,99,89,88,10                    ; 0.055505126860 ;; @@5f8a 171
-                 !text 126,117,253,231,198                ; 0.24022638462 ;; @@5f8f 171
-                 !text 128,49,114,24,16                   ; 0.69314718600 ;; @@5f94 171
-fone             !text 129,0,0,0,0                        ; 1.0 ;; @@5f99 171
- ;; @@5f9e 171
-logeb2           !text 129,56,170,59,41                   ; log(e) base 2 ;; @@5f9e 171
-sqr05            !text 128,53,4,243,52                    ; 0.707106781 sqr(0.5) ;; @@5fa3 171
-sqr20            !text 129,53,4,243,52                    ; 1.41421356 sqr(2.0) ;; @@5fa8 171
-log2             !text 128,49,114,23,248                  ; 0.693147181 ln(2) ;; @@5fad 171
- ;; @@5fb2 171
- ;; @@5fb2 171
-sincon           !text 5                                  ; degree-1 trig ;; @@5fb2 171
-                 !text 132,230,26,45,27                    ;; @@5fb3 171
-                 !text 134,40,7,251,248                    ;; @@5fb8 171
-                 !text 135,153,104,137,1                   ;; @@5fbd 171
-                 !text 135,35,53,223,225                   ;; @@5fc2 171
-                 !text 134,165,93,231,40                   ;; @@5fc7 171
-                 !text 131,73,15,218,162                   ;; @@5fcc 171
- ;; @@5fd1 171
-atncon           !text 11                                 ; degree-1 ;; @@5fd1 171
-                 !text 118,179,131,189,211                 ;; @@5fd2 171
-                 !text 121,30,244,166,245                  ;; @@5fd7 171
-                 !text 123,131,252,176,16                  ;; @@5fdc 171
-                 !text 124,12,31,103,202                   ;; @@5fe1 171
-                 !text 124,222,83,203,193                  ;; @@5fe6 171
-                 !text 125,20,100,112,76                   ;; @@5feb 171
-                 !text 125,183,234,81,122                  ;; @@5ff0 171
-                 !text 125,99,48,136,126                   ;; @@5ff5 171
-                 !text 126,146,68,153,58                   ;; @@5ffa 171
-                 !text 126,76,204,145,199                  ;; @@5fff 171
-                 !text 127,170,170,170,19                  ;; @@6004 171
-                 !text 129,0,0,0,0                         ;; @@6009 171
- ;; @@600e 171
-; .page ;; @@600e 171
-; Natural Log Function ;; @@600e 171
-; ;; @@600e 171
-; Calculation is by   LN(f*2^n) = (n+LOG2(f))*LN(2) ;; @@600e 171
-; An approximation polynomial is used to calculate LOG2(f). ;; @@600e 171
- ;; @@600e 171
- ;; @@600e 171
-log              jsr sign                                 ; is it positive? ;; @@600e 171
-                 +lbeq fcerr                              ; can't tolerate neg or zero ;; @@6011 171
- ;; @@6014 171
-                 lda facexp                               ; get exponent into (a) ;; @@6014 171
-                 sbc #$7f                                 ; remove bias (carry is off) ;; @@6016 171
-                 pha                                      ; save exponent a while ;; @@6018 171
-                 lda #$80                                  ;; @@6019 171
-                 sta facexp                               ; result is FAC in range (0.5,1) ;; @@601b 171
-                 lda #<sqr05                              ; get pointer to sqr(0.5) ;; @@601d 171
-                 ldy #>sqr05                               ;; @@601f 171
-                 jsr romadd                                ;; @@6021 171
-                 lda #<sqr20                               ;; @@6024 171
-                 ldy #>sqr20                               ;; @@6026 171
-                 jsr romdiv                                ;; @@6028 171
-                 lda #<fone                                ;; @@602b 171
-                 ldy #>fone                                ;; @@602d 171
-                 jsr romsub                                ;; @@602f 171
-                 lda #<logcn2                              ;; @@6032 171
-                 ldy #>logcn2                              ;; @@6034 171
-                 jsr polyx                                ; evaluate approximation polynomial ;; @@6036 171
-                 lda #<neghlf                             ; add in last constant ;; @@6039 171
-                 ldy #>neghlf                              ;; @@603b 171
-                 jsr romadd                                ;; @@603d 171
-                 pla                                      ; get exponent back ;; @@6040 171
-                 jsr finlog                                ;; @@6041 171
-                 lda #<log2                               ; multiply result by ln(2) ;; @@6044 171
-                 ldy #>log2                                ;; @@6046 171
- ;; @@6048 171
- ;; @@6048 171
-rommlt           jsr romupk                                ;; @@6048 171
-                 bra fmultt                               ; multiply together ;; @@604b 171
- ;; @@604d 171
- ;; @@604d 171
-faddh            lda #<fhalf                               ;; @@604d 171
-                 ldy #>fhalf                               ;; @@604f 171
- ;; @@6051 171
-romadd           jsr romupk                                ;; @@6051 171
-                 +lbra faddt                               ;; @@6054 171
- ;; @@6057 171
- ;; @@6057 171
-romsub           jsr romupk                                ;; @@6057 171
-                 +lbra fsubt                               ;; @@605a 171
- ;; @@605d 171
- ;; @@605d 171
-romdiv           jsr romupk                                ;; @@605d 171
-                 +lbra fdivt                               ;; @@6060 171
- ;; @@6063 171
-; .page ;; @@6063 171
-; Multiplication        FAC = ARG*FAC ;; @@6063 171
- ;; @@6063 171
-fmultt_c65                                                ; [910402] ;; @@6063 171
-                 lda argsgn                                ;; @@6063 171
-                 eor facsgn                                ;; @@6065 171
-                 sta arisgn                               ; resultant sign ;; @@6067 171
-                 ldx facexp                               ; set signs on thing to multiply ;; @@6069 171
-                 bra fmultt                               ; go multiply ;; @@606b 171
- ;; @@606d 171
-fmult            jsr conupk                               ; unpack the constant into arg for use ;; @@606d 171
- ;; @@6070 171
-fmultt           beq multrt                               ; if FAC=0, return.  FAC is set ;; @@6070 171
-                 jsr muldiv                               ; fix up the exponents ;; @@6072 171
-                 lda #0                                   ; to clear result ;; @@6075 171
-                 sta resho                                 ;; @@6077 171
-                 sta resmoh                                ;; @@6079 171
-                 sta resmo                                 ;; @@607b 171
-                 sta reslo                                 ;; @@607d 171
-                 lda facov                                 ;; @@607f 171
-                 jsr mltpl1                               ; *** THIS fixes the DBL-0 bug without causing other grief!  C128-04 FAB ;; @@6081 171
-                 lda faclo                                ; multiply arg by faclo ;; @@6084 171
-                 jsr mltply                                ;; @@6086 171
-                 lda facmo                                ; multiply arg by facmo ;; @@6089 171
-                 jsr mltply                                ;; @@608b 171
-                 lda facmoh                                ;; @@608e 171
-                 jsr mltpl1                               ; *** THIS fixes the DBL-0 bug without causing other grief!  C128-04 FAB ;; @@6090 171
-                 lda facho                                ; multiply arg by facho ;; @@6093 171
-                 jsr mltpl1                                ;; @@6095 171
-                 +lbra movfr                              ; move result into FAC ;; @@6098 171
- ;; @@609b 171
-; .page ;; @@609b 171
-mltply           +lbeq mulshf                             ; normalize result and return. shift result right 1 byte.  exits with .c=0 ;; @@609b 171
-mltpl1           lsr                                       ;; @@609e 171
-                 ora #$80                                 ; will flag end of shifting ;; @@609f 171
- ;; @@60a1 171
-_local_1170_10   tay                                       ;; @@60a1 171
-                 bcc _local_1170_20                       ; if mult bit=0, just shift ;; @@60a2 171
-                 clc                                       ;; @@60a4 171
-                 lda reslo                                 ;; @@60a5 171
-                 adc arglo                                 ;; @@60a7 171
-                 sta reslo                                 ;; @@60a9 171
-                 lda resmo                                 ;; @@60ab 171
-                 adc argmo                                 ;; @@60ad 171
-                 sta resmo                                 ;; @@60af 171
-                 lda resmoh                                ;; @@60b1 171
-                 adc argmoh                                ;; @@60b3 171
-                 sta resmoh                                ;; @@60b5 171
-                 lda resho                                 ;; @@60b7 171
-                 adc argho                                 ;; @@60b9 171
-                 sta resho                                 ;; @@60bb 171
- ;; @@60bd 171
-_local_1170_20   ror resho                                 ;; @@60bd 171
-                 ror resmoh                                ;; @@60bf 171
-                 ror resmo                                 ;; @@60c1 171
-                 ror reslo                                 ;; @@60c3 171
-                 ror facov                                ; save for rounding ;; @@60c5 171
-                 tya                                       ;; @@60c7 171
-                 lsr                                      ; clear msb so we get a closer to 0 ;; @@60c8 171
-                 bne _local_1170_10                       ; slow as a turtle ;; @@60c9 171
- ;; @@60cb 171
+rolshf           ror 2,x                                  
+                 ror 3,x                                  
+                 ror 4,x                                  ; one more time
+                 ror                                      
+                 iny                                      
+                 bne shftr3                               ; $$$ (most expensive!!!)
+
+shftrt           clc                                      ; clear output of FACOV
+                 rts                                      
+
+;.end
+; .page
+; .subttl Floating Point Math Package (CODE19)
+
+; Constants used by LOG, EXP, TRIG, and others.
+
+fr4              !text 127,0,0,0,0                        ; 1/4
+neghlf           !text 128,128,0,0,0                      ; -0.5
+fhalf            !text 128,0,0,0,0                        ; 0.5
+tenc             !text 132,32,0,0,0                       ; 10.0
+pival            !text 130,73,15,218,161                  ; pi
+pi2              !text 129,73,15,218,162                  ; pi/2
+twopi            !text 131,73,15,218,162                  ; pi*2
+
+n0999            !text $9b,$3e,$bc,$1f,$fd                
+n9999            !text $9e,$6e,$6b,$27,$fd                
+nmil             !text $9e,$6e,$6b,$28,$00                
+
+foutbl                                                    ; powers of 10
+                 !text 250,10,31,0                        ; -100,000,000
+                 !text 0,152,150,128                      ; 10,000,000
+                 !text 255,240,189,192                    ; -1,000,000
+                 !text 0,1,134,160                        ; 100,000
+                 !text 255,255,216,240                    ; -10,000
+                 !text 0,0,3,232                          ; 1,000
+                 !text 255,255,255,156                    ; -100
+                 !text 0,0,0,10                           ; 10
+                 !text 255,255,255,255                    ; -1
+fdcend                                                    
+
+; .byte @377,@337,@012,@200 ;-2,160,000 for time converter removed [901014]
+; .byte @000,@003,@113,@300 ;   216,000
+; .byte @377,@377,@163,@140 ;   -36,000
+; .byte @000,@000,@016,@020 ;     3,600
+; .byte @377,@377,@375,@250 ;      -600
+; .byte @000,@000,@000,@074 ;        60
+;timend
+
+logcn2           !text 3                                  ; degree-1
+                 !text 127,94,86,203,121                  ; 0.43425594188
+                 !text 128,19,155,11,100                  ; 0.57658454134
+                 !text 128,118,56,147,22                  ; 0.96180075921
+                 !text 130,56,170,59,32                   ; 2.8853900728
+
+expcon           !text 7                                  ; degree-1
+                 !text 113,52,88,62,86                    ; 0.000021498763697
+                 !text 116,22,126,179,27                  ; 0.00014352314036
+                 !text 119,47,238,227,133                 ; 0.0013422634824
+                 !text 122,29,132,28,42                   ; 0.0096140170199
+                 !text 124,99,89,88,10                    ; 0.055505126860
+                 !text 126,117,253,231,198                ; 0.24022638462
+                 !text 128,49,114,24,16                   ; 0.69314718600
+fone             !text 129,0,0,0,0                        ; 1.0
+
+logeb2           !text 129,56,170,59,41                   ; log(e) base 2
+sqr05            !text 128,53,4,243,52                    ; 0.707106781 sqr(0.5)
+sqr20            !text 129,53,4,243,52                    ; 1.41421356 sqr(2.0)
+log2             !text 128,49,114,23,248                  ; 0.693147181 ln(2)
+
+
+sincon           !text 5                                  ; degree-1 trig
+                 !text 132,230,26,45,27                   
+                 !text 134,40,7,251,248                   
+                 !text 135,153,104,137,1                  
+                 !text 135,35,53,223,225                  
+                 !text 134,165,93,231,40                  
+                 !text 131,73,15,218,162                  
+
+atncon           !text 11                                 ; degree-1
+                 !text 118,179,131,189,211                
+                 !text 121,30,244,166,245                 
+                 !text 123,131,252,176,16                 
+                 !text 124,12,31,103,202                  
+                 !text 124,222,83,203,193                 
+                 !text 125,20,100,112,76                  
+                 !text 125,183,234,81,122                 
+                 !text 125,99,48,136,126                  
+                 !text 126,146,68,153,58                  
+                 !text 126,76,204,145,199                 
+                 !text 127,170,170,170,19                 
+                 !text 129,0,0,0,0                        
+
+; .page
+; Natural Log Function
+;
+; Calculation is by   LN(f*2^n) = (n+LOG2(f))*LN(2)
+; An approximation polynomial is used to calculate LOG2(f).
+
+
+log              jsr sign                                 ; is it positive?
+                 +lbeq fcerr                              ; can't tolerate neg or zero
+
+                 lda facexp                               ; get exponent into (a)
+                 sbc #$7f                                 ; remove bias (carry is off)
+                 pha                                      ; save exponent a while
+                 lda #$80                                 
+                 sta facexp                               ; result is FAC in range (0.5,1)
+                 lda #<sqr05                              ; get pointer to sqr(0.5)
+                 ldy #>sqr05                              
+                 jsr romadd                               
+                 lda #<sqr20                              
+                 ldy #>sqr20                              
+                 jsr romdiv                               
+                 lda #<fone                               
+                 ldy #>fone                               
+                 jsr romsub                               
+                 lda #<logcn2                             
+                 ldy #>logcn2                             
+                 jsr polyx                                ; evaluate approximation polynomial
+                 lda #<neghlf                             ; add in last constant
+                 ldy #>neghlf                             
+                 jsr romadd                               
+                 pla                                      ; get exponent back
+                 jsr finlog                               
+                 lda #<log2                               ; multiply result by ln(2)
+                 ldy #>log2                               
+
+
+rommlt           jsr romupk                               
+                 bra fmultt                               ; multiply together
+
+
+faddh            lda #<fhalf                              
+                 ldy #>fhalf                              
+
+romadd           jsr romupk                               
+                 +lbra faddt                              
+
+
+romsub           jsr romupk                               
+                 +lbra fsubt                              
+
+
+romdiv           jsr romupk                               
+                 +lbra fdivt                              
+
+; .page
+; Multiplication        FAC = ARG*FAC
+
+fmultt_c65                                                ; [910402]
+                 lda argsgn                               
+                 eor facsgn                               
+                 sta arisgn                               ; resultant sign
+                 ldx facexp                               ; set signs on thing to multiply
+                 bra fmultt                               ; go multiply
+
+fmult            jsr conupk                               ; unpack the constant into arg for use
+
+fmultt           beq multrt                               ; if FAC=0, return.  FAC is set
+                 jsr muldiv                               ; fix up the exponents
+                 lda #0                                   ; to clear result
+                 sta resho                                
+                 sta resmoh                               
+                 sta resmo                                
+                 sta reslo                                
+                 lda facov                                
+                 jsr mltpl1                               ; *** THIS fixes the DBL-0 bug without causing other grief!  C128-04 FAB
+                 lda faclo                                ; multiply arg by faclo
+                 jsr mltply                               
+                 lda facmo                                ; multiply arg by facmo
+                 jsr mltply                               
+                 lda facmoh                               
+                 jsr mltpl1                               ; *** THIS fixes the DBL-0 bug without causing other grief!  C128-04 FAB
+                 lda facho                                ; multiply arg by facho
+                 jsr mltpl1                               
+                 +lbra movfr                              ; move result into FAC
+
+; .page
+mltply           +lbeq mulshf                             ; normalize result and return. shift result right 1 byte.  exits with .c=0
+mltpl1           lsr                                      
+                 ora #$80                                 ; will flag end of shifting
+
+_local_1170_10   tay                                      
+                 bcc _local_1170_20                       ; if mult bit=0, just shift
+                 clc                                      
+                 lda reslo                                
+                 adc arglo                                
+                 sta reslo                                
+                 lda resmo                                
+                 adc argmo                                
+                 sta resmo                                
+                 lda resmoh                               
+                 adc argmoh                               
+                 sta resmoh                               
+                 lda resho                                
+                 adc argho                                
+                 sta resho                                
+
+_local_1170_20   ror resho                                
+                 ror resmoh                               
+                 ror resmo                                
+                 ror reslo                                
+                 ror facov                                ; save for rounding
+                 tya                                      
+                 lsr                                      ; clear msb so we get a closer to 0
+                 bne _local_1170_10                       ; slow as a turtle
+

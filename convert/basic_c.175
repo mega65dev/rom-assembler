@@ -1,116 +1,116 @@
-movrts           rts                                       ;; @@62b1 175
- ;; @@62b2 175
- ;; @@62b2 175
-; .page ;; @@62b2 175
-round            lda facexp                               ; zero? ;; @@62b2 175
-                 beq movrts                               ; yes, done rounding ;; @@62b4 175
-                 asl facov                                ; round? ;; @@62b6 175
-                 bcc movrts                               ; no, msb off ;; @@62b8 175
- ;; @@62ba 175
-incrnd           jsr incfac                               ; yes, add one to lsb(FAC) /// entry from EXP ;; @@62ba 175
-;note .c=1 since incfac doesn't touch .c ;; @@62bd 175
-                 +lbeq rndshf                             ; carry:   squeeze msb in and rts ;; @@62bd 175
-                 rts                                      ; no carry: rts now ;; @@62c0 175
- ;; @@62c1 175
- ;; @@62c1 175
- ;; @@62c1 175
-; Put sign in FAC into (a). ;; @@62c1 175
- ;; @@62c1 175
-sign             lda facexp                                ;; @@62c1 175
-                 beq signrt                               ; if number is zero, so is result ;; @@62c3 175
- ;; @@62c5 175
-fcsign           lda facsgn                                ;; @@62c5 175
-fcomps           rol                                       ;; @@62c7 175
-                 lda #$ff                                 ; assume negative ;; @@62c8 175
-                 bcs signrt                                ;; @@62ca 175
-                 lda #1                                   ; get +1 ;; @@62cc 175
-signrt           rts                                       ;; @@62ce 175
- ;; @@62cf 175
- ;; @@62cf 175
-; .page ;; @@62cf 175
-; SGN function ;; @@62cf 175
- ;; @@62cf 175
-sgn              jsr sign                                  ;; @@62cf 175
- ;; @@62d2 175
-;float the signed integer in accb ;; @@62d2 175
-float            sta facho                                ; put (accb) in high order ;; @@62d2 175
-                 lda #0                                    ;; @@62d4 175
-                 sta facho+1                               ;; @@62d6 175
-                 ldx #$88                                 ; get the exponent ;; @@62d8 175
-;float the signed number in FAC ;; @@62da 175
- ;; @@62da 175
- ;; @@62da 175
-floats           lda facho                                 ;; @@62da 175
-                 eor #$ff                                  ;; @@62dc 175
-                 rol                                      ; get comp of sign in carry ;; @@62de 175
-floatc           lda #0                                   ; zero (a) but not carry ;; @@62df 175
-                 sta faclo                                 ;; @@62e1 175
-                 sta facmo                                 ;; @@62e3 175
- ;; @@62e5 175
-floatb           stx facexp                                ;; @@62e5 175
-                 sta facov                                 ;; @@62e7 175
-                 sta facsgn                                ;; @@62e9 175
-                 +lbra fadflt                              ;; @@62eb 175
- ;; @@62ee 175
- ;; @@62ee 175
- ;; @@62ee 175
- ;; @@62ee 175
-; Absolute value of FAC ;; @@62ee 175
- ;; @@62ee 175
-abs              lsr facsgn                                ;; @@62ee 175
-                 rts                                       ;; @@62f0 175
- ;; @@62f1 175
- ;; @@62f1 175
-; .page ;; @@62f1 175
-; Compare two numbers: ;; @@62f1 175
-; ;; @@62f1 175
-; a=1  if  ARG < FAC ;; @@62f1 175
-; a=0  if  ARG = FAC ;; @@62f1 175
-; a=-1 if  ARG > FAC ;; @@62f1 175
- ;; @@62f1 175
-fcomp            sta index2                                ;; @@62f1 175
-                 sty index2+1                              ;; @@62f3 175
-                 ldy #0                                    ;; @@62f5 175
-                 lda (index2),y                           ; has argexp ;; @@62f7 175
-                 iny                                      ; bump pointer up ;; @@62f9 175
-                 tax                                      ; save a in x and reset codes ;; @@62fa 175
-                 beq sign                                  ;; @@62fb 175
-                 lda (index2),y                            ;; @@62fd 175
-                 eor facsgn                               ; signs the same ;; @@62ff 175
-                 bmi fcsign                               ; signs differ so result is ;; @@6301 175
-                 cpx facexp                               ; sign of FAC again ;; @@6303 175
-                 bne _local_1174_10                        ;; @@6305 175
- ;; @@6307 175
-                 lda (index2),y                            ;; @@6307 175
-                 ora #$80                                  ;; @@6309 175
-                 cmp facho                                 ;; @@630b 175
-                 bne _local_1174_10                        ;; @@630d 175
-                 iny                                       ;; @@630f 175
-                 lda (index2),y                            ;; @@6310 175
-                 cmp facmoh                                ;; @@6312 175
-                 bne _local_1174_10                        ;; @@6314 175
-                 iny                                       ;; @@6316 175
-                 lda (index2),y                            ;; @@6317 175
-                 cmp facmo                                 ;; @@6319 175
-                 bne _local_1174_10                        ;; @@631b 175
-                 iny                                       ;; @@631d 175
-                 lda #$7f                                  ;; @@631e 175
-                 cmp facov                                 ;; @@6320 175
-                 lda (index2),y                            ;; @@6322 175
-                 sbc faclo                                ; get zero if equal ;; @@6324 175
-                 beq qintrt                               ; rts ;; @@6326 175
- ;; @@6328 175
-_local_1174_10   lda facsgn                                ;; @@6328 175
-                 bcc _local_1174_20                        ;; @@632a 175
-                 eor #$ff                                  ;; @@632c 175
-_local_1174_20   bra fcomps                               ; a part of sign sets up (a) ;; @@632e 175
- ;; @@6330 175
-;.end ;; @@6330 175
-; .page ;; @@6330 175
-; .subttl Floating Point Math Package (CODE21) ;; @@6330 175
- ;; @@6330 175
-; Quick Greatest Integer Function ;; @@6330 175
-; ;; @@6330 175
-; Leaves INT(FAC) in FACHO&MO&LO signed ;; @@6330 175
-; Assumes FAC < 2~23 =8388608 ;; @@6330 175
- ;; @@6330 175
+movrts           rts                                      
+
+
+; .page
+round            lda facexp                               ; zero?
+                 beq movrts                               ; yes, done rounding
+                 asl facov                                ; round?
+                 bcc movrts                               ; no, msb off
+
+incrnd           jsr incfac                               ; yes, add one to lsb(FAC) /// entry from EXP
+;note .c=1 since incfac doesn't touch .c
+                 +lbeq rndshf                             ; carry:   squeeze msb in and rts
+                 rts                                      ; no carry: rts now
+
+
+
+; Put sign in FAC into (a).
+
+sign             lda facexp                               
+                 beq signrt                               ; if number is zero, so is result
+
+fcsign           lda facsgn                               
+fcomps           rol                                      
+                 lda #$ff                                 ; assume negative
+                 bcs signrt                               
+                 lda #1                                   ; get +1
+signrt           rts                                      
+
+
+; .page
+; SGN function
+
+sgn              jsr sign                                 
+
+;float the signed integer in accb
+float            sta facho                                ; put (accb) in high order
+                 lda #0                                   
+                 sta facho+1                              
+                 ldx #$88                                 ; get the exponent
+;float the signed number in FAC
+
+
+floats           lda facho                                
+                 eor #$ff                                 
+                 rol                                      ; get comp of sign in carry
+floatc           lda #0                                   ; zero (a) but not carry
+                 sta faclo                                
+                 sta facmo                                
+
+floatb           stx facexp                               
+                 sta facov                                
+                 sta facsgn                               
+                 +lbra fadflt                             
+
+
+
+
+; Absolute value of FAC
+
+abs              lsr facsgn                               
+                 rts                                      
+
+
+; .page
+; Compare two numbers:
+;
+; a=1  if  ARG < FAC
+; a=0  if  ARG = FAC
+; a=-1 if  ARG > FAC
+
+fcomp            sta index2                               
+                 sty index2+1                             
+                 ldy #0                                   
+                 lda (index2),y                           ; has argexp
+                 iny                                      ; bump pointer up
+                 tax                                      ; save a in x and reset codes
+                 beq sign                                 
+                 lda (index2),y                           
+                 eor facsgn                               ; signs the same
+                 bmi fcsign                               ; signs differ so result is
+                 cpx facexp                               ; sign of FAC again
+                 bne _local_1174_10                       
+
+                 lda (index2),y                           
+                 ora #$80                                 
+                 cmp facho                                
+                 bne _local_1174_10                       
+                 iny                                      
+                 lda (index2),y                           
+                 cmp facmoh                               
+                 bne _local_1174_10                       
+                 iny                                      
+                 lda (index2),y                           
+                 cmp facmo                                
+                 bne _local_1174_10                       
+                 iny                                      
+                 lda #$7f                                 
+                 cmp facov                                
+                 lda (index2),y                           
+                 sbc faclo                                ; get zero if equal
+                 beq qintrt                               ; rts
+
+_local_1174_10   lda facsgn                               
+                 bcc _local_1174_20                       
+                 eor #$ff                                 
+_local_1174_20   bra fcomps                               ; a part of sign sets up (a)
+
+;.end
+; .page
+; .subttl Floating Point Math Package (CODE21)
+
+; Quick Greatest Integer Function
+;
+; Leaves INT(FAC) in FACHO&MO&LO signed
+; Assumes FAC < 2~23 =8388608
+

@@ -1,59 +1,59 @@
-MaxTimeValues                                              ;; @@53f1 133
-                 !text $10,$60,$60,$24                    ; t,s,m,h in packed BCD ;; @@53f1 133
- ;; @@53f5 133
-; .page ;; @@53f5 133
-; x$=TI$  Return a string of the form "hh:mm:ss.t", including colons. ;; @@53f5 133
- ;; @@53f5 133
-Get_TI_String                                              ;; @@53f5 133
-                 jsr ReadSystemClock                      ; get time as packed BCD ;; @@53f5 133
- ;; @@53f8 133
-                 lda #10                                  ; get string space for 10 characters ;; @@53f8 133
-                 jsr strspa                                ;; @@53fa 133
-                 tay                                      ; length ;; @@53fd 133
-                 dey                                      ; index ;; @@53fe 133
- ;; @@53ff 133
-                 lda time                                 ; build TI$ string in 'fbuffr' ;; @@53ff 133
-                 ora #'0'                                 ; (build string backwards, from last chr to first) ;; @@5401 133
-                 ldx #dsctmp+1                             ;; @@5403 133
-                 jsr sta_far_ram1                         ; put tenths (special case- only 1 digit) ;; @@5405 133
-                 dey                                       ;; @@5408 133
-                 lda #'.'                                  ;; @@5409 133
-                 jsr sta_far_ram1                         ; put period (special case)   [910103] ;; @@540b 133
-                 dey                                       ;; @@540e 133
-                 ldx #1                                    ;; @@540f 133
-                 bra _local_1132_20                        ;; @@5411 133
- ;; @@5413 133
-_local_1132_10   phx                                      ; element pointer (1=secs, 2=mins, 3=hrs) ;; @@5413 133
-                 ldx #dsctmp+1                             ;; @@5414 133
-                 lda #':'                                  ;; @@5416 133
-                 jsr sta_far_ram1                         ; put colon ;; @@5418 133
-                 dey                                       ;; @@541b 133
-                 plx                                       ;; @@541c 133
- ;; @@541d 133
-_local_1132_20   lda time,x                                ;; @@541d 133
-                 taz                                       ;; @@541f 133
-                 and #$0f                                 ; do lsd first, since we're working backwards ;; @@5420 133
-                 ora #'0'                                  ;; @@5422 133
-                 phx                                       ;; @@5424 133
-                 ldx #dsctmp+1                             ;; @@5425 133
-                 jsr sta_far_ram1                         ; put lsd ;; @@5427 133
-                 dey                                       ;; @@542a 133
-                 tza                                      ; then do msd ;; @@542b 133
-                 lsr                                       ;; @@542c 133
-                 lsr                                       ;; @@542d 133
-                 lsr                                       ;; @@542e 133
-                 lsr                                       ;; @@542f 133
-                 ora #'0'                                  ;; @@5430 133
-                 jsr sta_far_ram1                         ; put msd ;; @@5432 133
-                 plx                                       ;; @@5435 133
-                 inx                                      ; next packed element ;; @@5436 133
-                 dey                                       ;; @@5437 133
-                 bpl _local_1132_10                       ; loop until done ;; @@5438 133
- ;; @@543a 133
-                 lda #10                                  ; length ;; @@543a 133
-                 jsr mvdone                               ; update frespc ???? ;; @@543c 133
-                 +lbra putnew                             ; make descriptor in dsctmp real ;; @@543f 133
- ;; @@5442 133
-; .page ;; @@5442 133
-; TI. Convert 24-hour TOD into tenths of seconds.  901010 F.Bowen ;; @@5442 133
- ;; @@5442 133
+MaxTimeValues                                             
+                 !text $10,$60,$60,$24                    ; t,s,m,h in packed BCD
+
+; .page
+; x$=TI$  Return a string of the form "hh:mm:ss.t", including colons.
+
+Get_TI_String                                             
+                 jsr ReadSystemClock                      ; get time as packed BCD
+
+                 lda #10                                  ; get string space for 10 characters
+                 jsr strspa                               
+                 tay                                      ; length
+                 dey                                      ; index
+
+                 lda time                                 ; build TI$ string in 'fbuffr'
+                 ora #'0'                                 ; (build string backwards, from last chr to first)
+                 ldx #dsctmp+1                            
+                 jsr sta_far_ram1                         ; put tenths (special case- only 1 digit)
+                 dey                                      
+                 lda #'.'                                 
+                 jsr sta_far_ram1                         ; put period (special case)   [910103]
+                 dey                                      
+                 ldx #1                                   
+                 bra _local_1132_20                       
+
+_local_1132_10   phx                                      ; element pointer (1=secs, 2=mins, 3=hrs)
+                 ldx #dsctmp+1                            
+                 lda #':'                                 
+                 jsr sta_far_ram1                         ; put colon
+                 dey                                      
+                 plx                                      
+
+_local_1132_20   lda time,x                               
+                 taz                                      
+                 and #$0f                                 ; do lsd first, since we're working backwards
+                 ora #'0'                                 
+                 phx                                      
+                 ldx #dsctmp+1                            
+                 jsr sta_far_ram1                         ; put lsd
+                 dey                                      
+                 tza                                      ; then do msd
+                 lsr                                      
+                 lsr                                      
+                 lsr                                      
+                 lsr                                      
+                 ora #'0'                                 
+                 jsr sta_far_ram1                         ; put msd
+                 plx                                      
+                 inx                                      ; next packed element
+                 dey                                      
+                 bpl _local_1132_10                       ; loop until done
+
+                 lda #10                                  ; length
+                 jsr mvdone                               ; update frespc ????
+                 +lbra putnew                             ; make descriptor in dsctmp real
+
+; .page
+; TI. Convert 24-hour TOD into tenths of seconds.  901010 F.Bowen
+

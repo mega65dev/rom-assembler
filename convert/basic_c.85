@@ -1,44 +1,44 @@
-range            beq _local_1084_10                       ; a terminator from chrgot? ;; @@4250 85
-                 bcc _local_1084_10                       ; a number? ;; @@4252 85
-                 cmp #minus_token                         ; a dash? ;; @@4254 85
-                 bne _local_1084_40   ;if it's not a dash, error (C128-03 fix ; FAB) ;; @@4256 85
-                 ldy #1                                    ;; @@4258 85
-                 jsr indtxt                               ; let's peek, and see what follows the dash! ;; @@425a 85
-                 beq _local_1084_40                       ; uh-oh! it's of the form 'delete -' - error ;; @@425d 85
-                 cmp #':'                                 ; the other terminator ;; @@425f 85
-                 beq _local_1084_40                       ; ..still bad ;; @@4261 85
-                 sec                                      ; set up for linget ;; @@4263 85
- ;; @@4264 85
-_local_1084_10   jsr linget                               ; get first # ;; @@4264 85
-                 jsr FindLine                             ; find it & set ptrs ;; @@4267 85
-                 jsr chrgot                               ; get last char ;; @@426a 85
-                 beq _local_1084_20                       ; skip done ;; @@426d 85
-                 cmp #minus_token                         ; a dash? ;; @@426f 85
-                 bne _local_1084_40                       ; no- syntax error ;; @@4271 85
-                 jsr chrget                               ; yes- skip dash ;; @@4273 85
-                 jsr linget                               ; get second # ;; @@4276 85
-                 bne _local_1084_40                       ; error- wasn't a number ;; @@4279 85
- ;; @@427b 85
-_local_1084_20   lda endchr                               ; was a # input? ;; @@427b 85
-                 bne _local_1084_30                       ; yes ;; @@427d 85
-                 lda #$ff                                 ; no - make max ;; @@427f 85
-                 sta linnum                                ;; @@4281 85
-                 sta linnum+1                              ;; @@4283 85
-_local_1084_30   rts                                       ;; @@4285 85
- ;; @@4286 85
- ;; @@4286 85
-_local_1084_40   +lbra snerr                              ; syntax error ;; @@4286 85
- ;; @@4289 85
-;.end ;; @@4289 85
-; .page ;; @@4289 85
-; .subttl  FIND  CHANGE ;; @@4289 85
- ;; @@4289 85
-; FIND   "string"                    [,line_range] ;; @@4289 85
-; CHANGE "oldstring" TO "newstring"  [,line_range] ;; @@4289 85
-; ;; @@4289 85
-; where <"> delimiter can be any character, but only ;; @@4289 85
-; double-quotes will prevent tokenization of strings. ;; @@4289 85
-; ;; @@4289 85
-; N.B.: I am assuming that lines cannot be greater than 255 chars, as is ;; @@4289 85
-; the case where the line was entered "normally", that is, using LINGET. ;; @@4289 85
- ;; @@4289 85
+range            beq _local_1084_10                       ; a terminator from chrgot?
+                 bcc _local_1084_10                       ; a number?
+                 cmp #minus_token                         ; a dash?
+                 bne _local_1084_40   ;if it's not a dash, error (C128-03 fix ; FAB)
+                 ldy #1                                   
+                 jsr indtxt                               ; let's peek, and see what follows the dash!
+                 beq _local_1084_40                       ; uh-oh! it's of the form 'delete -' - error
+                 cmp #':'                                 ; the other terminator
+                 beq _local_1084_40                       ; ..still bad
+                 sec                                      ; set up for linget
+
+_local_1084_10   jsr linget                               ; get first #
+                 jsr FindLine                             ; find it & set ptrs
+                 jsr chrgot                               ; get last char
+                 beq _local_1084_20                       ; skip done
+                 cmp #minus_token                         ; a dash?
+                 bne _local_1084_40                       ; no- syntax error
+                 jsr chrget                               ; yes- skip dash
+                 jsr linget                               ; get second #
+                 bne _local_1084_40                       ; error- wasn't a number
+
+_local_1084_20   lda endchr                               ; was a # input?
+                 bne _local_1084_30                       ; yes
+                 lda #$ff                                 ; no - make max
+                 sta linnum                               
+                 sta linnum+1                             
+_local_1084_30   rts                                      
+
+
+_local_1084_40   +lbra snerr                              ; syntax error
+
+;.end
+; .page
+; .subttl  FIND  CHANGE
+
+; FIND   "string"                    [,line_range]
+; CHANGE "oldstring" TO "newstring"  [,line_range]
+;
+; where <"> delimiter can be any character, but only
+; double-quotes will prevent tokenization of strings.
+;
+; N.B.: I am assuming that lines cannot be greater than 255 chars, as is
+; the case where the line was entered "normally", that is, using LINGET.
+

@@ -1,88 +1,88 @@
-negop                                                     ; /// entry point ;; @@65fc 184
-                 lda facexp                                ;; @@65fc 184
-                 beq negrts                                ;; @@65fe 184
-                 lda facsgn                                ;; @@6600 184
-                 eor #$ff                                  ;; @@6602 184
-                 sta facsgn                                ;; @@6604 184
-negrts           rts                                       ;; @@6606 184
- ;; @@6607 184
-;.end ;; @@6607 184
-; .page ;; @@6607 184
-; .subttl Floating Point Math Package (CODE24) ;; @@6607 184
- ;; @@6607 184
-; Exponentation Function ;; @@6607 184
-; ;; @@6607 184
-; First save the original argument and multiply the FAC by LOG2(e).  The ;; @@6607 184
-; result is used to determine if overflow will occur since ;; @@6607 184
-; ;; @@6607 184
-;  EXP(x) = 2^(x*LOG2(e)) ;; @@6607 184
-; ;; @@6607 184
-; where ;; @@6607 184
-;  LOG2(e) = LOG(e), base 2 ;; @@6607 184
-; ;; @@6607 184
-; Then save the integer part of this to scale the answer at the end, since ;; @@6607 184
-; 2^y=2^INT(y)*2^(y-INT(y)) and 2^INT(y) are easy to compute.  Now compute ;; @@6607 184
-; ;; @@6607 184
-;  2^(x*LOG2(e)-INT(x*LOG2(e)) ;; @@6607 184
-; by ;; @@6607 184
-;  p(LOG(2)*(INT(x*LOG2(e))+1)-x ;; @@6607 184
-; ;; @@6607 184
-; where p is an approximation polynomial. The result is then scaled by the ;; @@6607 184
-; power of two previously saved.  Re: Taylor expansion. ;; @@6607 184
- ;; @@6607 184
- ;; @@6607 184
-exp              lda #<logeb2                             ; multiply by LOG(e) base 2 ;; @@6607 184
-                 ldy #>logeb2                              ;; @@6609 184
-                 jsr rommlt                               ; LOGEB2->ARG, FAC=FAC*ARG ;; @@660b 184
-                 lda facov                                 ;; @@660e 184
-                 adc #$50                                 ; ???? ;; @@6610 184
-                 bcc _local_1183_10                        ;; @@6612 184
-                 jsr incrnd                                ;; @@6614 184
- ;; @@6617 184
-_local_1183_10   sta oldov                                 ;; @@6617 184
-                 jsr movef                                ; to save in ARG without round.  ARG=FAC, facov=0) ;; @@6619 184
-                 lda facexp                                ;; @@661c 184
-                 cmp #$88                                 ; if ABS(FAC) >= 128, too big ;; @@661e 184
-                 bcc _local_1183_30                        ;; @@6620 184
- ;; @@6622 184
-_local_1183_20   jsr mldvex                               ; overflow or overflow ;; @@6622 184
-_local_1183_30   jsr int                                  ; FAC=INT(FAC), uses facov ;; @@6625 184
-                 lda integr                               ; get low part ;; @@6628 184
-                 clc                                       ;; @@662a 184
-                 adc #$81                                  ;; @@662b 184
-                 beq _local_1183_20                       ; overflow or overflow!! ;; @@662d 184
- ;; @@662f 184
-                 sec                                       ;; @@662f 184
-                 sbc #1                                   ; subtract it ;; @@6630 184
-                 pha                                      ; save a while ;; @@6632 184
- ;; @@6633 184
-                 ldx #5                                   ; swap FAC and ARG ;; @@6633 184
-_local_1183_40   lda argexp,x                              ;; @@6635 184
-                 ldy facexp,x                              ;; @@6637 184
-                 sta facexp,x                              ;; @@6639 184
-                 sty argexp,x                              ;; @@663b 184
-                 dex                                       ;; @@663d 184
-                 bpl _local_1183_40                        ;; @@663e 184
- ;; @@6640 184
-                 lda oldov                                 ;; @@6640 184
-                 sta facov                                 ;; @@6642 184
-                 jsr fsubt                                ; FAC=ARG-FAC ;; @@6644 184
-                 jsr negop                                ; negate FAC ;; @@6647 184
-                 lda #<expcon                              ;; @@664a 184
-                 ldy #>expcon                              ;; @@664c 184
-                 jsr poly                                  ;; @@664e 184
-                 lda #0                                    ;; @@6651 184
-                 sta arisgn                               ; multiply by positive 1.0 ;; @@6653 184
- ;; @@6655 184
-                 pla                                      ; recall scale factor ;; @@6655 184
-                 jsr mldexp                               ; modify facexp and check for overflow ;; @@6656 184
-                 rts                                      ; (has to do jsr due to pla's in muldiv) ;; @@6659 184
- ;; @@665a 184
-; .page ;; @@665a 184
-; Polynomial Evaluator and the Random Number Generator. ;; @@665a 184
-; ;; @@665a 184
-; Evaluate  p(x^2)*x ;; @@665a 184
-; The pointer to degree is in (a,y) and the constants follow the degree. ;; @@665a 184
-; For x=FAC, compute  c0*x + c1*x^3 + c2*x^5 + c3*x^7 +...+ c(n)*x^(2*n+1) ;; @@665a 184
- ;; @@665a 184
- ;; @@665a 184
+negop                                                     ; /// entry point
+                 lda facexp                               
+                 beq negrts                               
+                 lda facsgn                               
+                 eor #$ff                                 
+                 sta facsgn                               
+negrts           rts                                      
+
+;.end
+; .page
+; .subttl Floating Point Math Package (CODE24)
+
+; Exponentation Function
+;
+; First save the original argument and multiply the FAC by LOG2(e).  The
+; result is used to determine if overflow will occur since
+;
+;  EXP(x) = 2^(x*LOG2(e))
+;
+; where
+;  LOG2(e) = LOG(e), base 2
+;
+; Then save the integer part of this to scale the answer at the end, since
+; 2^y=2^INT(y)*2^(y-INT(y)) and 2^INT(y) are easy to compute.  Now compute
+;
+;  2^(x*LOG2(e)-INT(x*LOG2(e))
+; by
+;  p(LOG(2)*(INT(x*LOG2(e))+1)-x
+;
+; where p is an approximation polynomial. The result is then scaled by the
+; power of two previously saved.  Re: Taylor expansion.
+
+
+exp              lda #<logeb2                             ; multiply by LOG(e) base 2
+                 ldy #>logeb2                             
+                 jsr rommlt                               ; LOGEB2->ARG, FAC=FAC*ARG
+                 lda facov                                
+                 adc #$50                                 ; ????
+                 bcc _local_1183_10                       
+                 jsr incrnd                               
+
+_local_1183_10   sta oldov                                
+                 jsr movef                                ; to save in ARG without round.  ARG=FAC, facov=0)
+                 lda facexp                               
+                 cmp #$88                                 ; if ABS(FAC) >= 128, too big
+                 bcc _local_1183_30                       
+
+_local_1183_20   jsr mldvex                               ; overflow or overflow
+_local_1183_30   jsr int                                  ; FAC=INT(FAC), uses facov
+                 lda integr                               ; get low part
+                 clc                                      
+                 adc #$81                                 
+                 beq _local_1183_20                       ; overflow or overflow!!
+
+                 sec                                      
+                 sbc #1                                   ; subtract it
+                 pha                                      ; save a while
+
+                 ldx #5                                   ; swap FAC and ARG
+_local_1183_40   lda argexp,x                             
+                 ldy facexp,x                             
+                 sta facexp,x                             
+                 sty argexp,x                             
+                 dex                                      
+                 bpl _local_1183_40                       
+
+                 lda oldov                                
+                 sta facov                                
+                 jsr fsubt                                ; FAC=ARG-FAC
+                 jsr negop                                ; negate FAC
+                 lda #<expcon                             
+                 ldy #>expcon                             
+                 jsr poly                                 
+                 lda #0                                   
+                 sta arisgn                               ; multiply by positive 1.0
+
+                 pla                                      ; recall scale factor
+                 jsr mldexp                               ; modify facexp and check for overflow
+                 rts                                      ; (has to do jsr due to pla's in muldiv)
+
+; .page
+; Polynomial Evaluator and the Random Number Generator.
+;
+; Evaluate  p(x^2)*x
+; The pointer to degree is in (a,y) and the constants follow the degree.
+; For x=FAC, compute  c0*x + c1*x^3 + c2*x^5 + c3*x^7 +...+ c(n)*x^(2*n+1)
+
+

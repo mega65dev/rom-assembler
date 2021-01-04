@@ -1,48 +1,48 @@
-fretms           cpy lastpt+1                             ; last entry to temp? ;; @@5bcc 161
-                 bne frerts                                ;; @@5bce 161
-                 cmp lastpt                                ;; @@5bd0 161
-                 bne frerts                                ;; @@5bd2 161
-                 sta temppt                                ;; @@5bd4 161
-                 sbc #strsiz                              ; point to lst one ;; @@5bd6 161
-                 sta lastpt                               ; update temp pointer ;; @@5bd8 161
-                 ldy #0                                   ; also clears zflg so we do rest of fretmp ;; @@5bda 161
-frerts           rts                                      ; all done ;; @@5bdc 161
- ;; @@5bdd 161
-;.end ;; @@5bdd 161
-; .page ;; @@5bdd 161
-; .subttl Garbage Collection ;; @@5bdd 161
- ;; @@5bdd 161
-;  Get space for a string, perhaps forcing garbage collection. ;; @@5bdd 161
-; ;; @@5bdd 161
-;  Entry:  a = # of chars ;; @@5bdd 161
-;  Exit:   (x,y) pointer to space, otherwise ;; @@5bdd 161
-;          blows off to 'out of string space' error ;; @@5bdd 161
-;          (also preserves .a and sets frespc= y,x = -> at space.) ;; @@5bdd 161
- ;; @@5bdd 161
- ;; @@5bdd 161
-getspa           lsr garbfl                               ; signal no garbage collection yet ;; @@5bdd 161
- ;; @@5bdf 161
-tryag2           tax                                      ; save in x also ;; @@5bdf 161
-                 beq getrts                               ; length of 0 no go... ;; @@5be0 161
-                 pha                                      ; save a (length) on stack ;; @@5be2 161
-                 lda fretop                               ; lo byte ;; @@5be3 161
-                 sec                                      ; for subtract ;; @@5be5 161
-                 sbc #2                                   ; minus 2 (link bytes) ;; @@5be6 161
-                 ldy fretop+1                              ;; @@5be8 161
-                 bcs _local_1160_10                        ;; @@5bea 161
-                 dey                                       ;; @@5bec 161
-_local_1160_10   sta index1                               ; save for later ;; @@5bed 161
-                 sty index1+1                              ;; @@5bef 161
-                 txa                                       ;; @@5bf1 161
-                 eor #$ff                                  ;; @@5bf2 161
-                 sec                                       ;; @@5bf4 161
-                 adc index1                                ;; @@5bf5 161
-                 bcs _local_1160_20                        ;; @@5bf7 161
-                 dey                                       ;; @@5bf9 161
-_local_1160_20   cpy strend+1                              ;; @@5bfa 161
-                 bcc garbag                                ;; @@5bfc 161
-                 bne strfre                                ;; @@5bfe 161
-                 cmp strend                                ;; @@5c00 161
-                 bcc garbag                               ; clean up ;; @@5c02 161
- ;; @@5c04 161
-; .page ;; @@5c04 161
+fretms           cpy lastpt+1                             ; last entry to temp?
+                 bne frerts                               
+                 cmp lastpt                               
+                 bne frerts                               
+                 sta temppt                               
+                 sbc #strsiz                              ; point to lst one
+                 sta lastpt                               ; update temp pointer
+                 ldy #0                                   ; also clears zflg so we do rest of fretmp
+frerts           rts                                      ; all done
+
+;.end
+; .page
+; .subttl Garbage Collection
+
+;  Get space for a string, perhaps forcing garbage collection.
+;
+;  Entry:  a = # of chars
+;  Exit:   (x,y) pointer to space, otherwise
+;          blows off to 'out of string space' error
+;          (also preserves .a and sets frespc= y,x = -> at space.)
+
+
+getspa           lsr garbfl                               ; signal no garbage collection yet
+
+tryag2           tax                                      ; save in x also
+                 beq getrts                               ; length of 0 no go...
+                 pha                                      ; save a (length) on stack
+                 lda fretop                               ; lo byte
+                 sec                                      ; for subtract
+                 sbc #2                                   ; minus 2 (link bytes)
+                 ldy fretop+1                             
+                 bcs _local_1160_10                       
+                 dey                                      
+_local_1160_10   sta index1                               ; save for later
+                 sty index1+1                             
+                 txa                                      
+                 eor #$ff                                 
+                 sec                                      
+                 adc index1                               
+                 bcs _local_1160_20                       
+                 dey                                      
+_local_1160_20   cpy strend+1                             
+                 bcc garbag                               
+                 bne strfre                               
+                 cmp strend                               
+                 bcc garbag                               ; clean up
+
+; .page

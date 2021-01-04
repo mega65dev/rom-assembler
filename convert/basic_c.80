@@ -1,50 +1,50 @@
-form_line                                                  ;; @@4023 80
-                 jsr n1_reset                              ;; @@4023 80
-find_it                                                    ;; @@4026 80
-                 jsr chargt_x2                            ; new line, skip over link ;; @@4026 80
-                 bne _local_1079_70                       ; if we get to end-of-text without finding the ;; @@4029 80
-                 ldx #err_ref                             ; line # then 'unresolved reference' error ;; @@402b 80
-                 lda forpnt                                ;; @@402d 80
-                 sta curlin                               ; fake error routine into saying 'in line xxxxx' ;; @@402f 80
-                 lda forpnt+1                              ;; @@4031 80
-                 sta curlin+1                              ;; @@4033 80
-                 +lbra error                               ;; @@4035 80
- ;; @@4038 80
-_local_1079_70   jsr chargt                               ; get line number low ;; @@4038 80
-                 sta highds                               ; highds = current line# in loop ;; @@403b 80
-                 cmp linnum                                ;; @@403d 80
-                 bne _local_1079_100                       ;; @@403f 80
-                 jsr chargt                               ; get line number high ;; @@4041 80
-                 sta highds+1                              ;; @@4044 80
-                 cmp linnum+1                              ;; @@4046 80
-                 bne _local_1079_110                       ;; @@4048 80
-                 sec                                      ; if linnum < start#, no remapping ;; @@404a 80
-                 sbc hightr+1                              ;; @@404b 80
-                 bcc _local_1079_80                        ;; @@404d 80
-                 bne _local_1079_90                        ;; @@404f 80
-                 lda linnum                                ;; @@4051 80
-                 sbc hightr                                ;; @@4053 80
-                 bcs _local_1079_90                        ;; @@4055 80
- ;; @@4057 80
-_local_1079_80   lda linnum                               ; use same line# ;; @@4057 80
-                 sta facho+1                               ;; @@4059 80
-                 lda linnum+1                              ;; @@405b 80
-                 sta facho                                 ;; @@405d 80
- ;; @@405f 80
-_local_1079_90   ldx #$90                                 ; make replacement string ;; @@405f 80
-                 sec                                       ;; @@4061 80
-                 jsr floatc                                ;; @@4062 80
-                 +lbra fout                                ;; @@4065 80
- ;; @@4068 80
- ;; @@4068 80
-_local_1079_100  jsr chargt                                ;; @@4068 80
-                 sta highds+1                             ; (** 01/27/84 fix) ;; @@406b 80
- ;; @@406d 80
-_local_1079_110  jsr line_add                             ; scan to end of line ;; @@406d 80
-                 bra find_it                              ; always ;; @@4070 80
- ;; @@4072 80
-; .page ;; @@4072 80
-;*************************** N1_RESET ********************************** ;; @@4072 80
- ;; @@4072 80
-; Copies n1 (new renumber origin) into facho & sets (txtptr) = (txttab)-1 ;; @@4072 80
- ;; @@4072 80
+form_line                                                 
+                 jsr n1_reset                             
+find_it                                                   
+                 jsr chargt_x2                            ; new line, skip over link
+                 bne _local_1079_70                       ; if we get to end-of-text without finding the
+                 ldx #err_ref                             ; line # then 'unresolved reference' error
+                 lda forpnt                               
+                 sta curlin                               ; fake error routine into saying 'in line xxxxx'
+                 lda forpnt+1                             
+                 sta curlin+1                             
+                 +lbra error                              
+
+_local_1079_70   jsr chargt                               ; get line number low
+                 sta highds                               ; highds = current line# in loop
+                 cmp linnum                               
+                 bne _local_1079_100                      
+                 jsr chargt                               ; get line number high
+                 sta highds+1                             
+                 cmp linnum+1                             
+                 bne _local_1079_110                      
+                 sec                                      ; if linnum < start#, no remapping
+                 sbc hightr+1                             
+                 bcc _local_1079_80                       
+                 bne _local_1079_90                       
+                 lda linnum                               
+                 sbc hightr                               
+                 bcs _local_1079_90                       
+
+_local_1079_80   lda linnum                               ; use same line#
+                 sta facho+1                              
+                 lda linnum+1                             
+                 sta facho                                
+
+_local_1079_90   ldx #$90                                 ; make replacement string
+                 sec                                      
+                 jsr floatc                               
+                 +lbra fout                               
+
+
+_local_1079_100  jsr chargt                               
+                 sta highds+1                             ; (** 01/27/84 fix)
+
+_local_1079_110  jsr line_add                             ; scan to end of line
+                 bra find_it                              ; always
+
+; .page
+;*************************** N1_RESET **********************************
+
+; Copies n1 (new renumber origin) into facho & sets (txtptr) = (txttab)-1
+

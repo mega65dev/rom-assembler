@@ -1,88 +1,88 @@
-preamb           !text " YEK"                             ; key preamble ;; @@468c 102
- ;; @@4690 102
-keydat           !text "($RHC+",$22                       ; chr$( string ;; @@4690 102
- ;; @@4697 102
-keychr           !text cr,$8d,$22,esc                     ; special KEY chars- return, sft-return, quote, esc ;; @@4697 102
- ;; @@469b 102
-; .page ;; @@469b 102
-;************************************************************************ ;; @@469b 102
-; ;; @@469b 102
-;   Key_Change  Add, Delete or Change function key definition ;; @@469b 102
-; ;; @@469b 102
-;************************************************************************ ;; @@469b 102
- ;; @@469b 102
-Key_Change                                                 ;; @@469b 102
-                 jsr getbyt                               ; get key number (1-16) ;; @@469b 102
-                 stx z_p_temp_1                           ; save key number     [910925] ;; @@469e 102
-                 dex                                       ;; @@46a0 102
-                 cpx #number_fkeys                         ;; @@46a1 102
-                 +lbcs fcerr                              ; exit - key number invalid ;; @@46a3 102
- ;; @@46a6 102
-; stx z_p_temp_1 ;save key number ;; @@46a6 102
-                 jsr chkcom                               ; look for comma ;; @@46a6 102
-                 jsr frmstr                               ; do frmevl, frestr. returns len in .a, addr in 'index' ;; @@46a9 102
-                 tay                                      ; set up for call to do-a-key ;; @@46ac 102
-                 lda #1                                   ; tell do-a-key that string is in bank 1 ;; @@46ad 102
-                 sta index+2                               ;; @@46af 102
-                 lda #index                               ; now .A points to (adr lo, adr hi, bank #) ;; @@46b1 102
-                 ldx z_p_temp_1                            ;; @@46b3 102
-; inx         [910925] ;; @@46b5 102
-key_restore                                                ;; @@46b5 102
-; jsr put_io_in_map ;; @@46b5 102
-                 jsr _doakey                              ; re-define the key ;; @@46b5 102
-                 +lbcs omerr                              ; bad return (.c=1) ;; @@46b8 102
-                 rts                                      ; ok return  (.c=0) ;; @@46bb 102
- ;; @@46bc 102
-; .page ;; @@46bc 102
-;************************************************************************ ;; @@46bc 102
-;   Key_Load  Load function key definitions (from disk)   [900725] ;; @@46bc 102
-;************************************************************************ ;; @@46bc 102
- ;; @@46bc 102
-Key_load                                                   ;; @@46bc 102
-                 jsr GetLoadChannel                       ; get a channel      [911001] ;; @@46bc 102
-                 ldy #>_pky_lengths                        ;; @@46bf 102
-                 lda #<_pky_lengths                        ;; @@46c1 102
-                 jsr LoadBlock                            ; load it ;; @@46c3 102
-                 +lbra list_err                           ; release channel, close file, return to main ;; @@46c6 102
- ;; @@46c9 102
- ;; @@46c9 102
-GetLoadChannel                                            ; Used by KeyLoad and SpriteLoad    [911001] ;; @@46c9 102
-                 jsr chrget                               ; eat LOAD token ;; @@46c9 102
-                 lda #$e6                                 ; parse:  filename [,U#] [,D#] ;; @@46cc 102
-                 jsr dosprs                               ; (like dopen:  0 0 0 *  * 0 0 1 ) ;; @@46ce 102
-                 jsr chk1                                 ; check parameters ;; @@46d1 102
-                 lda #0                                    ;; @@46d4 102
-                 sta dossa                                ; setup as dload would (0 = load channel) ;; @@46d6 102
-                 jsr find_la                              ; find an unused LA to use (cannot use reserved one) ;; @@46d9 102
-                 ldy #fopn                                 ;; @@46dc 102
-                 ldx #4                                    ;; @@46de 102
-                 jsr open_file                            ; open the file ;; @@46e0 102
-                 bcs LoadEOF                              ; exit if problem ;; @@46e3 102
-                 ldx dosla                                 ;; @@46e5 102
-                 jsr _chkin                               ; get input channel ;; @@46e8 102
-                 bcs LoadEOF                              ; exit if bad?? ;; @@46eb 102
-                 jsr _basin                               ; waste dummy load address ;; @@46ed 102
-                 jsr _basin                                ;; @@46f0 102
-                 jsr _readst                              ; prevent corruption if there's a problem ;; @@46f3 102
-                 bne LoadERR                              ; exit if problem ;; @@46f6 102
-                 clc                                       ;; @@46f8 102
-                 rts                                       ;; @@46f9 102
- ;; @@46fa 102
-; .page ;; @@46fa 102
-LoadBlock                                                  ;; @@46fa 102
-                 sta highds                               ; where to put data ;; @@46fa 102
-                 sty highds+1                              ;; @@46fc 102
-LoadBlockNext                                              ;; @@46fe 102
-                 ldy #0                                    ;; @@46fe 102
-_local_1101_10   jsr _basin                               ; read definitions ;; @@4700 102
-                 sta (highds),y                            ;; @@4703 102
-                 jsr _readst                              ; check channel status ;; @@4705 102
-                 bne LoadEOF                              ; exit if eof or error ;; @@4708 102
-                 jsr _stop                                 ;; @@470a 102
-                 beq LoadEOF                              ; exit if stop key down ;; @@470d 102
-                 iny                                       ;; @@470f 102
-                 bne _local_1101_10                       ; continue up to 1 page maximum ;; @@4710 102
-                 clc                                      ; indicate "more" ;; @@4712 102
-                 rts                                       ;; @@4713 102
- ;; @@4714 102
- ;; @@4714 102
+preamb           !text " YEK"                             ; key preamble
+
+keydat           !text "($RHC+",$22                       ; chr$( string
+
+keychr           !text cr,$8d,$22,esc                     ; special KEY chars- return, sft-return, quote, esc
+
+; .page
+;************************************************************************
+;
+;   Key_Change  Add, Delete or Change function key definition
+;
+;************************************************************************
+
+Key_Change                                                
+                 jsr getbyt                               ; get key number (1-16)
+                 stx z_p_temp_1                           ; save key number     [910925]
+                 dex                                      
+                 cpx #number_fkeys                        
+                 +lbcs fcerr                              ; exit - key number invalid
+
+; stx z_p_temp_1 ;save key number
+                 jsr chkcom                               ; look for comma
+                 jsr frmstr                               ; do frmevl, frestr. returns len in .a, addr in 'index'
+                 tay                                      ; set up for call to do-a-key
+                 lda #1                                   ; tell do-a-key that string is in bank 1
+                 sta index+2                              
+                 lda #index                               ; now .A points to (adr lo, adr hi, bank #)
+                 ldx z_p_temp_1                           
+; inx         [910925]
+key_restore                                               
+; jsr put_io_in_map
+                 jsr _doakey                              ; re-define the key
+                 +lbcs omerr                              ; bad return (.c=1)
+                 rts                                      ; ok return  (.c=0)
+
+; .page
+;************************************************************************
+;   Key_Load  Load function key definitions (from disk)   [900725]
+;************************************************************************
+
+Key_load                                                  
+                 jsr GetLoadChannel                       ; get a channel      [911001]
+                 ldy #>_pky_lengths                       
+                 lda #<_pky_lengths                       
+                 jsr LoadBlock                            ; load it
+                 +lbra list_err                           ; release channel, close file, return to main
+
+
+GetLoadChannel                                            ; Used by KeyLoad and SpriteLoad    [911001]
+                 jsr chrget                               ; eat LOAD token
+                 lda #$e6                                 ; parse:  filename [,U#] [,D#]
+                 jsr dosprs                               ; (like dopen:  0 0 0 *  * 0 0 1 )
+                 jsr chk1                                 ; check parameters
+                 lda #0                                   
+                 sta dossa                                ; setup as dload would (0 = load channel)
+                 jsr find_la                              ; find an unused LA to use (cannot use reserved one)
+                 ldy #fopn                                
+                 ldx #4                                   
+                 jsr open_file                            ; open the file
+                 bcs LoadEOF                              ; exit if problem
+                 ldx dosla                                
+                 jsr _chkin                               ; get input channel
+                 bcs LoadEOF                              ; exit if bad??
+                 jsr _basin                               ; waste dummy load address
+                 jsr _basin                               
+                 jsr _readst                              ; prevent corruption if there's a problem
+                 bne LoadERR                              ; exit if problem
+                 clc                                      
+                 rts                                      
+
+; .page
+LoadBlock                                                 
+                 sta highds                               ; where to put data
+                 sty highds+1                             
+LoadBlockNext                                             
+                 ldy #0                                   
+_local_1101_10   jsr _basin                               ; read definitions
+                 sta (highds),y                           
+                 jsr _readst                              ; check channel status
+                 bne LoadEOF                              ; exit if eof or error
+                 jsr _stop                                
+                 beq LoadEOF                              ; exit if stop key down
+                 iny                                      
+                 bne _local_1101_10                       ; continue up to 1 page maximum
+                 clc                                      ; indicate "more"
+                 rts                                      
+
+

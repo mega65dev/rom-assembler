@@ -1,23 +1,23 @@
-fin_chrget                                                 ;; @@6457 180
-                 lda fin_bank                             ; text or string bank? ;; @@6457 180
-                 +lbeq chrget                             ; get byte from text bank via normal CHRGET mechanism ;; @@645a 180
- ;; @@645d 180
-fin_chrget_1                                              ; get byte from string bank via modified CHRGET mechanism ;; @@645d 180
-                 inw index1                                ;; @@645d 180
-fin_chrget_2                                               ;; @@645f 180
-                 ldy #0                                    ;; @@645f 180
-                 jsr indin1_ram1                           ;; @@6461 180
-                 cmp #':'                                  ;; @@6464 180
-                 bcs _local_1179_10                        ;; @@6466 180
-                 cmp #' '                                  ;; @@6468 180
-                 beq fin_chrget_1                         ; skip over spaces ;; @@646a 180
-                 sec                                       ;; @@646c 180
-                 sbc #'0'                                 ; set up .c as CHRGET would ;; @@646d 180
-                 sec                                       ;; @@646f 180
-                 sbc #$d0                                  ;; @@6470 180
-_local_1179_10   rts                                       ;; @@6472 180
- ;; @@6473 180
-;.end ;; @@6473 180
-; .page ;; @@6473 180
-; .subttl Floating Point Math Package (CODE22,23) ;; @@6473 180
- ;; @@6473 180
+fin_chrget                                                
+                 lda fin_bank                             ; text or string bank?
+                 +lbeq chrget                             ; get byte from text bank via normal CHRGET mechanism
+
+fin_chrget_1                                              ; get byte from string bank via modified CHRGET mechanism
+                 inw index1                               
+fin_chrget_2                                              
+                 ldy #0                                   
+                 jsr indin1_ram1                          
+                 cmp #':'                                 
+                 bcs _local_1179_10                       
+                 cmp #' '                                 
+                 beq fin_chrget_1                         ; skip over spaces
+                 sec                                      
+                 sbc #'0'                                 ; set up .c as CHRGET would
+                 sec                                      
+                 sbc #$d0                                 
+_local_1179_10   rts                                      
+
+;.end
+; .page
+; .subttl Floating Point Math Package (CODE22,23)
+

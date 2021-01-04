@@ -1,55 +1,55 @@
-ReadSystemClock                                            ;; @@5470 135
-                 jsr _ReadTime                            ; get packed BCD, y=hrs, x=min, a=sec, z=tenths ;; @@5470 135
-; (assumes system clock was set properly!) ;; @@5473 135
-                 stz time                                 ; tenths  0-9 ;; @@5473 135
-                 sta time+1                               ; seconds  0-59 ;; @@5475 135
-                 stx time+2                               ; minutes  0-59 ;; @@5477 135
-                 sty time+3                               ; hours  0-59 ;; @@5479 135
-                 rts                                       ;; @@547b 135
- ;; @@547c 135
-; .page ;; @@547c 135
-; Unsigned Integer Multiply: Time * Factor  -> Tenths_of_Seconds ;; @@547c 135
-;     A   *  (B,C)  ->      (D,E,F) ;; @@547c 135
- ;; @@547c 135
-TimeMultiply                                               ;; @@547c 135
-                 lda time,x                               ; convert packed BCD to binary ;; @@547c 135
-                 and #$0f                                  ;; @@547e 135
-                 sta facho                                 ;; @@5480 135
-                 lda time,x                               ; 10x = 8x + 2x ;; @@5482 135
-                 and #$f0                                  ;; @@5484 135
-                 lsr                                      ; msd x 8 ;; @@5486 135
-                 sta time,x                                ;; @@5487 135
-                 lsr                                       ;; @@5489 135
-                 lsr                                      ; msd x 2 ;; @@548a 135
-                 clc                                       ;; @@548b 135
-                 adc facho                                ; lsd ;; @@548c 135
-                 adc time,x                                ;; @@548e 135
-                 sta time,x                               ; can't overflow ($99->153) ;; @@5490 135
- ;; @@5492 135
-                 txa                                      ; make a word pointer from byte pointer ;; @@5492 135
-                 asl                                       ;; @@5493 135
-                 tay                                       ;; @@5494 135
-                 lda TimeFactor-2,y                       ; multiplicand = TimeFactor,y  (2 bytes) ;; @@5495 135
-                 sta multiplicand                         ; multiplier = Time,x x (1 byte) ;; @@5498 135
-                 lda TimeFactor-1,y                       ; ----------- ;; @@549a 135
-                 sta multiplicand+1                        ;; @@549d 135
-                 lda #0                                   ; product lo   (3 bytes) ;; @@549f 135
-                 sta product+1                            ; mid ;; @@54a1 135
-                 sta product+2                            ; hi ;; @@54a3 135
- ;; @@54a5 135
-                 ldy #16                                  ; 16-bit multiplicand ;; @@54a5 135
-_local_1134_10   asl                                       ;; @@54a7 135
-                 row product+1                             ;; @@54a8 135
-                 row multiplicand                         ; multiplier * multiplicand -> product ;; @@54ab 135
-                 bcc _local_1134_20                        ;; @@54ae 135
-                 clc                                       ;; @@54b0 135
-                 adc time,x                                ;; @@54b1 135
-                 bcc _local_1134_20                        ;; @@54b3 135
-                 inw product+1                            ; (does no error check, since using time factors ;; @@54b5 135
-_local_1134_20   dey                                      ; in ROM and maximum time multiplier of 59 there ;; @@54b7 135
-                 bne _local_1134_10                       ; is no danger of overflow) ;; @@54b8 135
- ;; @@54ba 135
-; sta product ;; @@54ba 135
-                 rts                                      ; (.X is preserved) ;; @@54ba 135
- ;; @@54bb 135
- ;; @@54bb 135
+ReadSystemClock                                           
+                 jsr _ReadTime                            ; get packed BCD, y=hrs, x=min, a=sec, z=tenths
+; (assumes system clock was set properly!)
+                 stz time                                 ; tenths  0-9
+                 sta time+1                               ; seconds  0-59
+                 stx time+2                               ; minutes  0-59
+                 sty time+3                               ; hours  0-59
+                 rts                                      
+
+; .page
+; Unsigned Integer Multiply: Time * Factor  -> Tenths_of_Seconds
+;     A   *  (B,C)  ->      (D,E,F)
+
+TimeMultiply                                              
+                 lda time,x                               ; convert packed BCD to binary
+                 and #$0f                                 
+                 sta facho                                
+                 lda time,x                               ; 10x = 8x + 2x
+                 and #$f0                                 
+                 lsr                                      ; msd x 8
+                 sta time,x                               
+                 lsr                                      
+                 lsr                                      ; msd x 2
+                 clc                                      
+                 adc facho                                ; lsd
+                 adc time,x                               
+                 sta time,x                               ; can't overflow ($99->153)
+
+                 txa                                      ; make a word pointer from byte pointer
+                 asl                                      
+                 tay                                      
+                 lda TimeFactor-2,y                       ; multiplicand = TimeFactor,y  (2 bytes)
+                 sta multiplicand                         ; multiplier = Time,x x (1 byte)
+                 lda TimeFactor-1,y                       ; -----------
+                 sta multiplicand+1                       
+                 lda #0                                   ; product lo   (3 bytes)
+                 sta product+1                            ; mid
+                 sta product+2                            ; hi
+
+                 ldy #16                                  ; 16-bit multiplicand
+_local_1134_10   asl                                      
+                 row product+1                            
+                 row multiplicand                         ; multiplier * multiplicand -> product
+                 bcc _local_1134_20                       
+                 clc                                      
+                 adc time,x                               
+                 bcc _local_1134_20                       
+                 inw product+1                            ; (does no error check, since using time factors
+_local_1134_20   dey                                      ; in ROM and maximum time multiplier of 59 there
+                 bne _local_1134_10                       ; is no danger of overflow)
+
+; sta product
+                 rts                                      ; (.X is preserved)
+
+

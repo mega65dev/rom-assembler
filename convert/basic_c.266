@@ -1,19 +1,19 @@
-Screen                                                     ;; @@af00 266
-                 cmp #open_token                          ; else dispatch per secondary token... ;; @@af00 266
-                 +lbeq ScreenOpen                          ;; @@af02 266
-                 cmp #close_token                          ;; @@af05 266
-                 +lbeq ScreenClose                         ;; @@af07 266
-                 cmp #def_token                            ;; @@af0a 266
-                 beq ScreenDef                             ;; @@af0c 266
-                 cmp #clr_token                            ;; @@af0e 266
-                 beq ScreenClr                             ;; @@af10 266
- ;; @@af12 266
-                 jsr chkesc                               ; [910930] ;; @@af12 266
-; cmp #esc_command_token ;; @@af15 266
-; bne _local_1265_10 ;; @@af15 266
-; jsr chrget  ; get past escape token ;; @@af15 266
-                 cmp #set_token                            ;; @@af15 266
-                 beq ScreenSet                             ;; @@af17 266
-_local_1265_10   +lbra snerr                              ; report syntax error ;; @@af19 266
- ;; @@af1c 266
-; .page ;; @@af1c 266
+Screen                                                    
+                 cmp #open_token                          ; else dispatch per secondary token...
+                 +lbeq ScreenOpen                         
+                 cmp #close_token                         
+                 +lbeq ScreenClose                        
+                 cmp #def_token                           
+                 beq ScreenDef                            
+                 cmp #clr_token                           
+                 beq ScreenClr                            
+
+                 jsr chkesc                               ; [910930]
+; cmp #esc_command_token
+; bne _local_1265_10
+; jsr chrget  ; get past escape token
+                 cmp #set_token                           
+                 beq ScreenSet                            
+_local_1265_10   +lbra snerr                              ; report syntax error
+
+; .page

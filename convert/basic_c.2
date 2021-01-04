@@ -1,96 +1,96 @@
-init_sound_sprites                                          ; [910523] ;; @@210d 2
-;; init_voices   ;Initialize music stuff ;; @@210d 2
-; bit _pal_ntsc  ;determine if PAL or NTSC system  [910724] ;; @@210d 2
-; bmi 1$   ;...branch if PAL ;; @@210d 2
-; lda #<beats_ntsc/4 ;set beat to quarter note (4/4 time = .5 sec) ;; @@210d 2
-; ldy #>beats_ntsc/4 ;; @@210d 2
-; bra 2$ ;; @@210d 2
-;1$ lda #<beats_pal/4 ;; @@210d 2
-; ldy #>beats_pal/4 ;; @@210d 2
-;2$ sta ntime ;; @@210d 2
-; sty ntime+1 ;; @@210d 2
-; ;; @@210d 2
-; lda #4   ;set default octave ;; @@210d 2
-; sta octave ;; @@210d 2
-; ;; @@210d 2
-; lda #12   ;set default tempo    [910220] ;; @@210d 2
-; sta tempo_rate  ; 12 makes whole note in 4/4 time last 2 seconds ;; @@210d 2
-;---- ;; @@210d 2
-;; jsr go_slow  ;      [910716] 4567R7A ;; @@210d 2
-; lda #0   ;make sure all gates are off ;; @@210d 2
-; sta sid1+4 ;; @@210d 2
-; sta sid1+11 ;; @@210d 2
-; sta sid1+18 ;; @@210d 2
-; sta sid2+4 ;; @@210d 2
-; sta sid2+11 ;; @@210d 2
-; sta sid2+18 ;; @@210d 2
-; sta filters1+2  ;set filters off, volume to max????  [910612] ;; @@210d 2
-; sta filters2+2 ;; @@210d 2
-; ;; @@210d 2
-; lda #8 ;; @@210d 2
-; sta sid1+24 ;; @@210d 2
-; sta sid2+24 ;; @@210d 2
-; sta filters1+3 ;; @@210d 2
-; sta filters2+3  ;      [910612] ;; @@210d 2
-;; sta filters+4  ;why?      [910612] ;; @@210d 2
-;; jsr go_fast  ;      [910716] 4567R7A ;; @@210d 2
-;---- ;; @@210d 2
-; ldy #29   ;initialize music tables ;; @@210d 2
-;10$ lda atkmus,y ;; @@210d 2
-; sta atktab,y ;; @@210d 2
-; dey ;; @@210d 2
-; bpl 10$ ;; @@210d 2
-; ;; @@210d 2
-; ldx #9   ;initialize pulse widths ;; @@210d 2
-;20$ lda pwhmus,x ;; @@210d 2
-; sta pulshi,x ;; @@210d 2
-; dex ;; @@210d 2
-; bpl 20$ ;; @@210d 2
-; ;; @@210d 2
-; stx sound_time_hi ;turn all SOUND counters off (.X = $ff) ;; @@210d 2
-; stx sound_time_hi+1 ;; @@210d 2
-; stx sound_time_hi+2 ;; @@210d 2
-; stx sound_time_hi+3 ;stereo SIDs     [910612] ;; @@210d 2
-; stx sound_time_hi+4 ;; @@210d 2
-; stx sound_time_hi+5 ;; @@210d 2
-; stx voices+1  ;turn all PLAY counters off ;; @@210d 2
-; stx voices+3 ;; @@210d 2
-; stx voices+5 ;; @@210d 2
-; stx voices+7  ;stereo SIDs     [910612] ;; @@210d 2
-; stx voices+9 ;; @@210d 2
-; stx voices+11 ;; @@210d 2
-; ;; @@210d 2
-; ldy #6-1  ;set default envelope (piano) for all voices (6) ;; @@210d 2
-; sty voice ;; @@210d 2
-;30$ ldx #0 ;; @@210d 2
-; jsr set_envelope_1 ;; @@210d 2
-; dec voice ;; @@210d 2
-; bpl 30$ ;; @@210d 2
-; inc voice  ;set default voice (0) ;; @@210d 2
-;----- ;; @@210d 2
-                 jsr Sound_CLR_1                          ; [910724] ;; @@210d 2
- ;; @@2110 2
-                 lda #%11100111                           ; [910626] ;; @@2110 2
-                 trb helper                               ; reset LIST/HELP/FIND flags ;; @@2112 2
-                 tsb highlight_save                       ; mark saved color as invalid ;; @@2114 2
- ;; @@2117 2
-                 lda #0                                   ; [910523] F018A ;; @@2117 2
-                 ldx #12+12-1                             ; init DMA lists ;; @@2119 2
-_local_1001_40   sta dma1_cmd,x                            ;; @@211b 2
-                 dex                                       ;; @@211e 2
-                 bpl _local_1001_40                        ;; @@211f 2
- ;; @@2121 2
-; stop_sprites   ;Stop all moving sprites (a=0)   [910523] ;; @@2121 2
-                 ldy #7                                   ; for sprites 0...7 ;; @@2121 2
-_local_1001_50   ldx sproff,y                             ; get table offset ;; @@2123 2
-                 sta sprite_data,x                        ; reset speed for this sprite ;; @@2126 2
-                 dey                                       ;; @@2129 2
-                 bpl _local_1001_50                       ; loop until done ;; @@212a 2
- ;; @@212c 2
-                 sta vic+21                               ; Turn off all sprites    [910717] ;; @@212c 2
- ;; @@212f 2
-                 sta irq_wrap_flag                        ; enable BASIC IRQ handler ;; @@212f 2
-; sta nmi_wrap_flag ;enable BASIC NMI handler   [910523] ;; @@2132 2
-                 rts                                      ; (removed)    [910826] ;; @@2132 2
- ;; @@2133 2
-; .page ;; @@2133 2
+init_sound_sprites                                          ; [910523]
+;; init_voices   ;Initialize music stuff
+; bit _pal_ntsc  ;determine if PAL or NTSC system  [910724]
+; bmi 1$   ;...branch if PAL
+; lda #<beats_ntsc/4 ;set beat to quarter note (4/4 time = .5 sec)
+; ldy #>beats_ntsc/4
+; bra 2$
+;1$ lda #<beats_pal/4
+; ldy #>beats_pal/4
+;2$ sta ntime
+; sty ntime+1
+;
+; lda #4   ;set default octave
+; sta octave
+;
+; lda #12   ;set default tempo    [910220]
+; sta tempo_rate  ; 12 makes whole note in 4/4 time last 2 seconds
+;----
+;; jsr go_slow  ;      [910716] 4567R7A
+; lda #0   ;make sure all gates are off
+; sta sid1+4
+; sta sid1+11
+; sta sid1+18
+; sta sid2+4
+; sta sid2+11
+; sta sid2+18
+; sta filters1+2  ;set filters off, volume to max????  [910612]
+; sta filters2+2
+;
+; lda #8
+; sta sid1+24
+; sta sid2+24
+; sta filters1+3
+; sta filters2+3  ;      [910612]
+;; sta filters+4  ;why?      [910612]
+;; jsr go_fast  ;      [910716] 4567R7A
+;----
+; ldy #29   ;initialize music tables
+;10$ lda atkmus,y
+; sta atktab,y
+; dey
+; bpl 10$
+;
+; ldx #9   ;initialize pulse widths
+;20$ lda pwhmus,x
+; sta pulshi,x
+; dex
+; bpl 20$
+;
+; stx sound_time_hi ;turn all SOUND counters off (.X = $ff)
+; stx sound_time_hi+1
+; stx sound_time_hi+2
+; stx sound_time_hi+3 ;stereo SIDs     [910612]
+; stx sound_time_hi+4
+; stx sound_time_hi+5
+; stx voices+1  ;turn all PLAY counters off
+; stx voices+3
+; stx voices+5
+; stx voices+7  ;stereo SIDs     [910612]
+; stx voices+9
+; stx voices+11
+;
+; ldy #6-1  ;set default envelope (piano) for all voices (6)
+; sty voice
+;30$ ldx #0
+; jsr set_envelope_1
+; dec voice
+; bpl 30$
+; inc voice  ;set default voice (0)
+;-----
+                 jsr Sound_CLR_1                          ; [910724]
+
+                 lda #%11100111                           ; [910626]
+                 trb helper                               ; reset LIST/HELP/FIND flags
+                 tsb highlight_save                       ; mark saved color as invalid
+
+                 lda #0                                   ; [910523] F018A
+                 ldx #12+12-1                             ; init DMA lists
+_local_1001_40   sta dma1_cmd,x                           
+                 dex                                      
+                 bpl _local_1001_40                       
+
+; stop_sprites   ;Stop all moving sprites (a=0)   [910523]
+                 ldy #7                                   ; for sprites 0...7
+_local_1001_50   ldx sproff,y                             ; get table offset
+                 sta sprite_data,x                        ; reset speed for this sprite
+                 dey                                      
+                 bpl _local_1001_50                       ; loop until done
+
+                 sta vic+21                               ; Turn off all sprites    [910717]
+
+                 sta irq_wrap_flag                        ; enable BASIC IRQ handler
+; sta nmi_wrap_flag ;enable BASIC NMI handler   [910523]
+                 rts                                      ; (removed)    [910826]
+
+; .page

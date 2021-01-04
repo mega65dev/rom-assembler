@@ -1,106 +1,106 @@
-mouse            cmp #on_token                            ; new [910122] ;; @@7bf0 259
-                 beq _local_1258_10                        ;; @@7bf2 259
-                 jsr chkesc                                ;; @@7bf4 259
-                 cmp #off_token                            ;; @@7bf7 259
-                 +lbne snerr                               ;; @@7bf9 259
- ;; @@7bfc 259
-;    The Kernel MOUSE_CMD is called to install or remove mouse driver. ;; @@7bfc 259
-; .a= B7,6 set to install mouse in game port 2 ($80), 1 ($40), or both ($C0) ;; @@7bfc 259
-; .a= 0 to disable mouse driver ;; @@7bfc 259
-; .x= 0-7 physical sprite pointer ;; @@7bfc 259
- ;; @@7bfc 259
-                 lda #0                                   ; TURN MOUSE OFF ;; @@7bfc 259
-                 jsr _mouse                               ; do it ;; @@7bfe 259
-                 +lbra chkeos                             ; eat token & exit after checking for eos ;; @@7c01 259
- ;; @@7c04 259
-;TURN MOUSE ON ;; @@7c04 259
-_local_1258_10   jsr chrget                               ; eat token ;; @@7c04 259
-                 ldx #2                                   ; get (optional) port# in .X ;; @@7c07 259
-                 jsr optbyt                               ; if not present default to port 2 ;; @@7c09 259
-                 cpx #4                                   ;  ;; @@7c0c 259
-                 +lbcs fcerr                              ; illegal value ;; @@7c0e 259
-                 phx                                       ;; @@7c11 259
- ;; @@7c12 259
-                 ldx #0                                   ; get (optional) sprite# in .X ;; @@7c12 259
-                 jsr optbyt                               ; if not present default to sprite 0 ;; @@7c14 259
-                 cpx #8                                    ;; @@7c17 259
-                 +lbcs fcerr                              ; illegal value ;; @@7c19 259
-                 stx z_p_temp_1                            ;; @@7c1c 259
-                 ldy sproff,x                             ; kill moving sprite ;; @@7c1e 259
-                 lda #0                                   ; get offset to speed data ;; @@7c21 259
-                 sta sprite_data,y                        ; reset sprite's speed value ;; @@7c23 259
- ;; @@7c26 259
-                 pla                                      ; setup for Kernel call- get port# into b7,6 ;; @@7c26 259
-                 ror                                      ; .a= port(s), .x=sprite ;; @@7c27 259
-                 ror                                       ;; @@7c28 259
-                 ror                                       ;; @@7c29 259
-                 jsr _mouse                               ; do it (???? do after coord error check) ;; @@7c2a 259
- ;; @@7c2d 259
-; .page ;; @@7c2d 259
-                 jsr optbyt                               ; get (optional) hotspot, x  new [910307] ;; @@7c2d 259
-                 bcc _local_1258_20                       ; not given ;; @@7c30 259
-                 cpx #24                                   ;; @@7c32 259
-                 +lbcs fcerr                              ; out of range (0-23) ;; @@7c34 259
-                 txa                                       ;; @@7c37 259
-                 neg                                       ;; @@7c38 259
-                 tax                                       ;; @@7c39 259
-                 adc #24                                   ;; @@7c3a 259
-                 sta _mouse_left                           ;; @@7c3c 259
-                 txa                                       ;; @@7c3f 259
-                 clc                                       ;; @@7c40 259
-                 adc #87                                   ;; @@7c41 259
-                 sta _mouse_right                          ;; @@7c43 259
- ;; @@7c46 259
-_local_1258_20   jsr optbyt                               ; get (optional) hotspot, y ;; @@7c46 259
-                 bcc _local_1258_30                       ; not given ;; @@7c49 259
-                 cpx #21                                   ;; @@7c4b 259
-                 +lbcs fcerr                              ; out of range (0-20) ;; @@7c4d 259
-                 txa                                       ;; @@7c50 259
-                 neg                                       ;; @@7c51 259
-                 tax                                       ;; @@7c52 259
-                 adc #50                                   ;; @@7c53 259
-                 sta _mouse_top                            ;; @@7c55 259
-                 txa                                       ;; @@7c58 259
-                 clc                                       ;; @@7c59 259
-                 adc #250                                  ;; @@7c5a 259
-                 sta _mouse_bottom                         ;; @@7c5c 259
- ;; @@7c5f 259
-_local_1258_30   jsr chrgot                               ; get (optional) position coordinate  [910123] ;; @@7c5f 259
-                 beq _local_1258_40                       ; eol, use this sprite's last position ;; @@7c62 259
-                 jsr sprcor                               ; else get first coordinate ;; @@7c64 259
-                 bit numcnt                               ; test coordinate type ;; @@7c67 259
-                 +lbvs snerr                              ; syntax error ;; @@7c6a 259
-                 sty xdest                                ; save coordinate value ;; @@7c6d 259
-                 sty xdest+2                               ;; @@7c70 259
-                 sta xdest+1                               ;; @@7c73 259
-                 sta xdest+3                               ;; @@7c76 259
- ;; @@7c79 259
-                 lda #$7f                                 ; flag 'mouse' for movspr call  [910808] ;; @@7c79 259
-                 sta op                                    ;; @@7c7b 259
-                 jsr sprcor                               ; get second coordinate ;; @@7c7d 259
-                 bit numcnt                               ; test type of coordinate ;; @@7c80 259
-                 +lbvc movspr_normal                      ; position sprite, normal coordinates ;; @@7c83 259
-                 +lbmi movspr_angle                       ; angular coordinates ;; @@7c86 259
-                 +lbra snerr                              ; else error ;; @@7c89 259
- ;; @@7c8c 259
-_local_1258_40   rts                                       ;; @@7c8c 259
- ;; @@7c8d 259
-;.end ;; @@7c8d 259
-; .page ;; @@7c8d 259
-;************************************************************************ ;; @@7c8d 259
-;*   RMOUSE Returns in variable list current status of mouse * ;; @@7c8d 259
-;*         * ;; @@7c8d 259
-;*   Syntax: RMOUSE [Xposition [,Yposition [, Buttons] ]]  * ;; @@7c8d 259
-;*         * ;; @@7c8d 259
-;*   Where: X,Yposition = current position of mouse pointer sprite * ;; @@7c8d 259
-;*  Button      = current status of mouse buttons  * ;; @@7c8d 259
-;*         * ;; @@7c8d 259
-;*   0   = no button     * ;; @@7c8d 259
-;*   1   = right button    * ;; @@7c8d 259
-;*   128 = left button    * ;; @@7c8d 259
-;*   129 = both buttons    * ;; @@7c8d 259
-;*         * ;; @@7c8d 259
-;* If a mouse is not installed, "-1" is returned for all vars. * ;; @@7c8d 259
-;* If both ports are enabled, buttons from each port are merged. * ;; @@7c8d 259
-;************************************************************************ ;; @@7c8d 259
- ;; @@7c8d 259
+mouse            cmp #on_token                            ; new [910122]
+                 beq _local_1258_10                       
+                 jsr chkesc                               
+                 cmp #off_token                           
+                 +lbne snerr                              
+
+;    The Kernel MOUSE_CMD is called to install or remove mouse driver.
+; .a= B7,6 set to install mouse in game port 2 ($80), 1 ($40), or both ($C0)
+; .a= 0 to disable mouse driver
+; .x= 0-7 physical sprite pointer
+
+                 lda #0                                   ; TURN MOUSE OFF
+                 jsr _mouse                               ; do it
+                 +lbra chkeos                             ; eat token & exit after checking for eos
+
+;TURN MOUSE ON
+_local_1258_10   jsr chrget                               ; eat token
+                 ldx #2                                   ; get (optional) port# in .X
+                 jsr optbyt                               ; if not present default to port 2
+                 cpx #4                                   ; 
+                 +lbcs fcerr                              ; illegal value
+                 phx                                      
+
+                 ldx #0                                   ; get (optional) sprite# in .X
+                 jsr optbyt                               ; if not present default to sprite 0
+                 cpx #8                                   
+                 +lbcs fcerr                              ; illegal value
+                 stx z_p_temp_1                           
+                 ldy sproff,x                             ; kill moving sprite
+                 lda #0                                   ; get offset to speed data
+                 sta sprite_data,y                        ; reset sprite's speed value
+
+                 pla                                      ; setup for Kernel call- get port# into b7,6
+                 ror                                      ; .a= port(s), .x=sprite
+                 ror                                      
+                 ror                                      
+                 jsr _mouse                               ; do it (???? do after coord error check)
+
+; .page
+                 jsr optbyt                               ; get (optional) hotspot, x  new [910307]
+                 bcc _local_1258_20                       ; not given
+                 cpx #24                                  
+                 +lbcs fcerr                              ; out of range (0-23)
+                 txa                                      
+                 neg                                      
+                 tax                                      
+                 adc #24                                  
+                 sta _mouse_left                          
+                 txa                                      
+                 clc                                      
+                 adc #87                                  
+                 sta _mouse_right                         
+
+_local_1258_20   jsr optbyt                               ; get (optional) hotspot, y
+                 bcc _local_1258_30                       ; not given
+                 cpx #21                                  
+                 +lbcs fcerr                              ; out of range (0-20)
+                 txa                                      
+                 neg                                      
+                 tax                                      
+                 adc #50                                  
+                 sta _mouse_top                           
+                 txa                                      
+                 clc                                      
+                 adc #250                                 
+                 sta _mouse_bottom                        
+
+_local_1258_30   jsr chrgot                               ; get (optional) position coordinate  [910123]
+                 beq _local_1258_40                       ; eol, use this sprite's last position
+                 jsr sprcor                               ; else get first coordinate
+                 bit numcnt                               ; test coordinate type
+                 +lbvs snerr                              ; syntax error
+                 sty xdest                                ; save coordinate value
+                 sty xdest+2                              
+                 sta xdest+1                              
+                 sta xdest+3                              
+
+                 lda #$7f                                 ; flag 'mouse' for movspr call  [910808]
+                 sta op                                   
+                 jsr sprcor                               ; get second coordinate
+                 bit numcnt                               ; test type of coordinate
+                 +lbvc movspr_normal                      ; position sprite, normal coordinates
+                 +lbmi movspr_angle                       ; angular coordinates
+                 +lbra snerr                              ; else error
+
+_local_1258_40   rts                                      
+
+;.end
+; .page
+;************************************************************************
+;*   RMOUSE Returns in variable list current status of mouse *
+;*         *
+;*   Syntax: RMOUSE [Xposition [,Yposition [, Buttons] ]]  *
+;*         *
+;*   Where: X,Yposition = current position of mouse pointer sprite *
+;*  Button      = current status of mouse buttons  *
+;*         *
+;*   0   = no button     *
+;*   1   = right button    *
+;*   128 = left button    *
+;*   129 = both buttons    *
+;*         *
+;* If a mouse is not installed, "-1" is returned for all vars. *
+;* If both ports are enabled, buttons from each port are merged. *
+;************************************************************************
+

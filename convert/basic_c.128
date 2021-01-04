@@ -1,166 +1,166 @@
-bserr            ldx #errbs                               ; get bad sub error number ;; @@51fb 128
-                 !text $2c                                 ;; @@51fd 128
- ;; @@51fe 128
-fcerr            ldx #errfc                               ; too big. Illegal Quantity error ;; @@51fe 128
-                 +lbra error                               ;; @@5200 128
- ;; @@5203 128
- ;; @@5203 128
- ;; @@5203 128
-gotary           ldx #errdd                               ; perhaps a "re-dimension" error ;; @@5203 128
-                 lda dimflg                               ; test the DIMFLG ;; @@5205 128
-                 +lbne error                               ;; @@5207 128
-                 jsr fmaptr                                ;; @@520a 128
-                 ldy #4                                    ;; @@520d 128
-                 jsr indlow_ram1                           ;; @@520f 128
-                 sta syntmp                                ;; @@5212 128
-                 lda count                                ; get number of dims input. ;; @@5214 128
-                 cmp syntmp                               ; # of dims the same? ;; @@5216 128
-                 bne bserr                                ; same so get definition. ;; @@5218 128
-                 +lbra getdef                              ;; @@521a 128
- ;; @@521d 128
-; .page ;; @@521d 128
-; Come here when variable is not found in the array table to build an entry. ;; @@521d 128
-; ;; @@521d 128
-; Put down the descriptor. ;; @@521d 128
-; Setup number of dimensions. ;; @@521d 128
-; Make sure there is room for the new entry. ;; @@521d 128
-; Remember VARPNT. ;; @@521d 128
-; Tally=4. ;; @@521d 128
-; Skip two locs for later fill in of size. ;; @@521d 128
-; LOOP: Get an indice. ;; @@521d 128
-;  Put down number+1 and increment VARPTR. ;; @@521d 128
-;  Tally=tally*number+1 ;; @@521d 128
-;  Decrement number of dims. ;; @@521d 128
-;  Bne LOOP ;; @@521d 128
-; Call REASON with (a,b) reflecting last loc of variable. ;; @@521d 128
-; Update STREND ;; @@521d 128
-; Zero all. ;; @@521d 128
-; Make tally include maxdims and descriptor. ;; @@521d 128
-; Put down tally ;; @@521d 128
-; If called by dimension, return. ;; @@521d 128
-;  Else index into the variable as if it were found on the initial search. ;; @@521d 128
- ;; @@521d 128
-notfdd                                                     ;; @@521d 128
-                 jsr fmaptr                               ; form ARYPNT ;; @@521d 128
-                 jsr reason                                ;; @@5220 128
-                 ldy #0                                    ;; @@5223 128
-                 sty curtol+1                              ;; @@5225 128
-                 ldx #5                                    ;; @@5227 128
-                 lda varnam                                ;; @@5229 128
-                 php                                       ;; @@522b 128
-                 phx                                       ;; @@522c 128
-                 ldx #lowtr                               ; point to string/array bank ;; @@522d 128
-                 jsr sta_far_ram1                         ; sta (lowtr),y ;; @@522f 128
-                 plx                                       ;; @@5232 128
-                 plp                                       ;; @@5233 128
-                 bpl _local_1127_10                        ;; @@5234 128
-                 dex                                       ;; @@5236 128
- ;; @@5237 128
-_local_1127_10   iny                                      ; notflt. ;; @@5237 128
-                 lda varnam+1                              ;; @@5238 128
-                 php                                       ;; @@523a 128
-                 phx                                       ;; @@523b 128
-                 ldx #lowtr                               ; point to string/array bank ;; @@523c 128
-                 jsr sta_far_ram1                         ; sta (lowtr),y ;; @@523e 128
-                 plx                                       ;; @@5241 128
-                 plp                                       ;; @@5242 128
-                 bpl _local_1127_20                        ;; @@5243 128
-                 dex                                       ;; @@5245 128
-                 dex                                       ;; @@5246 128
- ;; @@5247 128
-_local_1127_20   stx curtol                                ;; @@5247 128
-                 lda count                                ; save number of dimensions ;; @@5249 128
-                 iny                                       ;; @@524b 128
-                 iny                                       ;; @@524c 128
-                 iny                                       ;; @@524d 128
-                 ldx #lowtr                               ; point to string/array bank ;; @@524e 128
-                 jsr sta_far_ram1                         ; sta (lowtr),y ;; @@5250 128
- ;; @@5253 128
-_local_1127_30   ldx #11                                  ; loppta. default size ;; @@5253 128
-                 lda #0                                    ;; @@5255 128
-                 bbr6 dimflg,_local_1127_40               ; not in a dim statement ;; @@5257 128
-                 pla                                      ; get low order of indice ;; @@525a 128
-                 clc                                       ;; @@525b 128
-                 adc #1                                    ;; @@525c 128
-                 tax                                       ;; @@525e 128
-                 pla                                      ; get high order of indice ;; @@525f 128
-                 adc #0                                    ;; @@5260 128
- ;; @@5262 128
-_local_1127_40   iny                                      ; notdim. ;; @@5262 128
-                 phx                                       ;; @@5263 128
-                 ldx #lowtr                                ;; @@5264 128
-                 jsr sta_far_ram1 ;sta (lowtr),y          ; store high part of indice ;; @@5266 128
-                 plx                                       ;; @@5269 128
-                 iny                                       ;; @@526a 128
-                 txa                                       ;; @@526b 128
-                 phx                                       ;; @@526c 128
-                 ldx #lowtr                                ;; @@526d 128
-                 jsr sta_far_ram1 ;sta (lowtr),y          ; store low part of indice ;; @@526f 128
-                 plx                                       ;; @@5272 128
-                 jsr umult                                ; (a,x)+(curtol)*(lowtr,y) ;; @@5273 128
-                 stx curtol                               ; save new tally ;; @@5276 128
-                 sta curtol+1                              ;; @@5278 128
-                 ldy index                                 ;; @@527a 128
-                 dec count                                ; any more indices left? ;; @@527c 128
-                 bne _local_1127_30                       ; yes ;; @@527e 128
-                 adc arypnt+1                              ;; @@5280 128
-                 +lbcs omerr                              ; overflow ;; @@5282 128
-                 sta arypnt+1                             ; compute where to zero ;; @@5285 128
-                 tay                                       ;; @@5287 128
-                 txa                                       ;; @@5288 128
-                 adc arypnt                                ;; @@5289 128
-                 bcc _local_1127_50                        ;; @@528b 128
-                 iny                                       ;; @@528d 128
-                 +lbeq omerr                               ;; @@528e 128
- ;; @@5291 128
-_local_1127_50   jsr reason                               ; grease.  get room ;; @@5291 128
-                 sta strend                                ;; @@5294 128
-                 sty strend+1                             ; new end of storage ;; @@5296 128
-                 lda #0                                   ; storing (a) is faster than clear ;; @@5298 128
-                 inc curtol+1                              ;; @@529a 128
-                 ldy curtol                                ;; @@529c 128
-                 beq _local_1127_70                        ;; @@529e 128
- ;; @@52a0 128
-_local_1127_60   dey                                      ; zero out new entry ;; @@52a0 128
-                 php                                       ;; @@52a1 128
-                 phx                                       ;; @@52a2 128
-                 ldx #arypnt                               ;; @@52a3 128
-                 jsr sta_far_ram1                         ; sta (arypnt),y ;; @@52a5 128
-                 plx                                       ;; @@52a8 128
-                 plp                                       ;; @@52a9 128
-                 bne _local_1127_60                       ; no. continue ;; @@52aa 128
- ;; @@52ac 128
-_local_1127_70   dec arypnt+1                             ; deccur. ;; @@52ac 128
-                 dec curtol+1                              ;; @@52ae 128
-                 bne _local_1127_60                       ; do another block ;; @@52b0 128
-                 inc arypnt+1                             ; bump back up. will use later ;; @@52b2 128
-                 sec                                       ;; @@52b4 128
-                 lda strend                               ; restore (a) ;; @@52b5 128
-                 sbc lowtr                                ; determine length ;; @@52b7 128
-                 ldy #2                                    ;; @@52b9 128
-                 phx                                       ;; @@52bb 128
-                 ldx #lowtr                                ;; @@52bc 128
-                 jsr sta_far_ram1 ;sta (lowtr),y          ; low ;; @@52be 128
-                 lda strend+1                              ;; @@52c1 128
-                 iny                                       ;; @@52c3 128
-                 sbc lowtr+1                               ;; @@52c4 128
-                 jsr sta_far_ram1 ;sta (lowtr),y          ; high ;; @@52c6 128
-                 plx                                       ;; @@52c9 128
-                 lda dimflg                               ; quit here if this is a DIM statement ;; @@52ca 128
-                 bne dimrts                               ; bye! ;; @@52cc 128
-                 iny                                       ;; @@52ce 128
- ;; @@52cf 128
- ;; @@52cf 128
-; At this point (LOWTR,y) points beyond the size to the number of dimensions. ;; @@52cf 128
-; Strategy: ;; @@52cf 128
-;  NUMDIM = number of dimensions ;; @@52cf 128
-;  curtol = 0 ;; @@52cf 128
-;  INLPNM: Get a new indice ;; @@52cf 128
-;   Make sure indice is not too big ;; @@52cf 128
-;   Multiply CURTOL by CURMAX ;; @@52cf 128
-;   Add indice to CURTOL ;; @@52cf 128
-;   NUMDIM=NUMDIM-1 ;; @@52cf 128
-;   bne INLPNM ;; @@52cf 128
-;  Use (CURTOL)*4 as offset ;; @@52cf 128
- ;; @@52cf 128
- ;; @@52cf 128
+bserr            ldx #errbs                               ; get bad sub error number
+                 !text $2c                                
+
+fcerr            ldx #errfc                               ; too big. Illegal Quantity error
+                 +lbra error                              
+
+
+
+gotary           ldx #errdd                               ; perhaps a "re-dimension" error
+                 lda dimflg                               ; test the DIMFLG
+                 +lbne error                              
+                 jsr fmaptr                               
+                 ldy #4                                   
+                 jsr indlow_ram1                          
+                 sta syntmp                               
+                 lda count                                ; get number of dims input.
+                 cmp syntmp                               ; # of dims the same?
+                 bne bserr                                ; same so get definition.
+                 +lbra getdef                             
+
+; .page
+; Come here when variable is not found in the array table to build an entry.
+;
+; Put down the descriptor.
+; Setup number of dimensions.
+; Make sure there is room for the new entry.
+; Remember VARPNT.
+; Tally=4.
+; Skip two locs for later fill in of size.
+; LOOP: Get an indice.
+;  Put down number+1 and increment VARPTR.
+;  Tally=tally*number+1
+;  Decrement number of dims.
+;  Bne LOOP
+; Call REASON with (a,b) reflecting last loc of variable.
+; Update STREND
+; Zero all.
+; Make tally include maxdims and descriptor.
+; Put down tally
+; If called by dimension, return.
+;  Else index into the variable as if it were found on the initial search.
+
+notfdd                                                    
+                 jsr fmaptr                               ; form ARYPNT
+                 jsr reason                               
+                 ldy #0                                   
+                 sty curtol+1                             
+                 ldx #5                                   
+                 lda varnam                               
+                 php                                      
+                 phx                                      
+                 ldx #lowtr                               ; point to string/array bank
+                 jsr sta_far_ram1                         ; sta (lowtr),y
+                 plx                                      
+                 plp                                      
+                 bpl _local_1127_10                       
+                 dex                                      
+
+_local_1127_10   iny                                      ; notflt.
+                 lda varnam+1                             
+                 php                                      
+                 phx                                      
+                 ldx #lowtr                               ; point to string/array bank
+                 jsr sta_far_ram1                         ; sta (lowtr),y
+                 plx                                      
+                 plp                                      
+                 bpl _local_1127_20                       
+                 dex                                      
+                 dex                                      
+
+_local_1127_20   stx curtol                               
+                 lda count                                ; save number of dimensions
+                 iny                                      
+                 iny                                      
+                 iny                                      
+                 ldx #lowtr                               ; point to string/array bank
+                 jsr sta_far_ram1                         ; sta (lowtr),y
+
+_local_1127_30   ldx #11                                  ; loppta. default size
+                 lda #0                                   
+                 bbr6 dimflg,_local_1127_40               ; not in a dim statement
+                 pla                                      ; get low order of indice
+                 clc                                      
+                 adc #1                                   
+                 tax                                      
+                 pla                                      ; get high order of indice
+                 adc #0                                   
+
+_local_1127_40   iny                                      ; notdim.
+                 phx                                      
+                 ldx #lowtr                               
+                 jsr sta_far_ram1 ;sta (lowtr),y          ; store high part of indice
+                 plx                                      
+                 iny                                      
+                 txa                                      
+                 phx                                      
+                 ldx #lowtr                               
+                 jsr sta_far_ram1 ;sta (lowtr),y          ; store low part of indice
+                 plx                                      
+                 jsr umult                                ; (a,x)+(curtol)*(lowtr,y)
+                 stx curtol                               ; save new tally
+                 sta curtol+1                             
+                 ldy index                                
+                 dec count                                ; any more indices left?
+                 bne _local_1127_30                       ; yes
+                 adc arypnt+1                             
+                 +lbcs omerr                              ; overflow
+                 sta arypnt+1                             ; compute where to zero
+                 tay                                      
+                 txa                                      
+                 adc arypnt                               
+                 bcc _local_1127_50                       
+                 iny                                      
+                 +lbeq omerr                              
+
+_local_1127_50   jsr reason                               ; grease.  get room
+                 sta strend                               
+                 sty strend+1                             ; new end of storage
+                 lda #0                                   ; storing (a) is faster than clear
+                 inc curtol+1                             
+                 ldy curtol                               
+                 beq _local_1127_70                       
+
+_local_1127_60   dey                                      ; zero out new entry
+                 php                                      
+                 phx                                      
+                 ldx #arypnt                              
+                 jsr sta_far_ram1                         ; sta (arypnt),y
+                 plx                                      
+                 plp                                      
+                 bne _local_1127_60                       ; no. continue
+
+_local_1127_70   dec arypnt+1                             ; deccur.
+                 dec curtol+1                             
+                 bne _local_1127_60                       ; do another block
+                 inc arypnt+1                             ; bump back up. will use later
+                 sec                                      
+                 lda strend                               ; restore (a)
+                 sbc lowtr                                ; determine length
+                 ldy #2                                   
+                 phx                                      
+                 ldx #lowtr                               
+                 jsr sta_far_ram1 ;sta (lowtr),y          ; low
+                 lda strend+1                             
+                 iny                                      
+                 sbc lowtr+1                              
+                 jsr sta_far_ram1 ;sta (lowtr),y          ; high
+                 plx                                      
+                 lda dimflg                               ; quit here if this is a DIM statement
+                 bne dimrts                               ; bye!
+                 iny                                      
+
+
+; At this point (LOWTR,y) points beyond the size to the number of dimensions.
+; Strategy:
+;  NUMDIM = number of dimensions
+;  curtol = 0
+;  INLPNM: Get a new indice
+;   Make sure indice is not too big
+;   Multiply CURTOL by CURMAX
+;   Add indice to CURTOL
+;   NUMDIM=NUMDIM-1
+;   bne INLPNM
+;  Use (CURTOL)*4 as offset
+
+

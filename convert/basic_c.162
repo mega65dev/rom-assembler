@@ -1,68 +1,68 @@
-strfre           sta frespc                                ;; @@5c04 162
-                 sty frespc+1                              ;; @@5c06 162
-                 ldy #1                                   ; flag string as garbage ;; @@5c08 162
-                 lda #$ff                                  ;; @@5c0a 162
-                 phx                                      ; set up string bank ;; @@5c0c 162
-                 ldx #index1                               ;; @@5c0d 162
-                 jsr sta_far_ram1 ;sta (index1),y         ; flag ;; @@5c0f 162
-                 plx                                       ;; @@5c12 162
-                 dey                                       ;; @@5c13 162
-                 pla                                      ; length ;; @@5c14 162
-                 phx                                      ; set up string bank ;; @@5c15 162
-                 ldx #index1                               ;; @@5c16 162
-                 jsr sta_far_ram1 ;sta (index1),y         ; length ;; @@5c18 162
-                 plx                                       ;; @@5c1b 162
-                 ldx frespc                                ;; @@5c1c 162
-                 ldy frespc+1                              ;; @@5c1e 162
-                 stx fretop                                ;; @@5c20 162
-                 sty fretop+1                             ; save new (fretop) ;; @@5c22 162
-getrts           rts                                       ;; @@5c24 162
- ;; @@5c25 162
- ;; @@5c25 162
-garbag           lda garbfl                                ;; @@5c25 162
-                 +lbmi omerr                              ; if out of memory ;; @@5c27 162
-                 jsr garba2                                ;; @@5c2a 162
-                 sec                                       ;; @@5c2d 162
-                 ror garbfl                                ;; @@5c2e 162
-                 pla                                      ; get back string length ;; @@5c30 162
-                 bra tryag2                               ; always branches ;; @@5c31 162
- ;; @@5c33 162
- ;; @@5c33 162
-; .page ;; @@5c33 162
-; Routine looks for and squashes out any unused string space it finds, thus ;; @@5c33 162
-; returning the space for future use by the string routines.  GARBA2 is called ;; @@5c33 162
-; only when BASIC needs space or the FRE() function is used. ;; @@5c33 162
- ;; @@5c33 162
- ;; @@5c33 162
-garba2           ldx temppt                               ; ptr to temp. strings ;; @@5c33 162
-_local_1161_10   cpx #tempst                              ; any out there? ;; @@5c35 162
-                 beq _local_1161_20                       ; none ;; @@5c37 162
-                 jsr slr1                                 ; setup ptr (tempf2) to temp. string's bkptr ;; @@5c39 162
-                 beq _local_1161_10                       ; (skip if null string!) ;; @@5c3c 162
-                 txa                                      ; .x = lsb of ptr to descriptor ;; @@5c3e 162
-                 phx                                      ; set up string bank ;; @@5c3f 162
-                 ldx #tempf2                               ;; @@5c40 162
-                 ldy #0                                    ;; @@5c42 162
-                 jsr sta_far_ram1 ;(tempf2),y             ; place backpointer on string to temp. descr ;; @@5c44 162
-                 tya                                      ; .a = msb of ptr (0) ;; @@5c47 162
-                 iny                                       ;; @@5c48 162
-                 jsr sta_far_ram1                         ; (tempf2),y ;; @@5c49 162
-                 plx                                       ;; @@5c4c 162
-                 bra _local_1161_10                       ; always ;; @@5c4d 162
- ;; @@5c4f 162
- ;; @@5c4f 162
-_local_1161_20   ldy #0                                   ; set up flag ;; @@5c4f 162
-                 sty highds                                ;; @@5c51 162
-                 ldx max_mem_1                             ;; @@5c53 162
-                 ldy max_mem_1+1                           ;; @@5c55 162
-                 stx grbtop                               ; set both pointers ;; @@5c57 162
-                 stx grbpnt                                ;; @@5c59 162
-                 stx frespc                                ;; @@5c5b 162
-                 sty grbtop+1                              ;; @@5c5d 162
-                 sty grbpnt+1                              ;; @@5c5f 162
-                 sty frespc+1                              ;; @@5c61 162
-                 txa                                       ;; @@5c63 162
- ;; @@5c64 162
-; .page ;; @@5c64 162
-; do while (grbpnt <= fretop) ;; @@5c64 162
- ;; @@5c64 162
+strfre           sta frespc                               
+                 sty frespc+1                             
+                 ldy #1                                   ; flag string as garbage
+                 lda #$ff                                 
+                 phx                                      ; set up string bank
+                 ldx #index1                              
+                 jsr sta_far_ram1 ;sta (index1),y         ; flag
+                 plx                                      
+                 dey                                      
+                 pla                                      ; length
+                 phx                                      ; set up string bank
+                 ldx #index1                              
+                 jsr sta_far_ram1 ;sta (index1),y         ; length
+                 plx                                      
+                 ldx frespc                               
+                 ldy frespc+1                             
+                 stx fretop                               
+                 sty fretop+1                             ; save new (fretop)
+getrts           rts                                      
+
+
+garbag           lda garbfl                               
+                 +lbmi omerr                              ; if out of memory
+                 jsr garba2                               
+                 sec                                      
+                 ror garbfl                               
+                 pla                                      ; get back string length
+                 bra tryag2                               ; always branches
+
+
+; .page
+; Routine looks for and squashes out any unused string space it finds, thus
+; returning the space for future use by the string routines.  GARBA2 is called
+; only when BASIC needs space or the FRE() function is used.
+
+
+garba2           ldx temppt                               ; ptr to temp. strings
+_local_1161_10   cpx #tempst                              ; any out there?
+                 beq _local_1161_20                       ; none
+                 jsr slr1                                 ; setup ptr (tempf2) to temp. string's bkptr
+                 beq _local_1161_10                       ; (skip if null string!)
+                 txa                                      ; .x = lsb of ptr to descriptor
+                 phx                                      ; set up string bank
+                 ldx #tempf2                              
+                 ldy #0                                   
+                 jsr sta_far_ram1 ;(tempf2),y             ; place backpointer on string to temp. descr
+                 tya                                      ; .a = msb of ptr (0)
+                 iny                                      
+                 jsr sta_far_ram1                         ; (tempf2),y
+                 plx                                      
+                 bra _local_1161_10                       ; always
+
+
+_local_1161_20   ldy #0                                   ; set up flag
+                 sty highds                               
+                 ldx max_mem_1                            
+                 ldy max_mem_1+1                          
+                 stx grbtop                               ; set both pointers
+                 stx grbpnt                               
+                 stx frespc                               
+                 sty grbtop+1                             
+                 sty grbpnt+1                             
+                 sty frespc+1                             
+                 txa                                      
+
+; .page
+; do while (grbpnt <= fretop)
+

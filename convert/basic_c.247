@@ -1,24 +1,24 @@
-are_you_sure                                               ;; @@78c3 247
- ;; @@78c3 247
-                 bbs7 runmod,response_fake                ; branch if not direct mode ;; @@78c3 247
- ;; @@78c6 247
-                 jsr _primm                               ; else prompt user for y/n answer ;; @@78c6 247
-                 !text "ARE YOU SURE? ", 0                 ;; @@78c9 247
- ;; @@78d8 247
- ;; @@78d8 247
-response_get                                               ;; @@78d8 247
-                 jsr _clrch                               ; clear channel for basin ;; @@78d8 247
-                 jsr _basin                               ; next char ;; @@78db 247
-                 pha                                      ; save first char of reply ;; @@78de 247
- ;; @@78df 247
-_local_1246_10   cmp #cr                                  ; eat chars until end of line ;; @@78df 247
-                 beq _local_1246_20                       ; if cr received, exit ;; @@78e1 247
-                 jsr _basin                                ;; @@78e3 247
-                 bne _local_1246_10                       ; continue to ignore ;; @@78e6 247
- ;; @@78e8 247
-_local_1246_20   jsr _bsout                               ; new line     [910212] FAB ;; @@78e8 247
-                 pla                                       ;; @@78eb 247
-                 cmp #'Y'                                 ; z set means ans=y..... ;; @@78ec 247
-                 rts                                       ;; @@78ee 247
- ;; @@78ef 247
- ;; @@78ef 247
+are_you_sure                                              
+
+                 bbs7 runmod,response_fake                ; branch if not direct mode
+
+                 jsr _primm                               ; else prompt user for y/n answer
+                 !text "ARE YOU SURE? ", 0                
+
+
+response_get                                              
+                 jsr _clrch                               ; clear channel for basin
+                 jsr _basin                               ; next char
+                 pha                                      ; save first char of reply
+
+_local_1246_10   cmp #cr                                  ; eat chars until end of line
+                 beq _local_1246_20                       ; if cr received, exit
+                 jsr _basin                               
+                 bne _local_1246_10                       ; continue to ignore
+
+_local_1246_20   jsr _bsout                               ; new line     [910212] FAB
+                 pla                                      
+                 cmp #'Y'                                 ; z set means ans=y.....
+                 rts                                      
+
+

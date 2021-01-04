@@ -1,38 +1,38 @@
-dbank            lda #$01                                 ; repeated param? ;; @@7624 239
-                 jsr prxrpt                                ;; @@7626 239
-                 jsr gtbytc                               ; getval ;; @@7629 239
-; cpx #16  ;bank too large? ;; @@762c 239
-; bcs fcerr ;illegal qty ;; @@762c 239
-                 stx dosbnk                                ;; @@762c 239
-                 lda #$01                                  ;; @@762f 239
-                 tsb parstx                               ; set bnk bit in aux status ;; @@7631 239
-                 lda #0                                   ; .a=std status wrd, no bits to set ;; @@7633 239
-                 rts                                       ;; @@7635 239
- ;; @@7636 239
- ;; @@7636 239
-newnam                                                     ;; @@7636 239
-                 pha                                      ; save nam1,2 for subdir check later  [901115] ;; @@7636 239
-                 jsr prmrpt                               ; check for repeated parameter ;; @@7637 239
-                 jsr frmstr                                ;; @@763a 239
-                 tax                                      ; save length of string ;; @@763d 239
-                 beq err_mfn                              ; if length = 0 ;; @@763e 239
-                 ldy #0                                    ;; @@7640 239
-                 jsr indin1_ram1                           ;; @@7642 239
-                 cmp #'@'                                 ; Replace file convention? ;; @@7645 239
-                 bne _local_1238_10                       ; no ;; @@7647 239
-                 lda #$80                                 ; yes- check for repeated param ;; @@7649 239
-                 jsr prmrpt                                ;; @@764b 239
-                 smb7 parsts                              ; set "@" flag ;; @@764e 239
-                 dex                                      ; decrement length ;; @@7650 239
-                 inw index1                               ; increment past "@" ;; @@7651 239
-                 bra lenchk                                ;; @@7653 239
- ;; @@7655 239
-_local_1238_10   cmp #'/'                                 ; Subdirectory (partition)?   [901115] ;; @@7655 239
-                 bne lenchk                               ; no ;; @@7657 239
-                 pla                                      ; yes- recall nam1 or nam2 ;; @@7659 239
-                 tsb dosflags                             ; set appropriate '/' flag (.a=1 or 2) ;; @@765a 239
-                 dex                                      ; decrement length ;; @@765d 239
-                 inw index1                               ; increment past "@" ;; @@765e 239
-                 !text $89                                 ;; @@7660 239
- ;; @@7661 239
- ;; @@7661 239
+dbank            lda #$01                                 ; repeated param?
+                 jsr prxrpt                               
+                 jsr gtbytc                               ; getval
+; cpx #16  ;bank too large?
+; bcs fcerr ;illegal qty
+                 stx dosbnk                               
+                 lda #$01                                 
+                 tsb parstx                               ; set bnk bit in aux status
+                 lda #0                                   ; .a=std status wrd, no bits to set
+                 rts                                      
+
+
+newnam                                                    
+                 pha                                      ; save nam1,2 for subdir check later  [901115]
+                 jsr prmrpt                               ; check for repeated parameter
+                 jsr frmstr                               
+                 tax                                      ; save length of string
+                 beq err_mfn                              ; if length = 0
+                 ldy #0                                   
+                 jsr indin1_ram1                          
+                 cmp #'@'                                 ; Replace file convention?
+                 bne _local_1238_10                       ; no
+                 lda #$80                                 ; yes- check for repeated param
+                 jsr prmrpt                               
+                 smb7 parsts                              ; set "@" flag
+                 dex                                      ; decrement length
+                 inw index1                               ; increment past "@"
+                 bra lenchk                               
+
+_local_1238_10   cmp #'/'                                 ; Subdirectory (partition)?   [901115]
+                 bne lenchk                               ; no
+                 pla                                      ; yes- recall nam1 or nam2
+                 tsb dosflags                             ; set appropriate '/' flag (.a=1 or 2)
+                 dex                                      ; decrement length
+                 inw index1                               ; increment past "@"
+                 !text $89                                
+
+

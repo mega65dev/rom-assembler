@@ -1,17 +1,17 @@
-sta_far_ram1                                               ;; @@22f0 7
-                 php                                      ; save registers ;; @@22f0 7
-                 phz                                       ;; @@22f1 7
-                 pha                                       ;; @@22f2 7
-                 ldz var_bank                             ; RAM1 ;; @@22f3 7
-                 lda 1,x                                  ; check to see if pointer points to "common" ;; @@22f6 7
-                 cmp #$20                                  ;; @@22f8 7
-                 bcs _local_1006_10                       ; branch if not ;; @@22fa 7
-                 ldz text_bank                            ; else select RAM0 ;; @@22fc 7
- ;; @@22ff 7
-_local_1006_10   pla                                       ;; @@22ff 7
-                 jsr _sta_far                             ; STA (.x),Y to bank .z ;; @@2300 7
-                 plz                                       ;; @@2303 7
-                 plp                                       ;; @@2304 7
-                 rts                                       ;; @@2305 7
- ;; @@2306 7
- ;; @@2306 7
+sta_far_ram1                                              
+                 php                                      ; save registers
+                 phz                                      
+                 pha                                      
+                 ldz var_bank                             ; RAM1
+                 lda 1,x                                  ; check to see if pointer points to "common"
+                 cmp #$20                                 
+                 bcs _local_1006_10                       ; branch if not
+                 ldz text_bank                            ; else select RAM0
+
+_local_1006_10   pla                                      
+                 jsr _sta_far                             ; STA (.x),Y to bank .z
+                 plz                                      
+                 plp                                      
+                 rts                                      
+
+

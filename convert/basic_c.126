@@ -1,28 +1,28 @@
-bltu             jsr reason                                ;; @@5134 126
-                 sta strend                                ;; @@5137 126
-                 sty strend+1                              ;; @@5139 126
-                 sec                                       ;; @@513b 126
-                 lda hightr                                ;; @@513c 126
-                 sbc lowtr                                 ;; @@513e 126
-                 sta index                                 ;; @@5140 126
-                 tay                                       ;; @@5142 126
-                 lda hightr+1                              ;; @@5143 126
-                 sbc lowtr+1                               ;; @@5145 126
-                 tax                                       ;; @@5147 126
-                 inx                                       ;; @@5148 126
-                 tya                                       ;; @@5149 126
-                 beq decblt                                ;; @@514a 126
-                 lda hightr                                ;; @@514c 126
-                 sec                                       ;; @@514e 126
-                 sbc index                                 ;; @@514f 126
-                 sta hightr                                ;; @@5151 126
-                 bcs _local_1125_10                        ;; @@5153 126
-                 dec hightr+1                              ;; @@5155 126
-                 sec                                       ;; @@5157 126
-_local_1125_10   lda highds                                ;; @@5158 126
-                 sbc index                                 ;; @@515a 126
-                 sta highds                                ;; @@515c 126
-                 bcs moren1                                ;; @@515e 126
-                 dec highds+1                              ;; @@5160 126
-                 bcc moren1                                ;; @@5162 126
- ;; @@5164 126
+bltu             jsr reason                               
+                 sta strend                               
+                 sty strend+1                             
+                 sec                                      
+                 lda hightr                               
+                 sbc lowtr                                
+                 sta index                                
+                 tay                                      
+                 lda hightr+1                             
+                 sbc lowtr+1                              
+                 tax                                      
+                 inx                                      
+                 tya                                      
+                 beq decblt                               
+                 lda hightr                               
+                 sec                                      
+                 sbc index                                
+                 sta hightr                               
+                 bcs _local_1125_10                       
+                 dec hightr+1                             
+                 sec                                      
+_local_1125_10   lda highds                               
+                 sbc index                                
+                 sta highds                               
+                 bcs moren1                               
+                 dec highds+1                             
+                 bcc moren1                               
+

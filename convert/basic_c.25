@@ -1,116 +1,116 @@
-main             jmp (imain)                              ; MAIN INPUT LOOP ;; @@2f07 25
- ;; @@2f0a 25
-nmain            ldx #$ff                                 ; set direct mode flag ;; @@2f0a 25
-                 stx curlin+1                              ;; @@2f0c 25
-                 jsr InputLine                            ; get a line of input & buffer it ;; @@2f0e 25
- ;; @@2f11 25
-execute_a_line                                            ; EXECUTE PLAIN TEXT IN BUFFER ;; @@2f11 25
-                 stx txtptr                               ; init buffer pointer ;; @@2f11 25
-                 sty txtptr+1                              ;; @@2f13 25
-                 jsr chrget                               ; get first character of null-terminated string ;; @@2f15 25
-                 tax                                       ;; @@2f18 25
-                 beq main                                 ; got null input ;; @@2f19 25
-                 bcc _local_1024_10                       ; got line number ;; @@2f1b 25
-                 jsr crunch                               ; got text- tokenize buffer, ;; @@2f1d 25
-                 jsr chrgot                               ; get first command (token), ;; @@2f20 25
-                 +lbra xeqdir                             ; and execute it ;; @@2f23 25
- ;; @@2f26 25
-;ADD or DELETE NEW LINE ;; @@2f26 25
-_local_1024_10   jsr linget                               ; evaluate line number, put into into linnum ;; @@2f26 25
-                 bbr4 runmod,_local_1024_20                ;; @@2f29 25
-                 jsr edit_crunch                          ; if edit mode, find end of input   [910620] ;; @@2f2c 25
-                 bra _local_1024_30                        ;; @@2f2f 25
- ;; @@2f31 25
-_local_1024_20   jsr crunch                               ; tokenize rest of input if not edit mode ;; @@2f31 25
-_local_1024_30   sty count                                ; save length ;; @@2f34 25
-                 jsr FindLine                             ; locate line in program ;; @@2f36 25
-                 +lbcc nodel                              ; not found, go insert line into program ;; @@2f39 25
-; else delete current line and insert this one ;; @@2f3c 25
-; .page ;; @@2f3c 25
-; Test: IF new line is longer than the line it replaces, ;; @@2f3c 25
-;  THEN IF there isn't enough room in memory to add this new line, ;; @@2f3c 25
-;   THEN out-of-memory error ;; @@2f3c 25
-; ;; @@2f3c 25
-; Before this fix, the old line was deleted BEFORE testing if the new line fit. ;; @@2f3c 25
-; ;; @@2f3c 25
-; N.B.: I am assuming that lines cannot be greater than 255 chars, as is the ;; @@2f3c 25
-; case where the line was entered "normally", that is, using LINGET.  The only ;; @@2f3c 25
-; consequence of this assumption is that lines > 255 will fall prey to the ;; @@2f3c 25
-; pre-fix problem mentioned above. ;; @@2f3c 25
- ;; @@2f3c 25
-                 ldy #0                                    ;; @@2f3c 25
-                 jsr indlow                               ; get lsb of the next line's starting address ;; @@2f3e 25
-                 sec                                       ;; @@2f41 25
-                 sbc lowtr                                ; subtract lsb of this line's starting address ;; @@2f42 25
-                 sec                                      ; ignore borrow (gives abs. value) ;; @@2f44 25
-                 sbc #4                                   ; allow for link & line number ;; @@2f45 25
-                 sbc count                                ; compare with new length ;; @@2f47 25
-                 bcs _local_1024_2                        ; new line is shorter, no problem ;; @@2f49 25
-                 neg                                      ; convert to positive delta ;; @@2f4b 25
- ;; @@2f4c 25
-                 ldy text_top+1                           ; get msb of end of text (.c=0) ;; @@2f4c 25
-                 adc text_top                             ; add our calculated delta to end of text ;; @@2f4e 25
-                 bcc _local_1024_1                         ;; @@2f50 25
-                 iny                                       ;; @@2f52 25
-_local_1024_1    cpy max_mem_0+1                           ;; @@2f53 25
-                 bcc _local_1024_2                        ; result is less than top-of-memory: ok ;; @@2f56 25
-                 +lbne omerr                              ; msb >  top, overflow ;; @@2f58 25
-                 cmp max_mem_0                            ; msb's the same, test lsb's ;; @@2f5b 25
-                 +lbcs omerr                              ; lsb >= top, overflow ;; @@2f5e 25
- ;; @@2f61 25
-; Using DMA device to move text downwards (to delete or replace a line)... ;; @@2f61 25
-; ;; @@2f61 25
-; lowtr     = destination ;; @@2f61 25
-; (lowtr)    = pointer to source (via link bytes of line to be removed) ;; @@2f61 25
-; text_top-(lowtr) = number of bytes to move (text_top points to old top of text) ;; @@2f61 25
-; new text_top     = text_top -( (lowtr)-lowtr ) ;; @@2f61 25
- ;; @@2f61 25
-_local_1024_2    lda lowtr                                ; set up DMA destination ;; @@2f61 25
-                 sta dma1_dest_lo                          ;; @@2f63 25
-                 lda lowtr+1                               ;; @@2f66 25
-                 sta dma1_dest_hi                          ;; @@2f68 25
-                 ldy #0                                    ;; @@2f6b 25
-                 jsr indlow                               ; set up DMA source (& delta) ;; @@2f6d 25
-                 sta dma1_src_lo                           ;; @@2f70 25
-                 sec                                       ;; @@2f73 25
-                 sbc lowtr                                 ;; @@2f74 25
-                 sta index1                               ; (delta lo) ;; @@2f76 25
-                 iny                                       ;; @@2f78 25
-                 jsr indlow                                ;; @@2f79 25
-                 sta dma1_src_hi                           ;; @@2f7c 25
-                 sbc lowtr+1                               ;; @@2f7f 25
-                 sta index1+1                             ; (delta hi) ;; @@2f81 25
-                 sec                                       ;; @@2f83 25
-                 lda text_top                             ; set up DMA count ;; @@2f84 25
-                 sbc dma1_src_lo                           ;; @@2f86 25
-                 sta dma1_cnt_lo                           ;; @@2f89 25
-                 lda text_top+1                            ;; @@2f8c 25
-                 sbc dma1_src_hi                           ;; @@2f8e 25
-                 sta dma1_cnt_hi                           ;; @@2f91 25
- ;; @@2f94 25
-                 lda text_bank                             ;; @@2f94 25
-; and #%00001111  ;      [910102] ;; @@2f96 25
-; and #%01111111  ;      [910520] F018A ;; @@2f96 25
-                 sta dma1_src_bank                         ;; @@2f96 25
-                 sta dma1_dest_bank                        ;; @@2f99 25
- ;; @@2f9c 25
-                 lda #0                                    ;; @@2f9c 25
-                 sta dma1_cmd                             ; dma command (copy, source=start) ;; @@2f9e 25
-                 sta dma1_subcmd                          ; [910520] F018A ;; @@2fa1 25
-                 sta dma_ctlr+2                           ; dma_list bank ;; @@2fa4 25
- ;; @@2fa7 25
-                 ldx #>dma1_cmd                           ; dma_list ;; @@2fa7 25
-                 lda #<dma1_cmd                            ;; @@2fa9 25
-                 stx dma_ctlr+1                           ; dma_list hi ;; @@2fab 25
-                 sta dma_ctlr                             ; dma_list lo & trigger ;; @@2fae 25
- ;; @@2fb1 25
-                 sec                                      ; calculate & set new text_top ;; @@2fb1 25
-                 lda text_top                              ;; @@2fb2 25
-                 sbc index1                                ;; @@2fb4 25
-                 sta text_top                             ; lo ;; @@2fb6 25
-                 lda text_top+1                            ;; @@2fb8 25
-                 sbc index1+1                              ;; @@2fba 25
-                 sta text_top+1                           ; hi ;; @@2fbc 25
-;fall into routine to insert new line (if any) ;; @@2fbe 25
- ;; @@2fbe 25
-; .page ;; @@2fbe 25
+main             jmp (imain)                              ; MAIN INPUT LOOP
+
+nmain            ldx #$ff                                 ; set direct mode flag
+                 stx curlin+1                             
+                 jsr InputLine                            ; get a line of input & buffer it
+
+execute_a_line                                            ; EXECUTE PLAIN TEXT IN BUFFER
+                 stx txtptr                               ; init buffer pointer
+                 sty txtptr+1                             
+                 jsr chrget                               ; get first character of null-terminated string
+                 tax                                      
+                 beq main                                 ; got null input
+                 bcc _local_1024_10                       ; got line number
+                 jsr crunch                               ; got text- tokenize buffer,
+                 jsr chrgot                               ; get first command (token),
+                 +lbra xeqdir                             ; and execute it
+
+;ADD or DELETE NEW LINE
+_local_1024_10   jsr linget                               ; evaluate line number, put into into linnum
+                 bbr4 runmod,_local_1024_20               
+                 jsr edit_crunch                          ; if edit mode, find end of input   [910620]
+                 bra _local_1024_30                       
+
+_local_1024_20   jsr crunch                               ; tokenize rest of input if not edit mode
+_local_1024_30   sty count                                ; save length
+                 jsr FindLine                             ; locate line in program
+                 +lbcc nodel                              ; not found, go insert line into program
+; else delete current line and insert this one
+; .page
+; Test: IF new line is longer than the line it replaces,
+;  THEN IF there isn't enough room in memory to add this new line,
+;   THEN out-of-memory error
+;
+; Before this fix, the old line was deleted BEFORE testing if the new line fit.
+;
+; N.B.: I am assuming that lines cannot be greater than 255 chars, as is the
+; case where the line was entered "normally", that is, using LINGET.  The only
+; consequence of this assumption is that lines > 255 will fall prey to the
+; pre-fix problem mentioned above.
+
+                 ldy #0                                   
+                 jsr indlow                               ; get lsb of the next line's starting address
+                 sec                                      
+                 sbc lowtr                                ; subtract lsb of this line's starting address
+                 sec                                      ; ignore borrow (gives abs. value)
+                 sbc #4                                   ; allow for link & line number
+                 sbc count                                ; compare with new length
+                 bcs _local_1024_2                        ; new line is shorter, no problem
+                 neg                                      ; convert to positive delta
+
+                 ldy text_top+1                           ; get msb of end of text (.c=0)
+                 adc text_top                             ; add our calculated delta to end of text
+                 bcc _local_1024_1                        
+                 iny                                      
+_local_1024_1    cpy max_mem_0+1                          
+                 bcc _local_1024_2                        ; result is less than top-of-memory: ok
+                 +lbne omerr                              ; msb >  top, overflow
+                 cmp max_mem_0                            ; msb's the same, test lsb's
+                 +lbcs omerr                              ; lsb >= top, overflow
+
+; Using DMA device to move text downwards (to delete or replace a line)...
+;
+; lowtr     = destination
+; (lowtr)    = pointer to source (via link bytes of line to be removed)
+; text_top-(lowtr) = number of bytes to move (text_top points to old top of text)
+; new text_top     = text_top -( (lowtr)-lowtr )
+
+_local_1024_2    lda lowtr                                ; set up DMA destination
+                 sta dma1_dest_lo                         
+                 lda lowtr+1                              
+                 sta dma1_dest_hi                         
+                 ldy #0                                   
+                 jsr indlow                               ; set up DMA source (& delta)
+                 sta dma1_src_lo                          
+                 sec                                      
+                 sbc lowtr                                
+                 sta index1                               ; (delta lo)
+                 iny                                      
+                 jsr indlow                               
+                 sta dma1_src_hi                          
+                 sbc lowtr+1                              
+                 sta index1+1                             ; (delta hi)
+                 sec                                      
+                 lda text_top                             ; set up DMA count
+                 sbc dma1_src_lo                          
+                 sta dma1_cnt_lo                          
+                 lda text_top+1                           
+                 sbc dma1_src_hi                          
+                 sta dma1_cnt_hi                          
+
+                 lda text_bank                            
+; and #%00001111  ;      [910102]
+; and #%01111111  ;      [910520] F018A
+                 sta dma1_src_bank                        
+                 sta dma1_dest_bank                       
+
+                 lda #0                                   
+                 sta dma1_cmd                             ; dma command (copy, source=start)
+                 sta dma1_subcmd                          ; [910520] F018A
+                 sta dma_ctlr+2                           ; dma_list bank
+
+                 ldx #>dma1_cmd                           ; dma_list
+                 lda #<dma1_cmd                           
+                 stx dma_ctlr+1                           ; dma_list hi
+                 sta dma_ctlr                             ; dma_list lo & trigger
+
+                 sec                                      ; calculate & set new text_top
+                 lda text_top                             
+                 sbc index1                               
+                 sta text_top                             ; lo
+                 lda text_top+1                           
+                 sbc index1+1                             
+                 sta text_top+1                           ; hi
+;fall into routine to insert new line (if any)
+
+; .page

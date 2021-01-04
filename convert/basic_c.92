@@ -1,32 +1,32 @@
-trap                                                       ;; @@4456 92
-; jsr errdir ;why not????      [910925] ;; @@4456 92
-                 jsr chrgot                               ; if no #, means 'turn off trap' ;; @@4456 92
-                 beq _local_1091_10                        ;; @@4459 92
-                 jsr getwrd                                ;; @@445b 92
-                 sty trapno                                ;; @@445e 92
-                 !text $2c                                 ;; @@4461 92
- ;; @@4462 92
-_local_1091_10   lda #$ff                                 ; flag no trap ;; @@4462 92
-                 sta trapno+1                              ;; @@4464 92
-                 rts                                       ;; @@4467 92
- ;; @@4468 92
-;.end ;; @@4468 92
- ;; @@4468 92
-; .page ;; @@4468 92
-; .subttl  RESUME ;; @@4468 92
- ;; @@4468 92
-; RESUME command ;; @@4468 92
-; ;; @@4468 92
-; Used to resume execution following a TRAPped error. ;; @@4468 92
-; ;; @@4468 92
-; Syntax: RESUME [line_number | NEXT] ;; @@4468 92
-; ;; @@4468 92
-; Can take the following forms: ;; @@4468 92
-; ;; @@4468 92
-; RESUME   :resume executing at the statement which caused ;; @@4468 92
-;     the error. ;; @@4468 92
-; RESUME NEXT  :resume execution at the statement FOLLOWING ;; @@4468 92
-;     the statement which caused the error. ;; @@4468 92
-; RESUME line_number :resume at the specified line number. ;; @@4468 92
- ;; @@4468 92
- ;; @@4468 92
+trap                                                      
+; jsr errdir ;why not????      [910925]
+                 jsr chrgot                               ; if no #, means 'turn off trap'
+                 beq _local_1091_10                       
+                 jsr getwrd                               
+                 sty trapno                               
+                 !text $2c                                
+
+_local_1091_10   lda #$ff                                 ; flag no trap
+                 sta trapno+1                             
+                 rts                                      
+
+;.end
+
+; .page
+; .subttl  RESUME
+
+; RESUME command
+;
+; Used to resume execution following a TRAPped error.
+;
+; Syntax: RESUME [line_number | NEXT]
+;
+; Can take the following forms:
+;
+; RESUME   :resume executing at the statement which caused
+;     the error.
+; RESUME NEXT  :resume execution at the statement FOLLOWING
+;     the statement which caused the error.
+; RESUME line_number :resume at the specified line number.
+
+

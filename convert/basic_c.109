@@ -1,40 +1,40 @@
-play_note                                                  ;; @@48bb 109
-                 sec                                       ;; @@48bb 109
-                 sbc #'A'                                  ;; @@48bc 109
-                 tax                                       ;; @@48be 109
-                 lda scalen,x                             ; note #0-11 ;; @@48bf 109
-                 tax                                       ;; @@48c2 109
-                 lda #6                                    ;; @@48c3 109
-                 sec                                       ;; @@48c5 109
-                 sbc octave                                ;; @@48c6 109
-                 tay                                       ;; @@48c9 109
-                 txa                                       ;; @@48ca 109
-                 clc                                       ;; @@48cb 109
-                 adc sharp                                 ;; @@48cc 109
-                 bpl _local_1108_10                       ; added sharp or nat ;; @@48cf 109
-                 lda #11                                  ; underflow ;; @@48d1 109
-                 iny                                      ; bump octave down ;; @@48d3 109
-_local_1108_10   cmp #12                                  ; overflow? ;; @@48d4 109
-                 bcc _local_1108_20                       ; no... ;; @@48d6 109
-                 lda #0                                    ;; @@48d8 109
-                 dey                                      ; bump octave up ;; @@48da 109
-_local_1108_20   tax                                       ;; @@48db 109
-                 lda scalel,x                              ;; @@48dc 109
-                 sta pitch                                 ;; @@48df 109
- ;; @@48e2 109
-                 bit _pal_ntsc                            ; determine if PAL or NTSC system ;; @@48e2 109
-                 bmi _local_1108_25                       ; ...branch if PAL ;; @@48e5 109
-                 lda scaleh,x                             ; continue as before patch ;; @@48e7 109
-                 bra _local_1108_30                        ;; @@48ea 109
- ;; @@48ec 109
-_local_1108_25   lda scalelp,x                            ; load from PAL tables ;; @@48ec 109
-                 sta pitch                                 ;; @@48ef 109
-                 lda scalehp,x                             ;; @@48f2 109
- ;; @@48f5 109
-_local_1108_30   dey                                       ;; @@48f5 109
-                 bmi play_note_1                          ; go play note ;; @@48f6 109
-                 lsr                                       ;; @@48f8 109
-                 ror pitch                                 ;; @@48f9 109
-                 bra _local_1108_30                        ;; @@48fc 109
- ;; @@48fe 109
-; .page ;; @@48fe 109
+play_note                                                 
+                 sec                                      
+                 sbc #'A'                                 
+                 tax                                      
+                 lda scalen,x                             ; note #0-11
+                 tax                                      
+                 lda #6                                   
+                 sec                                      
+                 sbc octave                               
+                 tay                                      
+                 txa                                      
+                 clc                                      
+                 adc sharp                                
+                 bpl _local_1108_10                       ; added sharp or nat
+                 lda #11                                  ; underflow
+                 iny                                      ; bump octave down
+_local_1108_10   cmp #12                                  ; overflow?
+                 bcc _local_1108_20                       ; no...
+                 lda #0                                   
+                 dey                                      ; bump octave up
+_local_1108_20   tax                                      
+                 lda scalel,x                             
+                 sta pitch                                
+
+                 bit _pal_ntsc                            ; determine if PAL or NTSC system
+                 bmi _local_1108_25                       ; ...branch if PAL
+                 lda scaleh,x                             ; continue as before patch
+                 bra _local_1108_30                       
+
+_local_1108_25   lda scalelp,x                            ; load from PAL tables
+                 sta pitch                                
+                 lda scalehp,x                            
+
+_local_1108_30   dey                                      
+                 bmi play_note_1                          ; go play note
+                 lsr                                      
+                 ror pitch                                
+                 bra _local_1108_30                       
+
+; .page

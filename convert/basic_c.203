@@ -1,48 +1,48 @@
-sswe             jsr shpn                                 ; shift decimal point ;; @@6b31 203
-                 jsr uround                               ; round number ;; @@6b34 203
-                 jsr shpn                                 ; shift again if necessary ;; @@6b37 203
- ;; @@6b3a 203
-hup              +lbra chout                              ; output number ;; @@6b3a 203
- ;; @@6b3d 203
- ;; @@6b3d 203
- ;; @@6b3d 203
-cff              ldy uexp                                 ; exponent in no? ;; @@6b3d 203
-                 beq _local_1202_20                       ; no... ;; @@6b40 203
-                 sta hulp                                 ; delete exponent ;; @@6b42 203
-                 sec                                      ; adjust decimal point ;; @@6b44 203
-                 ror etof                                 ; set e-to-f flag ;; @@6b45 203
-                 ldy point                                 ;; @@6b48 203
-                 lda usgn                                 ; exec nos3 or nos4 ;; @@6b4a 203
-                 bpl _local_1202_10                       ; depends on sign of exp ;; @@6b4d 203
-                 jsr nos3                                  ;; @@6b4f 203
-                 bra _local_1202_30                        ;; @@6b52 203
- ;; @@6b54 203
-_local_1202_10   jsr nos4                                  ;; @@6b54 203
- ;; @@6b57 203
-_local_1202_20   ldy point                                ; at start of no? ;; @@6b57 203
-                 beq _local_1202_30                       ; yes... ;; @@6b59 203
-                 jsr cho                                  ; no = 0 ? ;; @@6b5b 203
-                 beq _local_1202_40                       ; yes...no round ;; @@6b5e 203
- ;; @@6b60 203
-_local_1202_30   jsr uround                                ;; @@6b60 203
-                 bra _local_1202_50                        ;; @@6b63 203
- ;; @@6b65 203
-_local_1202_40   dec vn                                   ; adjust...no was 0 ;; @@6b65 203
-_local_1202_50   sec                                       ;; @@6b68 203
-                 lda vf                                    ;; @@6b69 203
-                 sbc vn                                    ;; @@6b6c 203
-                 bcc errf                                 ; no fit...error ;; @@6b6f 203
-                 sta swe                                  ; save difference ;; @@6b71 203
-                 ldy posp                                 ; + or -? ;; @@6b74 203
-                 bne ahp                                  ; yes... ;; @@6b77 203
-                 ldy sno                                  ; get sign ;; @@6b79 203
-                 bmi ahp                                  ; positive... ;; @@6b7c 203
-                 tay                                       ;; @@6b7e 203
-                 beq errf                                 ; no room for sign ;; @@6b7f 203
-                 dey                                       ;; @@6b81 203
-                 bne ldvn                                 ; swe<>1 ;; @@6b82 203
-                 lda nf                                    ;; @@6b84 203
-                 ora vn                                   ; both zero? ;; @@6b87 203
-                 bne hup                                  ; no... ;; @@6b8a 203
- ;; @@6b8c 203
- ;; @@6b8c 203
+sswe             jsr shpn                                 ; shift decimal point
+                 jsr uround                               ; round number
+                 jsr shpn                                 ; shift again if necessary
+
+hup              +lbra chout                              ; output number
+
+
+
+cff              ldy uexp                                 ; exponent in no?
+                 beq _local_1202_20                       ; no...
+                 sta hulp                                 ; delete exponent
+                 sec                                      ; adjust decimal point
+                 ror etof                                 ; set e-to-f flag
+                 ldy point                                
+                 lda usgn                                 ; exec nos3 or nos4
+                 bpl _local_1202_10                       ; depends on sign of exp
+                 jsr nos3                                 
+                 bra _local_1202_30                       
+
+_local_1202_10   jsr nos4                                 
+
+_local_1202_20   ldy point                                ; at start of no?
+                 beq _local_1202_30                       ; yes...
+                 jsr cho                                  ; no = 0 ?
+                 beq _local_1202_40                       ; yes...no round
+
+_local_1202_30   jsr uround                               
+                 bra _local_1202_50                       
+
+_local_1202_40   dec vn                                   ; adjust...no was 0
+_local_1202_50   sec                                      
+                 lda vf                                   
+                 sbc vn                                   
+                 bcc errf                                 ; no fit...error
+                 sta swe                                  ; save difference
+                 ldy posp                                 ; + or -?
+                 bne ahp                                  ; yes...
+                 ldy sno                                  ; get sign
+                 bmi ahp                                  ; positive...
+                 tay                                      
+                 beq errf                                 ; no room for sign
+                 dey                                      
+                 bne ldvn                                 ; swe<>1
+                 lda nf                                   
+                 ora vn                                   ; both zero?
+                 bne hup                                  ; no...
+
+

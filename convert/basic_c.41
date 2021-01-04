@@ -1,94 +1,94 @@
-nescpr           +lbcs p1l015                             ; no takers, print a funny graphic character ;; @@344e 41
-                 ldy #0                                    ;; @@3451 41
-                 bra p1l070                                ;; @@3453 41
- ;; @@3455 41
- ;; @@3455 41
-;.end ;; @@3455 41
-; .page ;; @@3455 41
-; .subttl NEW  CLR ;; @@3455 41
-; ;; @@3455 41
-; The NEW command clears the program text as well as variable space. ;; @@3455 41
-; ;; @@3455 41
- ;; @@3455 41
-new              beq init_text                            ; Erase program in memory ;; @@3455 41
-                 cmp #restore_token                       ; Restore an erased program?    [910103] ;; @@3457 41
-                 +lbne snerr                              ; no- syntax error    [910410] ;; @@3459 41
-                 jsr chkeos                               ; yes- eat token, error if not eos  [910429] ;; @@345c 41
-                 lda txttab                               ; "seed" first link to fool 'chead' ;; @@345f 41
-                 ldx txttab+1                              ;; @@3461 41
-                 sta index                                 ;; @@3463 41
-                 stx index+1                               ;; @@3465 41
-                 lda #0                                    ;; @@3467 41
-                 ldy #1                                    ;; @@3469 41
-                 ldx #index                                ;; @@346b 41
-                 jsr sta_far_ram0                         ; clear msb  (bleed-thru) ;; @@346d 41
-                 dey                                       ;; @@3470 41
-                 inc                                       ;; @@3471 41
-                 jsr sta_far_ram0                         ; set lsb   (bleed-thru) ;; @@3472 41
-                 +lbra renumber                           ; make renumber check it for us (not 100%) & relink ;; @@3475 41
- ;; @@3478 41
- ;; @@3478 41
-init_text                                                  ;; @@3478 41
-                 lda txttab                               ; find the bottom of basic text ;; @@3478 41
-                 ldx txttab+1                              ;; @@347a 41
-                 sta index                                 ;; @@347c 41
-                 stx index+1                               ;; @@347e 41
-                 dew index                                ; (the absolute bottom) ;; @@3480 41
- ;; @@3482 41
-                 lda #0                                    ;; @@3482 41
-                 tay                                       ;; @@3484 41
-                 ldx #index                                ;; @@3485 41
-                 jsr sta_far_ram0                         ; clear bottom     (bleed-thru) ;; @@3487 41
-                 iny                                       ;; @@348a 41
-                 jsr sta_far_ram0                         ; clear first link bytes    (bleed-thru) ;; @@348b 41
-                 iny                                       ;; @@348e 41
-                 jsr sta_far_ram0                         ; (bleed-thru) ;; @@348f 41
-                 clc                                       ;; @@3492 41
-                 lda txttab                                ;; @@3493 41
-                 adc #2                                    ;; @@3495 41
-                 sta text_top                             ; set up (text_top), the end of text ;; @@3497 41
-                 lda txttab+1                              ;; @@3499 41
-                 adc #0                                    ;; @@349b 41
-                 sta text_top+1                            ;; @@349d 41
- ;; @@349f 41
-                 rmb5 runmod                              ; trcflg. reset trace flag ;; @@349f 41
- ;; @@34a1 41
- ;; @@34a1 41
-runc             jsr reset_txtptr                         ; load (txtptr) with (txttab)-1 ;; @@34a1 41
-                 bra clearc                               ; "CLR" to clear vars    [910410] ;; @@34a4 41
- ;; @@34a6 41
-; .page ;; @@34a6 41
-; CLeaR Routines ;; @@34a6 41
-; ;; @@34a6 41
- ;; @@34a6 41
-; Special forms of CLR command: ;; @@34a6 41
-; ;; @@34a6 41
-; CLR ERR$ Clears program error status, useful in TRAP handlers which ;; @@34a6 41
-;   have resolved an error & wish to RESUME with a clean status. ;; @@34a6 41
-; ;; @@34a6 41
-; CLR DS$  Clears the currently buffered DS,DS$ messages.  The next ;; @@34a6 41
-;   use of DS or DS$ will make BASIC re a new message from DOS. ;; @@34a6 41
- ;; @@34a6 41
-clear            beq clearc                               ; branch if no args    [910410] ;; @@34a6 41
- ;; @@34a8 41
-                 cmp #err_token                           ; CLR ERR$ ;; @@34a8 41
-                 bne _local_1040_10                       ; no ;; @@34aa 41
-                 jsr chkeos                               ; yes- eat token & error if not eos ;; @@34ac 41
-                 +lbra error_clear                        ; and go clear ERR$ ;; @@34af 41
- ;; @@34b2 41
-_local_1040_10   cmp #'D'                                 ; CLR DS$     [910717] ;; @@34b2 41
-                 bne _local_1040_20                       ; no- error ;; @@34b4 41
-                 jsr chrget                                ;; @@34b6 41
-                 cmp #'S'                                  ;; @@34b9 41
-                 bne _local_1040_20                        ;; @@34bb 41
-                 jsr chrget                                ;; @@34bd 41
-                 cmp #'$'                                  ;; @@34c0 41
-_local_1040_20   +lbne snerr                              ; no- error ;; @@34c2 41
-                 jsr chkeos                                ;; @@34c5 41
-                 +lbra Clear_DS                           ; yes- clear current DS$ ;; @@34c8 41
- ;; @@34cb 41
-; .page ;; @@34cb 41
-; Clearc is a subroutine which initializes the variable and array space by ;; @@34cb 41
-; resetting STREND (the end of array storage).  It falls into INIT_STACK, ;; @@34cb 41
-; which resets the stack. ;; @@34cb 41
- ;; @@34cb 41
+nescpr           +lbcs p1l015                             ; no takers, print a funny graphic character
+                 ldy #0                                   
+                 bra p1l070                               
+
+
+;.end
+; .page
+; .subttl NEW  CLR
+;
+; The NEW command clears the program text as well as variable space.
+;
+
+new              beq init_text                            ; Erase program in memory
+                 cmp #restore_token                       ; Restore an erased program?    [910103]
+                 +lbne snerr                              ; no- syntax error    [910410]
+                 jsr chkeos                               ; yes- eat token, error if not eos  [910429]
+                 lda txttab                               ; "seed" first link to fool 'chead'
+                 ldx txttab+1                             
+                 sta index                                
+                 stx index+1                              
+                 lda #0                                   
+                 ldy #1                                   
+                 ldx #index                               
+                 jsr sta_far_ram0                         ; clear msb  (bleed-thru)
+                 dey                                      
+                 inc                                      
+                 jsr sta_far_ram0                         ; set lsb   (bleed-thru)
+                 +lbra renumber                           ; make renumber check it for us (not 100%) & relink
+
+
+init_text                                                 
+                 lda txttab                               ; find the bottom of basic text
+                 ldx txttab+1                             
+                 sta index                                
+                 stx index+1                              
+                 dew index                                ; (the absolute bottom)
+
+                 lda #0                                   
+                 tay                                      
+                 ldx #index                               
+                 jsr sta_far_ram0                         ; clear bottom     (bleed-thru)
+                 iny                                      
+                 jsr sta_far_ram0                         ; clear first link bytes    (bleed-thru)
+                 iny                                      
+                 jsr sta_far_ram0                         ; (bleed-thru)
+                 clc                                      
+                 lda txttab                               
+                 adc #2                                   
+                 sta text_top                             ; set up (text_top), the end of text
+                 lda txttab+1                             
+                 adc #0                                   
+                 sta text_top+1                           
+
+                 rmb5 runmod                              ; trcflg. reset trace flag
+
+
+runc             jsr reset_txtptr                         ; load (txtptr) with (txttab)-1
+                 bra clearc                               ; "CLR" to clear vars    [910410]
+
+; .page
+; CLeaR Routines
+;
+
+; Special forms of CLR command:
+;
+; CLR ERR$ Clears program error status, useful in TRAP handlers which
+;   have resolved an error & wish to RESUME with a clean status.
+;
+; CLR DS$  Clears the currently buffered DS,DS$ messages.  The next
+;   use of DS or DS$ will make BASIC re a new message from DOS.
+
+clear            beq clearc                               ; branch if no args    [910410]
+
+                 cmp #err_token                           ; CLR ERR$
+                 bne _local_1040_10                       ; no
+                 jsr chkeos                               ; yes- eat token & error if not eos
+                 +lbra error_clear                        ; and go clear ERR$
+
+_local_1040_10   cmp #'D'                                 ; CLR DS$     [910717]
+                 bne _local_1040_20                       ; no- error
+                 jsr chrget                               
+                 cmp #'S'                                 
+                 bne _local_1040_20                       
+                 jsr chrget                               
+                 cmp #'$'                                 
+_local_1040_20   +lbne snerr                              ; no- error
+                 jsr chkeos                               
+                 +lbra Clear_DS                           ; yes- clear current DS$
+
+; .page
+; Clearc is a subroutine which initializes the variable and array space by
+; resetting STREND (the end of array storage).  It falls into INIT_STACK,
+; which resets the stack.
+

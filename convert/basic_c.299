@@ -1,41 +1,41 @@
-pixel            jsr CheckGraphicMode                     ; verify screen open ;; @@b976 299
-                 jsr PushParms                            ; preserve Graphics parameters & LINNUM  [910820] ;; @@b979 299
- ;; @@b97c 299
-                 jsr getsad                               ; get x ;; @@b97c 299
-                 sty GKI__parm1                            ;; @@b97f 299
-                 sta GKI__parm2                            ;; @@b982 299
-                 jsr comsad                               ; get y ;; @@b985 299
-                 sty GKI__parm3                            ;; @@b988 299
-                 sta GKI__parm4                            ;; @@b98b 299
-                 jsr chkcls                               ; check for closing parens ;; @@b98e 299
- ;; @@b991 299
-                 jsr ($8032)                              ; get Bitplane data at pixel (x,y), returned in .y ;; @@b991 299
-                 jsr sngflt                               ; go float 1 byte arg in .Y ;; @@b994 299
- ;; @@b997 299
-                 jsr PopParms                             ; restore graphics parameters ;; @@b997 299
-                 rts                                       ;; @@b99a 299
- ;; @@b99b 299
-; .page ;; @@b99b 299
-; Return the color of a drawscreen's PEN      [910820] ;; @@b99b 299
-;  RPEN (pen#) where pen# = 0,1,2 ;; @@b99b 299
- ;; @@b99b 299
-rpen             jsr CheckGraphicMode                     ; verify screen open ;; @@b99b 299
-                 jsr PushParms                            ; preserve Graphics parameters & LINNUM  [910820] ;; @@b99e 299
- ;; @@b9a1 299
-                 jsr conint                               ; get 1 byte arg in .x (old style single arg function) ;; @@b9a1 299
-                 cpx #3                                    ;; @@b9a4 299
-                 bcs _local_1298_10                       ; illegal pen #? ;; @@b9a6 299
-                 stx GKI__parm1                            ;; @@b9a8 299
- ;; @@b9ab 299
-                 jsr ($8036)                              ; convert to logical color# (palette index#) ;; @@b9ab 299
-_local_1298_10   +lbcs fcerr                              ; drawscreen not set or illegal quantity somewhere ;; @@b9ae 299
- ;; @@b9b1 299
-                 jsr sngflt                               ; go float 1 byte arg in .Y ;; @@b9b1 299
- ;; @@b9b4 299
-                 jsr PopParms                             ; restore graphics parameters ;; @@b9b4 299
-                 rts                                       ;; @@b9b7 299
- ;; @@b9b8 299
-; .page ;; @@b9b8 299
-; Return the R,G, or B component of a color     [910820] ;; @@b9b8 299
-; RPALETTE (screen#, color#, rgb) ;; @@b9b8 299
- ;; @@b9b8 299
+pixel            jsr CheckGraphicMode                     ; verify screen open
+                 jsr PushParms                            ; preserve Graphics parameters & LINNUM  [910820]
+
+                 jsr getsad                               ; get x
+                 sty GKI__parm1                           
+                 sta GKI__parm2                           
+                 jsr comsad                               ; get y
+                 sty GKI__parm3                           
+                 sta GKI__parm4                           
+                 jsr chkcls                               ; check for closing parens
+
+                 jsr ($8032)                              ; get Bitplane data at pixel (x,y), returned in .y
+                 jsr sngflt                               ; go float 1 byte arg in .Y
+
+                 jsr PopParms                             ; restore graphics parameters
+                 rts                                      
+
+; .page
+; Return the color of a drawscreen's PEN      [910820]
+;  RPEN (pen#) where pen# = 0,1,2
+
+rpen             jsr CheckGraphicMode                     ; verify screen open
+                 jsr PushParms                            ; preserve Graphics parameters & LINNUM  [910820]
+
+                 jsr conint                               ; get 1 byte arg in .x (old style single arg function)
+                 cpx #3                                   
+                 bcs _local_1298_10                       ; illegal pen #?
+                 stx GKI__parm1                           
+
+                 jsr ($8036)                              ; convert to logical color# (palette index#)
+_local_1298_10   +lbcs fcerr                              ; drawscreen not set or illegal quantity somewhere
+
+                 jsr sngflt                               ; go float 1 byte arg in .Y
+
+                 jsr PopParms                             ; restore graphics parameters
+                 rts                                      
+
+; .page
+; Return the R,G, or B component of a color     [910820]
+; RPALETTE (screen#, color#, rgb)
+

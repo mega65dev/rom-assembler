@@ -1,91 +1,91 @@
-set_voice                                                  ;; @@47ee 106
-                 dec                                       ;; @@47ee 106
-                 cmp #6                                   ; stereo SIDs: 0-2=right, 3-5=left  [910612] ;; @@47ef 106
-                 +lbcs play_bad_value                      ;; @@47f1 106
-                 sta voice                                ; 0-5 ;; @@47f4 106
-                 bra clear_flag                           ; always ;; @@47f7 106
- ;; @@47f9 106
- ;; @@47f9 106
-set_octave                                                 ;; @@47f9 106
-                 cmp #7                                    ;; @@47f9 106
-                 +lbcs play_bad_value                     ; too big octave ;; @@47fb 106
-                 sta octave                               ; set octave ;; @@47fe 106
-                 bra clear_flag                           ; always ;; @@4801 106
- ;; @@4803 106
- ;; @@4803 106
-set_envelope                                               ;; @@4803 106
-                 jsr wait_for_quiet                       ; [910626] ;; @@4803 106
-                 tax                                       ;; @@4806 106
-set_envelope_1                                            ; entry for initialization code ;; @@4807 106
-; jsr put_io_in_map ;; @@4807 106
-                 ldy voice                                 ;; @@4807 106
-                 lda wavtab,x                              ;; @@480a 106
-                 sta waveform,y                           ; set waveform ;; @@480d 106
-                 lda SID_offset,y                         ; get hardware offset for this voice ;; @@4810 106
-                 tay                                       ;; @@4813 106
-; jsr go_slow  ;      [910716] 4567R7A ;; @@4814 106
-                 lda atktab,x                              ;; @@4814 106
-                 sta sid1+5,y                             ; set attack/decay ;; @@4817 106
-                 lda sustab,x                              ;; @@481a 106
-                 sta sid1+6,y                             ; set sustain/release ;; @@481d 106
-                 lda pulslw,x                              ;; @@4820 106
-                 sta sid1+2,y                             ; set pulse width - low byte ;; @@4823 106
-                 lda pulshi,x                              ;; @@4826 106
-                 sta sid1+3,y                             ; set pulse width - high byte ;; @@4829 106
-; jsr go_fast  ;      [910716] 4567R7A ;; @@482c 106
-                 bra clear_flag                            ;; @@482c 106
- ;; @@482e 106
-; .page ;; @@482e 106
-set_volume                                                 ;; @@482e 106
-                 jsr wait_for_all_quiet                   ; [910626] ;; @@482e 106
-                 tax                                       ;; @@4831 106
-                 ldy voice                                ; [910612] ;; @@4832 106
-                 lda filter_offset,y                      ; get filter offset for this voice ;; @@4835 106
-                 tay                                       ;; @@4838 106
-                 lda filters1+3,y                         ; get mode/volume for this SID ;; @@4839 106
-                 and #$f0                                 ; mask out old volume ;; @@483c 106
-                 ora voltab,x                             ; add new volume ;; @@483e 106
-                 sta filters1+3,y                         ; save for filter change ;; @@4841 106
-; lda filters1+4,y ;get current filter-type/volume ????why  [910612] ;; @@4844 106
-; and #$f0 ;; @@4844 106
-; ora voltab,x ;; @@4844 106
-                 tax                                       ;; @@4844 106
-                 ldy voice                                 ;; @@4845 106
-                 lda SID_offset,y                         ; get hardware offset for current voice ;; @@4848 106
-                 and #$f0                                 ; $00 or $20 ;; @@484b 106
-                 tay                                       ;; @@484d 106
-; jsr go_slow  ;      [910716] 4567R7A ;; @@484e 106
-                 stx sid1+24,y                            ; set new volume ;; @@484e 106
-; jsr go_fast  ;      [910716] 4567R7A ;; @@4851 106
-;fall into clear_flag ;; @@4851 106
-; .page ;; @@4851 106
-clear_flag                                                 ;; @@4851 106
-                 lda #0                                    ;; @@4851 106
-                 sta flag                                  ;; @@4853 106
-                 rts                                       ;; @@4856 106
- ;; @@4857 106
- ;; @@4857 106
-go_fast                                                    ;; @@4857 106
-                 lda sid_speed_flag                        ;; @@4857 106
-                 tsb vic+49                                ;; @@4859 106
-                 rts                                       ;; @@485c 106
- ;; @@485d 106
- ;; @@485d 106
-go_slow                                                    ;; @@485d 106
-                 pha                                       ;; @@485d 106
-                 lda #$40                                  ;; @@485e 106
-                 and vic+49                                ;; @@4860 106
-                 trb vic+49                                ;; @@4863 106
-                 sta sid_speed_flag                        ;; @@4866 106
-                 pla                                       ;; @@4868 106
-                 rts                                       ;; @@4869 106
- ;; @@486a 106
- ;; @@486a 106
-wait_for_quiet                                            ; Wait for current voice to be quiet  [910626] ;; @@486a 106
-                 ldy voice                                 ;; @@486a 106
-                 ldx times2,y                             ; voice*2 ;; @@486d 106
-_local_1105_10   bit voices+1,x                           ; test if voice is active   [910617] ;; @@4870 106
-                 bpl _local_1105_10                       ; loop until inactive (IRQ) ;; @@4873 106
-                 rts                                       ;; @@4875 106
- ;; @@4876 106
- ;; @@4876 106
+set_voice                                                 
+                 dec                                      
+                 cmp #6                                   ; stereo SIDs: 0-2=right, 3-5=left  [910612]
+                 +lbcs play_bad_value                     
+                 sta voice                                ; 0-5
+                 bra clear_flag                           ; always
+
+
+set_octave                                                
+                 cmp #7                                   
+                 +lbcs play_bad_value                     ; too big octave
+                 sta octave                               ; set octave
+                 bra clear_flag                           ; always
+
+
+set_envelope                                              
+                 jsr wait_for_quiet                       ; [910626]
+                 tax                                      
+set_envelope_1                                            ; entry for initialization code
+; jsr put_io_in_map
+                 ldy voice                                
+                 lda wavtab,x                             
+                 sta waveform,y                           ; set waveform
+                 lda SID_offset,y                         ; get hardware offset for this voice
+                 tay                                      
+; jsr go_slow  ;      [910716] 4567R7A
+                 lda atktab,x                             
+                 sta sid1+5,y                             ; set attack/decay
+                 lda sustab,x                             
+                 sta sid1+6,y                             ; set sustain/release
+                 lda pulslw,x                             
+                 sta sid1+2,y                             ; set pulse width - low byte
+                 lda pulshi,x                             
+                 sta sid1+3,y                             ; set pulse width - high byte
+; jsr go_fast  ;      [910716] 4567R7A
+                 bra clear_flag                           
+
+; .page
+set_volume                                                
+                 jsr wait_for_all_quiet                   ; [910626]
+                 tax                                      
+                 ldy voice                                ; [910612]
+                 lda filter_offset,y                      ; get filter offset for this voice
+                 tay                                      
+                 lda filters1+3,y                         ; get mode/volume for this SID
+                 and #$f0                                 ; mask out old volume
+                 ora voltab,x                             ; add new volume
+                 sta filters1+3,y                         ; save for filter change
+; lda filters1+4,y ;get current filter-type/volume ????why  [910612]
+; and #$f0
+; ora voltab,x
+                 tax                                      
+                 ldy voice                                
+                 lda SID_offset,y                         ; get hardware offset for current voice
+                 and #$f0                                 ; $00 or $20
+                 tay                                      
+; jsr go_slow  ;      [910716] 4567R7A
+                 stx sid1+24,y                            ; set new volume
+; jsr go_fast  ;      [910716] 4567R7A
+;fall into clear_flag
+; .page
+clear_flag                                                
+                 lda #0                                   
+                 sta flag                                 
+                 rts                                      
+
+
+go_fast                                                   
+                 lda sid_speed_flag                       
+                 tsb vic+49                               
+                 rts                                      
+
+
+go_slow                                                   
+                 pha                                      
+                 lda #$40                                 
+                 and vic+49                               
+                 trb vic+49                               
+                 sta sid_speed_flag                       
+                 pla                                      
+                 rts                                      
+
+
+wait_for_quiet                                            ; Wait for current voice to be quiet  [910626]
+                 ldy voice                                
+                 ldx times2,y                             ; voice*2
+_local_1105_10   bit voices+1,x                           ; test if voice is active   [910617]
+                 bpl _local_1105_10                       ; loop until inactive (IRQ)
+                 rts                                      
+
+

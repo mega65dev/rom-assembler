@@ -1,33 +1,33 @@
-poke             jsr getnum                                ;; @@55ee 141
-_local_1140_1    txa                                      ; set up value to store for Kernel 'stash' routine ;; @@55f1 141
-                 ldy #0                                   ; ..and index ;; @@55f2 141
-                 sei                                      ; to allow poking IRQ vector, etc.  [910612] ;; @@55f4 141
-                 bit current_bank                          ;; @@55f5 141
-                 bmi _local_1140_10                       ; (anything >1Meg means NOMAP) ;; @@55f8 141
- ;; @@55fa 141
-                 phz                                       ;; @@55fa 141
-                 ldx #poker                               ; ..and address ;; @@55fb 141
-                 ldz current_bank                         ; ..finally, get the bank number ;; @@55fd 141
-                 jsr _sta_far                             ; sta (poker),y ;; @@5600 141
-                 plz                                       ;; @@5603 141
-                 !text $2c                                 ;; @@5604 141
- ;; @@5605 141
-_local_1140_10   sta (poker),y                            ; NoMap ;; @@5605 141
- ;; @@5607 141
-_local_1140_20   jsr chrgot                               ; eol? ;; @@5607 141
-                 beq _local_1140_30                       ; yes ;; @@560a 141
-                 inw poker                                ; no- increment address ;; @@560c 141
-; lda poker  ; check for segment wrap (FFFF->0000) [910911] ;; @@560e 141
-; ora poker+1 ;; @@560e 141
-                 +lbeq omerr                              ; [910916] ;; @@560e 141
-                 jsr optbyt                               ; & get next [,byte] ;; @@5611 141
-                 bcs _local_1140_1                         ;; @@5614 141
- ;; @@5616 141
-_local_1140_30   cli                                      ; [910612] ;; @@5616 141
-                 rts                                       ;; @@5617 141
- ;; @@5618 141
- ;; @@5618 141
-;.end ;; @@5618 141
-; .page ;; @@5618 141
-; .subttl  ERR$ ;; @@5618 141
- ;; @@5618 141
+poke             jsr getnum                               
+_local_1140_1    txa                                      ; set up value to store for Kernel 'stash' routine
+                 ldy #0                                   ; ..and index
+                 sei                                      ; to allow poking IRQ vector, etc.  [910612]
+                 bit current_bank                         
+                 bmi _local_1140_10                       ; (anything >1Meg means NOMAP)
+
+                 phz                                      
+                 ldx #poker                               ; ..and address
+                 ldz current_bank                         ; ..finally, get the bank number
+                 jsr _sta_far                             ; sta (poker),y
+                 plz                                      
+                 !text $2c                                
+
+_local_1140_10   sta (poker),y                            ; NoMap
+
+_local_1140_20   jsr chrgot                               ; eol?
+                 beq _local_1140_30                       ; yes
+                 inw poker                                ; no- increment address
+; lda poker  ; check for segment wrap (FFFF->0000) [910911]
+; ora poker+1
+                 +lbeq omerr                              ; [910916]
+                 jsr optbyt                               ; & get next [,byte]
+                 bcs _local_1140_1                        
+
+_local_1140_30   cli                                      ; [910612]
+                 rts                                      
+
+
+;.end
+; .page
+; .subttl  ERR$
+

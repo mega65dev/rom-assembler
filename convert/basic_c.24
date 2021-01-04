@@ -1,16 +1,16 @@
-ready_1                                                    ;; @@2ee4 24
-                 lda #%10000000                            ;; @@2ee4 24
-                 jsr _setmsg                              ; turn Kernel messages on ;; @@2ee6 24
-                 lda #%11000000                            ;; @@2ee9 24
-                 trb runmod                               ; turn run modes off, leave trace mode on???? ;; @@2eeb 24
- ;; @@2eed 24
-ready_2                                                    ;; @@2eed 24
-                 bbs4 runmod,_local_1023_10               ; print appropriate system prompt ;; @@2eed 24
-                 jsr _primm                               ; Program mode: print 'ready.' ;; @@2ef0 24
-                 !text cr,"READY.",cr,0                    ;; @@2ef3 24
-                 bra main                                  ;; @@2efc 24
- ;; @@2efe 24
-_local_1023_10   jsr _primm                               ; Edit mode: print 'ok.' ;; @@2efe 24
-                 !text cr,"OK.",cr,0                       ;; @@2f01 24
- ;; @@2f07 24
- ;; @@2f07 24
+ready_1                                                   
+                 lda #%10000000                           
+                 jsr _setmsg                              ; turn Kernel messages on
+                 lda #%11000000                           
+                 trb runmod                               ; turn run modes off, leave trace mode on????
+
+ready_2                                                   
+                 bbs4 runmod,_local_1023_10               ; print appropriate system prompt
+                 jsr _primm                               ; Program mode: print 'ready.'
+                 !text cr,"READY.",cr,0                   
+                 bra main                                 
+
+_local_1023_10   jsr _primm                               ; Edit mode: print 'ok.'
+                 !text cr,"OK.",cr,0                      
+
+

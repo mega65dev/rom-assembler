@@ -1,78 +1,78 @@
-dono             jsr chrgot                                ;; @@4512 96
-                 bra fnd010                               ; advance to end of block, do rts ;; @@4515 96
- ;; @@4517 96
- ;; @@4517 96
-;  Here for UNTIL ;; @@4517 96
- ;; @@4517 96
-do10             jsr frmjmp                                ;; @@4517 96
-                 lda facexp                                ;; @@451a 96
-                 bne dono                                  ;; @@451c 96
- ;; @@451e 96
-doyes            lda #5                                   ; 'do' needs 5 bytes on the run-time stack ;; @@451e 96
-                 jsr getstk                                ;; @@4520 96
-                 ldy #4                                   ; ..now stuff those 5 bytes! ;; @@4523 96
-                 lda tmptxt+1                              ;; @@4525 96
-                 sta (tos),y                              ; (common area) ;; @@4528 96
-                 dey                                       ;; @@452a 96
-                 lda tmptxt                                ;; @@452b 96
-                 sta (tos),y                              ; (common area) ;; @@452e 96
-                 dey                                       ;; @@4530 96
-                 lda tmplin+1                              ;; @@4531 96
-                 sta (tos),y                              ; (common area) ;; @@4534 96
-                 dey                                       ;; @@4536 96
-                 lda tmplin                                ;; @@4537 96
-                 sta (tos),y                              ; (common area) ;; @@453a 96
-                 dey                                       ;; @@453c 96
-                 lda #do_token                             ;; @@453d 96
-                 sta (tos),y                              ; (common area) ;; @@453f 96
-                 rts                                       ;; @@4541 96
- ;; @@4542 96
- ;; @@4542 96
-;  Here for EXIT ;; @@4542 96
- ;; @@4542 96
-exit             jsr popdgo                               ; pop do entry off stack ;; @@4542 96
-                 jsr chrgot                                ;; @@4545 96
-                 beq fnd010                                ;; @@4548 96
-snrjmp           +lbra snerr                               ;; @@454a 96
- ;; @@454d 96
- ;; @@454d 96
- ;; @@454d 96
-;  Find end of current block ;; @@454d 96
- ;; @@454d 96
-fndend           jsr chrget                                ;; @@454d 96
- ;; @@4550 96
-fnd010           beq _local_1095_20                       ; end of statement ;; @@4550 96
-                 cmp #loop_token                           ;; @@4552 96
-                 +lbeq data                               ; a hit!  read to end of statement, rts ;; @@4554 96
-                 cmp #'"'                                 ; quote ;; @@4557 96
-                 beq _local_1095_10                        ;; @@4559 96
-                 cmp #do_token                             ;; @@455b 96
-                 bne fndend                               ; keep looking ;; @@455d 96
-                 jsr fndend                               ; recursivly ;; @@455f 96
-                 bra dono                                 ; do a chrgot, go to fnd010 ;; @@4562 96
- ;; @@4564 96
- ;; @@4564 96
-_local_1095_10   jsr un_quote                             ; look for terminating quote, or end of statement ;; @@4564 96
-                 bne fndend                               ; character after quote wasn't terminator, keep going ;; @@4567 96
- ;; @@4569 96
-_local_1095_20   cmp #':'                                 ; end of line or end of stmt? ;; @@4569 96
-                 beq fndend                               ; just stmt, keep going ;; @@456b 96
-                 bbr7 runmod,fnderr                       ; if direct mode, not found error ;; @@456d 96
-                 ldy #2                                    ;; @@4570 96
-                 jsr indtxt                               ; end of text? ;; @@4572 96
-                 beq fnderr                               ; 'fraid so ;; @@4575 96
-                 iny                                      ; y=3 ;; @@4577 96
-                 jsr indtxt                               ; update pointers ;; @@4578 96
-                 sta curlin                                ;; @@457b 96
-                 iny                                       ;; @@457d 96
-                 jsr indtxt                                ;; @@457e 96
-                 sta curlin+1                              ;; @@4581 96
-                 tya                                       ;; @@4583 96
-                 clc                                       ;; @@4584 96
-                 adc txtptr                                ;; @@4585 96
-                 sta txtptr                                ;; @@4587 96
-                 bcc fndend                                ;; @@4589 96
-                 inc txtptr+1                              ;; @@458b 96
-                 bra fndend                                ;; @@458d 96
- ;; @@458f 96
-; .page ;; @@458f 96
+dono             jsr chrgot                               
+                 bra fnd010                               ; advance to end of block, do rts
+
+
+;  Here for UNTIL
+
+do10             jsr frmjmp                               
+                 lda facexp                               
+                 bne dono                                 
+
+doyes            lda #5                                   ; 'do' needs 5 bytes on the run-time stack
+                 jsr getstk                               
+                 ldy #4                                   ; ..now stuff those 5 bytes!
+                 lda tmptxt+1                             
+                 sta (tos),y                              ; (common area)
+                 dey                                      
+                 lda tmptxt                               
+                 sta (tos),y                              ; (common area)
+                 dey                                      
+                 lda tmplin+1                             
+                 sta (tos),y                              ; (common area)
+                 dey                                      
+                 lda tmplin                               
+                 sta (tos),y                              ; (common area)
+                 dey                                      
+                 lda #do_token                            
+                 sta (tos),y                              ; (common area)
+                 rts                                      
+
+
+;  Here for EXIT
+
+exit             jsr popdgo                               ; pop do entry off stack
+                 jsr chrgot                               
+                 beq fnd010                               
+snrjmp           +lbra snerr                              
+
+
+
+;  Find end of current block
+
+fndend           jsr chrget                               
+
+fnd010           beq _local_1095_20                       ; end of statement
+                 cmp #loop_token                          
+                 +lbeq data                               ; a hit!  read to end of statement, rts
+                 cmp #'"'                                 ; quote
+                 beq _local_1095_10                       
+                 cmp #do_token                            
+                 bne fndend                               ; keep looking
+                 jsr fndend                               ; recursivly
+                 bra dono                                 ; do a chrgot, go to fnd010
+
+
+_local_1095_10   jsr un_quote                             ; look for terminating quote, or end of statement
+                 bne fndend                               ; character after quote wasn't terminator, keep going
+
+_local_1095_20   cmp #':'                                 ; end of line or end of stmt?
+                 beq fndend                               ; just stmt, keep going
+                 bbr7 runmod,fnderr                       ; if direct mode, not found error
+                 ldy #2                                   
+                 jsr indtxt                               ; end of text?
+                 beq fnderr                               ; 'fraid so
+                 iny                                      ; y=3
+                 jsr indtxt                               ; update pointers
+                 sta curlin                               
+                 iny                                      
+                 jsr indtxt                               
+                 sta curlin+1                             
+                 tya                                      
+                 clc                                      
+                 adc txtptr                               
+                 sta txtptr                               
+                 bcc fndend                               
+                 inc txtptr+1                             
+                 bra fndend                               
+
+; .page

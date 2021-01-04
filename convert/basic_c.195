@@ -1,76 +1,76 @@
-verify_check                                               ;; @@68c9 195
-                 ldx #ervfy                               ; assume error ;; @@68c9 195
-; jsr _readst  ;read status ;; @@68cb 195
-                 bbs4 parsts,cld55                        ; branch if 'verify' error ;; @@68cb 195
-                 bbs7 runmod,cld20                        ; branch if not direct mode ;; @@68ce 195
-verify_ok                                                  ;; @@68d1 195
-                 jsr _primm                                ;; @@68d1 195
-                 !text cr,"OK", cr,0                       ;; @@68d4 195
-cld20            rts                                       ;; @@68d9 195
- ;; @@68da 195
- ;; @@68da 195
- ;; @@68da 195
-; Finish load ;; @@68da 195
- ;; @@68da 195
-cld50                                                      ;; @@68da 195
-; jsr _readst  ;check I/O status ;; @@68da 195
-                 lda parsts                                ;; @@68da 195
-                 and #%10111111                           ; EOI is okay, so mask it ;; @@68dc 195
-                 beq cld60                                ; good- finish load operation ;; @@68de 195
- ;; @@68e0 195
-load_error                                                 ;; @@68e0 195
-                 ldx #erload                               ;; @@68e0 195
-cld55            +lbra error                               ;; @@68e2 195
- ;; @@68e5 195
- ;; @@68e5 195
-cld60            stx text_top                              ;; @@68e5 195
-                 sty text_top+1                           ; end load address ;; @@68e7 195
- ;; @@68e9 195
-                 bbs7 runmod,cld70                        ; branch if not direct mode ;; @@68e9 195
-                 bbs6 runmod,cld20                        ; special "RUN file_name" flag...get out here (rts) ;; @@68ec 195
- ;; @@68ef 195
-                 jsr link_program                         ; relink ;; @@68ef 195
-                 jsr runc                                 ; clear vars ;; @@68f2 195
-                 +lbra ready_2                            ; print 'ready' & return to main ;; @@68f5 195
- ;; @@68f8 195
- ;; @@68f8 195
-; Program load ;; @@68f8 195
- ;; @@68f8 195
-cld70            jsr reset_txtptr                          ;; @@68f8 195
-                 jsr link_program                          ;; @@68fb 195
-                 +lbra fload                               ;; @@68fe 195
- ;; @@6901 195
-; .page ;; @@6901 195
-open             jsr paoc                                 ; parse statement ;; @@6901 195
-                 jsr _open                                ; open it ;; @@6904 195
-                 bra close_out_1                           ;; @@6907 195
- ;; @@6909 195
- ;; @@6909 195
- ;; @@6909 195
-close            jsr paoc                                 ; parse statement ;; @@6909 195
-; jsr put_io_in_map ;; @@690c 195
-                 lda andmsk                               ; get la ;; @@690c 195
- ;; @@690e 195
- ;; @@690e 195
-close_out                                                 ; enter with .a=LA   [900725] ;; @@690e 195
-                 clc                                      ; flag a real close ;; @@690e 195
-                 jsr _close                               ; close it ;; @@690f 195
- ;; @@6912 195
-close_out_1                                                ;; @@6912 195
-                 php                                       ;; @@6912 195
-                 pha                                       ;; @@6913 195
-                 lda _fa                                  ; special error checking if disk op ;; @@6914 195
-                 cmp #8                                    ;; @@6916 195
-                 bcc _local_1194_10                        ;; @@6918 195
-                 pla                                       ;; @@691a 195
-                 plp                                       ;; @@691b 195
-                 +lbra exit_disk_operation                ; disk ;; @@691c 195
- ;; @@691f 195
-_local_1194_10   pla                                      ; something else ;; @@691f 195
-                 plp                                       ;; @@6920 195
-                 +lbcs erexit                              ;; @@6921 195
-                 rts                                       ;; @@6924 195
- ;; @@6925 195
-; .page ;; @@6925 195
-; Parse LOAD, SAVE, & VERIFY commands ;; @@6925 195
- ;; @@6925 195
+verify_check                                              
+                 ldx #ervfy                               ; assume error
+; jsr _readst  ;read status
+                 bbs4 parsts,cld55                        ; branch if 'verify' error
+                 bbs7 runmod,cld20                        ; branch if not direct mode
+verify_ok                                                 
+                 jsr _primm                               
+                 !text cr,"OK", cr,0                      
+cld20            rts                                      
+
+
+
+; Finish load
+
+cld50                                                     
+; jsr _readst  ;check I/O status
+                 lda parsts                               
+                 and #%10111111                           ; EOI is okay, so mask it
+                 beq cld60                                ; good- finish load operation
+
+load_error                                                
+                 ldx #erload                              
+cld55            +lbra error                              
+
+
+cld60            stx text_top                             
+                 sty text_top+1                           ; end load address
+
+                 bbs7 runmod,cld70                        ; branch if not direct mode
+                 bbs6 runmod,cld20                        ; special "RUN file_name" flag...get out here (rts)
+
+                 jsr link_program                         ; relink
+                 jsr runc                                 ; clear vars
+                 +lbra ready_2                            ; print 'ready' & return to main
+
+
+; Program load
+
+cld70            jsr reset_txtptr                         
+                 jsr link_program                         
+                 +lbra fload                              
+
+; .page
+open             jsr paoc                                 ; parse statement
+                 jsr _open                                ; open it
+                 bra close_out_1                          
+
+
+
+close            jsr paoc                                 ; parse statement
+; jsr put_io_in_map
+                 lda andmsk                               ; get la
+
+
+close_out                                                 ; enter with .a=LA   [900725]
+                 clc                                      ; flag a real close
+                 jsr _close                               ; close it
+
+close_out_1                                               
+                 php                                      
+                 pha                                      
+                 lda _fa                                  ; special error checking if disk op
+                 cmp #8                                   
+                 bcc _local_1194_10                       
+                 pla                                      
+                 plp                                      
+                 +lbra exit_disk_operation                ; disk
+
+_local_1194_10   pla                                      ; something else
+                 plp                                      
+                 +lbcs erexit                             
+                 rts                                      
+
+; .page
+; Parse LOAD, SAVE, & VERIFY commands
+

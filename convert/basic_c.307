@@ -1,199 +1,199 @@
-dotwo2                                                     ;; @@bb34 307
-                 bcc addtw2                               ; go do addition ;; @@bb34 307
-                 bcs subtw2                               ; go do subtraction ;; @@bb36 307
-dotwo                                                      ;; @@bb38 307
-                 bcs subtwo                               ; go do subtraction ;; @@bb38 307
- ;; @@bb3a 307
-;*************************************************************** ;; @@bb3a 307
-;  ADDTWO  - Add vwork+y and vwork+x  Result in y/a ;; @@bb3a 307
-;*************************************************************** ;; @@bb3a 307
- ;; @@bb3a 307
-addtwo                                                     ;; @@bb3a 307
-                 jsr settwo                               ; put vwrok+y into y/a ;; @@bb3a 307
- ;; @@bb3d 307
-addtw2                                                    ; enter here to add y/a to vwork+x ;; @@bb3d 307
-                 clc                                       ;; @@bb3d 307
-                 adc vwork,x                               ;; @@bb3e 307
-                 pha                                       ;; @@bb41 307
-                 tya                                       ;; @@bb42 307
-                 adc vwork+1,x                             ;; @@bb43 307
-                 tay                                       ;; @@bb46 307
-                 pla                                       ;; @@bb47 307
-                 rts                                       ;; @@bb48 307
- ;; @@bb49 307
-; .page ;; @@bb49 307
-;**************************************************************** ;; @@bb49 307
-;  SUBTWO  - Subtract vwork+y - vwork+x Result in y/a ;; @@bb49 307
-;**************************************************************** ;; @@bb49 307
- ;; @@bb49 307
-subtwo                                                     ;; @@bb49 307
-                 jsr settwo                               ; move vwork+y into y/a ;; @@bb49 307
- ;; @@bb4c 307
-subtw2                                                    ; enter here with 1st value in y/a ;; @@bb4c 307
-                 sec                                       ;; @@bb4c 307
-                 sbc vwork,x                               ;; @@bb4d 307
-                 sta tempf1                                ;; @@bb50 307
-                 tya                                       ;; @@bb52 307
-                 sbc vwork+1,x                             ;; @@bb53 307
-                 tay                                       ;; @@bb56 307
-                 php                                       ;; @@bb57 307
-                 lda tempf1                                ;; @@bb58 307
-                 plp                                       ;; @@bb5a 307
-                 rts                                       ;; @@bb5b 307
- ;; @@bb5c 307
- ;; @@bb5c 307
-subtwo_savram                                              ;; @@bb5c 307
-                 lda savram,y                             ; load value into y,a ;; @@bb5c 307
-                 pha                                       ;; @@bb5f 307
-                 lda savram+1,y                            ;; @@bb60 307
-                 tay                                       ;; @@bb63 307
-                 pla                                       ;; @@bb64 307
-                 sec                                       ;; @@bb65 307
-                 sbc savram,x                              ;; @@bb66 307
-                 sta tempf1                                ;; @@bb69 307
-                 tya                                       ;; @@bb6b 307
-                 sbc savram+1,x                            ;; @@bb6c 307
-                 tay                                       ;; @@bb6f 307
-                 php                                       ;; @@bb70 307
-                 lda tempf1                                ;; @@bb71 307
-                 plp                                       ;; @@bb73 307
-                 rts                                       ;; @@bb74 307
- ;; @@bb75 307
-; .page ;; @@bb75 307
-;************************************************************ ;; @@bb75 307
-;  SETTWO  - Move value in vwork+y into y/a ;; @@bb75 307
-;************************************************************ ;; @@bb75 307
- ;; @@bb75 307
-settwo                                                     ;; @@bb75 307
-                 lda vwork,y                               ;; @@bb75 307
-                 pha                                       ;; @@bb78 307
-                 lda vwork+1,y                             ;; @@bb79 307
-                 tay                                       ;; @@bb7c 307
-                 pla                                       ;; @@bb7d 307
-                 rts                                       ;; @@bb7e 307
- ;; @@bb7f 307
-;****************************************************************** ;; @@bb7f 307
-;  ABSTWO  - Get absolute value of vwork+y - vwork+x ;; @@bb7f 307
-;  Result in y/a  -  carry === vwork+y >= vwork+x ;; @@bb7f 307
-;****************************************************************** ;; @@bb7f 307
- ;; @@bb7f 307
-abstwo                                                    ; movspr_to [910809] ;; @@bb7f 307
-                 jsr subtwo                               ; subtract vwork+y - vwork+x ;; @@bb7f 307
-abstw2                                                    ; entrance with vwork+y in y/a ;; @@bb82 307
-                 bpl absrts                               ; done if result is positive ;; @@bb82 307
-invert           php                                       ;; @@bb84 307
-                 clc                                       ;; @@bb85 307
-                 eor #$ff                                 ; invert low byte result and add 1 ;; @@bb86 307
-                 adc #1                                    ;; @@bb88 307
-                 pha                                       ;; @@bb8a 307
-                 tya                                       ;; @@bb8b 307
-                 eor #$ff                                 ; invert high byte result ;; @@bb8c 307
-                 adc #0                                   ; add back any carry ;; @@bb8e 307
-                 tay                                       ;; @@bb90 307
-                 pla                                       ;; @@bb91 307
-                 plp                                       ;; @@bb92 307
-absrts           rts                                       ;; @@bb93 307
- ;; @@bb94 307
-; .page ;; @@bb94 307
-;**************************************************************** ;; @@bb94 307
-;  TWOBYT  - Multiply 2 byte fraction in y/a times 2 bytes ;; @@bb94 307
-;  Integer found in vwork+x-reg.  Result = y/a ;; @@bb94 307
-;**************************************************************** ;; @@bb94 307
- ;; @@bb94 307
-twobyt                                                     ;; @@bb94 307
-                 sty vtemp1                               ; save fraction ;; @@bb94 307
-                 sta vtemp2                                ;; @@bb97 307
-                 lda vwork,x                               ;; @@bb9a 307
-                 ldy vwork+1,x                             ;; @@bb9d 307
-                 php                                      ; save sign of integer ;; @@bba0 307
-                 jsr abstw2                               ; absolute value ;; @@bba1 307
-                 sta vwork,x                               ;; @@bba4 307
-                 tya                                       ;; @@bba7 307
-                 sta vwork+1,x                             ;; @@bba8 307
-                 lda #0                                    ;; @@bbab 307
-                 sta vtemp3                               ; initialize result to zero ;; @@bbad 307
- ;; @@bbb0 307
-                 ldy #16                                  ; initialize count ;; @@bbb0 307
-_local_1306_10   lsr vtemp1                                ;; @@bbb2 307
-                 ror vtemp2                                ;; @@bbb5 307
-                 bcc _local_1306_20                       ; skip if no bit set ;; @@bbb8 307
-                 clc                                       ;; @@bbba 307
-                 adc vwork,x                              ; add integer low byte ;; @@bbbb 307
-                 pha                                       ;; @@bbbe 307
-                 lda vtemp3                                ;; @@bbbf 307
-                 adc vwork+1,x                            ; add integer high byte to total ;; @@bbc2 307
-                 sta vtemp3                                ;; @@bbc5 307
-                 pla                                       ;; @@bbc8 307
- ;; @@bbc9 307
-_local_1306_20   lsr vtemp3                               ; divide by 2 ;; @@bbc9 307
-                 ror                                       ;; @@bbcc 307
-                 dey                                       ;; @@bbcd 307
-                 bne _local_1306_10                       ; loop 16 times - test all bits in 2 bytes ;; @@bbce 307
- ;; @@bbd0 307
-                 adc #0                                   ; add back round factor ;; @@bbd0 307
-                 ldy vtemp3                                ;; @@bbd2 307
-                 bcc _local_1306_30                        ;; @@bbd5 307
-                 iny                                       ;; @@bbd7 307
-_local_1306_30   plp                                      ; pop sign ;; @@bbd8 307
-                 bra abstw2                               ; return with signed product in y/a ;; @@bbd9 307
- ;; @@bbdb 307
-; .page ;; @@bbdb 307
-;****************************************************************** ;; @@bbdb 307
-;  dstpos  -  move xdest/ydest to xpos/ypos ;; @@bbdb 307
-;****************************************************************** ;; @@bbdb 307
-; ;; @@bbdb 307
-;dstpos ;; @@bbdb 307
-; ldy #0 ;; @@bbdb 307
-; jsr dstmov ;; @@bbdb 307
-; ldy #2 ;; @@bbdb 307
-;dstmov ;; @@bbdb 307
-; lda xdest,y ;; @@bbdb 307
-; sta xpos,y ;; @@bbdb 307
-; lda xdest+1,y ;; @@bbdb 307
-; sta xpos+1,y ;; @@bbdb 307
-; rts ;; @@bbdb 307
- ;; @@bbdb 307
-;.end ;; @@bbdb 307
-; .page ;; @@bbdb 307
-;GRAPHICS10.SRC ;; @@bbdb 307
-;************************************************************ ;; @@bbdb 307
-;   incolr  --  get color selection parameter into colsel ;; @@bbdb 307
-;************************************************************ ;; @@bbdb 307
-; ;; @@bbdb 307
-;incolr ;; @@bbdb 307
-; ldx #1   ;get an optional 1 byte val, def=fg(1) ;; @@bbdb 307
-; jsr chrgot ;; @@bbdb 307
-;incol1 ;; @@bbdb 307
-; beq incol2       ;eol, use default ;; @@bbdb 307
-; cmp #',' ;; @@bbdb 307
-; beq incol2       ;just ',', use default ;; @@bbdb 307
-; jsr getbyt ;; @@bbdb 307
-; cpx #4   ;must be 0-3 ;; @@bbdb 307
-; bcs illval       ;..else illegal value ;; @@bbdb 307
-; cpx #2 ;; @@bbdb 307
-; bit _graphm       ;if hires, must be 0 or 1 ;; @@bbdb 307
-; bmi incol2 ;; @@bbdb 307
-; bcs illval ;; @@bbdb 307
-;incol2 ;; @@bbdb 307
-; stx colsel ;; @@bbdb 307
-; rts ;; @@bbdb 307
-; ;; @@bbdb 307
-;illval ;; @@bbdb 307
-; jmp fcerr  ;illegal value ;; @@bbdb 307
- ;; @@bbdb 307
-; .page ;; @@bbdb 307
-;****************************************************************** ;; @@bbdb 307
-;  INCORD  ---  Get X,Y coordinate from input stream into vwork+x ;; @@bbdb 307
-; ;; @@bbdb 307
-;  Coordinate may have any of the forms: ;; @@bbdb 307
-;    x,y  = absolute xpos & absolute ypos ;; @@bbdb 307
-; +/-x,y  = relative xpos & absolute ypos ;; @@bbdb 307
-;    x,+/-y = absolute xpos & relative ypos ;; @@bbdb 307
-; +/-x,+/-y = relative xpos & relative ypos ;; @@bbdb 307
-;    x;y  = x-distance at an angle y ;; @@bbdb 307
-; ;; @@bbdb 307
-;  Relative and angle distances are relative to current x,ypos. ;; @@bbdb 307
-;  Values are scaled to current mode parameters if required. ;; @@bbdb 307
-;****************************************************************** ;; @@bbdb 307
- ;; @@bbdb 307
- ;; @@bbdb 307
+dotwo2                                                    
+                 bcc addtw2                               ; go do addition
+                 bcs subtw2                               ; go do subtraction
+dotwo                                                     
+                 bcs subtwo                               ; go do subtraction
+
+;***************************************************************
+;  ADDTWO  - Add vwork+y and vwork+x  Result in y/a
+;***************************************************************
+
+addtwo                                                    
+                 jsr settwo                               ; put vwrok+y into y/a
+
+addtw2                                                    ; enter here to add y/a to vwork+x
+                 clc                                      
+                 adc vwork,x                              
+                 pha                                      
+                 tya                                      
+                 adc vwork+1,x                            
+                 tay                                      
+                 pla                                      
+                 rts                                      
+
+; .page
+;****************************************************************
+;  SUBTWO  - Subtract vwork+y - vwork+x Result in y/a
+;****************************************************************
+
+subtwo                                                    
+                 jsr settwo                               ; move vwork+y into y/a
+
+subtw2                                                    ; enter here with 1st value in y/a
+                 sec                                      
+                 sbc vwork,x                              
+                 sta tempf1                               
+                 tya                                      
+                 sbc vwork+1,x                            
+                 tay                                      
+                 php                                      
+                 lda tempf1                               
+                 plp                                      
+                 rts                                      
+
+
+subtwo_savram                                             
+                 lda savram,y                             ; load value into y,a
+                 pha                                      
+                 lda savram+1,y                           
+                 tay                                      
+                 pla                                      
+                 sec                                      
+                 sbc savram,x                             
+                 sta tempf1                               
+                 tya                                      
+                 sbc savram+1,x                           
+                 tay                                      
+                 php                                      
+                 lda tempf1                               
+                 plp                                      
+                 rts                                      
+
+; .page
+;************************************************************
+;  SETTWO  - Move value in vwork+y into y/a
+;************************************************************
+
+settwo                                                    
+                 lda vwork,y                              
+                 pha                                      
+                 lda vwork+1,y                            
+                 tay                                      
+                 pla                                      
+                 rts                                      
+
+;******************************************************************
+;  ABSTWO  - Get absolute value of vwork+y - vwork+x
+;  Result in y/a  -  carry === vwork+y >= vwork+x
+;******************************************************************
+
+abstwo                                                    ; movspr_to [910809]
+                 jsr subtwo                               ; subtract vwork+y - vwork+x
+abstw2                                                    ; entrance with vwork+y in y/a
+                 bpl absrts                               ; done if result is positive
+invert           php                                      
+                 clc                                      
+                 eor #$ff                                 ; invert low byte result and add 1
+                 adc #1                                   
+                 pha                                      
+                 tya                                      
+                 eor #$ff                                 ; invert high byte result
+                 adc #0                                   ; add back any carry
+                 tay                                      
+                 pla                                      
+                 plp                                      
+absrts           rts                                      
+
+; .page
+;****************************************************************
+;  TWOBYT  - Multiply 2 byte fraction in y/a times 2 bytes
+;  Integer found in vwork+x-reg.  Result = y/a
+;****************************************************************
+
+twobyt                                                    
+                 sty vtemp1                               ; save fraction
+                 sta vtemp2                               
+                 lda vwork,x                              
+                 ldy vwork+1,x                            
+                 php                                      ; save sign of integer
+                 jsr abstw2                               ; absolute value
+                 sta vwork,x                              
+                 tya                                      
+                 sta vwork+1,x                            
+                 lda #0                                   
+                 sta vtemp3                               ; initialize result to zero
+
+                 ldy #16                                  ; initialize count
+_local_1306_10   lsr vtemp1                               
+                 ror vtemp2                               
+                 bcc _local_1306_20                       ; skip if no bit set
+                 clc                                      
+                 adc vwork,x                              ; add integer low byte
+                 pha                                      
+                 lda vtemp3                               
+                 adc vwork+1,x                            ; add integer high byte to total
+                 sta vtemp3                               
+                 pla                                      
+
+_local_1306_20   lsr vtemp3                               ; divide by 2
+                 ror                                      
+                 dey                                      
+                 bne _local_1306_10                       ; loop 16 times - test all bits in 2 bytes
+
+                 adc #0                                   ; add back round factor
+                 ldy vtemp3                               
+                 bcc _local_1306_30                       
+                 iny                                      
+_local_1306_30   plp                                      ; pop sign
+                 bra abstw2                               ; return with signed product in y/a
+
+; .page
+;******************************************************************
+;  dstpos  -  move xdest/ydest to xpos/ypos
+;******************************************************************
+;
+;dstpos
+; ldy #0
+; jsr dstmov
+; ldy #2
+;dstmov
+; lda xdest,y
+; sta xpos,y
+; lda xdest+1,y
+; sta xpos+1,y
+; rts
+
+;.end
+; .page
+;GRAPHICS10.SRC
+;************************************************************
+;   incolr  --  get color selection parameter into colsel
+;************************************************************
+;
+;incolr
+; ldx #1   ;get an optional 1 byte val, def=fg(1)
+; jsr chrgot
+;incol1
+; beq incol2       ;eol, use default
+; cmp #','
+; beq incol2       ;just ',', use default
+; jsr getbyt
+; cpx #4   ;must be 0-3
+; bcs illval       ;..else illegal value
+; cpx #2
+; bit _graphm       ;if hires, must be 0 or 1
+; bmi incol2
+; bcs illval
+;incol2
+; stx colsel
+; rts
+;
+;illval
+; jmp fcerr  ;illegal value
+
+; .page
+;******************************************************************
+;  INCORD  ---  Get X,Y coordinate from input stream into vwork+x
+;
+;  Coordinate may have any of the forms:
+;    x,y  = absolute xpos & absolute ypos
+; +/-x,y  = relative xpos & absolute ypos
+;    x,+/-y = absolute xpos & relative ypos
+; +/-x,+/-y = relative xpos & relative ypos
+;    x;y  = x-distance at an angle y
+;
+;  Relative and angle distances are relative to current x,ypos.
+;  Values are scaled to current mode parameters if required.
+;******************************************************************
+
+

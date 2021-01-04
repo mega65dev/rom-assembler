@@ -1,12 +1,12 @@
-movtop           eor #$ff                                 ; comp and add ;; @@5d41 166
-                 sec                                       ;; @@5d43 166
-                 adc grbtop                                ;; @@5d44 166
-                 ldy grbtop+1                              ;; @@5d46 166
-                 bcs _local_1165_1                         ;; @@5d48 166
-                 dey                                       ;; @@5d4a 166
-_local_1165_1    sta grbtop                                ;; @@5d4b 166
-                 sty grbtop+1                              ;; @@5d4d 166
-                 rts                                       ;; @@5d4f 166
- ;; @@5d50 166
- ;; @@5d50 166
- ;; @@5d50 166
+movtop           eor #$ff                                 ; comp and add
+                 sec                                      
+                 adc grbtop                               
+                 ldy grbtop+1                             
+                 bcs _local_1165_1                        
+                 dey                                      
+_local_1165_1    sta grbtop                               
+                 sty grbtop+1                             
+                 rts                                      
+
+
+

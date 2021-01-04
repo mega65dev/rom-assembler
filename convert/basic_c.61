@@ -1,45 +1,45 @@
-datlop           jsr datan                                ; skip some text ;; @@3a4a 61
-                 iny                                       ;; @@3a4d 61
-                 tax                                      ; end of line? ;; @@3a4e 61
-                 bne _local_1060_10                       ; no ;; @@3a4f 61
-                 ldx #errod                               ; yes, "no data" error ;; @@3a51 61
-                 iny                                       ;; @@3a53 61
-                 jsr indtxt                                ;; @@3a54 61
-                 +lbeq error                               ;; @@3a57 61
- ;; @@3a5a 61
-                 iny                                       ;; @@3a5a 61
-                 jsr indtxt                               ; get high byte of line number ;; @@3a5b 61
-                 sta datlin                                ;; @@3a5e 61
-                 iny                                       ;; @@3a60 61
-                 jsr indtxt                               ; get low byte ;; @@3a61 61
-                 iny                                       ;; @@3a64 61
-                 sta datlin+1                              ;; @@3a65 61
- ;; @@3a67 61
-_local_1060_10   jsr addon                                ; nowlin.  txtptr+.y ;; @@3a67 61
-                 jsr chrgot                               ; span blanks ;; @@3a6a 61
-                 tax                                      ; used later ;; @@3a6d 61
-                 cpx #data_token                          ; is it a DATA statement? ;; @@3a6e 61
-                 bne datlop                               ; not quite right, keep looking ;; @@3a70 61
-                 +lbra datbk1                             ; this is the one ;; @@3a72 61
- ;; @@3a75 61
- ;; @@3a75 61
-;.end ;; @@3a75 61
-; .page ;; @@3a75 61
-; .subttl NEXT ;; @@3a75 61
- ;; @@3a75 61
-; Next routine ;; @@3a75 61
-; ;; @@3a75 61
-; 'FOR' entry on the stack has the following format: ;; @@3a75 61
-; ;; @@3a75 61
-; Low address ;; @@3a75 61
-;  token (for_token) 1 byte ;; @@3a75 61
-;  a pointer to the loop variable 2 bytes ;; @@3a75 61
-;  the step 5 bytes ;; @@3a75 61
-;  a byte reflecting the sign of the incr. 2 bytes ;; @@3a75 61
-;  the upper value (packed) 5 bytes ;; @@3a75 61
-;  the line number of the FOR statement 2 bytes ;; @@3a75 61
-;  a text pointer into the FOR statement 2 bytes ;; @@3a75 61
-; High address ;; @@3a75 61
-; ;; @@3a75 61
-; (total 16 bytes) ;; @@3a75 61
- ;; @@3a75 61
+datlop           jsr datan                                ; skip some text
+                 iny                                      
+                 tax                                      ; end of line?
+                 bne _local_1060_10                       ; no
+                 ldx #errod                               ; yes, "no data" error
+                 iny                                      
+                 jsr indtxt                               
+                 +lbeq error                              
+
+                 iny                                      
+                 jsr indtxt                               ; get high byte of line number
+                 sta datlin                               
+                 iny                                      
+                 jsr indtxt                               ; get low byte
+                 iny                                      
+                 sta datlin+1                             
+
+_local_1060_10   jsr addon                                ; nowlin.  txtptr+.y
+                 jsr chrgot                               ; span blanks
+                 tax                                      ; used later
+                 cpx #data_token                          ; is it a DATA statement?
+                 bne datlop                               ; not quite right, keep looking
+                 +lbra datbk1                             ; this is the one
+
+
+;.end
+; .page
+; .subttl NEXT
+
+; Next routine
+;
+; 'FOR' entry on the stack has the following format:
+;
+; Low address
+;  token (for_token) 1 byte
+;  a pointer to the loop variable 2 bytes
+;  the step 5 bytes
+;  a byte reflecting the sign of the incr. 2 bytes
+;  the upper value (packed) 5 bytes
+;  the line number of the FOR statement 2 bytes
+;  a text pointer into the FOR statement 2 bytes
+; High address
+;
+; (total 16 bytes)
+

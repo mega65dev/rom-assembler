@@ -1,11 +1,11 @@
-lstnd            dec keysiz                                ;; @@465a 100
-                 bne lsloop                               ; loop to end of definition ;; @@465c 100
-                 cpx #9                                    ;; @@465e 100
-                 bcc _local_1099_10                       ; skip if previous not normal character ;; @@4660 100
-                 lda #'"'                                  ;; @@4662 100
-                 jsr _bsout                               ; add ending quote ;; @@4664 100
- ;; @@4667 100
-_local_1099_10   lda #$8d                                  ;; @@4667 100
-                 jsr _bsout                               ; add ending return (shifted) ;; @@4669 100
- ;; @@466c 100
-                 ldx z_p_temp_1                           ; key number ;; @@466c 100
+lstnd            dec keysiz                               
+                 bne lsloop                               ; loop to end of definition
+                 cpx #9                                   
+                 bcc _local_1099_10                       ; skip if previous not normal character
+                 lda #'"'                                 
+                 jsr _bsout                               ; add ending quote
+
+_local_1099_10   lda #$8d                                 
+                 jsr _bsout                               ; add ending return (shifted)
+
+                 ldx z_p_temp_1                           ; key number

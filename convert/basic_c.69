@@ -1,11 +1,11 @@
-highlight_done                                            ; nasty kludge to colorize error or found text ;; @@3ccb 69
-                 lda highlight_save                        ;; @@3ccb 69
-                 bmi _local_1068_10                       ; (unless it's already normal) ;; @@3cce 69
-                 sta _color                               ; restore normal color ;; @@3cd0 69
-                 ora #$80                                  ;; @@3cd2 69
-                 sta highlight_save                       ; mark highlight_save invalid ;; @@3cd4 69
-                 rmb7 helper                              ; remove HELP flag ;; @@3cd7 69
-                 rmb1 helper                              ; remove token flag ;; @@3cd9 69
-_local_1068_10   rts                                       ;; @@3cdb 69
- ;; @@3cdc 69
- ;; @@3cdc 69
+highlight_done                                            ; nasty kludge to colorize error or found text
+                 lda highlight_save                       
+                 bmi _local_1068_10                       ; (unless it's already normal)
+                 sta _color                               ; restore normal color
+                 ora #$80                                 
+                 sta highlight_save                       ; mark highlight_save invalid
+                 rmb7 helper                              ; remove HELP flag
+                 rmb1 helper                              ; remove token flag
+_local_1068_10   rts                                      
+
+

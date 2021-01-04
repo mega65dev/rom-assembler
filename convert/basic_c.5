@@ -1,19 +1,19 @@
-chrget           inw txtptr                               ; get next character from text ;; @@2283 5
-chrgot           ldy #0                                   ; re-get current character from text ;; @@2285 5
-                 jsr indtxt                               ; lda (txtptr),y from RAM0 ;; @@2287 5
-qnum             cmp #' '                                  ;; @@228a 5
-                 beq chrget                               ; skip spaces ;; @@228c 5
-chrtst           cmp #':'                                 ; [910513] ;; @@228e 5
-                 bcs _local_1004_10                       ; eol ;; @@2290 5
-                 sec                                       ;; @@2292 5
-                 sbc #'0'                                 ; alpha or numeric? ;; @@2293 5
-                 sec                                       ;; @@2295 5
-                 sbc #$d0                                  ;; @@2296 5
-_local_1004_10   rts                                       ;; @@2298 5
- ;; @@2299 5
- ;; @@2299 5
-;.end ;; @@2299 5
-; .page ;; @@2299 5
-; C65 BASIC Indirect Load Subroutines ;; @@2299 5
- ;; @@2299 5
- ;; @@2299 5
+chrget           inw txtptr                               ; get next character from text
+chrgot           ldy #0                                   ; re-get current character from text
+                 jsr indtxt                               ; lda (txtptr),y from RAM0
+qnum             cmp #' '                                 
+                 beq chrget                               ; skip spaces
+chrtst           cmp #':'                                 ; [910513]
+                 bcs _local_1004_10                       ; eol
+                 sec                                      
+                 sbc #'0'                                 ; alpha or numeric?
+                 sec                                      
+                 sbc #$d0                                 
+_local_1004_10   rts                                      
+
+
+;.end
+; .page
+; C65 BASIC Indirect Load Subroutines
+
+

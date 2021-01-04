@@ -1,46 +1,46 @@
-strd             jsr chknum                               ; arg has to be numeric ;; @@59a5 152
-                 ldy #0                                    ;; @@59a8 152
-                 jsr foutc                                ; do its output ;; @@59aa 152
-                 pla                                       ;; @@59ad 152
-                 pla                                       ;; @@59ae 152
- ;; @@59af 152
-timstr           lda #<lofbuf                              ;; @@59af 152
-                 ldy #>lofbuf                              ;; @@59b1 152
-                 +lbra strlit                              ;; @@59b3 152
- ;; @@59b6 152
- ;; @@59b6 152
-; CHR$() creates a string which contains as its only character the PETSCII ;; @@59b6 152
-; equivalent of the integer argument (#) which must be < 256. ;; @@59b6 152
- ;; @@59b6 152
-chrd             jsr conint                               ; get integer in range ;; @@59b6 152
-                 phx                                       ;; @@59b9 152
-                 lda #1                                   ; one-character string ;; @@59ba 152
-                 jsr strspa                               ; get space for string ;; @@59bc 152
-                 ldy #0                                    ;; @@59bf 152
-                 pla                                       ;; @@59c1 152
-; phx   ;set up string bank ;; @@59c2 152
-                 ldx #dsctmp+1                             ;; @@59c2 152
-                 jsr sta_far_ram1                         ; sta (dsctmp+1),y ;; @@59c4 152
-; plx ;; @@59c7 152
- ;; @@59c7 152
-chrd1            pla                                      ; get rid of "chknum" return address ;; @@59c7 152
-                 pla                                       ;; @@59c8 152
-                 +lbra putnew                             ; setup FAC to point to desc ;; @@59c9 152
-; .page ;; @@59cc 152
- ;; @@59cc 152
-; The following is the LEFT$($,#) function.  It takes the leftmost # characters ;; @@59cc 152
-; of the string.  If # > len of the string, it returns the whole string. ;; @@59cc 152
- ;; @@59cc 152
-leftd            jsr pream                                ; test parameters ;; @@59cc 152
-                 pha                                      ; # arg ;; @@59cf 152
-                 jsr inddpt                               ; string len ;; @@59d0 152
-                 sta syntmp                                ;; @@59d3 152
-                 pla                                       ;; @@59d5 152
-                 cmp syntmp                                ;; @@59d6 152
-                 tya                                      ; that's all there is to LEFT$ ;; @@59d8 152
- ;; @@59d9 152
-rleft            bcc _local_1151_1                         ;; @@59d9 152
-                 jsr inddpt                                ;; @@59db 152
-                 tax                                      ; put length into x ;; @@59de 152
-                 tya                                      ; zero (a), the offset ;; @@59df 152
-_local_1151_1    pha                                      ; save offset ;; @@59e0 152
+strd             jsr chknum                               ; arg has to be numeric
+                 ldy #0                                   
+                 jsr foutc                                ; do its output
+                 pla                                      
+                 pla                                      
+
+timstr           lda #<lofbuf                             
+                 ldy #>lofbuf                             
+                 +lbra strlit                             
+
+
+; CHR$() creates a string which contains as its only character the PETSCII
+; equivalent of the integer argument (#) which must be < 256.
+
+chrd             jsr conint                               ; get integer in range
+                 phx                                      
+                 lda #1                                   ; one-character string
+                 jsr strspa                               ; get space for string
+                 ldy #0                                   
+                 pla                                      
+; phx   ;set up string bank
+                 ldx #dsctmp+1                            
+                 jsr sta_far_ram1                         ; sta (dsctmp+1),y
+; plx
+
+chrd1            pla                                      ; get rid of "chknum" return address
+                 pla                                      
+                 +lbra putnew                             ; setup FAC to point to desc
+; .page
+
+; The following is the LEFT$($,#) function.  It takes the leftmost # characters
+; of the string.  If # > len of the string, it returns the whole string.
+
+leftd            jsr pream                                ; test parameters
+                 pha                                      ; # arg
+                 jsr inddpt                               ; string len
+                 sta syntmp                               
+                 pla                                      
+                 cmp syntmp                               
+                 tya                                      ; that's all there is to LEFT$
+
+rleft            bcc _local_1151_1                        
+                 jsr inddpt                               
+                 tax                                      ; put length into x
+                 tya                                      ; zero (a), the offset
+_local_1151_1    pha                                      ; save offset

@@ -1,68 +1,68 @@
-search           sta srchtk                               ; save token to search for ;; @@3143 29
-                 jsr movtos                               ; tos => fndpnt ;; @@3145 29
- ;; @@3148 29
- ;; @@3148 29
-; Test if pointer is at bottom of stack.  If so, the item was not found. ;; @@3148 29
- ;; @@3148 29
-_local_1028_5    lda fndpnt                                ;; @@3148 29
-                 cmp #<stkbot                              ;; @@314a 29
-                 bne _local_1028_10                       ; (fndpnt) <> bottom, ok ;; @@314c 29
-                 lda fndpnt+1                             ; lsb's the same, test msb's ;; @@314e 29
-                 cmp #>stkbot                              ;; @@3150 29
-                 beq _local_1028_98                       ; stack empty, rts ;; @@3152 29
- ;; @@3154 29
-_local_1028_10   ldy #0                                    ;; @@3154 29
-                 lda srchtk                               ; what are we looking for? ;; @@3156 29
-                 cmp #for_token                           ; 'for' tokens are special cases ;; @@3158 29
-                 bne _local_1028_20                        ;; @@315a 29
- ;; @@315c 29
-; Looking for a 'for' token.  If next token examined is not a 'for' token, ;; @@315c 29
-; return with z = 0.  Otherwise, check the pointer to its 'for' variable. ;; @@315c 29
-; If the variable pointer = (forpnt) or if (forpnt) = $FFxx, return with z=1. ;; @@315c 29
-; Otherwise, set up x with length of a 'for' entry, and use the usual ;; @@315c 29
-; mechanisim for examining the next entry. ;; @@315c 29
- ;; @@315c 29
-                 cmp (fndpnt),y                           ; indirect ok- looking at runtime stack???? ;; @@315c 29
-                 bne _local_1028_99                       ; not 'for', do rts with z = 0 ;; @@315e 29
-                 ldy #2                                   ; point to msb of 'for' variable ;; @@3160 29
-                 lda forpnt+1                              ;; @@3162 29
-                 cmp #$ff                                  ;; @@3164 29
-                 beq _local_1028_99                       ; do rts with z = 1 ;; @@3166 29
-                 cmp (fndpnt),y                            ;; @@3168 29
-                 bne _local_1028_15                       ; not right variable, keep looking. ;; @@316a 29
-                 dey                                       ;; @@316c 29
-                 lda forpnt                               ; test lsb ;; @@316d 29
-                 cmp (fndpnt),y                            ;; @@316f 29
-                 beq _local_1028_99                       ; a hit! rts with z = 1 ;; @@3171 29
- ;; @@3173 29
-_local_1028_15   ldx #lenfor                               ;; @@3173 29
-                 bra _local_1028_30                       ; keep looking ;; @@3175 29
- ;; @@3177 29
-_local_1028_20   lda (fndpnt),y                            ;; @@3177 29
-                 cmp srchtk                               ; is this the correct type of entry? ;; @@3179 29
-                 beq _local_1028_99                       ; rts with z = 1 ;; @@317b 29
- ;; @@317d 29
-; The entry on top of the run-time stack is not the entry we are looking for. ;; @@317d 29
-; Find out what is there, and advance temp. pointer past it. ;; @@317d 29
- ;; @@317d 29
-                 ldx #lenfor                              ; is it a 'for' entry? ;; @@317d 29
-                 cmp #for_token                            ;; @@317f 29
-                 beq _local_1028_30                        ;; @@3181 29
-                 ldx #5                                   ; must be gosub or do by default ;; @@3183 29
- ;; @@3185 29
-_local_1028_30   txa                                       ;; @@3185 29
-                 clc                                       ;; @@3186 29
-                 adc fndpnt                                ;; @@3187 29
-                 sta fndpnt                                ;; @@3189 29
-                 bcc _local_1028_5                         ;; @@318b 29
-                 inc fndpnt+1                              ;; @@318d 29
-                 bra _local_1028_5                        ; always ;; @@318f 29
- ;; @@3191 29
-_local_1028_98   ldy #1                                   ; clear z flag ;; @@3191 29
-_local_1028_99   rts                                       ;; @@3193 29
- ;; @@3194 29
-; .page ;; @@3194 29
-; GETSTK ;; @@3194 29
-; ;; @@3194 29
-; Add (.A) elements to top of run-time stack.  Error if result exceeds tos. ;; @@3194 29
- ;; @@3194 29
+search           sta srchtk                               ; save token to search for
+                 jsr movtos                               ; tos => fndpnt
+
+
+; Test if pointer is at bottom of stack.  If so, the item was not found.
+
+_local_1028_5    lda fndpnt                               
+                 cmp #<stkbot                             
+                 bne _local_1028_10                       ; (fndpnt) <> bottom, ok
+                 lda fndpnt+1                             ; lsb's the same, test msb's
+                 cmp #>stkbot                             
+                 beq _local_1028_98                       ; stack empty, rts
+
+_local_1028_10   ldy #0                                   
+                 lda srchtk                               ; what are we looking for?
+                 cmp #for_token                           ; 'for' tokens are special cases
+                 bne _local_1028_20                       
+
+; Looking for a 'for' token.  If next token examined is not a 'for' token,
+; return with z = 0.  Otherwise, check the pointer to its 'for' variable.
+; If the variable pointer = (forpnt) or if (forpnt) = $FFxx, return with z=1.
+; Otherwise, set up x with length of a 'for' entry, and use the usual
+; mechanisim for examining the next entry.
+
+                 cmp (fndpnt),y                           ; indirect ok- looking at runtime stack????
+                 bne _local_1028_99                       ; not 'for', do rts with z = 0
+                 ldy #2                                   ; point to msb of 'for' variable
+                 lda forpnt+1                             
+                 cmp #$ff                                 
+                 beq _local_1028_99                       ; do rts with z = 1
+                 cmp (fndpnt),y                           
+                 bne _local_1028_15                       ; not right variable, keep looking.
+                 dey                                      
+                 lda forpnt                               ; test lsb
+                 cmp (fndpnt),y                           
+                 beq _local_1028_99                       ; a hit! rts with z = 1
+
+_local_1028_15   ldx #lenfor                              
+                 bra _local_1028_30                       ; keep looking
+
+_local_1028_20   lda (fndpnt),y                           
+                 cmp srchtk                               ; is this the correct type of entry?
+                 beq _local_1028_99                       ; rts with z = 1
+
+; The entry on top of the run-time stack is not the entry we are looking for.
+; Find out what is there, and advance temp. pointer past it.
+
+                 ldx #lenfor                              ; is it a 'for' entry?
+                 cmp #for_token                           
+                 beq _local_1028_30                       
+                 ldx #5                                   ; must be gosub or do by default
+
+_local_1028_30   txa                                      
+                 clc                                      
+                 adc fndpnt                               
+                 sta fndpnt                               
+                 bcc _local_1028_5                        
+                 inc fndpnt+1                             
+                 bra _local_1028_5                        ; always
+
+_local_1028_98   ldy #1                                   ; clear z flag
+_local_1028_99   rts                                      
+
+; .page
+; GETSTK
+;
+; Add (.A) elements to top of run-time stack.  Error if result exceeds tos.
+

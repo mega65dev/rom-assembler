@@ -1,57 +1,57 @@
-movspr_to_irq                                             ; [910809] ;; @@7a24 254
-                 phy                                      ; sprite # ;; @@7a24 254
-                 and #$3f                                 ; speed factor ;; @@7a25 254
-                 taz                                       ;; @@7a27 254
-                 tya                                      ; vic sprite index ;; @@7a28 254
-                 asl                                       ;; @@7a29 254
-                 tay                                       ;; @@7a2a 254
- ;; @@7a2b 254
-_local_1253_10   sec                                      ; for i = 1 to abs(greatr) ;; @@7a2b 254
-                 lda sprite_data+1,x                       ;; @@7a2c 254
-                 sbc #1                                    ;; @@7a2f 254
-                 sta sprite_data+1,x                       ;; @@7a31 254
-                 bcs _local_1253_20                        ;; @@7a34 254
-                 lda sprite_data+2,x                       ;; @@7a36 254
-                 sbc #0                                    ;; @@7a39 254
-                 sta sprite_data+2,x                       ;; @@7a3b 254
-                 bcs _local_1253_20                        ;; @@7a3e 254
-                 lda #0                                    ;; @@7a40 254
-                 sta sprite_data,x                        ; done!  sprite is at its destination ;; @@7a42 254
-                 ply                                      ; remember sprite # ;; @@7a45 254
-                 rts                                       ;; @@7a46 254
- ;; @@7a47 254
-_local_1253_20   lda sprite_data+3,x                      ; ptr(lesser) ;; @@7a47 254
-                 bit sprite_data+10,x                      ;; @@7a4a 254
-                 bmi _local_1253_30                       ; if e > 0 ;; @@7a4d 254
-                 bit sprite_data+3,x                      ; sgn(lesser) (b7=1=neg, b6=1=pos, else 0) ;; @@7a4f 254
-                 jsr drwinc                               ; pos(lesser) = pos(lesser) + sgn(lesser) ;; @@7a52 254
- ;; @@7a55 254
-                 lda sprite_data+4,x                      ; ptr(greater) ;; @@7a55 254
-_local_1253_30   lsr                                      ; which f? ;; @@7a58 254
-                 bcs _local_1253_40                        ;; @@7a59 254
-                 lda sprite_data+9,x                      ; e = e + f1 ;; @@7a5b 254
-                 adc sprite_data+5,x                       ;; @@7a5e 254
-                 sta sprite_data+9,x                       ;; @@7a61 254
-                 lda sprite_data+10,x                      ;; @@7a64 254
-                 adc sprite_data+6,x                       ;; @@7a67 254
-                 sta sprite_data+10,x                      ;; @@7a6a 254
-                 bra _local_1253_50                        ;; @@7a6d 254
- ;; @@7a6f 254
-_local_1253_40   clc                                       ;; @@7a6f 254
-                 lda sprite_data+9,x                      ; e = e + f2 ;; @@7a70 254
-                 adc sprite_data+7,x                       ;; @@7a73 254
-                 sta sprite_data+9,x                       ;; @@7a76 254
-                 lda sprite_data+10,x                      ;; @@7a79 254
-                 adc sprite_data+8,x                       ;; @@7a7c 254
-                 sta sprite_data+10,x                      ;; @@7a7f 254
- ;; @@7a82 254
-_local_1253_50   lda sprite_data+4,x                      ; ptr(greater) ;; @@7a82 254
-                 bit sprite_data+4,x                      ; sgn(greater) (b7=1=neg, b6=1=pos, else 0) ;; @@7a85 254
-                 jsr drwinc                               ; pos(greater) = pos(greater) + sgn(greater) ;; @@7a88 254
- ;; @@7a8b 254
-                 dez                                      ; count ;; @@7a8b 254
-                 bne _local_1253_10                        ;; @@7a8c 254
-                 ply                                      ; remember sprite # ;; @@7a8e 254
-                 rts                                      ; done this frame ;; @@7a8f 254
- ;; @@7a90 254
- ;; @@7a90 254
+movspr_to_irq                                             ; [910809]
+                 phy                                      ; sprite #
+                 and #$3f                                 ; speed factor
+                 taz                                      
+                 tya                                      ; vic sprite index
+                 asl                                      
+                 tay                                      
+
+_local_1253_10   sec                                      ; for i = 1 to abs(greatr)
+                 lda sprite_data+1,x                      
+                 sbc #1                                   
+                 sta sprite_data+1,x                      
+                 bcs _local_1253_20                       
+                 lda sprite_data+2,x                      
+                 sbc #0                                   
+                 sta sprite_data+2,x                      
+                 bcs _local_1253_20                       
+                 lda #0                                   
+                 sta sprite_data,x                        ; done!  sprite is at its destination
+                 ply                                      ; remember sprite #
+                 rts                                      
+
+_local_1253_20   lda sprite_data+3,x                      ; ptr(lesser)
+                 bit sprite_data+10,x                     
+                 bmi _local_1253_30                       ; if e > 0
+                 bit sprite_data+3,x                      ; sgn(lesser) (b7=1=neg, b6=1=pos, else 0)
+                 jsr drwinc                               ; pos(lesser) = pos(lesser) + sgn(lesser)
+
+                 lda sprite_data+4,x                      ; ptr(greater)
+_local_1253_30   lsr                                      ; which f?
+                 bcs _local_1253_40                       
+                 lda sprite_data+9,x                      ; e = e + f1
+                 adc sprite_data+5,x                      
+                 sta sprite_data+9,x                      
+                 lda sprite_data+10,x                     
+                 adc sprite_data+6,x                      
+                 sta sprite_data+10,x                     
+                 bra _local_1253_50                       
+
+_local_1253_40   clc                                      
+                 lda sprite_data+9,x                      ; e = e + f2
+                 adc sprite_data+7,x                      
+                 sta sprite_data+9,x                      
+                 lda sprite_data+10,x                     
+                 adc sprite_data+8,x                      
+                 sta sprite_data+10,x                     
+
+_local_1253_50   lda sprite_data+4,x                      ; ptr(greater)
+                 bit sprite_data+4,x                      ; sgn(greater) (b7=1=neg, b6=1=pos, else 0)
+                 jsr drwinc                               ; pos(greater) = pos(greater) + sgn(greater)
+
+                 dez                                      ; count
+                 bne _local_1253_10                       
+                 ply                                      ; remember sprite #
+                 rts                                      ; done this frame
+
+

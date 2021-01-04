@@ -1,33 +1,33 @@
-helpsb                                                    ; logic to highlight error or find string ;; @@3c96 68
-                 bbs4 helper,highlight_done               ; branch if highlighting tokens ;; @@3c96 68
-                 bbs5 helper,_local_1067_10               ; branch if FIND ;; @@3c99 68
- ;; @@3c9c 68
-                 ldx lowtr+1                              ; has P1LINE reached code in error? ;; @@3c9c 68
-                 tya                                       ;; @@3c9e 68
-                 clc                                       ;; @@3c9f 68
-                 adc lowtr                                ; add character pointer to line pointer... ;; @@3ca0 68
-                 bcc _local_1067_1                         ;; @@3ca2 68
-                 inx                                       ;; @@3ca4 68
-_local_1067_1    cpx errtxt+1                             ; and compare to error pointer ;; @@3ca5 68
-                 bne _local_1067_3                        ; not there ;; @@3ca8 68
-                 cmp errtxt                                ;; @@3caa 68
-                 bcs highlight_text                       ; we're there- begin highlighting ;; @@3cad 68
-_local_1067_3    rts                                       ;; @@3caf 68
- ;; @@3cb0 68
- ;; @@3cb0 68
-_local_1067_10   cpy fndpnt                               ; at first character of find string? ;; @@3cb0 68
-                 bcc _local_1067_30                       ; before it ;; @@3cb2 68
-                 lda find_count                            ;; @@3cb4 68
-                 beq _local_1067_30                       ; past it ;; @@3cb7 68
-                 bmi _local_1067_40                       ; at last character ;; @@3cb9 68
-                 cmp fstr1+2                               ;; @@3cbb 68
-                 bcc _local_1067_20                       ; in middle of string ;; @@3cbd 68
-                 jsr highlight_text                       ; at first char- start highlight ;; @@3cbf 68
-_local_1067_20   dec find_count                           ; one less character to highlight ;; @@3cc2 68
-                 beq _local_1067_20                       ; special case- ;; @@3cc5 68
-;make it negative for next time around ;; @@3cc7 68
-_local_1067_30   rts                                       ;; @@3cc7 68
- ;; @@3cc8 68
-_local_1067_40   inc find_count                           ; make it zero ;; @@3cc8 68
- ;; @@3ccb 68
- ;; @@3ccb 68
+helpsb                                                    ; logic to highlight error or find string
+                 bbs4 helper,highlight_done               ; branch if highlighting tokens
+                 bbs5 helper,_local_1067_10               ; branch if FIND
+
+                 ldx lowtr+1                              ; has P1LINE reached code in error?
+                 tya                                      
+                 clc                                      
+                 adc lowtr                                ; add character pointer to line pointer...
+                 bcc _local_1067_1                        
+                 inx                                      
+_local_1067_1    cpx errtxt+1                             ; and compare to error pointer
+                 bne _local_1067_3                        ; not there
+                 cmp errtxt                               
+                 bcs highlight_text                       ; we're there- begin highlighting
+_local_1067_3    rts                                      
+
+
+_local_1067_10   cpy fndpnt                               ; at first character of find string?
+                 bcc _local_1067_30                       ; before it
+                 lda find_count                           
+                 beq _local_1067_30                       ; past it
+                 bmi _local_1067_40                       ; at last character
+                 cmp fstr1+2                              
+                 bcc _local_1067_20                       ; in middle of string
+                 jsr highlight_text                       ; at first char- start highlight
+_local_1067_20   dec find_count                           ; one less character to highlight
+                 beq _local_1067_20                       ; special case-
+;make it negative for next time around
+_local_1067_30   rts                                      
+
+_local_1067_40   inc find_count                           ; make it zero
+
+

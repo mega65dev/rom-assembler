@@ -1,73 +1,73 @@
-gonprc           pla                                      ; get rid of rts addr. ;; @@4e6e 118
-                 pla                                       ;; @@4e6f 118
-                 +lbra negprc                             ; do negation ;; @@4e70 118
- ;; @@4e73 118
-;.end ;; @@4e73 118
-; .page ;; @@4e73 118
-; .subttl Variable Assignment ;; @@4e73 118
- ;; @@4e73 118
-is_variable                                                ;; @@4e73 118
-                 jsr ptrget                               ; parse variable name, put name in varnam ;; @@4e73 118
- ;; @@4e76 118
-isvret           sta facmo                                ; save pointer to variable ;; @@4e76 118
-                 sty facmo+1                               ;; @@4e78 118
-                 ldx varnam                                ;; @@4e7a 118
-                 ldy varnam+1                              ;; @@4e7c 118
-                 lda valtyp                                ;; @@4e7e 118
-                 beq is_numeric                           ; branch if numeric ;; @@4e80 118
- ;; @@4e82 118
-                 lda #0                                    ;; @@4e82 118
-                 sta facov                                 ;; @@4e84 118
-                 cpx #'T'                                 ; TI$ is a special case. look for it ;; @@4e86 118
-                 bne isvds                                ; no- go test for DS$ ;; @@4e88 118
-                 cpy #'I'+$80                             ; shifted I? ;; @@4e8a 118
-                 bne ds_rts                               ; no- and it's not DS$ either ;; @@4e8c 118
- ;; @@4e8e 118
-; Variable name is TI$.  To see if this is 'the' TI$ and not an ;; @@4e8e 118
-; array TI$(), test to see if it has a pointer to the zero in "ROM". ;; @@4e8e 118
-; If it is an array item, its pointer will be to a real value, or ;; @@4e8e 118
-; a real zero.  If it isn't an array item, its pointer will point ;; @@4e8e 118
-; to a dummy zero in "ROM". ;; @@4e8e 118
- ;; @@4e8e 118
-                 lda facmo+1                               ;; @@4e8e 118
-                 cmp #>zero                                ;; @@4e90 118
-                 bne ds_rts                               ; not TI$, not DS$ ;; @@4e92 118
-                 lda facmo                                 ;; @@4e94 118
-                 cmp #<zero                                ;; @@4e96 118
-                 bne ds_rts                                ;; @@4e98 118
-                 +lbra Get_TI_String                      ; the one and only TI$ ;; @@4e9a 118
- ;; @@4e9d 118
-; .page ;; @@4e9d 118
-isvds            cpx #'D'                                 ; is this DS$? ;; @@4e9d 118
-                 bne ds_rts                               ; no ;; @@4e9f 118
-                 cpy #'S'+$80                             ; shifted S? ;; @@4ea1 118
-                 bne ds_rts                               ; no ;; @@4ea3 118
- ;; @@4ea5 118
-                 jsr Check_DS                             ; yes- check DS$ allocation, ;; @@4ea5 118
-;  and get it if not in memory ;; @@4ea8 118
-                 ldy #$ff                                  ;; @@4ea8 118
-_local_1117_10   iny                                      ; copy DS$ to a temp. ;; @@4eaa 118
-                 lda #dsdesc+1                            ; must first determine how big it is ;; @@4eab 118
-                 jsr lda_far_ram1                         ; lda (dsdesc+1),y ;; @@4ead 118
-                 bne _local_1117_10                       ; loop until terminating null found ;; @@4eb0 118
- ;; @@4eb2 118
-                 tya                                      ; length of string required ;; @@4eb2 118
-                 jsr strini                               ; get temp. string space & descriptor ;; @@4eb3 118
-                 tay                                       ;; @@4eb6 118
-                 beq _local_1117_30                       ; (don't bother copying if length is 0) ;; @@4eb7 118
- ;; @@4eb9 118
-                 phx                                       ;; @@4eb9 118
- ;; @@4eba 118
-                 ldx #dsctmp+1                            ; ???? was ldx #frespc ;; @@4eba 118
-_local_1117_20   lda #dsdesc+1                            ; copy DS$ into temp ;; @@4ebc 118
-                 dey                                       ;; @@4ebe 118
-                 jsr lda_far_ram1                         ; lda (dsdesc+1),y ;; @@4ebf 118
-                 jsr sta_far_ram1                         ; sta (dsctmp+1),y ;; @@4ec2 118
-                 tya                                       ;; @@4ec5 118
-                 bne _local_1117_20                        ;; @@4ec6 118
-                 plx                                       ;; @@4ec8 118
-                 lda dsdesc                               ; a=length     [901014] FAB ;; @@4ec9 118
-                 jsr mvdone                               ; ???? (does nothing on C128 - bug or oversight?) ;; @@4ecb 118
- ;; @@4ece 118
-_local_1117_30   +lbra putnew                              ;; @@4ece 118
- ;; @@4ed1 118
+gonprc           pla                                      ; get rid of rts addr.
+                 pla                                      
+                 +lbra negprc                             ; do negation
+
+;.end
+; .page
+; .subttl Variable Assignment
+
+is_variable                                               
+                 jsr ptrget                               ; parse variable name, put name in varnam
+
+isvret           sta facmo                                ; save pointer to variable
+                 sty facmo+1                              
+                 ldx varnam                               
+                 ldy varnam+1                             
+                 lda valtyp                               
+                 beq is_numeric                           ; branch if numeric
+
+                 lda #0                                   
+                 sta facov                                
+                 cpx #'T'                                 ; TI$ is a special case. look for it
+                 bne isvds                                ; no- go test for DS$
+                 cpy #'I'+$80                             ; shifted I?
+                 bne ds_rts                               ; no- and it's not DS$ either
+
+; Variable name is TI$.  To see if this is 'the' TI$ and not an
+; array TI$(), test to see if it has a pointer to the zero in "ROM".
+; If it is an array item, its pointer will be to a real value, or
+; a real zero.  If it isn't an array item, its pointer will point
+; to a dummy zero in "ROM".
+
+                 lda facmo+1                              
+                 cmp #>zero                               
+                 bne ds_rts                               ; not TI$, not DS$
+                 lda facmo                                
+                 cmp #<zero                               
+                 bne ds_rts                               
+                 +lbra Get_TI_String                      ; the one and only TI$
+
+; .page
+isvds            cpx #'D'                                 ; is this DS$?
+                 bne ds_rts                               ; no
+                 cpy #'S'+$80                             ; shifted S?
+                 bne ds_rts                               ; no
+
+                 jsr Check_DS                             ; yes- check DS$ allocation,
+;  and get it if not in memory
+                 ldy #$ff                                 
+_local_1117_10   iny                                      ; copy DS$ to a temp.
+                 lda #dsdesc+1                            ; must first determine how big it is
+                 jsr lda_far_ram1                         ; lda (dsdesc+1),y
+                 bne _local_1117_10                       ; loop until terminating null found
+
+                 tya                                      ; length of string required
+                 jsr strini                               ; get temp. string space & descriptor
+                 tay                                      
+                 beq _local_1117_30                       ; (don't bother copying if length is 0)
+
+                 phx                                      
+
+                 ldx #dsctmp+1                            ; ???? was ldx #frespc
+_local_1117_20   lda #dsdesc+1                            ; copy DS$ into temp
+                 dey                                      
+                 jsr lda_far_ram1                         ; lda (dsdesc+1),y
+                 jsr sta_far_ram1                         ; sta (dsctmp+1),y
+                 tya                                      
+                 bne _local_1117_20                       
+                 plx                                      
+                 lda dsdesc                               ; a=length     [901014] FAB
+                 jsr mvdone                               ; ???? (does nothing on C128 - bug or oversight?)
+
+_local_1117_30   +lbra putnew                             
+

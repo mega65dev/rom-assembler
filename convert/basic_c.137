@@ -1,42 +1,42 @@
-wait             jsr getnum                               ; get required mask1 ;; @@54e7 137
-                 stx andmsk                                ;; @@54ea 137
-                 ldx #0                                    ;; @@54ec 137
-                 jsr chrgot                                ;; @@54ee 137
-                 beq _local_1136_10                        ;; @@54f1 137
-                 jsr combyt                               ; get optional mask2 ;; @@54f3 137
-_local_1136_10   stx eormsk                                ;; @@54f6 137
- ;; @@54f8 137
-                 phz                                       ;; @@54f8 137
-                 ldz current_bank                         ; set up bank number for fetch ;; @@54f9 137
-                 ldx #poker                               ; ..and address ;; @@54fc 137
-                 ldy #0                                   ; ..and index ;; @@54fe 137
- ;; @@5500 137
-_local_1136_15   bit current_bank                          ;; @@5500 137
-                 bmi _local_1136_20                       ; NOMAP? ;; @@5503 137
-                 jsr _lda_far                             ; lda (poker),y ;; @@5505 137
-                 !text $2c                                 ;; @@5508 137
- ;; @@5509 137
-_local_1136_20   lda (poker),y                             ;; @@5509 137
-                 eor eormsk                                ;; @@550b 137
-                 and andmsk                                ;; @@550d 137
-                 beq _local_1136_15                        ;; @@550f 137
-                 plz                                       ;; @@5511 137
-                 rts                                      ; got a nonzero ;; @@5512 137
- ;; @@5513 137
-;.end ;; @@5513 137
-; .page ;; @@5513 137
-; .subttl  FRE ;; @@5513 137
- ;; @@5513 137
-;***************************************************************************** ;; @@5513 137
-; FRE(n) Function ;; @@5513 137
-; ;; @@5513 137
-; Where: n=0 returns amount of free RAM in bank 0. This is the area ;; @@5513 137
-;  between top of text (TEXT_TOP) and top of RAM (MAX_MEM_0). ;; @@5513 137
-; ;; @@5513 137
-;  n=1 returns amount of free ram in bank 1. This is the area ;; @@5513 137
-;  between top of arrays (STREND) and bottom of strings (FRETOP). ;; @@5513 137
-; ;; @@5513 137
-;  n=2 returns the amount (???? presence) of expansion RAM. ;; @@5513 137
-; ;; @@5513 137
-;***************************************************************************** ;; @@5513 137
- ;; @@5513 137
+wait             jsr getnum                               ; get required mask1
+                 stx andmsk                               
+                 ldx #0                                   
+                 jsr chrgot                               
+                 beq _local_1136_10                       
+                 jsr combyt                               ; get optional mask2
+_local_1136_10   stx eormsk                               
+
+                 phz                                      
+                 ldz current_bank                         ; set up bank number for fetch
+                 ldx #poker                               ; ..and address
+                 ldy #0                                   ; ..and index
+
+_local_1136_15   bit current_bank                         
+                 bmi _local_1136_20                       ; NOMAP?
+                 jsr _lda_far                             ; lda (poker),y
+                 !text $2c                                
+
+_local_1136_20   lda (poker),y                            
+                 eor eormsk                               
+                 and andmsk                               
+                 beq _local_1136_15                       
+                 plz                                      
+                 rts                                      ; got a nonzero
+
+;.end
+; .page
+; .subttl  FRE
+
+;*****************************************************************************
+; FRE(n) Function
+;
+; Where: n=0 returns amount of free RAM in bank 0. This is the area
+;  between top of text (TEXT_TOP) and top of RAM (MAX_MEM_0).
+;
+;  n=1 returns amount of free ram in bank 1. This is the area
+;  between top of arrays (STREND) and bottom of strings (FRETOP).
+;
+;  n=2 returns the amount (???? presence) of expansion RAM.
+;
+;*****************************************************************************
+

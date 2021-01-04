@@ -1,27 +1,27 @@
-foreground                                                 ;; @@b4db 284
-                 jsr getnyb                               ; Set text foreground color ;; @@b4db 284
-                 stx _color                                ;; @@b4de 284
-                 rts                                       ;; @@b4e0 284
- ;; @@b4e1 284
- ;; @@b4e1 284
- ;; @@b4e1 284
-highlight                                                  ;; @@b4e1 284
-                 +lbeq snerr                              ; missing args??     [911017] ;; @@b4e1 284
-                 cmp #','                                  ;; @@b4e4 284
-                 beq _local_1283_10                       ; options byte only ;; @@b4e6 284
- ;; @@b4e8 284
-                 jsr getbyt                               ; Set text highlight color ;; @@b4e8 284
-                 stx highlight_color                       ;; @@b4eb 284
- ;; @@b4ee 284
-_local_1283_10   jsr optzer                               ; set options:     [911001] ;; @@b4ee 284
-                 bcc _local_1283_20                       ; comma but no value not given?? ;; @@b4f1 284
-                 txa                                       ;; @@b4f3 284
-                 and #3                                   ; 0= error msgs only ;; @@b4f4 284
-                 asl                                      ; 1= REMs ;; @@b4f6 284
-                 asl                                      ; 2= tokens ;; @@b4f7 284
-                 asl                                       ;; @@b4f8 284
-                 sta helper                                ;; @@b4f9 284
-_local_1283_20   rts                                       ;; @@b4fb 284
- ;; @@b4fc 284
- ;; @@b4fc 284
- ;; @@b4fc 284
+foreground                                                
+                 jsr getnyb                               ; Set text foreground color
+                 stx _color                               
+                 rts                                      
+
+
+
+highlight                                                 
+                 +lbeq snerr                              ; missing args??     [911017]
+                 cmp #','                                 
+                 beq _local_1283_10                       ; options byte only
+
+                 jsr getbyt                               ; Set text highlight color
+                 stx highlight_color                      
+
+_local_1283_10   jsr optzer                               ; set options:     [911001]
+                 bcc _local_1283_20                       ; comma but no value not given??
+                 txa                                      
+                 and #3                                   ; 0= error msgs only
+                 asl                                      ; 1= REMs
+                 asl                                      ; 2= tokens
+                 asl                                      
+                 sta helper                               
+_local_1283_20   rts                                      
+
+
+

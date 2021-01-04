@@ -1,70 +1,70 @@
-frmstr           jsr frmevl                                ;; @@5b67 160
- ;; @@5b6a 160
-frestr           jsr chkstr                               ; make sure it's a string ;; @@5b6a 160
-frefac           lda facmo                                ; free up string pointed to by FAC ;; @@5b6d 160
-                 ldy facmo+1                               ;; @@5b6f 160
-fretmp           sta index                                ; get length for later ;; @@5b71 160
-                 sty index+1                               ;; @@5b73 160
-                 jsr fretms                               ; check desc. if last ;; @@5b75 160
-                 bne _local_1159_30                       ; one then scratch it ;; @@5b78 160
-                 jsr stradj                               ; index points to link ;; @@5b7a 160
-                 bcc _local_1159_30                       ; literal no fix ;; @@5b7d 160
- ;; @@5b7f 160
-                 phx                                      ; .x=length ;; @@5b7f 160
-                 dey                                      ; .y=1 ;; @@5b80 160
-                 ldx #index                                ;; @@5b81 160
-                 lda #$ff                                 ; flag string as garbage ;; @@5b83 160
-                 jsr sta_far_ram1                         ; sta (index),y ;; @@5b85 160
-                 pla                                       ;; @@5b88 160
-                 pha                                      ; get length, but leave copy on stack ;; @@5b89 160
-                 dey                                       ;; @@5b8a 160
-                 ldx #index                                ;; @@5b8b 160
-                 jsr sta_far_ram1 ;sta (index),y          ; put in length ;; @@5b8d 160
- ;; @@5b90 160
-                 eor #$ff                                 ; put index back ;; @@5b90 160
-                 sec                                      ; to first byte ;; @@5b92 160
-                 adc index                                 ;; @@5b93 160
-                 ldy index+1                               ;; @@5b95 160
-                 bcs _local_1159_10                        ;; @@5b97 160
-                 dey                                       ;; @@5b99 160
-_local_1159_10   sta index                                 ;; @@5b9a 160
-                 sty index+1                               ;; @@5b9c 160
- ;; @@5b9e 160
-                 tax                                      ; lo into x ;; @@5b9e 160
-                 pla                                      ; pull length from stack ;; @@5b9f 160
-                 cpy fretop+1                             ; = to fretop? ;; @@5ba0 160
-                 bne frerts                                ;; @@5ba2 160
-                 cpx fretop                                ;; @@5ba4 160
-                 bne frerts                                ;; @@5ba6 160
- ;; @@5ba8 160
-; .page ;; @@5ba8 160
-; The string was the last one put into string space.  Save garbage ;; @@5ba8 160
-; collection some time by freeing up. (length + 2) ;; @@5ba8 160
- ;; @@5ba8 160
-                 pha                                      ; save length on stack ;; @@5ba8 160
-                 sec                                      ; plus one ;; @@5ba9 160
-                 adc fretop                                ;; @@5baa 160
-                 sta fretop                                ;; @@5bac 160
-                 bcc _local_1159_20                        ;; @@5bae 160
-                 inc fretop+1                              ;; @@5bb0 160
-_local_1159_20   inw fretop                               ; + one more ;; @@5bb2 160
-                 pla                                      ; pull length off stack ;; @@5bb4 160
-                 rts                                       ;; @@5bb5 160
- ;; @@5bb6 160
- ;; @@5bb6 160
-_local_1159_30   ldy #0                                   ; set up x,y,a and index ;; @@5bb6 160
-                 jsr indin1_ram1                          ; length ;; @@5bb8 160
-                 pha                                      ; on stack ;; @@5bbb 160
-                 iny                                       ;; @@5bbc 160
-                 jsr indin1_ram1                          ; pointer lo ;; @@5bbd 160
-                 tax                                       ;; @@5bc0 160
-                 iny                                       ;; @@5bc1 160
-                 jsr indin1_ram1                          ; pointer hi ;; @@5bc2 160
-                 tay                                       ;; @@5bc5 160
-                 stx index                                 ;; @@5bc6 160
-                 sty index+1                               ;; @@5bc8 160
-                 pla                                      ; get back length ;; @@5bca 160
-                 rts                                       ;; @@5bcb 160
- ;; @@5bcc 160
- ;; @@5bcc 160
- ;; @@5bcc 160
+frmstr           jsr frmevl                               
+
+frestr           jsr chkstr                               ; make sure it's a string
+frefac           lda facmo                                ; free up string pointed to by FAC
+                 ldy facmo+1                              
+fretmp           sta index                                ; get length for later
+                 sty index+1                              
+                 jsr fretms                               ; check desc. if last
+                 bne _local_1159_30                       ; one then scratch it
+                 jsr stradj                               ; index points to link
+                 bcc _local_1159_30                       ; literal no fix
+
+                 phx                                      ; .x=length
+                 dey                                      ; .y=1
+                 ldx #index                               
+                 lda #$ff                                 ; flag string as garbage
+                 jsr sta_far_ram1                         ; sta (index),y
+                 pla                                      
+                 pha                                      ; get length, but leave copy on stack
+                 dey                                      
+                 ldx #index                               
+                 jsr sta_far_ram1 ;sta (index),y          ; put in length
+
+                 eor #$ff                                 ; put index back
+                 sec                                      ; to first byte
+                 adc index                                
+                 ldy index+1                              
+                 bcs _local_1159_10                       
+                 dey                                      
+_local_1159_10   sta index                                
+                 sty index+1                              
+
+                 tax                                      ; lo into x
+                 pla                                      ; pull length from stack
+                 cpy fretop+1                             ; = to fretop?
+                 bne frerts                               
+                 cpx fretop                               
+                 bne frerts                               
+
+; .page
+; The string was the last one put into string space.  Save garbage
+; collection some time by freeing up. (length + 2)
+
+                 pha                                      ; save length on stack
+                 sec                                      ; plus one
+                 adc fretop                               
+                 sta fretop                               
+                 bcc _local_1159_20                       
+                 inc fretop+1                             
+_local_1159_20   inw fretop                               ; + one more
+                 pla                                      ; pull length off stack
+                 rts                                      
+
+
+_local_1159_30   ldy #0                                   ; set up x,y,a and index
+                 jsr indin1_ram1                          ; length
+                 pha                                      ; on stack
+                 iny                                      
+                 jsr indin1_ram1                          ; pointer lo
+                 tax                                      
+                 iny                                      
+                 jsr indin1_ram1                          ; pointer hi
+                 tay                                      
+                 stx index                                
+                 sty index+1                              
+                 pla                                      ; get back length
+                 rts                                      
+
+
+

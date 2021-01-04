@@ -1,57 +1,57 @@
-cursor           cmp #on_token                            ; Check for ON | OFF ;; @@7d28 261
-                 clc                                       ;; @@7d2a 261
-                 beq _local_1260_20                       ; turn cursor on (.c=0) ;; @@7d2b 261
-                 cmp #esc_command_token                    ;; @@7d2d 261
-                 bne _local_1260_1                        ; (might be a function) ;; @@7d2f 261
-                 jsr chkesc                                ;; @@7d31 261
-                 cmp #off_token                           ; turn cursor off (.c=1) ;; @@7d34 261
-                 beq _local_1260_20                        ;; @@7d36 261
-                 +lbra snerr                               ;; @@7d38 261
- ;; @@7d3b 261
-_local_1260_1    pha                                      ; Evaluate cursor position parameters ;; @@7d3b 261
-                 sec                                       ;; @@7d3c 261
-                 jsr _plot                                ; get current cursor position & save it ;; @@7d3d 261
-                 stx srow                                  ;; @@7d40 261
-                 sty column                                ;; @@7d42 261
- ;; @@7d44 261
-                 ldx column                               ; get new column, default=current column ;; @@7d44 261
-                 pla                                       ;; @@7d46 261
-                 cmp #','                                  ;; @@7d47 261
-                 beq _local_1260_10                       ; not given, use default ;; @@7d49 261
-                 jsr getbyt                                ;; @@7d4b 261
-_local_1260_10   stx column                                ;; @@7d4e 261
-                 ldx srow                                 ; get new row, default=current row ;; @@7d50 261
-                 jsr optbyt                                ;; @@7d52 261
-; stx srow ;; @@7d55 261
-                 ldy column                                ;; @@7d55 261
-                 clc                                       ;; @@7d57 261
-                 jsr _plot                                ; set new cursor position ;; @@7d58 261
-                 +lbcs fcerr                              ; error if bad position ;; @@7d5b 261
- ;; @@7d5e 261
-                 jsr optzer                               ; Get new cursor type   ???? assumes screen output ;; @@7d5e 261
-                 bcc _local_1260_30                       ; not given, exit ;; @@7d61 261
-                 lda #esc                                  ;; @@7d63 261
-                 jsr _bsout                               ; use escape sequence to set ;; @@7d65 261
-                 txa                                       ;; @@7d68 261
-                 and #1                                    ;; @@7d69 261
-                 eor #1                                   ; [910808] ;; @@7d6b 261
-                 clc                                       ;; @@7d6d 261
-                 adc #'E'                                 ; 0=F=flash, 1=E=solid ;; @@7d6e 261
-                 jmp _bsout                               ; set it and exit ;; @@7d70 261
- ;; @@7d73 261
-_local_1260_20   jsr _cursor                              ; Turn cursor ON or OFF per .c ;; @@7d73 261
- ;; @@7d76 261
-                 jsr chrget                               ; eat token, get next character ;; @@7d76 261
-                 beq _local_1260_30                       ; eol- exit ;; @@7d79 261
-                 jsr chkcom                               ; else, must be comma ;; @@7d7b 261
-                 bra _local_1260_1                        ; it is- go evaluate position ;; @@7d7e 261
- ;; @@7d80 261
-_local_1260_30   rts                                      ; eol ;; @@7d80 261
- ;; @@7d81 261
-; .page ;; @@7d81 261
-;************************************************************************ ;; @@7d81 261
-;*   RCURSOR Returns in variable list current cursor position * ;; @@7d81 261
-;*         * ;; @@7d81 261
-;*   Syntax: RCURSOR [column [,row] ]    * ;; @@7d81 261
-;************************************************************************ ;; @@7d81 261
- ;; @@7d81 261
+cursor           cmp #on_token                            ; Check for ON | OFF
+                 clc                                      
+                 beq _local_1260_20                       ; turn cursor on (.c=0)
+                 cmp #esc_command_token                   
+                 bne _local_1260_1                        ; (might be a function)
+                 jsr chkesc                               
+                 cmp #off_token                           ; turn cursor off (.c=1)
+                 beq _local_1260_20                       
+                 +lbra snerr                              
+
+_local_1260_1    pha                                      ; Evaluate cursor position parameters
+                 sec                                      
+                 jsr _plot                                ; get current cursor position & save it
+                 stx srow                                 
+                 sty column                               
+
+                 ldx column                               ; get new column, default=current column
+                 pla                                      
+                 cmp #','                                 
+                 beq _local_1260_10                       ; not given, use default
+                 jsr getbyt                               
+_local_1260_10   stx column                               
+                 ldx srow                                 ; get new row, default=current row
+                 jsr optbyt                               
+; stx srow
+                 ldy column                               
+                 clc                                      
+                 jsr _plot                                ; set new cursor position
+                 +lbcs fcerr                              ; error if bad position
+
+                 jsr optzer                               ; Get new cursor type   ???? assumes screen output
+                 bcc _local_1260_30                       ; not given, exit
+                 lda #esc                                 
+                 jsr _bsout                               ; use escape sequence to set
+                 txa                                      
+                 and #1                                   
+                 eor #1                                   ; [910808]
+                 clc                                      
+                 adc #'E'                                 ; 0=F=flash, 1=E=solid
+                 jmp _bsout                               ; set it and exit
+
+_local_1260_20   jsr _cursor                              ; Turn cursor ON or OFF per .c
+
+                 jsr chrget                               ; eat token, get next character
+                 beq _local_1260_30                       ; eol- exit
+                 jsr chkcom                               ; else, must be comma
+                 bra _local_1260_1                        ; it is- go evaluate position
+
+_local_1260_30   rts                                      ; eol
+
+; .page
+;************************************************************************
+;*   RCURSOR Returns in variable list current cursor position *
+;*         *
+;*   Syntax: RCURSOR [column [,row] ]    *
+;************************************************************************
+

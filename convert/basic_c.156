@@ -1,56 +1,56 @@
-strini                                                     ;; @@5a73 156
-                 ldx facmo                                ; get facmo to store in dscpnt ;; @@5a73 156
-                 ldy facmo+1                               ;; @@5a75 156
-                 stx dscpnt                               ; retain the descriptor pointer ;; @@5a77 156
-                 sty dscpnt+1                              ;; @@5a79 156
- ;; @@5a7b 156
-strspa           jsr getspa                               ; get string space ;; @@5a7b 156
-                 stx dsctmp+1                             ; save location ;; @@5a7e 156
-                 sty dsctmp+2                              ;; @@5a80 156
-                 sta dsctmp                               ; save length ;; @@5a82 156
-                 rts                                      ; done ;; @@5a84 156
- ;; @@5a85 156
-; .page ;; @@5a85 156
-; STRLT2 takes the string literal whose first character is pointed to by ;; @@5a85 156
-; (xreg)+1 and builds a descriptor for it.  The descriptor is initially ;; @@5a85 156
-; built in DSCTMP, but PUTNEW transfers it into a temporary and leaves a ;; @@5a85 156
-; pointer to the temporary in FACMO & FACLO.  The characters other than the ;; @@5a85 156
-; zero that terminates the string should be set up in CHARAC and ENDCHR. ;; @@5a85 156
-; If the terminator is a quote, the quote is skipped over.  Leading quotes ;; @@5a85 156
-; should be skipped before call.  On return, the character after the string ;; @@5a85 156
-; literal is pointed to by (strng2). ;; @@5a85 156
- ;; @@5a85 156
- ;; @@5a85 156
-strlit           ldx #'"'                                 ; assume string ends on quote ;; @@5a85 156
-                 stx charac                                ;; @@5a87 156
-                 stx endchr                                ;; @@5a89 156
- ;; @@5a8b 156
-strlt2           sta strng1                               ; save pointer to string ;; @@5a8b 156
-                 sty strng1+1                              ;; @@5a8d 156
-                 sta dsctmp+1                             ; in case no strcpy ;; @@5a8f 156
-                 sty dsctmp+2                              ;; @@5a91 156
- ;; @@5a93 156
-                 ldy #255                                 ; initialize character count ;; @@5a93 156
-strget           iny                                       ;; @@5a95 156
-                 jsr indst1                               ; get character ;; @@5a96 156
-                 beq _local_1155_20                       ; if zero ;; @@5a99 156
-                 cmp charac                               ; this terminator? ;; @@5a9b 156
-                 beq _local_1155_10                       ; yes ;; @@5a9d 156
-                 cmp endchr                                ;; @@5a9f 156
-                 bne strget                               ; look further ;; @@5aa1 156
- ;; @@5aa3 156
-_local_1155_10   cmp #'"'                                 ; strfin.  quote? ;; @@5aa3 156
-                 beq _local_1155_30                        ;; @@5aa5 156
- ;; @@5aa7 156
-_local_1155_20   clc                                       ;; @@5aa7 156
-_local_1155_30   sty dsctmp                               ; no, back up. retain count ;; @@5aa8 156
-                 tya                                       ;; @@5aaa 156
-                 adc strng1                               ; wishing to set (txtptr) ;; @@5aab 156
-                 sta strng2                                ;; @@5aad 156
-                 ldx strng1+1                              ;; @@5aaf 156
-                 bcc _local_1155_40                        ;; @@5ab1 156
-                 inx                                       ;; @@5ab3 156
-_local_1155_40   stx strng2+1                              ;; @@5ab4 156
-                 tya                                       ;; @@5ab6 156
- ;; @@5ab7 156
-; .page ;; @@5ab7 156
+strini                                                    
+                 ldx facmo                                ; get facmo to store in dscpnt
+                 ldy facmo+1                              
+                 stx dscpnt                               ; retain the descriptor pointer
+                 sty dscpnt+1                             
+
+strspa           jsr getspa                               ; get string space
+                 stx dsctmp+1                             ; save location
+                 sty dsctmp+2                             
+                 sta dsctmp                               ; save length
+                 rts                                      ; done
+
+; .page
+; STRLT2 takes the string literal whose first character is pointed to by
+; (xreg)+1 and builds a descriptor for it.  The descriptor is initially
+; built in DSCTMP, but PUTNEW transfers it into a temporary and leaves a
+; pointer to the temporary in FACMO & FACLO.  The characters other than the
+; zero that terminates the string should be set up in CHARAC and ENDCHR.
+; If the terminator is a quote, the quote is skipped over.  Leading quotes
+; should be skipped before call.  On return, the character after the string
+; literal is pointed to by (strng2).
+
+
+strlit           ldx #'"'                                 ; assume string ends on quote
+                 stx charac                               
+                 stx endchr                               
+
+strlt2           sta strng1                               ; save pointer to string
+                 sty strng1+1                             
+                 sta dsctmp+1                             ; in case no strcpy
+                 sty dsctmp+2                             
+
+                 ldy #255                                 ; initialize character count
+strget           iny                                      
+                 jsr indst1                               ; get character
+                 beq _local_1155_20                       ; if zero
+                 cmp charac                               ; this terminator?
+                 beq _local_1155_10                       ; yes
+                 cmp endchr                               
+                 bne strget                               ; look further
+
+_local_1155_10   cmp #'"'                                 ; strfin.  quote?
+                 beq _local_1155_30                       
+
+_local_1155_20   clc                                      
+_local_1155_30   sty dsctmp                               ; no, back up. retain count
+                 tya                                      
+                 adc strng1                               ; wishing to set (txtptr)
+                 sta strng2                               
+                 ldx strng1+1                             
+                 bcc _local_1155_40                       
+                 inx                                      
+_local_1155_40   stx strng2+1                             
+                 tya                                      
+
+; .page

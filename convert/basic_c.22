@@ -1,30 +1,30 @@
-errisd           dex                                       ;; @@2e98 22
-                 txa                                       ;; @@2e99 22
-                 jsr erstup                               ; set up address of error msg in .a in index2 ;; @@2e9a 22
- ;; @@2e9d 22
-                 bbs7 runmod,_local_1021_5                ; reset error line if direct mode error ;; @@2e9d 22
-                 lda #$ff                                  ;; @@2ea0 22
-                 sta errlin                               ;  ;; @@2ea2 22
-                 sta errlin+1                              ;; @@2ea5 22
- ;; @@2ea8 22
-_local_1021_5    jsr release_channels                     ; restore output to screen    [910909] ;; @@2ea8 22
-                 jsr RestoreTextScreen                    ; make sure we're in text mode    [910404] ;; @@2eab 22
-                 jsr init_stack                            ;; @@2eae 22
- ;; @@2eb1 22
-_local_1021_10   jsr crdo                                 ; Print error message- start a new line with '?' ;; @@2eb1 22
-                 jsr highlight_text                       ; use highlight color????    [910624] ;; @@2eb4 22
-                 jsr outqst                                ;; @@2eb7 22
-                 ldy #0                                    ;; @@2eba 22
-_local_1021_20   lda (index2),y                           ; Read error msg from ROM  (ind.ok????) ;; @@2ebc 22
-                 pha                                       ;; @@2ebe 22
-                 and #$7f                                  ;; @@2ebf 22
-                 jsr outch                                ; Print it ;; @@2ec1 22
-                 iny                                       ;; @@2ec4 22
-                 pla                                       ;; @@2ec5 22
-                 bpl _local_1021_20                        ;; @@2ec6 22
-                 ldx errnum                               ; retrieve error #     [910925] ;; @@2ec8 22
-                 cpx #erbrk                                ;; @@2ecb 22
-                 beq errfin                               ; skip 'error' crap if 'break' ;; @@2ecd 22
-                 jsr _primm                                ;; @@2ecf 22
-                 !text " ERROR",0                          ;; @@2ed2 22
- ;; @@2ed9 22
+errisd           dex                                      
+                 txa                                      
+                 jsr erstup                               ; set up address of error msg in .a in index2
+
+                 bbs7 runmod,_local_1021_5                ; reset error line if direct mode error
+                 lda #$ff                                 
+                 sta errlin                               ; 
+                 sta errlin+1                             
+
+_local_1021_5    jsr release_channels                     ; restore output to screen    [910909]
+                 jsr RestoreTextScreen                    ; make sure we're in text mode    [910404]
+                 jsr init_stack                           
+
+_local_1021_10   jsr crdo                                 ; Print error message- start a new line with '?'
+                 jsr highlight_text                       ; use highlight color????    [910624]
+                 jsr outqst                               
+                 ldy #0                                   
+_local_1021_20   lda (index2),y                           ; Read error msg from ROM  (ind.ok????)
+                 pha                                      
+                 and #$7f                                 
+                 jsr outch                                ; Print it
+                 iny                                      
+                 pla                                      
+                 bpl _local_1021_20                       
+                 ldx errnum                               ; retrieve error #     [910925]
+                 cpx #erbrk                               
+                 beq errfin                               ; skip 'error' crap if 'break'
+                 jsr _primm                               
+                 !text " ERROR",0                         
+

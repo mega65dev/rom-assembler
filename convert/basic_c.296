@@ -1,31 +1,31 @@
-savs50           lda sprtmp_1                             ; restore basic text pointer ;; @@b88d 296
-                 sta txtptr                                ;; @@b890 296
-                 lda sprtmp_2                              ;; @@b892 296
-                 sta txtptr+1                              ;; @@b895 296
-                 jsr ptrget                               ; get symbol table descriptor for string dest. ;; @@b897 296
-                 sta forpnt                                ;; @@b89a 296
-                 sty forpnt+1                             ; save symbol table address ;; @@b89c 296
-                 lda #<savsiz                              ;; @@b89e 296
-                 sta facmo                                ; save descriptor address of source ;; @@b8a0 296
-                 lda #>savsiz                              ;; @@b8a2 296
-                 sta facmo+1                               ;; @@b8a4 296
-                 +lbra inpcom                             ; move source to dest, do rts (snerr if not eol) ;; @@b8a6 296
- ;; @@b8a9 296
-; .page ;; @@b8a9 296
-savinp           jsr frmevl                               ; evaluate expression ;; @@b8a9 296
-                 bbs7 valtyp,desc_free                    ; exit if a string ;; @@b8ac 296
-                 jsr conint                               ; get one byte integer in .X ;; @@b8af 296
-; dex    ;adjust sprite 1..8 to 0..7  [910220] ;; @@b8b2 296
-                 cpx #8                                    ;; @@b8b2 296
-                 +lbcs fcerr                              ; bad value ;; @@b8b4 296
-                 txa                                      ; move sprite number to .A ;; @@b8b7 296
-                 lsr                                       ;; @@b8b8 296
-                 ror                                       ;; @@b8b9 296
-                 ror                                      ; get sprite address ;; @@b8ba 296
-                 ldy #>sprite_base                         ;; @@b8bb 296
-                 bcc _local_1295_5                         ;; @@b8bd 296
-                 iny                                       ;; @@b8bf 296
-_local_1295_5    clc                                      ; flag 'sprite' (as opposed to 'string') ;; @@b8c0 296
-                 rts                                       ;; @@b8c1 296
- ;; @@b8c2 296
- ;; @@b8c2 296
+savs50           lda sprtmp_1                             ; restore basic text pointer
+                 sta txtptr                               
+                 lda sprtmp_2                             
+                 sta txtptr+1                             
+                 jsr ptrget                               ; get symbol table descriptor for string dest.
+                 sta forpnt                               
+                 sty forpnt+1                             ; save symbol table address
+                 lda #<savsiz                             
+                 sta facmo                                ; save descriptor address of source
+                 lda #>savsiz                             
+                 sta facmo+1                              
+                 +lbra inpcom                             ; move source to dest, do rts (snerr if not eol)
+
+; .page
+savinp           jsr frmevl                               ; evaluate expression
+                 bbs7 valtyp,desc_free                    ; exit if a string
+                 jsr conint                               ; get one byte integer in .X
+; dex    ;adjust sprite 1..8 to 0..7  [910220]
+                 cpx #8                                   
+                 +lbcs fcerr                              ; bad value
+                 txa                                      ; move sprite number to .A
+                 lsr                                      
+                 ror                                      
+                 ror                                      ; get sprite address
+                 ldy #>sprite_base                        
+                 bcc _local_1295_5                        
+                 iny                                      
+_local_1295_5    clc                                      ; flag 'sprite' (as opposed to 'string')
+                 rts                                      
+
+

@@ -1,116 +1,116 @@
-movspr_line                                                ;; @@b701 291
-                 ldx #ypos-vwork                           ;; @@b701 291
-                 ldy #ydest-vwork                          ;; @@b703 291
-_local_1290_10   lda #0                                    ;; @@b705 291
-                 sta xsgn,x                               ; init direction pointers ;; @@b707 291
-                 sta xsgn+1,x                              ;; @@b70a 291
-                 jsr abstwo                               ; get absolute value of coordinate differences ;; @@b70d 291
-                 bpl _local_1290_20                       ; and determine direction ;; @@b710 291
-                 dec xsgn,x                               ; negative direction ;; @@b712 291
-                 dec xsgn+1,x                              ;; @@b715 291
-                 bra _local_1290_40                        ;; @@b718 291
- ;; @@b71a 291
-_local_1290_20   cmp #0                                    ;; @@b71a 291
-                 bne _local_1290_30                        ;; @@b71c 291
-                 cpy #0                                    ;; @@b71e 291
-                 beq _local_1290_40                       ; zero direction ;; @@b720 291
-_local_1290_30   inc xsgn,x                               ; positive direction ;; @@b722 291
-_local_1290_40   sta xabs,x                                ;; @@b725 291
-                 asl                                       ;; @@b728 291
-                 sta fct,x                                ; fct(x,y) = 2*abs(x,y) ;; @@b729 291
-                 tya                                       ;; @@b72c 291
-                 sta xabs+1,x                              ;; @@b72d 291
-                 rol                                       ;; @@b730 291
-                 sta fct+1,x                               ;; @@b731 291
-                 dex                                       ;; @@b734 291
-                 dex                                       ;; @@b735 291
-                 ldy #xdest-vwork                         ; loop to do in x-direction ;; @@b736 291
-                 cpx #xpos-vwork                           ;; @@b738 291
-                 beq _local_1290_10                        ;; @@b73a 291
- ;; @@b73c 291
-                 ldx #yabs-savram                         ; determine max(xabs,yabs) ;; @@b73c 291
-                 ldy #xabs-savram                          ;; @@b73e 291
-                 jsr subtwo_savram                         ;; @@b740 291
-                 lda #0                                    ;; @@b743 291
-                 rol                                       ;; @@b745 291
-                 rol                                      ; a = c * 2 ;; @@b746 291
-                 sta lesser                               ; index to smaller delta ;; @@b747 291
-                 eor #2                                    ;; @@b74a 291
-                 sta greatr                               ; index to greater delta ;; @@b74c 291
- ;; @@b74f 291
-                 clc                                       ;; @@b74f 291
-                 lda #fct-savram                           ;; @@b750 291
-                 adc lesser                                ;; @@b752 291
-                 pha                                       ;; @@b755 291
-                 tay                                       ;; @@b756 291
-                 eor #2                                    ;; @@b757 291
-                 tax                                       ;; @@b759 291
-                 jsr subtwo_savram                        ; fct(greatr) = fct(lesser)-fct(greatr) ;; @@b75a 291
-                 sta savram,x                              ;; @@b75d 291
-                 sty savram+1,x                            ;; @@b760 291
- ;; @@b763 291
-                 ply                                      ; fct(lesser) ;; @@b763 291
-                 clc                                       ;; @@b764 291
-                 lda #xabs-savram                          ;; @@b765 291
-                 adc greatr                                ;; @@b767 291
-                 tax                                       ;; @@b76a 291
-                 jsr subtwo_savram                        ; error = fct(lesser) - abs(greatr) ;; @@b76b 291
-                 sta errval                                ;; @@b76e 291
-                 sty errval+1                              ;; @@b771 291
- ;; @@b774 291
-; At this point, we've positioned the sprite at the start position, and have ;; @@b774 291
-; calculated everything we need to move it along a line towards the destination ;; @@b774 291
-; position.  All that's left is to copy the working vars into the sprite_data ;; @@b774 291
-; tables where the IRQ routine can find & diddle with our data. ;; @@b774 291
-; ;; @@b774 291
-;    move ang/dist move line ;; @@b774 291
-;  offset= 0 b7=0+speed b7=1+speed ;; @@b774 291
-;   1 counter  counter lo ;; @@b774 291
-;   2 angle sign         hi ;; @@b774 291
-;   3,4 delta-X  dir+min/max ;; @@b774 291
-;   5,6 delta-Y  fct1 ;; @@b774 291
-;   7,8 total-X  fct2 ;; @@b774 291
-;   9,10 total-Y  error ;; @@b774 291
- ;; @@b774 291
-                 ldy z_p_temp_1                           ; sprite # ;; @@b774 291
-                 ldx sproff,y                             ; sprite IRQ table offset ;; @@b776 291
- ;; @@b779 291
-                 lda xcnt                                 ; set speed factor ;; @@b779 291
-                 sta sprite_data,x                         ;; @@b77c 291
-                 ldy greatr                                ;; @@b77f 291
-                 lda xabs,y                               ; set counter = max(xyabs) ;; @@b782 291
-                 sta sprite_data+1,x                       ;; @@b785 291
-                 lda xabs+1,y                              ;; @@b788 291
-                 sta sprite_data+2,x                       ;; @@b78b 291
-                 lda xsgn,y                               ; set dir(max) and max ;; @@b78e 291
-                 ora xsgn+1,y                              ;; @@b791 291
-                 and #3                                    ;; @@b794 291
-                 lsr                                       ;; @@b796 291
-                 ror                                       ;; @@b797 291
-                 ora greatr                                ;; @@b798 291
-                 ror                                       ;; @@b79b 291
-                 sta sprite_data+4,x                       ;; @@b79c 291
-                 ldy lesser                                ;; @@b79f 291
-                 lda xsgn,y                               ; set dir(min) and min ;; @@b7a2 291
-                 ora xsgn+1,y                              ;; @@b7a5 291
-                 and #3                                    ;; @@b7a8 291
-                 lsr                                       ;; @@b7aa 291
-                 ror                                       ;; @@b7ab 291
-                 ora lesser                                ;; @@b7ac 291
-                 ror                                       ;; @@b7af 291
-                 sta sprite_data+3,x                       ;; @@b7b0 291
-                 ldy #0                                   ; set f1, f2, and e ;; @@b7b3 291
-_local_1290_50   lda fct,y                                 ;; @@b7b5 291
-                 sta sprite_data+5,x                       ;; @@b7b8 291
-                 inx                                       ;; @@b7bb 291
-                 iny                                       ;; @@b7bc 291
-                 cpy #6                                    ;; @@b7bd 291
-                 bcc _local_1290_50                        ;; @@b7bf 291
- ;; @@b7c1 291
-                 cli                                       ;; @@b7c1 291
-                 rts                                      ; done! ;; @@b7c2 291
- ;; @@b7c3 291
-; .page ;; @@b7c3 291
-;  SPRCOR  -- Get sprite position coordinate ;; @@b7c3 291
-; ;; @@b7c3 291
- ;; @@b7c3 291
+movspr_line                                               
+                 ldx #ypos-vwork                          
+                 ldy #ydest-vwork                         
+_local_1290_10   lda #0                                   
+                 sta xsgn,x                               ; init direction pointers
+                 sta xsgn+1,x                             
+                 jsr abstwo                               ; get absolute value of coordinate differences
+                 bpl _local_1290_20                       ; and determine direction
+                 dec xsgn,x                               ; negative direction
+                 dec xsgn+1,x                             
+                 bra _local_1290_40                       
+
+_local_1290_20   cmp #0                                   
+                 bne _local_1290_30                       
+                 cpy #0                                   
+                 beq _local_1290_40                       ; zero direction
+_local_1290_30   inc xsgn,x                               ; positive direction
+_local_1290_40   sta xabs,x                               
+                 asl                                      
+                 sta fct,x                                ; fct(x,y) = 2*abs(x,y)
+                 tya                                      
+                 sta xabs+1,x                             
+                 rol                                      
+                 sta fct+1,x                              
+                 dex                                      
+                 dex                                      
+                 ldy #xdest-vwork                         ; loop to do in x-direction
+                 cpx #xpos-vwork                          
+                 beq _local_1290_10                       
+
+                 ldx #yabs-savram                         ; determine max(xabs,yabs)
+                 ldy #xabs-savram                         
+                 jsr subtwo_savram                        
+                 lda #0                                   
+                 rol                                      
+                 rol                                      ; a = c * 2
+                 sta lesser                               ; index to smaller delta
+                 eor #2                                   
+                 sta greatr                               ; index to greater delta
+
+                 clc                                      
+                 lda #fct-savram                          
+                 adc lesser                               
+                 pha                                      
+                 tay                                      
+                 eor #2                                   
+                 tax                                      
+                 jsr subtwo_savram                        ; fct(greatr) = fct(lesser)-fct(greatr)
+                 sta savram,x                             
+                 sty savram+1,x                           
+
+                 ply                                      ; fct(lesser)
+                 clc                                      
+                 lda #xabs-savram                         
+                 adc greatr                               
+                 tax                                      
+                 jsr subtwo_savram                        ; error = fct(lesser) - abs(greatr)
+                 sta errval                               
+                 sty errval+1                             
+
+; At this point, we've positioned the sprite at the start position, and have
+; calculated everything we need to move it along a line towards the destination
+; position.  All that's left is to copy the working vars into the sprite_data
+; tables where the IRQ routine can find & diddle with our data.
+;
+;    move ang/dist move line
+;  offset= 0 b7=0+speed b7=1+speed
+;   1 counter  counter lo
+;   2 angle sign         hi
+;   3,4 delta-X  dir+min/max
+;   5,6 delta-Y  fct1
+;   7,8 total-X  fct2
+;   9,10 total-Y  error
+
+                 ldy z_p_temp_1                           ; sprite #
+                 ldx sproff,y                             ; sprite IRQ table offset
+
+                 lda xcnt                                 ; set speed factor
+                 sta sprite_data,x                        
+                 ldy greatr                               
+                 lda xabs,y                               ; set counter = max(xyabs)
+                 sta sprite_data+1,x                      
+                 lda xabs+1,y                             
+                 sta sprite_data+2,x                      
+                 lda xsgn,y                               ; set dir(max) and max
+                 ora xsgn+1,y                             
+                 and #3                                   
+                 lsr                                      
+                 ror                                      
+                 ora greatr                               
+                 ror                                      
+                 sta sprite_data+4,x                      
+                 ldy lesser                               
+                 lda xsgn,y                               ; set dir(min) and min
+                 ora xsgn+1,y                             
+                 and #3                                   
+                 lsr                                      
+                 ror                                      
+                 ora lesser                               
+                 ror                                      
+                 sta sprite_data+3,x                      
+                 ldy #0                                   ; set f1, f2, and e
+_local_1290_50   lda fct,y                                
+                 sta sprite_data+5,x                      
+                 inx                                      
+                 iny                                      
+                 cpy #6                                   
+                 bcc _local_1290_50                       
+
+                 cli                                      
+                 rts                                      ; done!
+
+; .page
+;  SPRCOR  -- Get sprite position coordinate
+;
+

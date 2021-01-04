@@ -1,37 +1,37 @@
-link_program                                               ;; @@30b9 27
-                 lda txttab                                ;; @@30b9 27
-                 ldy txttab+1                              ;; @@30bb 27
-                 sta index                                 ;; @@30bd 27
-                 sty index+1                               ;; @@30bf 27
-                 clc                                       ;; @@30c1 27
- ;; @@30c2 27
-chead            ldy #0                                    ;; @@30c2 27
-                 jsr indin1                               ; lda (index),y .. check for null link ;; @@30c4 27
-                 bne _local_1026_10                        ;; @@30c7 27
-                 iny                                       ;; @@30c9 27
-                 jsr indin1                               ; lda (index),y ;; @@30ca 27
-                 beq lnkrts                                ;; @@30cd 27
- ;; @@30cf 27
-_local_1026_10   ldy #3                                   ; [900524] ;; @@30cf 27
-_local_1026_20   iny                                      ; ???? very expensive loop ???? ;; @@30d1 27
-                 cpy #254                                  ;; @@30d2 27
-                 bcs link_error                           ; failsafe- program is mangled  [910103] ;; @@30d4 27
-                 jsr indin1                               ; lda (index),y ;; @@30d6 27
-                 bne _local_1026_20                        ;; @@30d9 27
-                 iny                                       ;; @@30db 27
-                 tya                                       ;; @@30dc 27
-                 adc index                                 ;; @@30dd 27
-                 pha                                       ;; @@30df 27
-                 ldy #0                                    ;; @@30e0 27
-                 ldx #index                                ;; @@30e2 27
-                 jsr sta_far_ram0                         ; sta (index),y   (bleed-thru) ;; @@30e4 27
-                 tya                                       ;; @@30e7 27
-                 adc index+1                               ;; @@30e8 27
-                 iny                                       ;; @@30ea 27
-                 jsr sta_far_ram0                         ; sta (index),y   (bleed-thru) ;; @@30eb 27
-                 plx                                       ;; @@30ee 27
-                 stx index                                 ;; @@30ef 27
-                 sta index+1                               ;; @@30f1 27
-                 bra chead                                ; always ;; @@30f3 27
- ;; @@30f5 27
- ;; @@30f5 27
+link_program                                              
+                 lda txttab                               
+                 ldy txttab+1                             
+                 sta index                                
+                 sty index+1                              
+                 clc                                      
+
+chead            ldy #0                                   
+                 jsr indin1                               ; lda (index),y .. check for null link
+                 bne _local_1026_10                       
+                 iny                                      
+                 jsr indin1                               ; lda (index),y
+                 beq lnkrts                               
+
+_local_1026_10   ldy #3                                   ; [900524]
+_local_1026_20   iny                                      ; ???? very expensive loop ????
+                 cpy #254                                 
+                 bcs link_error                           ; failsafe- program is mangled  [910103]
+                 jsr indin1                               ; lda (index),y
+                 bne _local_1026_20                       
+                 iny                                      
+                 tya                                      
+                 adc index                                
+                 pha                                      
+                 ldy #0                                   
+                 ldx #index                               
+                 jsr sta_far_ram0                         ; sta (index),y   (bleed-thru)
+                 tya                                      
+                 adc index+1                              
+                 iny                                      
+                 jsr sta_far_ram0                         ; sta (index),y   (bleed-thru)
+                 plx                                      
+                 stx index                                
+                 sta index+1                              
+                 bra chead                                ; always
+
+

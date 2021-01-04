@@ -1,22 +1,22 @@
-eex2             jsr synchr                               ; check character ;; @@6a17 199
-                 sty z_p_temp_1                           ; clear flag for anaf ;; @@6a1a 199
-                 sty bnr                                  ; set pointer to begin of no ;; @@6a1c 199
-                 jsr frmevl                               ; evaluate expression ;; @@6a1f 199
-                 bbr7 valtyp,conv                         ; branch if numeric ;; @@6a22 199
- ;; @@6a25 199
-                 jsr ini                                  ; init counters and flags ;; @@6a25 199
-                 jsr anaf                                 ; analyze format ;; @@6a28 199
-                 ldx chsn                                 ; > or = in format field ;; @@6a2b 199
-                 beq prcha                                ; branch if not ;; @@6a2e 199
-                 ldx #0                                    ;; @@6a30 199
-                 sec                                       ;; @@6a32 199
-                 lda cform                                 ;; @@6a33 199
-                 sbc hulp                                 ; .a=room left in field ;; @@6a36 199
-                 bcc prcha                                ; branch if no room left ;; @@6a38 199
-                 ldx #'='                                  ;; @@6a3a 199
-                 cpx chsn                                 ; = in field ;; @@6a3c 199
-                 bne _local_1198_50                       ; branch if not ;; @@6a3f 199
-                 lsr                                      ; .a=.a/2 ;; @@6a41 199
-                 adc #0                                   ; add 1 if odd ;; @@6a42 199
- ;; @@6a44 199
-_local_1198_50   tax                                      ; store no of blanks in x ;; @@6a44 199
+eex2             jsr synchr                               ; check character
+                 sty z_p_temp_1                           ; clear flag for anaf
+                 sty bnr                                  ; set pointer to begin of no
+                 jsr frmevl                               ; evaluate expression
+                 bbr7 valtyp,conv                         ; branch if numeric
+
+                 jsr ini                                  ; init counters and flags
+                 jsr anaf                                 ; analyze format
+                 ldx chsn                                 ; > or = in format field
+                 beq prcha                                ; branch if not
+                 ldx #0                                   
+                 sec                                      
+                 lda cform                                
+                 sbc hulp                                 ; .a=room left in field
+                 bcc prcha                                ; branch if no room left
+                 ldx #'='                                 
+                 cpx chsn                                 ; = in field
+                 bne _local_1198_50                       ; branch if not
+                 lsr                                      ; .a=.a/2
+                 adc #0                                   ; add 1 if odd
+
+_local_1198_50   tax                                      ; store no of blanks in x

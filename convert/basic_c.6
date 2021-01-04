@@ -1,97 +1,97 @@
-inddef                                                     ;; @@2299 6
-                 lda #defpnt                               ;; @@2299 6
-                 bra lda_far_ram1                          ;; @@229b 6
- ;; @@229d 6
-indfrm                                                     ;; @@229d 6
-                 lda #form                                 ;; @@229d 6
-                 bra lda_far_ram1                          ;; @@229f 6
- ;; @@22a1 6
-inddpt                                                     ;; @@22a1 6
-                 lda #dscpnt                               ;; @@22a1 6
-                 bra lda_far_ram1                          ;; @@22a3 6
- ;; @@22a5 6
-;indhtr ;; @@22a5 6
-; lda #hightr ;; @@22a5 6
-; bra lda_far_ram0 ;; @@22a5 6
- ;; @@22a5 6
-indhtr_ram1                                                ;; @@22a5 6
-                 lda #hightr                               ;; @@22a5 6
-                 bra lda_far_ram1                          ;; @@22a7 6
- ;; @@22a9 6
-indfmo                                                     ;; @@22a9 6
-                 lda #facmo                                ;; @@22a9 6
-                 bra lda_far_ram1                          ;; @@22ab 6
- ;; @@22ad 6
-indlow                                                     ;; @@22ad 6
-                 lda #lowtr                                ;; @@22ad 6
-                 bra lda_far_ram0                          ;; @@22af 6
- ;; @@22b1 6
-indst1                                                     ;; @@22b1 6
-                 lda #strng1                               ;; @@22b1 6
-                 bra lda_far_ram0                          ;; @@22b3 6
- ;; @@22b5 6
-indst1_ram1                                                ;; @@22b5 6
-                 lda #strng1                               ;; @@22b5 6
-                 bra lda_far_ram1                          ;; @@22b7 6
- ;; @@22b9 6
-indgrb                                                     ;; @@22b9 6
-                 lda #grbpnt                               ;; @@22b9 6
-                 bra lda_far_ram1                          ;; @@22bb 6
- ;; @@22bd 6
-indlow_ram1                                                ;; @@22bd 6
-                 lda #lowtr                                ;; @@22bd 6
-                 bra lda_far_ram1                          ;; @@22bf 6
- ;; @@22c1 6
-indin1                                                     ;; @@22c1 6
-                 lda #index1                               ;; @@22c1 6
-                 bra lda_far_ram0                          ;; @@22c3 6
- ;; @@22c5 6
-;indin2 ;; @@22c5 6
-; lda #index2 ;; @@22c5 6
-; bra lda_far_ram0 ;; @@22c5 6
- ;; @@22c5 6
-indtxt                                                     ;; @@22c5 6
-                 lda #txtptr                               ;; @@22c5 6
-; bra lda_far_ram0 ;; @@22c7 6
- ;; @@22c7 6
-; .page ;; @@22c7 6
-; C65 BASIC Indirect Load Subroutines ;; @@22c7 6
- ;; @@22c7 6
-lda_far_ram0                                               ;; @@22c7 6
-                 phz                                      ; save registers ;; @@22c7 6
-                 phx                                       ;; @@22c8 6
-                 tax                                      ; pointer ;; @@22c9 6
-                 ldz text_bank                            ; RAM0 ;; @@22ca 6
-                 jsr _lda_far                             ; LDA (.x),Y from bank .z ;; @@22cd 6
-                 plx                                       ;; @@22d0 6
-                 plz                                       ;; @@22d1 6
-                 and #$ff                                 ; set processor status per byte fetched ;; @@22d2 6
-                 rts                                       ;; @@22d4 6
- ;; @@22d5 6
- ;; @@22d5 6
- ;; @@22d5 6
-indin1_ram1                                                ;; @@22d5 6
-                 lda #index1                               ;; @@22d5 6
-; bra lda_far_ram1 ;; @@22d7 6
- ;; @@22d7 6
-lda_far_ram1                                               ;; @@22d7 6
-                 php                                      ; save .c ;; @@22d7 6
-                 phz                                      ; save registers ;; @@22d8 6
-                 phx                                       ;; @@22d9 6
-                 tax                                      ; pointer ;; @@22da 6
-                 ldz var_bank                             ; RAM1 ;; @@22db 6
-                 lda 1,x                                  ; check to see if pointer points to "common" ;; @@22de 6
-                 cmp #$20                                  ;; @@22e0 6
-                 bcs _local_1005_10                       ; branch if not ;; @@22e2 6
-                 ldz text_bank                            ; else select RAM0 ;; @@22e4 6
- ;; @@22e7 6
-_local_1005_10   jsr _lda_far                             ; LDA (.x),Y from bank .z ;; @@22e7 6
-                 plx                                       ;; @@22ea 6
-                 plz                                       ;; @@22eb 6
-                 plp                                      ; restore .c ;; @@22ec 6
-                 and #$ff                                 ; set processor status per byte fetched ;; @@22ed 6
-                 rts                                       ;; @@22ef 6
- ;; @@22f0 6
-; .page ;; @@22f0 6
-; C65 BASIC Indirect Save Subroutines ;; @@22f0 6
- ;; @@22f0 6
+inddef                                                    
+                 lda #defpnt                              
+                 bra lda_far_ram1                         
+
+indfrm                                                    
+                 lda #form                                
+                 bra lda_far_ram1                         
+
+inddpt                                                    
+                 lda #dscpnt                              
+                 bra lda_far_ram1                         
+
+;indhtr
+; lda #hightr
+; bra lda_far_ram0
+
+indhtr_ram1                                               
+                 lda #hightr                              
+                 bra lda_far_ram1                         
+
+indfmo                                                    
+                 lda #facmo                               
+                 bra lda_far_ram1                         
+
+indlow                                                    
+                 lda #lowtr                               
+                 bra lda_far_ram0                         
+
+indst1                                                    
+                 lda #strng1                              
+                 bra lda_far_ram0                         
+
+indst1_ram1                                               
+                 lda #strng1                              
+                 bra lda_far_ram1                         
+
+indgrb                                                    
+                 lda #grbpnt                              
+                 bra lda_far_ram1                         
+
+indlow_ram1                                               
+                 lda #lowtr                               
+                 bra lda_far_ram1                         
+
+indin1                                                    
+                 lda #index1                              
+                 bra lda_far_ram0                         
+
+;indin2
+; lda #index2
+; bra lda_far_ram0
+
+indtxt                                                    
+                 lda #txtptr                              
+; bra lda_far_ram0
+
+; .page
+; C65 BASIC Indirect Load Subroutines
+
+lda_far_ram0                                              
+                 phz                                      ; save registers
+                 phx                                      
+                 tax                                      ; pointer
+                 ldz text_bank                            ; RAM0
+                 jsr _lda_far                             ; LDA (.x),Y from bank .z
+                 plx                                      
+                 plz                                      
+                 and #$ff                                 ; set processor status per byte fetched
+                 rts                                      
+
+
+
+indin1_ram1                                               
+                 lda #index1                              
+; bra lda_far_ram1
+
+lda_far_ram1                                              
+                 php                                      ; save .c
+                 phz                                      ; save registers
+                 phx                                      
+                 tax                                      ; pointer
+                 ldz var_bank                             ; RAM1
+                 lda 1,x                                  ; check to see if pointer points to "common"
+                 cmp #$20                                 
+                 bcs _local_1005_10                       ; branch if not
+                 ldz text_bank                            ; else select RAM0
+
+_local_1005_10   jsr _lda_far                             ; LDA (.x),Y from bank .z
+                 plx                                      
+                 plz                                      
+                 plp                                      ; restore .c
+                 and #$ff                                 ; set processor status per byte fetched
+                 rts                                      
+
+; .page
+; C65 BASIC Indirect Save Subroutines
+

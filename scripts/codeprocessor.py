@@ -234,7 +234,8 @@ if __name__ == "__main__":
 			startPC = 0 if hp.currentPC is None else hp.currentPC 
 			p = hp.process(l)
 			if p is not None:
-				tgt.write("{0} ;; @@{1:04x} {2}\n".format(p,startPC,page))
+				#tgt.write("{0} ;; @@{1:04x} {2}\n".format(p,startPC,page))
+				tgt.write("{0}\n".format(p))
 				#print("{0:2}:${1:02x} {2}".format(page,startPC,p))
 			else:
 				assert False,"Couldn't fathom {"+l+"}"

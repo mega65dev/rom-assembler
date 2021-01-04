@@ -1,59 +1,59 @@
-hexd             jsr chknum                                ;; @@566f 143
-                 phw poker                                ; save linnum    [910911] ;; @@5672 143
-                 jsr getadr                               ; 2 byte val in (poker) ;; @@5675 143
-                 lda #4                                    ;; @@5678 143
-                 jsr strspa                                ;; @@567a 143
-                 ldy #0                                    ;; @@567d 143
-                 lda poker+1                               ;; @@567f 143
-                 jsr hexit                                 ;; @@5681 143
-                 lda poker                                 ;; @@5684 143
-                 jsr hexit                                 ;; @@5686 143
-                 pla                                      ; restore linnum ;; @@5689 143
-                 sta poker+1                               ;; @@568a 143
-                 pla                                       ;; @@568c 143
-                 sta poker                                 ;; @@568d 143
-                 +lbra chrd1                              ; pla,pla,jmp putnew ;; @@568f 143
- ;; @@5692 143
-hexit            pha                                       ;; @@5692 143
-                 lsr                                       ;; @@5693 143
-                 lsr                                       ;; @@5694 143
-                 lsr                                       ;; @@5695 143
-                 lsr                                       ;; @@5696 143
-                 jsr dohex                                 ;; @@5697 143
-                 pla                                       ;; @@569a 143
- ;; @@569b 143
-dohex            and #$0f                                  ;; @@569b 143
-                 cmp #$0a                                  ;; @@569d 143
-                 bcc _local_1142_1                         ;; @@569f 143
-                 adc #6                                    ;; @@56a1 143
-_local_1142_1    adc #'0'                                  ;; @@56a3 143
-                 phx                                       ;; @@56a5 143
-                 ldx #dsctmp+1                             ;; @@56a6 143
-                 jsr sta_far_ram1                         ; sta (dsctmp+1),y ;; @@56a8 143
-                 plx                                       ;; @@56ab 143
-                 iny                                       ;; @@56ac 143
-                 rts                                       ;; @@56ad 143
- ;; @@56ae 143
-;.end ;; @@56ae 143
-; .page ;; @@56ae 143
-; .subttl  JOY ;; @@56ae 143
- ;; @@56ae 143
-;************************************************************* ;; @@56ae 143
-; JOY (n)  -- Return joystick status ;; @@56ae 143
-; ;; @@56ae 143
-; where: n =  1  return position of joystick-1 ;; @@56ae 143
-;       2  return position of joystick-2 ;; @@56ae 143
-; ;; @@56ae 143
-; result:      0  no direction, no button ;; @@56ae 143
-;       1-8    direction (see below), no button ;; @@56ae 143
-;       128 no direction, button ;; @@56ae 143
-;       129-136 direction & button  128 + [1...8] ;; @@56ae 143
-; ;; @@56ae 143
-; button--->  128        1 ;; @@56ae 143
-;       8     2 ;; @@56ae 143
-; stick--->  7           3 ;; @@56ae 143
-;       6     4 ;; @@56ae 143
-;          5 ;; @@56ae 143
-; ;; @@56ae 143
-;************************************************************* ;; @@56ae 143
- ;; @@56ae 143
+hexd             jsr chknum                               
+                 phw poker                                ; save linnum    [910911]
+                 jsr getadr                               ; 2 byte val in (poker)
+                 lda #4                                   
+                 jsr strspa                               
+                 ldy #0                                   
+                 lda poker+1                              
+                 jsr hexit                                
+                 lda poker                                
+                 jsr hexit                                
+                 pla                                      ; restore linnum
+                 sta poker+1                              
+                 pla                                      
+                 sta poker                                
+                 +lbra chrd1                              ; pla,pla,jmp putnew
+
+hexit            pha                                      
+                 lsr                                      
+                 lsr                                      
+                 lsr                                      
+                 lsr                                      
+                 jsr dohex                                
+                 pla                                      
+
+dohex            and #$0f                                 
+                 cmp #$0a                                 
+                 bcc _local_1142_1                        
+                 adc #6                                   
+_local_1142_1    adc #'0'                                 
+                 phx                                      
+                 ldx #dsctmp+1                            
+                 jsr sta_far_ram1                         ; sta (dsctmp+1),y
+                 plx                                      
+                 iny                                      
+                 rts                                      
+
+;.end
+; .page
+; .subttl  JOY
+
+;*************************************************************
+; JOY (n)  -- Return joystick status
+;
+; where: n =  1  return position of joystick-1
+;       2  return position of joystick-2
+;
+; result:      0  no direction, no button
+;       1-8    direction (see below), no button
+;       128 no direction, button
+;       129-136 direction & button  128 + [1...8]
+;
+; button--->  128        1
+;       8     2
+; stick--->  7           3
+;       6     4
+;          5
+;
+;*************************************************************
+

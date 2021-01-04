@@ -1,195 +1,195 @@
-strdon           jsr strprt                                ;; @@37c3 55
- ;; @@37c6 55
-newchr           jsr chrgot                               ; reget last character ;; @@37c6 55
- ;; @@37c9 55
-print            beq crdo                                 ; terminator only, so print crlf ;; @@37c9 55
-                 cmp #using_token                          ;; @@37cb 55
-                 +lbeq using                               ;; @@37cd 55
- ;; @@37d0 55
- ;; @@37d0 55
- ;; @@37d0 55
-printc           beq prtrts  ;here after seeing TAB(x) or "," or " ; " in which case ;; @@37d0 55
-;a terminator does not mean a crlf but just RTS ;; @@37d2 55
-                 cmp #tab_token                           ; TAB function? ;; @@37d2 55
-                 beq taber                                ; yes (c=1) ;; @@37d4 55
-                 cmp #spc_token                           ; space function? ;; @@37d6 55
-                 clc                                      ; clear carry ;; @@37d8 55
-                 beq taber                                ; yes (c=0) ;; @@37d9 55
-                 cmp #','                                 ; comma? ;; @@37db 55
-                 beq comprt                               ; yes ;; @@37dd 55
-                 cmp #';'                                 ; a semicolon? ;; @@37df 55
-                 beq notabr                               ; yes ;; @@37e1 55
- ;; @@37e3 55
-                 jsr frmevl                               ; evaluate the formula ;; @@37e3 55
-                 bbs7 valtyp,strdon                       ; branch if a string ;; @@37e6 55
-                 jsr fout                                  ;; @@37e9 55
-                 jsr strlit                               ; build descriptor ;; @@37ec 55
-                 jsr strprt                               ; print the number ;; @@37ef 55
-                 jsr outspc                               ; print a space ;; @@37f2 55
-                 bra newchr                               ; always goes ;; @@37f5 55
- ;; @@37f7 55
- ;; @@37f7 55
- ;; @@37f7 55
-crdo             lda #cr                                   ;; @@37f7 55
-                 jsr outch                                ; outdo ;; @@37f9 55
- ;; @@37fc 55
-crfin            bbr7 channl,prtrts                        ;; @@37fc 55
-                 lda #lf                                   ;; @@37ff 55
-                 jsr outch                                ; outdo ;; @@3801 55
-; eor #$ff  ;???? ;; @@3804 55
- ;; @@3804 55
-prtrts           rts                                       ;; @@3804 55
- ;; @@3805 55
- ;; @@3805 55
- ;; @@3805 55
-comprt           sec                                       ;; @@3805 55
-                 jsr _plot                                ; get tab position in x ;; @@3806 55
-                 tya                                       ;; @@3809 55
-                 sec                                       ;; @@380a 55
-morco1           sbc #column_width                         ;; @@380b 55
-                 bcs morco1                                ;; @@380d 55
-                 eor #$ff                                  ;; @@380f 55
-                 adc #1                                    ;; @@3811 55
-                 bne aspac                                 ;; @@3813 55
- ;; @@3815 55
-taber            php                                      ; remember if SPC(c=0) or TAB(c=1) function ;; @@3815 55
-                 sec                                       ;; @@3816 55
-                 jsr _plot                                ; read tab position ;; @@3817 55
-                 sty trmpos                                ;; @@381a 55
-                 jsr gtbytc                               ; get value into accx ;; @@381c 55
-                 cmp #')'                                  ;; @@381f 55
-                 +lbne snerr                               ;; @@3821 55
-                 plp                                       ;; @@3824 55
-                 bcc xspac                                 ;; @@3825 55
-                 txa                                       ;; @@3827 55
-                 sbc trmpos                                ;; @@3828 55
-                 bcc notabr                               ; negative, don't print any ;; @@382a 55
-aspac            tax                                       ;; @@382c 55
-xspac            inx                                       ;; @@382d 55
-xspac2           dex                                       ;; @@382e 55
-                 bne xspac1                                ;; @@382f 55
- ;; @@3831 55
- ;; @@3831 55
-notabr           jsr chrget                               ; reget last character ;; @@3831 55
-                 bra printc                               ; don't call crdo ;; @@3834 55
- ;; @@3836 55
- ;; @@3836 55
-xspac1           jsr outspc                                ;; @@3836 55
-                 bne xspac2                                ;; @@3839 55
- ;; @@383b 55
-; .page ;; @@383b 55
-; STROUT Routine ;; @@383b 55
-; ;; @@383b 55
-; Print the string pointed to by .x.  It must end with a null byte. ;; @@383b 55
- ;; @@383b 55
-strout           jsr strlit                               ; get a string literal ;; @@383b 55
- ;; @@383e 55
-strprt           jsr frefac                               ; return temp pointer ;; @@383e 55
-                 tax                                      ; put count into counter ;; @@3841 55
-                 ldy #0                                    ;; @@3842 55
-                 inx                                      ; move one ahead ;; @@3844 55
-strpr2           dex                                       ;; @@3845 55
-                 beq prtrts                               ; all done ;; @@3846 55
-                 jsr indin1_ram1                          ; lda (index),y ;; @@3848 55
-                 jsr outch                                ; outdo ;; @@384b 55
-                 iny                                       ;; @@384e 55
-                 cmp #cr                                   ;; @@384f 55
-                 bne strpr2                                ;; @@3851 55
-                 jsr crfin                                ; type rest of carriage return ;; @@3853 55
-                 bra strpr2                               ; and on and on ;; @@3856 55
- ;; @@3858 55
-outspc           lda channl                               ; if terminal print skip chr., else print space ;; @@3858 55
-                 bne realsp                                ;; @@385a 55
-                 lda #29                                  ; CBM cursor right (non-destructive skip char) ;; @@385c 55
-                 !text $2c                                 ;; @@385e 55
- ;; @@385f 55
-realsp           lda #' '                                 ; space ;; @@385f 55
-                 !text $2c                                 ;; @@3861 55
- ;; @@3862 55
-outqst           lda #'?'                                  ;; @@3862 55
- ;; @@3864 55
-;outdo ;; @@3864 55
-                 jmp outch                                ; output char in .a ;; @@3864 55
-; and #$ff ;???? ;; @@3867 55
-; rts ;; @@3867 55
- ;; @@3867 55
-;.end ;; @@3867 55
-; .page ;; @@3867 55
-; .subttl INPUT  GET  READ  LINPUT ;; @@3867 55
- ;; @@3867 55
-get              jsr errdir                               ; direct mode illegal ;; @@3867 55
-                 sta z_p_temp_1                           ; flag to distinguish between GET and GETKEY ;; @@386a 55
- ;; @@386c 55
-                 cmp #'#'                                 ; is it GET# ? ;; @@386c 55
-                 beq getn                                 ; yes ;; @@386e 55
-                 cmp #key_token                           ; is it GETKEY ? ;; @@3870 55
-                 bne gettty                               ; no, must be plain GET ;; @@3872 55
-                 jsr chrget                               ; yes, skip over KEY token ;; @@3874 55
-                 bra gettty                                ;; @@3877 55
- ;; @@3879 55
- ;; @@3879 55
-getn             jsr chrget                               ; GET# move up to next byte ;; @@3879 55
-                 jsr getbyt                               ; get channel into x ;; @@387c 55
-                 lda #','                                 ; comma? ;; @@387f 55
-                 jsr synchr                                ;; @@3881 55
-                 stx channl                                ;; @@3884 55
-                 jsr coin                                 ; chkin ;; @@3886 55
- ;; @@3889 55
- ;; @@3889 55
-gettty                                                    ; GET ;; @@3889 55
-                 ldx #<buf+1                              ; point to 0 ;; @@3889 55
-                 ldy #>buf                                 ;; @@388b 55
-                 lda #0                                   ; to stuff and to point ;; @@388d 55
-                 sta buf+1                                ; zero it ;; @@388f 55
-                 lda #$40                                 ; turn on v-bit ;; @@3892 55
-                 jsr inpco1                               ; do the get ;; @@3894 55
-                 ldx channl                                ;; @@3897 55
-                 bne release_channels                     ; restore terminal channels ;; @@3899 55
-                 rts                                       ;; @@389b 55
- ;; @@389c 55
-; .page ;; @@389c 55
-linputn                                                   ; input line from channel into a string var ;; @@389c 55
-                 jsr chrget                               ; (eat input# token) ;; @@389c 55
-                 smb7 op                                   ;; @@389f 55
-                 !text $2c                                 ;; @@38a1 55
- ;; @@38a2 55
-inputn           rmb7 op                                  ; flag INPUT# vs. LINPUT# ;; @@38a2 55
-                 jsr getbyt                               ; get channel number ;; @@38a4 55
-                 lda #','                                 ; a comma? ;; @@38a7 55
-                 jsr synchr                                ;; @@38a9 55
-                 stx channl                                ;; @@38ac 55
-                 jsr coin                                 ; chkin ;; @@38ae 55
-                 jsr notqti                               ; do input to variables ;; @@38b1 55
- ;; @@38b4 55
- ;; @@38b4 55
-release_channels                                          ; iodone, iorele. ;; @@38b4 55
-                 jsr _clrch                               ; clear I/O channels ;; @@38b4 55
-; ldx #0   ;restore normal terminal channels ;; @@38b7 55
-                 sta channl                               ; (was stx)     [910909] ;; @@38b7 55
-                 rts                                       ;; @@38b9 55
- ;; @@38ba 55
- ;; @@38ba 55
-linput                                                    ; input line from console into a string var ;; @@38ba 55
-                 jsr chrget                               ; (eat input token) ;; @@38ba 55
-                 smb7 op                                   ;; @@38bd 55
-                 !text $2c                                 ;; @@38bf 55
- ;; @@38c0 55
-input            rmb7 op                                  ; flag INPUT vs. LINPUT ;; @@38c0 55
-                 cmp #'"'                                 ; a quote? ;; @@38c2 55
-                 bne notqti                               ; no message ;; @@38c4 55
-                 jsr strtxt                               ; literalize the string in text ;; @@38c6 55
- ;; @@38c9 55
-                 jsr chrgot                               ; looking for prompt string terminator  [910219] ;; @@38c9 55
-                 cmp #','                                  ;; @@38cc 55
-                 bne _local_1054_10                        ;; @@38ce 55
-                 sta buf_txtptr                           ; is comma- supress '?' after prompt  [910219] ;; @@38d0 55
-                 jsr chrget                               ; eat comma ;; @@38d3 55
-                 jsr strprt                               ; print prompt ;; @@38d6 55
-                 jsr errdir                               ; error if direct mode ;; @@38d9 55
-                 jsr InputLine                            ; get first item ;; @@38dc 55
-                 bra getagn1                              ; see if there's more to do ;; @@38df 55
- ;; @@38e1 55
-_local_1054_10   lda #';'                                 ; must end in semicolon ;; @@38e1 55
-                 jsr synchr                                ;; @@38e3 55
-                 jsr strprt                               ; print prompt ;; @@38e6 55
- ;; @@38e9 55
+strdon           jsr strprt                               
+
+newchr           jsr chrgot                               ; reget last character
+
+print            beq crdo                                 ; terminator only, so print crlf
+                 cmp #using_token                         
+                 +lbeq using                              
+
+
+
+printc           beq prtrts  ;here after seeing TAB(x) or "," or " ; " in which case
+;a terminator does not mean a crlf but just RTS
+                 cmp #tab_token                           ; TAB function?
+                 beq taber                                ; yes (c=1)
+                 cmp #spc_token                           ; space function?
+                 clc                                      ; clear carry
+                 beq taber                                ; yes (c=0)
+                 cmp #','                                 ; comma?
+                 beq comprt                               ; yes
+                 cmp #';'                                 ; a semicolon?
+                 beq notabr                               ; yes
+
+                 jsr frmevl                               ; evaluate the formula
+                 bbs7 valtyp,strdon                       ; branch if a string
+                 jsr fout                                 
+                 jsr strlit                               ; build descriptor
+                 jsr strprt                               ; print the number
+                 jsr outspc                               ; print a space
+                 bra newchr                               ; always goes
+
+
+
+crdo             lda #cr                                  
+                 jsr outch                                ; outdo
+
+crfin            bbr7 channl,prtrts                       
+                 lda #lf                                  
+                 jsr outch                                ; outdo
+; eor #$ff  ;????
+
+prtrts           rts                                      
+
+
+
+comprt           sec                                      
+                 jsr _plot                                ; get tab position in x
+                 tya                                      
+                 sec                                      
+morco1           sbc #column_width                        
+                 bcs morco1                               
+                 eor #$ff                                 
+                 adc #1                                   
+                 bne aspac                                
+
+taber            php                                      ; remember if SPC(c=0) or TAB(c=1) function
+                 sec                                      
+                 jsr _plot                                ; read tab position
+                 sty trmpos                               
+                 jsr gtbytc                               ; get value into accx
+                 cmp #')'                                 
+                 +lbne snerr                              
+                 plp                                      
+                 bcc xspac                                
+                 txa                                      
+                 sbc trmpos                               
+                 bcc notabr                               ; negative, don't print any
+aspac            tax                                      
+xspac            inx                                      
+xspac2           dex                                      
+                 bne xspac1                               
+
+
+notabr           jsr chrget                               ; reget last character
+                 bra printc                               ; don't call crdo
+
+
+xspac1           jsr outspc                               
+                 bne xspac2                               
+
+; .page
+; STROUT Routine
+;
+; Print the string pointed to by .x.  It must end with a null byte.
+
+strout           jsr strlit                               ; get a string literal
+
+strprt           jsr frefac                               ; return temp pointer
+                 tax                                      ; put count into counter
+                 ldy #0                                   
+                 inx                                      ; move one ahead
+strpr2           dex                                      
+                 beq prtrts                               ; all done
+                 jsr indin1_ram1                          ; lda (index),y
+                 jsr outch                                ; outdo
+                 iny                                      
+                 cmp #cr                                  
+                 bne strpr2                               
+                 jsr crfin                                ; type rest of carriage return
+                 bra strpr2                               ; and on and on
+
+outspc           lda channl                               ; if terminal print skip chr., else print space
+                 bne realsp                               
+                 lda #29                                  ; CBM cursor right (non-destructive skip char)
+                 !text $2c                                
+
+realsp           lda #' '                                 ; space
+                 !text $2c                                
+
+outqst           lda #'?'                                 
+
+;outdo
+                 jmp outch                                ; output char in .a
+; and #$ff ;????
+; rts
+
+;.end
+; .page
+; .subttl INPUT  GET  READ  LINPUT
+
+get              jsr errdir                               ; direct mode illegal
+                 sta z_p_temp_1                           ; flag to distinguish between GET and GETKEY
+
+                 cmp #'#'                                 ; is it GET# ?
+                 beq getn                                 ; yes
+                 cmp #key_token                           ; is it GETKEY ?
+                 bne gettty                               ; no, must be plain GET
+                 jsr chrget                               ; yes, skip over KEY token
+                 bra gettty                               
+
+
+getn             jsr chrget                               ; GET# move up to next byte
+                 jsr getbyt                               ; get channel into x
+                 lda #','                                 ; comma?
+                 jsr synchr                               
+                 stx channl                               
+                 jsr coin                                 ; chkin
+
+
+gettty                                                    ; GET
+                 ldx #<buf+1                              ; point to 0
+                 ldy #>buf                                
+                 lda #0                                   ; to stuff and to point
+                 sta buf+1                                ; zero it
+                 lda #$40                                 ; turn on v-bit
+                 jsr inpco1                               ; do the get
+                 ldx channl                               
+                 bne release_channels                     ; restore terminal channels
+                 rts                                      
+
+; .page
+linputn                                                   ; input line from channel into a string var
+                 jsr chrget                               ; (eat input# token)
+                 smb7 op                                  
+                 !text $2c                                
+
+inputn           rmb7 op                                  ; flag INPUT# vs. LINPUT#
+                 jsr getbyt                               ; get channel number
+                 lda #','                                 ; a comma?
+                 jsr synchr                               
+                 stx channl                               
+                 jsr coin                                 ; chkin
+                 jsr notqti                               ; do input to variables
+
+
+release_channels                                          ; iodone, iorele.
+                 jsr _clrch                               ; clear I/O channels
+; ldx #0   ;restore normal terminal channels
+                 sta channl                               ; (was stx)     [910909]
+                 rts                                      
+
+
+linput                                                    ; input line from console into a string var
+                 jsr chrget                               ; (eat input token)
+                 smb7 op                                  
+                 !text $2c                                
+
+input            rmb7 op                                  ; flag INPUT vs. LINPUT
+                 cmp #'"'                                 ; a quote?
+                 bne notqti                               ; no message
+                 jsr strtxt                               ; literalize the string in text
+
+                 jsr chrgot                               ; looking for prompt string terminator  [910219]
+                 cmp #','                                 
+                 bne _local_1054_10                       
+                 sta buf_txtptr                           ; is comma- supress '?' after prompt  [910219]
+                 jsr chrget                               ; eat comma
+                 jsr strprt                               ; print prompt
+                 jsr errdir                               ; error if direct mode
+                 jsr InputLine                            ; get first item
+                 bra getagn1                              ; see if there's more to do
+
+_local_1054_10   lda #';'                                 ; must end in semicolon
+                 jsr synchr                               
+                 jsr strprt                               ; print prompt
+

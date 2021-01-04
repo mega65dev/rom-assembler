@@ -1,63 +1,63 @@
-type             ldz #0                                    ;; @@6f17 215
- ;; @@6f19 215
-open_SEQ_file                                              ;; @@6f19 215
-                 phz                                      ; save EDIT load flag    [910620] ;; @@6f19 215
-                 lda #$e6                                 ; parse:  filename [,U#] [,D#] ;; @@6f1a 215
-                 jsr dosprs                               ; (like dopen:      0 0 0 *  * 0 0 1 ) ;; @@6f1c 215
-                 jsr chk1                                 ; check parameters ;; @@6f1f 215
-                 jsr find_la                              ; find an available LA ;; @@6f22 215
-                 jsr find_sa                              ; find an available SA ;; @@6f25 215
-                 ldy #fopnseq                              ;; @@6f28 215
-                 ldx #6                                    ;; @@6f2a 215
-                 jsr open_file                            ; open the file ;; @@6f2c 215
-                 +lbcs list_err                           ; exit if error ;; @@6f2f 215
-                 plz                                      ; [910620] ;; @@6f32 215
-                 beq _local_1214_20                        ;; @@6f33 215
-                 rts                                      ; or exit if called by EDIT load routine ;; @@6f35 215
- ;; @@6f36 215
-_local_1214_20   jsr _stop                                ; check stop key ;; @@6f36 215
-                 beq _local_1214_30                       ; exit if down ;; @@6f39 215
-                 ldx dosla                                 ;; @@6f3b 215
-                 jsr _chkin                               ; get input channel ;; @@6f3e 215
-                 bcs _local_1214_30                       ; exit if bad?? ;; @@6f41 215
-                 ldx #0                                    ;; @@6f43 215
-_local_1214_25   cpx #255                                 ; check buffer (buflen????) ;; @@6f45 215
-; bcs 99$   ; 'too long' error ;; @@6f47 215
-                 beq _local_1214_26                       ; allow long lines   [910620] ;; @@6f47 215
-                 jsr _basin                               ; read file data ;; @@6f49 215
-                 sta dosstr,x                             ; buffer it ;; @@6f4c 215
-                 inx                                      ; bump buffer pointer ;; @@6f4f 215
-                 tay                                      ; save char ;; @@6f50 215
-                 jsr _readst                              ; check channel status ;; @@6f51 215
-                 bne _local_1214_26                       ; exit if eof or error ;; @@6f54 215
-                 cpy #cr                                   ;; @@6f56 215
-                 bne _local_1214_25                       ; loop until eol ;; @@6f58 215
- ;; @@6f5a 215
-_local_1214_26   php                                      ; save input channel status (beq=eol, bne=eof/err) ;; @@6f5a 215
-                 stx t4                                   ; save character count ;; @@6f5b 215
-                 jsr dcato                                ; get output channel ;; @@6f5e 215
-                 ldx #0                                    ;; @@6f61 215
-_local_1214_27   cpx t4                                   ; check buffer ;; @@6f63 215
-                 bcs _local_1214_28                       ; end of buffered data ;; @@6f66 215
-                 lda dosstr,x                             ; output data ;; @@6f68 215
-                 jsr _bsout                                ;; @@6f6b 215
-                 inx                                      ; bump buffer pointer ;; @@6f6e 215
-                 bne _local_1214_27                       ; loop until end of buffer ;; @@6f6f 215
- ;; @@6f71 215
-_local_1214_28   jsr _clrch                                ;; @@6f71 215
-                 plp                                      ; check input status ;; @@6f74 215
-                 beq _local_1214_20                       ; loop until eof or bad status ;; @@6f75 215
- ;; @@6f77 215
-_local_1214_30   +lbra list_exit                          ; release channel, close file, return to main ;; @@6f77 215
- ;; @@6f7a 215
-;99$ jsr _clrch  ;non-I/O trouble   removed [910620] ;; @@6f7a 215
-; lda dosla  ; shut down disk & report BASIC error ;; @@6f7a 215
-; clc ;; @@6f7a 215
-; jsr _close ;; @@6f7a 215
-; bra errlen  ;buffer overflow: report 'string too long' ;; @@6f7a 215
- ;; @@6f7a 215
-; .page ;; @@6f7a 215
-; .subttl  DISK command ;; @@6f7a 215
- ;; @@6f7a 215
-; DISK "command_string" [,U#] [,D#]     new [910123] ;; @@6f7a 215
- ;; @@6f7a 215
+type             ldz #0                                   
+
+open_SEQ_file                                             
+                 phz                                      ; save EDIT load flag    [910620]
+                 lda #$e6                                 ; parse:  filename [,U#] [,D#]
+                 jsr dosprs                               ; (like dopen:      0 0 0 *  * 0 0 1 )
+                 jsr chk1                                 ; check parameters
+                 jsr find_la                              ; find an available LA
+                 jsr find_sa                              ; find an available SA
+                 ldy #fopnseq                             
+                 ldx #6                                   
+                 jsr open_file                            ; open the file
+                 +lbcs list_err                           ; exit if error
+                 plz                                      ; [910620]
+                 beq _local_1214_20                       
+                 rts                                      ; or exit if called by EDIT load routine
+
+_local_1214_20   jsr _stop                                ; check stop key
+                 beq _local_1214_30                       ; exit if down
+                 ldx dosla                                
+                 jsr _chkin                               ; get input channel
+                 bcs _local_1214_30                       ; exit if bad??
+                 ldx #0                                   
+_local_1214_25   cpx #255                                 ; check buffer (buflen????)
+; bcs 99$   ; 'too long' error
+                 beq _local_1214_26                       ; allow long lines   [910620]
+                 jsr _basin                               ; read file data
+                 sta dosstr,x                             ; buffer it
+                 inx                                      ; bump buffer pointer
+                 tay                                      ; save char
+                 jsr _readst                              ; check channel status
+                 bne _local_1214_26                       ; exit if eof or error
+                 cpy #cr                                  
+                 bne _local_1214_25                       ; loop until eol
+
+_local_1214_26   php                                      ; save input channel status (beq=eol, bne=eof/err)
+                 stx t4                                   ; save character count
+                 jsr dcato                                ; get output channel
+                 ldx #0                                   
+_local_1214_27   cpx t4                                   ; check buffer
+                 bcs _local_1214_28                       ; end of buffered data
+                 lda dosstr,x                             ; output data
+                 jsr _bsout                               
+                 inx                                      ; bump buffer pointer
+                 bne _local_1214_27                       ; loop until end of buffer
+
+_local_1214_28   jsr _clrch                               
+                 plp                                      ; check input status
+                 beq _local_1214_20                       ; loop until eof or bad status
+
+_local_1214_30   +lbra list_exit                          ; release channel, close file, return to main
+
+;99$ jsr _clrch  ;non-I/O trouble   removed [910620]
+; lda dosla  ; shut down disk & report BASIC error
+; clc
+; jsr _close
+; bra errlen  ;buffer overflow: report 'string too long'
+
+; .page
+; .subttl  DISK command
+
+; DISK "command_string" [,U#] [,D#]     new [910123]
+

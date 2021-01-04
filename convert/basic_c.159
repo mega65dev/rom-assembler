@@ -1,15 +1,15 @@
-mvdone           clc                                      ; update frespc pointer ;; @@5b5d 159
-                 adc frespc                                ;; @@5b5e 159
-                 sta frespc                                ;; @@5b60 159
-                 bcc _local_1158_10                        ;; @@5b62 159
-                 inc frespc+1                              ;; @@5b64 159
-_local_1158_10   rts                                       ;; @@5b66 159
- ;; @@5b67 159
-; .page ;; @@5b67 159
-; FRETMP is passed a string descriptor pntr in (a,y).  A check is made to see ;; @@5b67 159
-; if the string descriptor points to the last temporary descriptor allocated by ;; @@5b67 159
-; putnew.  If so, the temporary is freed up by the updating of (temppt).  If a ;; @@5b67 159
-; string is freed up, a further check sees if it was the last one created and if ;; @@5b67 159
-; so, (fretop) is updated to reflect the fact that the space is no longer in use. ;; @@5b67 159
-; The address of the actual string is returned in (x,y) and its length in (a). ;; @@5b67 159
- ;; @@5b67 159
+mvdone           clc                                      ; update frespc pointer
+                 adc frespc                               
+                 sta frespc                               
+                 bcc _local_1158_10                       
+                 inc frespc+1                             
+_local_1158_10   rts                                      
+
+; .page
+; FRETMP is passed a string descriptor pntr in (a,y).  A check is made to see
+; if the string descriptor points to the last temporary descriptor allocated by
+; putnew.  If so, the temporary is freed up by the updating of (temppt).  If a
+; string is freed up, a further check sees if it was the last one created and if
+; so, (fretop) is updated to reflect the fact that the space is no longer in use.
+; The address of the actual string is returned in (x,y) and its length in (a).
+

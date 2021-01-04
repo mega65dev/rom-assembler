@@ -1,50 +1,50 @@
-read             rmb7 op                                  ; flag READ vs. LREAD    [910102] ;; @@3910 57
-                 ldx datptr                               ; get last data location ;; @@3912 57
-                 ldy datptr+1                              ;; @@3914 57
-                 lda #$98                                 ; initiator= read ;; @@3916 57
-                 !text $2c                                 ;; @@3918 57
- ;; @@3919 57
-inpcon           lda #0                                   ; initiator= input ;; @@3919 57
-inpco1           sta input_flag                           ; $98=read, $40=get, $00=input ;; @@391b 57
- ;; @@391d 57
-; In the processing of DATA and READ statements, one pointer points to the data ;; @@391d 57
-; (i.e., the numbers being fetched) and another points to the list of variables. ;; @@391d 57
-; ;; @@391d 57
-; The pointer into the data always starts pointing to a terminator- a ",", ":", or EOL. ;; @@391d 57
-; At this point TXTPTR points to list of variables and (x,y) points to data or input line. ;; @@391d 57
- ;; @@391d 57
-                 stx inpptr                               ; pointer to data ;; @@391d 57
-                 sty inpptr+1                              ;; @@391f 57
- ;; @@3921 57
-inloop           jsr ptrget                               ; get a pointer to the variable ;; @@3921 57
-                 sta forpnt                               ; store its address ;; @@3924 57
-                 sty forpnt+1                              ;; @@3926 57
- ;; @@3928 57
-                 ldx #1                                    ;; @@3928 57
-_local_1056_1    lda txtptr,x                             ; move variable list pointer to 'vartxt' ;; @@392a 57
-                 sta vartxt,x                              ;; @@392c 57
-                 lda inpptr,x                             ; move data line pointer to 'txtptr' ;; @@392e 57
-                 sta txtptr,x                              ;; @@3930 57
-                 dex                                       ;; @@3932 57
-                 bpl _local_1056_1                         ;; @@3933 57
- ;; @@3935 57
-                 jsr chrgot                               ; get first data byte ;; @@3935 57
-                 bne datbk1                               ; not null, so we got something ;; @@3938 57
-                 bit input_flag                           ; READ($98), GET($40), or INPUT($00)? ;; @@393a 57
-                 bvc qdata                                ; branch if READ or INPUT ;; @@393c 57
-                 lda z_p_temp_1                           ; GET or GETKEY? ;; @@393e 57
-                 cmp #key_token                            ;; @@3940 57
-                 bne _local_1056_3                        ; branch if GET ;; @@3942 57
- ;; @@3944 57
-_local_1056_2    jsr cgetl                                ; GETKEY ;; @@3944 57
-                 tax                                      ; test if null ;; @@3947 57
-                 beq _local_1056_2                        ; it is null, keep scanning ;; @@3948 57
-                 bne _local_1056_4                        ; got a key, go put it in var ;; @@394a 57
- ;; @@394c 57
-_local_1056_3    jsr cgetl                                ; get a key if pressed, otherwise gets a zero ;; @@394c 57
-_local_1056_4    sta buf                                   ;; @@394f 57
-                 ldx #<buf_txtptr                          ;; @@3952 57
-                 ldy #>buf_txtptr                          ;; @@3954 57
-                 bra datbk                                 ;; @@3956 57
- ;; @@3958 57
-; .page ;; @@3958 57
+read             rmb7 op                                  ; flag READ vs. LREAD    [910102]
+                 ldx datptr                               ; get last data location
+                 ldy datptr+1                             
+                 lda #$98                                 ; initiator= read
+                 !text $2c                                
+
+inpcon           lda #0                                   ; initiator= input
+inpco1           sta input_flag                           ; $98=read, $40=get, $00=input
+
+; In the processing of DATA and READ statements, one pointer points to the data
+; (i.e., the numbers being fetched) and another points to the list of variables.
+;
+; The pointer into the data always starts pointing to a terminator- a ",", ":", or EOL.
+; At this point TXTPTR points to list of variables and (x,y) points to data or input line.
+
+                 stx inpptr                               ; pointer to data
+                 sty inpptr+1                             
+
+inloop           jsr ptrget                               ; get a pointer to the variable
+                 sta forpnt                               ; store its address
+                 sty forpnt+1                             
+
+                 ldx #1                                   
+_local_1056_1    lda txtptr,x                             ; move variable list pointer to 'vartxt'
+                 sta vartxt,x                             
+                 lda inpptr,x                             ; move data line pointer to 'txtptr'
+                 sta txtptr,x                             
+                 dex                                      
+                 bpl _local_1056_1                        
+
+                 jsr chrgot                               ; get first data byte
+                 bne datbk1                               ; not null, so we got something
+                 bit input_flag                           ; READ($98), GET($40), or INPUT($00)?
+                 bvc qdata                                ; branch if READ or INPUT
+                 lda z_p_temp_1                           ; GET or GETKEY?
+                 cmp #key_token                           
+                 bne _local_1056_3                        ; branch if GET
+
+_local_1056_2    jsr cgetl                                ; GETKEY
+                 tax                                      ; test if null
+                 beq _local_1056_2                        ; it is null, keep scanning
+                 bne _local_1056_4                        ; got a key, go put it in var
+
+_local_1056_3    jsr cgetl                                ; get a key if pressed, otherwise gets a zero
+_local_1056_4    sta buf                                  
+                 ldx #<buf_txtptr                         
+                 ldy #>buf_txtptr                         
+                 bra datbk                                
+
+; .page

@@ -1,14 +1,14 @@
-resswp           lda errtxt                               ; backup one so chrget will work ;; @@44bc 94
-                 bne _local_1093_10                        ;; @@44bf 94
-                 dec errtxt+1                              ;; @@44c1 94
-_local_1093_10   dec errtxt                                ;; @@44c4 94
- ;; @@44c7 94
-                 ldx #1                                    ;; @@44c7 94
-_local_1093_20   lda errlin,x                             ; restore line# ;; @@44c9 94
-                 sta curlin,x                              ;; @@44cc 94
-                 lda errtxt,x                             ; restore text pointer to statement ;; @@44ce 94
-                 sta txtptr,x                              ;; @@44d1 94
-                 dex                                       ;; @@44d3 94
-                 bpl _local_1093_20                        ;; @@44d4 94
- ;; @@44d6 94
- ;; @@44d6 94
+resswp           lda errtxt                               ; backup one so chrget will work
+                 bne _local_1093_10                       
+                 dec errtxt+1                             
+_local_1093_10   dec errtxt                               
+
+                 ldx #1                                   
+_local_1093_20   lda errlin,x                             ; restore line#
+                 sta curlin,x                             
+                 lda errtxt,x                             ; restore text pointer to statement
+                 sta txtptr,x                             
+                 dex                                      
+                 bpl _local_1093_20                       
+
+

@@ -1,48 +1,48 @@
-rightd           jsr pream                                 ;; @@59ff 154
-                 pha                                       ;; @@5a02 154
-                 jsr inddpt                                ;; @@5a03 154
-                 sta syntmp                                ;; @@5a06 154
-                 pla                                       ;; @@5a08 154
-                 clc                                      ; (length des'd)-(length)-1 ;; @@5a09 154
-                 sbc syntmp                                ;; @@5a0a 154
-                 eor #$ff                                 ; negate ;; @@5a0c 154
-                 bra rleft                                 ;; @@5a0e 154
- ;; @@5a10 154
- ;; @@5a10 154
-; MID$($,#) returns string with chars from # position onward. If # > LEN($) ;; @@5a10 154
-; then return null string.  MID($,#,#) returns string with characters from ;; @@5a10 154
-; # position for #2 characters.  If #2 goes past end of string return as much ;; @@5a10 154
-; as possible. ;; @@5a10 154
- ;; @@5a10 154
-midd             lda #255                                 ; default ;; @@5a10 154
-                 sta faclo                                ; save for later compare ;; @@5a12 154
-                 jsr chrgot                               ; get current character ;; @@5a14 154
-                 cmp #')'                                 ; is it a right paren )? ;; @@5a17 154
-                 beq _local_1153_1                        ; no third paren. ;; @@5a19 154
-; jsr chkcom  ;must have comma ;; @@5a1b 154
-; jsr getbyt  ;get the length into "faclo" ;; @@5a1b 154
-                 jsr combyt                               ; [910820] ;; @@5a1b 154
- ;; @@5a1e 154
-_local_1153_1    jsr pream                                ; check it out ;; @@5a1e 154
-                 +lbeq fcerr                              ; illegal qty error ;; @@5a21 154
-                 dex                                      ; compute offset ;; @@5a24 154
-                 phx                                       ;; @@5a25 154
-                 phx                                      ; preserve a while (2 copies) ;; @@5a26 154
-                 ldx #0                                    ;; @@5a27 154
-                 jsr inddpt                               ; get length of what's left ;; @@5a29 154
-                 sta syntmp                                ;; @@5a2c 154
-                 pla                                       ;; @@5a2e 154
-                 clc                                       ;; @@5a2f 154
-                 sbc syntmp                                ;; @@5a30 154
-                 bcs rleft2                               ; give null string ;; @@5a32 154
-                 eor #$ff                                 ; in sub c was 0 so just complement ;; @@5a34 154
-                 cmp faclo                                ; greater than what's desired ;; @@5a36 154
-                 bcc rleft3                               ; no, just copy that much ;; @@5a38 154
-                 lda faclo                                ; get length of what's desired ;; @@5a3a 154
-                 bcs rleft3                               ; copy it ;; @@5a3c 154
- ;; @@5a3e 154
- ;; @@5a3e 154
- ;; @@5a3e 154
- ;; @@5a3e 154
-; Common routine used by RIGHT$, LEFT$, MID$, for parameter chk and setup. ;; @@5a3e 154
- ;; @@5a3e 154
+rightd           jsr pream                                
+                 pha                                      
+                 jsr inddpt                               
+                 sta syntmp                               
+                 pla                                      
+                 clc                                      ; (length des'd)-(length)-1
+                 sbc syntmp                               
+                 eor #$ff                                 ; negate
+                 bra rleft                                
+
+
+; MID$($,#) returns string with chars from # position onward. If # > LEN($)
+; then return null string.  MID($,#,#) returns string with characters from
+; # position for #2 characters.  If #2 goes past end of string return as much
+; as possible.
+
+midd             lda #255                                 ; default
+                 sta faclo                                ; save for later compare
+                 jsr chrgot                               ; get current character
+                 cmp #')'                                 ; is it a right paren )?
+                 beq _local_1153_1                        ; no third paren.
+; jsr chkcom  ;must have comma
+; jsr getbyt  ;get the length into "faclo"
+                 jsr combyt                               ; [910820]
+
+_local_1153_1    jsr pream                                ; check it out
+                 +lbeq fcerr                              ; illegal qty error
+                 dex                                      ; compute offset
+                 phx                                      
+                 phx                                      ; preserve a while (2 copies)
+                 ldx #0                                   
+                 jsr inddpt                               ; get length of what's left
+                 sta syntmp                               
+                 pla                                      
+                 clc                                      
+                 sbc syntmp                               
+                 bcs rleft2                               ; give null string
+                 eor #$ff                                 ; in sub c was 0 so just complement
+                 cmp faclo                                ; greater than what's desired
+                 bcc rleft3                               ; no, just copy that much
+                 lda faclo                                ; get length of what's desired
+                 bcs rleft3                               ; copy it
+
+
+
+
+; Common routine used by RIGHT$, LEFT$, MID$, for parameter chk and setup.
+

@@ -1,36 +1,36 @@
-rrts             rts                                       ;; @@6cae 208
- ;; @@6caf 208
-; .page ;; @@6caf 208
-; Using- alg: delete leading zeros of no ;; @@6caf 208
- ;; @@6caf 208
-alg              ldy point                                ; start with a .? ;; @@6caf 208
-                 beq szer                                 ; yes... ;; @@6cb1 208
- ;; @@6cb3 208
-cho              ldy bnr                                   ;; @@6cb3 208
-cmo              lda fbuffr,y                             ; start with a 0? ;; @@6cb6 208
-                 cmp #'0'                                  ;; @@6cb9 208
-                 rts                                       ;; @@6cbb 208
- ;; @@6cbc 208
- ;; @@6cbc 208
-nbr              inc point                                ; adjust point ;; @@6cbc 208
-                 jsr eado                                 ; and exponent ;; @@6cbe 208
-                 inc bnr                                  ; and pointer to begin of no ;; @@6cc1 208
-                 cpy enr                                  ; end of number? ;; @@6cc4 208
-                 beq rrts                                 ; yes... ;; @@6cc7 208
-                 iny                                       ;; @@6cc9 208
- ;; @@6cca 208
-szer             jsr cmo                                  ; zero in no? ;; @@6cca 208
-                 beq nbr                                  ; yes... ;; @@6ccd 208
-                 rts                                      ; no... ;; @@6ccf 208
- ;; @@6cd0 208
- ;; @@6cd0 208
-; Using- chout: print number ;; @@6cd0 208
- ;; @@6cd0 208
-chout            lda dolr                                 ; dollar flag set? ;; @@6cd0 208
-                 bmi _local_1207_10                       ; no... ;; @@6cd3 208
-                 inc z_p_temp_1                           ; make room for $ ;; @@6cd5 208
- ;; @@6cd7 208
-_local_1207_10   ldx bnr                                  ; start of # ;; @@6cd7 208
-                 dex                                       ;; @@6cda 208
-                 ldy begfd                                ; begin of field ;; @@6cdb 208
- ;; @@6cde 208
+rrts             rts                                      
+
+; .page
+; Using- alg: delete leading zeros of no
+
+alg              ldy point                                ; start with a .?
+                 beq szer                                 ; yes...
+
+cho              ldy bnr                                  
+cmo              lda fbuffr,y                             ; start with a 0?
+                 cmp #'0'                                 
+                 rts                                      
+
+
+nbr              inc point                                ; adjust point
+                 jsr eado                                 ; and exponent
+                 inc bnr                                  ; and pointer to begin of no
+                 cpy enr                                  ; end of number?
+                 beq rrts                                 ; yes...
+                 iny                                      
+
+szer             jsr cmo                                  ; zero in no?
+                 beq nbr                                  ; yes...
+                 rts                                      ; no...
+
+
+; Using- chout: print number
+
+chout            lda dolr                                 ; dollar flag set?
+                 bmi _local_1207_10                       ; no...
+                 inc z_p_temp_1                           ; make room for $
+
+_local_1207_10   ldx bnr                                  ; start of #
+                 dex                                      
+                 ldy begfd                                ; begin of field
+

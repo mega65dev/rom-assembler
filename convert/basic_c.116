@@ -1,62 +1,62 @@
-window           jsr getbyt                               ; get u.l. col ;; @@4c60 116
-                 cpx #80                                   ;; @@4c63 116
-                 bbr7 _mode,_local_1115_10                 ;; @@4c65 116
-                 cpx #40                                   ;; @@4c68 116
-_local_1115_10   bcs _local_1115_98                        ;; @@4c6a 116
-                 stx window_temp                           ;; @@4c6c 116
- ;; @@4c6f 116
-                 jsr combyt                               ; get u.l. row ;; @@4c6f 116
-                 cpx #25                                   ;; @@4c72 116
-                 bcs _local_1115_98                        ;; @@4c74 116
-                 stx window_temp+1                         ;; @@4c76 116
- ;; @@4c79 116
-                 jsr combyt                               ; get l.r. column ;; @@4c79 116
-                 cpx #80                                   ;; @@4c7c 116
-                 bbr7 _mode,_local_1115_20                 ;; @@4c7e 116
-                 cpx #40                                   ;; @@4c81 116
-_local_1115_20   bcs _local_1115_98                        ;; @@4c83 116
-                 stx window_temp+2                         ;; @@4c85 116
-                 cpx window_temp                          ; can't be less than u.l. column ;; @@4c88 116
-                 bcc _local_1115_98                        ;; @@4c8b 116
- ;; @@4c8d 116
-                 jsr combyt                               ; get l.r. row ;; @@4c8d 116
-                 cpx #25                                   ;; @@4c90 116
-                 bcs _local_1115_98                        ;; @@4c92 116
-                 stx window_temp+3                         ;; @@4c94 116
-                 cpx window_temp+1                        ; can't be less than u.l. row ;; @@4c97 116
-                 bcc _local_1115_98                        ;; @@4c9a 116
- ;; @@4c9c 116
-                 jsr optzer                               ; get optional clear flag ;; @@4c9c 116
-                 cpx #2                                    ;; @@4c9f 116
-                 bcs _local_1115_98                        ;; @@4ca1 116
-                 phx                                       ;; @@4ca3 116
- ;; @@4ca4 116
-                 ldx window_temp                           ;; @@4ca4 116
-                 lda window_temp+1                         ;; @@4ca7 116
-                 clc                                       ;; @@4caa 116
-                 jsr _set_window                           ;; @@4cab 116
- ;; @@4cae 116
-                 ldx window_temp+2                         ;; @@4cae 116
-                 lda window_temp+3                         ;; @@4cb1 116
-                 sec                                       ;; @@4cb4 116
-                 jsr _set_window                           ;; @@4cb5 116
- ;; @@4cb8 116
-                 ldx #19                                  ; assume 'home', not 'cls' ;; @@4cb8 116
-                 pla                                       ;; @@4cba 116
-                 beq _local_1115_30                        ;; @@4cbb 116
-                 ldx #147                                  ;; @@4cbd 116
-_local_1115_30   txa                                       ;; @@4cbf 116
-                 jmp _bsout                                ;; @@4cc0 116
- ;; @@4cc3 116
-_local_1115_98   +lbra fcerr                              ; illegal value error ;; @@4cc3 116
- ;; @@4cc6 116
-;.end ;; @@4cc6 116
-; .page ;; @@4cc6 116
-; .subttl  FAST  SLOW ;; @@4cc6 116
- ;; @@4cc6 116
-;*********************************************************************** ;; @@4cc6 116
-; ;; @@4cc6 116
-;    FAST - put the system in FAST (4 MHz?) mode. ;; @@4cc6 116
-; ;; @@4cc6 116
-;*********************************************************************** ;; @@4cc6 116
- ;; @@4cc6 116
+window           jsr getbyt                               ; get u.l. col
+                 cpx #80                                  
+                 bbr7 _mode,_local_1115_10                
+                 cpx #40                                  
+_local_1115_10   bcs _local_1115_98                       
+                 stx window_temp                          
+
+                 jsr combyt                               ; get u.l. row
+                 cpx #25                                  
+                 bcs _local_1115_98                       
+                 stx window_temp+1                        
+
+                 jsr combyt                               ; get l.r. column
+                 cpx #80                                  
+                 bbr7 _mode,_local_1115_20                
+                 cpx #40                                  
+_local_1115_20   bcs _local_1115_98                       
+                 stx window_temp+2                        
+                 cpx window_temp                          ; can't be less than u.l. column
+                 bcc _local_1115_98                       
+
+                 jsr combyt                               ; get l.r. row
+                 cpx #25                                  
+                 bcs _local_1115_98                       
+                 stx window_temp+3                        
+                 cpx window_temp+1                        ; can't be less than u.l. row
+                 bcc _local_1115_98                       
+
+                 jsr optzer                               ; get optional clear flag
+                 cpx #2                                   
+                 bcs _local_1115_98                       
+                 phx                                      
+
+                 ldx window_temp                          
+                 lda window_temp+1                        
+                 clc                                      
+                 jsr _set_window                          
+
+                 ldx window_temp+2                        
+                 lda window_temp+3                        
+                 sec                                      
+                 jsr _set_window                          
+
+                 ldx #19                                  ; assume 'home', not 'cls'
+                 pla                                      
+                 beq _local_1115_30                       
+                 ldx #147                                 
+_local_1115_30   txa                                      
+                 jmp _bsout                               
+
+_local_1115_98   +lbra fcerr                              ; illegal value error
+
+;.end
+; .page
+; .subttl  FAST  SLOW
+
+;***********************************************************************
+;
+;    FAST - put the system in FAST (4 MHz?) mode.
+;
+;***********************************************************************
+

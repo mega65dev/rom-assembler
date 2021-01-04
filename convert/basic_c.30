@@ -1,18 +1,18 @@
-getstk           eor #$ff                                 ; make value 2's comp. ;; @@3194 30
-                 sec                                       ;; @@3196 30
-                 adc tos                                   ;; @@3197 30
-                 sta tos                                   ;; @@3199 30
-                 ldy tos+1                                 ;; @@319b 30
-                 bcs _local_1029_10                        ;; @@319d 30
-                 dey                                       ;; @@319f 30
-_local_1029_10   sty tos+1                                 ;; @@31a0 30
-                 cpy #>stktop                              ;; @@31a2 30
-                 +lbcc omerr                               ;; @@31a4 30
-                 bne _local_1029_20                        ;; @@31a7 30
-                 cmp tos                                   ;; @@31a9 30
-                 +lbcc omerr                               ;; @@31ab 30
-_local_1029_20   rts                                       ;; @@31ae 30
- ;; @@31af 30
-; .page ;; @@31af 30
-; (a,y) is a certain address.  REASON makes sure it is less than (fretop). ;; @@31af 30
- ;; @@31af 30
+getstk           eor #$ff                                 ; make value 2's comp.
+                 sec                                      
+                 adc tos                                  
+                 sta tos                                  
+                 ldy tos+1                                
+                 bcs _local_1029_10                       
+                 dey                                      
+_local_1029_10   sty tos+1                                
+                 cpy #>stktop                             
+                 +lbcc omerr                              
+                 bne _local_1029_20                       
+                 cmp tos                                  
+                 +lbcc omerr                              
+_local_1029_20   rts                                      
+
+; .page
+; (a,y) is a certain address.  REASON makes sure it is less than (fretop).
+

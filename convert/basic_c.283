@@ -1,37 +1,37 @@
-color            cmp #','                                 ; optional first arg ;; @@b49a 283
-                 beq _local_1282_20                        ;; @@b49c 283
-                 cmp #on_token                            ; SOFTWARE (Editor) color mode ;; @@b49e 283
-                 beq _local_1282_10                        ;; @@b4a0 283
-                 jsr chkesc                                ;; @@b4a2 283
-                 cmp #off_token                            ;; @@b4a5 283
-_local_1282_5    +lbne snerr                               ;; @@b4a7 283
- ;; @@b4aa 283
-                 ldy #'['                                 ; OFF (color & attributes) ;; @@b4aa 283
-                 !text $2c                                 ;; @@b4ac 283
-_local_1282_10   ldy #']'                                 ; ON ;; @@b4ad 283
-                 lda #esc                                  ;; @@b4af 283
-                 jsr _bsout                               ; do it ;; @@b4b1 283
-                 tya                                       ;; @@b4b4 283
-                 jsr _bsout                                ;; @@b4b5 283
-                 jsr chrget                               ; eat token ;; @@b4b8 283
-                 beq _local_1282_40                       ; eol- exit ;; @@b4bb 283
- ;; @@b4bd 283
-_local_1282_20   jsr chkcom                               ; else must be comma, eat & get next ;; @@b4bd 283
-; jsr chrgot  ;      [910930] ;; @@b4c0 283
-                 cmp #on_token                            ; HARDWARE (Vic) color mode ;; @@b4c0 283
-                 beq _local_1282_30                        ;; @@b4c2 283
-                 jsr chkesc                                ;; @@b4c4 283
-                 cmp #off_token                            ;; @@b4c7 283
-                 bne _local_1282_5                         ;; @@b4c9 283
- ;; @@b4cb 283
-                 lda #%00000010                           ; OFF (monochrome) ;; @@b4cb 283
-                 tsb vic+49                                ;; @@b4cd 283
-                 bra _local_1282_35                        ;; @@b4d0 283
- ;; @@b4d2 283
-_local_1282_30   lda #%00000010                           ; ON ;; @@b4d2 283
-                 trb vic+49                                ;; @@b4d4 283
-_local_1282_35   +lbra chrget                             ; exit after eating last token ;; @@b4d7 283
- ;; @@b4da 283
-_local_1282_40   rts                                      ; exit after encountering eol ;; @@b4da 283
- ;; @@b4db 283
-; .page ;; @@b4db 283
+color            cmp #','                                 ; optional first arg
+                 beq _local_1282_20                       
+                 cmp #on_token                            ; SOFTWARE (Editor) color mode
+                 beq _local_1282_10                       
+                 jsr chkesc                               
+                 cmp #off_token                           
+_local_1282_5    +lbne snerr                              
+
+                 ldy #'['                                 ; OFF (color & attributes)
+                 !text $2c                                
+_local_1282_10   ldy #']'                                 ; ON
+                 lda #esc                                 
+                 jsr _bsout                               ; do it
+                 tya                                      
+                 jsr _bsout                               
+                 jsr chrget                               ; eat token
+                 beq _local_1282_40                       ; eol- exit
+
+_local_1282_20   jsr chkcom                               ; else must be comma, eat & get next
+; jsr chrgot  ;      [910930]
+                 cmp #on_token                            ; HARDWARE (Vic) color mode
+                 beq _local_1282_30                       
+                 jsr chkesc                               
+                 cmp #off_token                           
+                 bne _local_1282_5                        
+
+                 lda #%00000010                           ; OFF (monochrome)
+                 tsb vic+49                               
+                 bra _local_1282_35                       
+
+_local_1282_30   lda #%00000010                           ; ON
+                 trb vic+49                               
+_local_1282_35   +lbra chrget                             ; exit after eating last token
+
+_local_1282_40   rts                                      ; exit after encountering eol
+
+; .page

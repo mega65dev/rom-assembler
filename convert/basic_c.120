@@ -1,8 +1,8 @@
-isletc           cmp #'A'                                  ;; @@5002 120
-                 bcc _local_1119_1                        ; if less than "a", return ;; @@5004 120
-                 sbc #'Z'+1                               ; $5a + 1 ;; @@5006 120
-                 sec                                       ;; @@5008 120
-                 sbc #$a5                                 ; reset carry if (a) .gt. "z". ;; @@5009 120
-_local_1119_1    rts                                       ;; @@500b 120
- ;; @@500c 120
- ;; @@500c 120
+isletc           cmp #'A'                                 
+                 bcc _local_1119_1                        ; if less than "a", return
+                 sbc #'Z'+1                               ; $5a + 1
+                 sec                                      
+                 sbc #$a5                                 ; reset carry if (a) .gt. "z".
+_local_1119_1    rts                                      
+
+

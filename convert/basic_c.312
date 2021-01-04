@@ -1,34 +1,34 @@
-edit_crunch                                               ; Edit mode only, find end of plain text in input buffer ;; @@bce1 312
-                 phw txtptr                               ; save current position in input buffer ;; @@bce1 312
-                 jsr rem                                  ; find the end of the line ;; @@bce4 312
-                 ldx txtptr                                ;; @@bce7 312
-                 pla                                      ; restore buffer pointer ;; @@bce9 312
-                 sta txtptr+1                              ;; @@bcea 312
-                 pla                                       ;; @@bcec 312
-                 sta txtptr                                ;; @@bced 312
-                 sec                                      ; compute length of line ;; @@bcef 312
-                 txa                                       ;; @@bcf0 312
-                 sbc txtptr                                ;; @@bcf1 312
-                 tay                                       ;; @@bcf3 312
-                 iny                                       ;; @@bcf4 312
-                 rts                                      ; done ;; @@bcf5 312
- ;; @@bcf6 312
- ;; @@bcf6 312
-edit_p1line                                               ; Edit mode only, list a line of plain text ;; @@bcf6 312
-                 jsr linprt                               ; print line number in (a,x) ;; @@bcf6 312
-                 lda #' '                                 ; print a space ;; @@bcf9 312
- ;; @@bcfb 312
-                 ldy #3                                   ; start printing at text following line number ;; @@bcfb 312
-_local_1311_10   jsr outch                                ; print character ;; @@bcfd 312
-                 iny                                       ;; @@bd00 312
-                 bbr5 helper,_local_1311_20               ; if called from FIND/CHANGE check for highlighting ;; @@bd01 312
-                 jsr helpsb                                ;; @@bd04 312
-_local_1311_20   jsr indlow                               ; get next character ;; @@bd07 312
-                 bne _local_1311_10                       ; loop until eol ;; @@bd0a 312
-                 rts                                      ; done ;; @@bd0c 312
- ;; @@bd0d 312
- ;; @@bd0d 312
-;.end ;; @@bd0d 312
-; .page ;; @@bd0d 312
-; EDIT LOAD/SAVE  Load or Save a plain text SEQ file in memory ;; @@bd0d 312
- ;; @@bd0d 312
+edit_crunch                                               ; Edit mode only, find end of plain text in input buffer
+                 phw txtptr                               ; save current position in input buffer
+                 jsr rem                                  ; find the end of the line
+                 ldx txtptr                               
+                 pla                                      ; restore buffer pointer
+                 sta txtptr+1                             
+                 pla                                      
+                 sta txtptr                               
+                 sec                                      ; compute length of line
+                 txa                                      
+                 sbc txtptr                               
+                 tay                                      
+                 iny                                      
+                 rts                                      ; done
+
+
+edit_p1line                                               ; Edit mode only, list a line of plain text
+                 jsr linprt                               ; print line number in (a,x)
+                 lda #' '                                 ; print a space
+
+                 ldy #3                                   ; start printing at text following line number
+_local_1311_10   jsr outch                                ; print character
+                 iny                                      
+                 bbr5 helper,_local_1311_20               ; if called from FIND/CHANGE check for highlighting
+                 jsr helpsb                               
+_local_1311_20   jsr indlow                               ; get next character
+                 bne _local_1311_10                       ; loop until eol
+                 rts                                      ; done
+
+
+;.end
+; .page
+; EDIT LOAD/SAVE  Load or Save a plain text SEQ file in memory
+

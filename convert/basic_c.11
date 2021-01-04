@@ -1,663 +1,663 @@
-keyword_list                                               ;; @@243a 11
-                 !text "EN",'D'+$80                       ; $80 ;; @@243a 11
-                 !text "FO",'R'+$80                       ; $81 ;; @@243d 11
-                 !text "NEX",'T'+$80                      ; $82 ;; @@2440 11
-                 !text "DAT",'A'+$80                      ; $83 ;; @@2444 11
-                 !text "INPUT",'#'+$80                    ; $84 ;; @@2448 11
-                 !text "INPU",'T'+$80                     ; $85 ;; @@244e 11
-                 !text "DI",'M'+$80                       ; $86 ;; @@2453 11
-                 !text "REA",'D'+$80                      ; $87 ;; @@2456 11
-                 !text "LE",'T'+$80                       ; $88 ;; @@245a 11
-                 !text "GOT",'O'+$80                      ; $89 ;; @@245d 11
-                 !text "RU",'N'+$80                       ; $8A ;; @@2461 11
-                 !text "I",'F'+$80                        ; $8B ;; @@2464 11
-                 !text "RESTOR",'E'+$80                   ; $8C ;; @@2466 11
-                 !text "GOSU",'B'+$80                     ; $8D ;; @@246d 11
-                 !text "RETUR",'N'+$80                    ; $8E ;; @@2472 11
-                 !text "RE",'M'+$80                       ; $8F ;; @@2478 11
-                 !text "STO",'P'+$80                      ; $90 ;; @@247b 11
-                 !text "O",'N'+$80                        ; $91 ;; @@247f 11
-                 !text "WAI",'T'+$80                      ; $92 ;; @@2481 11
-                 !text "LOA",'D'+$80                      ; $93 ;; @@2485 11
-                 !text "SAV",'E'+$80                      ; $94 ;; @@2489 11
-                 !text "VERIF",'Y'+$80                    ; $95 ;; @@248d 11
-                 !text "DE",'F'+$80                       ; $96 ;; @@2493 11
-                 !text "POK",'E'+$80                      ; $97 ;; @@2496 11
-                 !text "PRINT",'#'+$80                    ; $98 ;; @@249a 11
-                 !text "PRIN",'T'+$80                     ; $99 ;; @@24a0 11
-                 !text "CON",'T'+$80                      ; $9A ;; @@24a5 11
-                 !text "LIS",'T'+$80                      ; $9B ;; @@24a9 11
-                 !text "CL",'R'+$80                       ; $9C ;; @@24ad 11
-                 !text "CM",'D'+$80                       ; $9D ;; @@24b0 11
-                 !text "SY",'S'+$80                       ; $9E ;; @@24b3 11
-                 !text "OPE",'N'+$80                      ; $9F ;; @@24b6 11
-                 !text "CLOS",'E'+$80                     ; $A0 ;; @@24ba 11
-                 !text "GE",'T'+$80                       ; $A1 ;; @@24bf 11
-                 !text "NE",'W'+$80                       ; $A2 ;; @@24c2 11
-                 !text "TAB",'('+$80                      ; $A3 ;; @@24c5 11
-                 !text "T",'O'+$80                        ; $A4 ;; @@24c9 11
-                 !text "F",'N'+$80                        ; $A5 ;; @@24cb 11
-                 !text "SPC",'('+$80                      ; $A6 ;; @@24cd 11
-                 !text "THE",'N'+$80                      ; $A7 ;; @@24d1 11
-                 !text "NO",'T'+$80                       ; $A8 ;; @@24d5 11
-                 !text "STE",'P'+$80                      ; $A9 ;; @@24d8 11
-                 !text '+'+$80                            ; $AA operators ;; @@24dc 11
-                 !text '-'+$80                            ; $AB ;; @@24dd 11
-                 !text '*'+$80                            ; $AC ;; @@24de 11
-                 !text '/'+$80                            ; $AD ;; @@24df 11
-                 !text '^'+$80                            ; $AE ;; @@24e0 11
-                 !text "AN",'D'+$80                       ; $AF ;; @@24e1 11
-                 !text "O",'R'+$80                        ; $B0 ;; @@24e4 11
-                 !text '>'+$80                            ; $B1 ;; @@24e6 11
-                 !text '='+$80                            ; $B2 ;; @@24e7 11
-                 !text '<'+$80                            ; $B3 ;; @@24e8 11
-                 !text "SG",'N'+$80                       ; $B4 first numeric function ;; @@24e9 11
-                 !text "IN",'T'+$80                       ; $B5 ;; @@24ec 11
-                 !text "AB",'S'+$80                       ; $B6 ;; @@24ef 11
-                 !text "US",'R'+$80                       ; $B7 ;; @@24f2 11
-                 !text "FR",'E'+$80                       ; $B8 ;; @@24f5 11
-                 !text "PO",'S'+$80                       ; $B9 ;; @@24f8 11
-                 !text "SQ",'R'+$80                       ; $BA ;; @@24fb 11
-                 !text "RN",'D'+$80                       ; $BB ;; @@24fe 11
-                 !text "LO",'G'+$80                       ; $BC ;; @@2501 11
-                 !text "EX",'P'+$80                       ; $BD ;; @@2504 11
-                 !text "CO",'S'+$80                       ; $BE ;; @@2507 11
-                 !text "SI",'N'+$80                       ; $BF ;; @@250a 11
-                 !text "TA",'N'+$80                       ; $C0 ;; @@250d 11
-                 !text "AT",'N'+$80                       ; $C1 ;; @@2510 11
-                 !text "PEE",'K'+$80                      ; $C2 ;; @@2513 11
-                 !text "LE",'N'+$80                       ; $C3 ;; @@2517 11
-                 !text "STR",'$'+$80                      ; $C4 ;; @@251a 11
-                 !text "VA",'L'+$80                       ; $C5 ;; @@251e 11
-                 !text "AS",'C'+$80                       ; $C6 last numeric function ;; @@2521 11
-                 !text "CHR",'$'+$80                      ; $C7 last single-arg function ;; @@2524 11
-                 !text "LEFT",'$'+$80                     ; $C8 ;; @@2528 11
-                 !text "RIGHT",'$'+$80                    ; $C9 ;; @@252d 11
-                 !text "MID",'$'+$80                      ; $CA ;; @@2533 11
-                 !text "G",'O'+$80                        ; $CB ;; @@2537 11
-; beginning of new C128 keywords------------ ;; @@2539 11
-                 !text "RGRAPHI",'C'+$80                  ; $CC was 'rgr'   [910701] ;; @@2539 11
-                 !text "RCOLO",'R'+$80                    ; $CD was 'rclr'   [910701] ;; @@2541 11
-                 !text $80                                ; $CE null to skip over escape_function token ;; @@2547 11
-                 !text "JO",'Y'+$80                       ; $CF ;; @@2548 11
-                 !text "RPE",'N'+$80                      ; $D0 (was rdot in c128) ;; @@254b 11
-                 !text "DE",'C'+$80                       ; $D1 ;; @@254f 11
-                 !text "HEX",'$'+$80                      ; $D2 ;; @@2552 11
-                 !text "ERR",'$'+$80                      ; $D3 ;; @@2556 11
-                 !text "INST",'R'+$80                     ; $D4 last function ;; @@255a 11
- ;; @@255f 11
-                 !text "ELS",'E'+$80                      ; $D5 ;; @@255f 11
-                 !text "RESUM",'E'+$80                    ; $D6 ;; @@2563 11
-                 !text "TRA",'P'+$80                      ; $D7 ;; @@2569 11
-                 !text "TRO",'N'+$80                      ; $D8 ;; @@256d 11
-                 !text "TROF",'F'+$80                     ; $D9 ;; @@2571 11
-                 !text "SOUN",'D'+$80                     ; $DA ;; @@2576 11
-                 !text "VO",'L'+$80                       ; $DB ;; @@257b 11
-                 !text "AUT",'O'+$80                      ; $DC ;; @@257e 11
-                 !text "PUDE",'F'+$80                     ; $DD ;; @@2582 11
-                 !text "GRAPHI",'C'+$80                   ; $DE ;; @@2587 11
-                 !text "PAIN",'T'+$80                     ; $DF ;; @@258e 11
-                 !text "CHA",'R'+$80                      ; $E0 ;; @@2593 11
-                 !text "BO",'X'+$80                       ; $E1 ;; @@2597 11
-                 !text "CIRCL",'E'+$80                    ; $E2 ;; @@259a 11
-                 !text "PAST",'E'+$80                     ; $E3 (was gshape in C128) ;; @@25a0 11
-                 !text "CU",'T'+$80                       ; $E4 (was sshape in C128) ;; @@25a5 11
-                 !text "LIN",'E'+$80                      ; $E5 (was draw in C128) ;; @@25a8 11
-                 !text "LOCAT",'E'+$80                    ; $E6 ;; @@25ac 11
-                 !text "COLO",'R'+$80                     ; $E7 ;; @@25b2 11
-                 !text "SCNCL",'R'+$80                    ; $E8 ;; @@25b7 11
-                 !text "SCAL",'E'+$80                     ; $E9 ;; @@25bd 11
-                 !text "HEL",'P'+$80                      ; $EA ;; @@25c2 11
-                 !text "D",'O'+$80                        ; $EB ;; @@25c6 11
-                 !text "LOO",'P'+$80                      ; $EC ;; @@25c8 11
-                 !text "EXI",'T'+$80                      ; $ED ;; @@25cc 11
-                 !text "DI",'R'+$80                       ; $EE ;; @@25d0 11
-                 !text "DSAV",'E'+$80                     ; $EF ;; @@25d3 11
-                 !text "DLOA",'D'+$80                     ; $F0 ;; @@25d8 11
-                 !text "HEADE",'R'+$80                    ; $F1 ;; @@25dd 11
-                 !text "SCRATC",'H'+$80                   ; $F2 ;; @@25e3 11
-                 !text "COLLEC",'T'+$80                   ; $F3 ;; @@25ea 11
-                 !text "COP",'Y'+$80                      ; $F4 ;; @@25f1 11
-                 !text "RENAM",'E'+$80                    ; $F5 ;; @@25f5 11
-                 !text "BACKU",'P'+$80                    ; $F6 ;; @@25fb 11
-                 !text "DELET",'E'+$80                    ; $F7 ;; @@2601 11
-                 !text "RENUMBE",'R'+$80                  ; $F8 ;; @@2607 11
-                 !text "KE",'Y'+$80                       ; $F9 ;; @@260f 11
-                 !text "MONITO",'R'+$80                   ; $FA ;; @@2612 11
-                 !text "USIN",'G'+$80                     ; $FB ;; @@2619 11
-                 !text "UNTI",'L'+$80                     ; $FC ;; @@261e 11
-                 !text "WHIL",'E'+$80                     ; $FD ;; @@2623 11
-                 !text 0                                  ; $FE skip over the escape_command token ;; @@2628 11
- ;; @@2629 11
-;.end ;; @@2629 11
- ;; @@2629 11
-; .page ;; @@2629 11
-; .subttl Escape Tokens and Keywords ;; @@2629 11
- ;; @@2629 11
-; Escape Command Tokens ;; @@2629 11
- ;; @@2629 11
-esc_command_list                                           ;; @@2629 11
-                 !text "BAN",'K'+$80                      ; $02: set bank number ;; @@2629 11
-                 !text "FILTE",'R'+$80                    ; $03: set up filter ;; @@262d 11
-                 !text "PLA",'Y'+$80                      ; $04: play a tune ;; @@2633 11
-                 !text "TEMP",'O'+$80                     ; $05: set rate for playing ;; @@2637 11
-                 !text "MOVSP",'R'+$80                    ; $06: sprite position/movement ;; @@263c 11
-                 !text "SPRIT",'E'+$80                    ; $07: turn on/set up sprite ;; @@2642 11
-                 !text "SPRCOLO",'R'+$80                  ; $08: set sprite multicolor registers ;; @@2648 11
-                 !text "RRE",'G'+$80                      ; $09: retreive register values after 'SYS' ;; @@2650 11
-                 !text "ENVELOP",'E'+$80                  ; $0A: set up SID envelopes ;; @@2654 11
-                 !text "SLEE",'P'+$80                     ; $0B: delay ;; @@265c 11
-                 !text "CATALO",'G'+$80                   ; $0C: disk directory ;; @@2661 11
-                 !text "DOPE",'N'+$80                     ; $0D: open a disk file ;; @@2668 11
-                 !text "APPEN",'D'+$80                    ; $0E: open a disk file for appending ;; @@266d 11
-                 !text "DCLOS",'E'+$80                    ; $0F: close a file opened w/ DOPEN ;; @@2673 11
-                 !text "BSAV",'E'+$80                     ; $10: binary (non-program) save ;; @@2679 11
-                 !text "BLOA",'D'+$80                     ; $11: binary load ;; @@267e 11
-                 !text "RECOR",'D'+$80                    ; $12: ;; @@2683 11
-                 !text "CONCA",'T'+$80                    ; $13: concatenate 2 files ;; @@2689 11
-                 !text "DVERIF",'Y'+$80                   ; $14: verify a saved program ;; @@268f 11
-                 !text "DCLEA",'R'+$80                    ; $15: re-initialize a drive ;; @@2696 11
-                 !text "SPRSA",'V'+$80                    ; $16: sprite/string to sprite/string ;; @@269c 11
-                 !text "COLLISIO",'N'+$80                 ; $17: set traps for sprite & light pen collisions ;; @@26a2 11
-                 !text "BEGI",'N'+$80                     ; $18: mark start of a b-block ;; @@26ab 11
-                 !text "BEN",'D'+$80                      ; $19: ..and its end, too! ;; @@26b0 11
-                 !text "WINDO",'W'+$80                    ; $1A: set screen window ;; @@26b4 11
-                 !text "BOO",'T'+$80                      ; $1B: load&run ML or autoboot a disk ;; @@26ba 11
-                 !text "WIDT",'H'+$80                     ; $1C: single/double width drawing ;; @@26be 11
-                 !text "SPRDE",'F'+$80                    ; $1D: define a sprite ;; @@26c3 11
-                 !text "QUI",'T'+$80                      ; $1E: (UNIMPLEMENTED) ;; @@26c9 11
-                 !text "DM",'A'+$80                       ; $1F: access memory ;; @@26cd 11
-                 !text ' '+$80                            ; $20: POISON - space character ;; @@26d0 11
-                 !text "DM",'A'+$80                       ; $21: access memory ;; @@26d1 11
-                 !text ' '+$80                            ; $22: POISON - quote character ;; @@26d4 11
-                 !text "DM",'A'+$80                       ; $23: access memory ;; @@26d5 11
-                 !text "OF",'F'+$80                       ; $24: KEY OFF ;; @@26d8 11
-                 !text "FAS",'T'+$80                      ; $25: go to 2 MHz. mode ;; @@26db 11
-                 !text "SLO",'W'+$80                      ; $26: go to 1 MHz. mode ;; @@26df 11
-                 !text "TYP",'E'+$80                      ; $27: type SEQ file ;; @@26e3 11
-                 !text "BVERIF",'Y'+$80                   ; $28: verify a saved program ;; @@26e7 11
-                 !text "ECTOR",'Y'+$80                    ; $29: dirECTORY ;; @@26ee 11
-                 !text "ERAS",'E'+$80                     ; $2A: alias for scratch ;; @@26f4 11
-                 !text "FIN",'D'+$80                      ; $2B: find string ;; @@26f9 11
-                 !text "CHANG",'E'+$80                    ; $2C: change string ;; @@26fd 11
-                 !text "SE",'T'+$80                       ; $2D: ;; @@2703 11
-                 !text "SCREE",'N'+$80                    ; $2E: ;; @@2706 11
-                 !text "POLYGO",'N'+$80                   ; $2F: ;; @@270c 11
-                 !text "ELLIPS",'E'+$80                   ; $30: ;; @@2713 11
-                 !text "VIEWPOR",'T'+$80                  ; $31: ;; @@271a 11
-                 !text "GCOP",'Y'+$80                     ; $32: ;; @@2722 11
-                 !text "PE",'N'+$80                       ; $33: ;; @@2727 11
-                 !text "PALETT",'E'+$80                   ; $34: ;; @@272a 11
-                 !text "DMOD",'E'+$80                     ; $35: ;; @@2731 11
-                 !text "DPA",'T'+$80                      ; $36: ;; @@2736 11
-                 !text "FORMA",'T'+$80                    ; $37: alias for HEADER command  [911017] ;; @@273a 11
-                 !text "GENLOC",'K'+$80                   ; $38:     [910108] ;; @@2740 11
-                 !text "FOREGROUN",'D'+$80                ; $39:     [910109] ;; @@2747 11
-                 !text ' '+$80                            ; $3A: POISON - colon character  " ;; @@2751 11
-                 !text "BACKGROUN",'D'+$80                ; $3B:     " ;; @@2752 11
-                 !text "BORDE",'R'+$80                    ; $3C:     " ;; @@275c 11
-                 !text "HIGHLIGH",'T'+$80                 ; $3D:     " ;; @@2762 11
-                 !text "MOUS",'E'+$80                     ; $3E:     [910122] ;; @@276b 11
-                 !text "RMOUS",'E'+$80                    ; $3F: return coordinates of mouse [910123] ;; @@2770 11
-                 !text "DIS",'K'+$80                      ; $40:     [910123] ;; @@2776 11
-                 !text "CURSO",'R'+$80                    ; $41:     [910228] ;; @@277a 11
-                 !text "RCURSO",'R'+$80                   ; $42: return cursor position  [910228] ;; @@2780 11
-                 !text "LOADIF",'F'+$80                   ; $43: load IFF picture from disk [910402] ;; @@2787 11
-                 !text "SAVEIF",'F'+$80                   ; $44: save IFF picture to   disk [910402] ;; @@278e 11
-                 !text "EDI",'T'+$80                      ; $45: Edit mode on/off   [910620] ;; @@2795 11
- ;; @@2799 11
-                 !text 0                                  ; End marker ;; @@2799 11
-;(don't forget to change last_command_token!) ;; @@279a 11
-; .page ;; @@279a 11
-; Escape Function Tokens ;; @@279a 11
- ;; @@279a 11
-esc_function_list                                           ;; @@279a 11
-                 !text "PO",'T'+$80                       ; $02: return paddle value ;; @@279a 11
-                 !text "BUM",'P'+$80                      ; $03: read sprite collision ;; @@279d 11
-                 !text "LPE",'N'+$80                      ; $04: read light pen value ;; @@27a1 11
-                 !text "RSPPO",'S'+$80                    ; $05: read sprite position ;; @@27a5 11
-                 !text "RSPRIT",'E'+$80                   ; $06: read sprite value ;; @@27ab 11
-                 !text "RSPCOLO",'R'+$80                  ; $07: read sprite multicolor value ;; @@27b2 11
-                 !text "XO",'R'+$80                       ; $08: exclusive or ;; @@27ba 11
-                 !text "RWINDO",'W'+$80                   ; $09: read window size ;; @@27bd 11
-                 !text "POINTE",'R'+$80                   ; $0a: return address of descriptor ;; @@27c4 11
-                 !text "MO",'D'+$80                       ; $0b: modulus    [910402] ;; @@27cb 11
-                 !text "PIXE",'L'+$80                     ; $0c: return BP data at pixel  [910820] ;; @@27ce 11
-                 !text "RPALETT",'E'+$80                  ; $0d: return RGB component of color [910820] ;; @@27d3 11
-                 !text 0                                   ;; @@27db 11
- ;; @@27dc 11
-;.end ;; @@27dc 11
-; .page ;; @@27dc 11
-; .subttl Jump Table For Dispatch Routine ;; @@27dc 11
-stmdsp                                                     ;; @@27dc 11
-                 !word end-1                               ;; @@27dc 11
-                 !word for-1                               ;; @@27de 11
-                 !word next-1                              ;; @@27e0 11
-                 !word data-1                              ;; @@27e2 11
-                 !word inputn-1                            ;; @@27e4 11
-                 !word input-1                             ;; @@27e6 11
-                 !word dim-1                               ;; @@27e8 11
-                 !word read-1                              ;; @@27ea 11
-                 !word let-1                               ;; @@27ec 11
-                 !word goto-1                              ;; @@27ee 11
-                 !word run-1                               ;; @@27f0 11
-                 !word if-1                                ;; @@27f2 11
-                 !word restor-1                            ;; @@27f4 11
-                 !word gosub-1                             ;; @@27f6 11
-                 !word return-1                            ;; @@27f8 11
-                 !word rem-1                               ;; @@27fa 11
-                 !word stop-1                              ;; @@27fc 11
-                 !word ongoto-1                            ;; @@27fe 11
-                 !word wait-1                              ;; @@2800 11
-                 !word load-1                              ;; @@2802 11
-                 !word save-1                              ;; @@2804 11
-                 !word verify-1                            ;; @@2806 11
-                 !word def-1                               ;; @@2808 11
-                 !word poke-1                              ;; @@280a 11
-                 !word printn-1                            ;; @@280c 11
-                 !word print-1                             ;; @@280e 11
-                 !word cont-1                              ;; @@2810 11
-                 !word list-1                              ;; @@2812 11
-                 !word clear-1                             ;; @@2814 11
-                 !word cmd-1                               ;; @@2816 11
-                 !word sys-1                               ;; @@2818 11
-                 !word open-1                              ;; @@281a 11
-                 !word close-1                             ;; @@281c 11
-                 !word get-1                               ;; @@281e 11
-                 !word new-1                               ;; @@2820 11
- ;; @@2822 11
-                 !word else-1                              ;; @@2822 11
-                 !word resume-1                            ;; @@2824 11
-                 !word trap-1                              ;; @@2826 11
-                 !word tron-1                              ;; @@2828 11
-                 !word troff-1                             ;; @@282a 11
-                 !word sound-1                             ;; @@282c 11
-                 !word volume-1                            ;; @@282e 11
-                 !word auto-1                              ;; @@2830 11
-                 !word puctrl-1                            ;; @@2832 11
-                 !word graphic-1                           ;; @@2834 11
- ;; @@2836 11
-                 !word C65__paint-1                        ;; @@2836 11
-                 !word C65__char-1                         ;; @@2838 11
-                 !word C65__box-1                          ;; @@283a 11
-                 !word C65__circle-1                       ;; @@283c 11
-                 !word C65__paste-1                       ; gshape ;; @@283e 11
-                 !word C65__cut-1                         ; sshape ;; @@2840 11
-                 !word C65__line-1                        ; draw ;; @@2842 11
- ;; @@2844 11
-                 !word bad_command-1                      ; escape - SYSTEM - unimplemented command ;; @@2844 11
-; .word  locate-1 ;; @@2846 11
- ;; @@2846 11
-                 !word color-1                             ;; @@2846 11
-                 !word scnclr-1                            ;; @@2848 11
- ;; @@284a 11
-                 !word bad_command-1                      ; escape - SYSTEM - unimplemented command ;; @@284a 11
-; .word  scale-1 ;; @@284c 11
- ;; @@284c 11
-                 !word help-1                              ;; @@284c 11
-                 !word do-1                                ;; @@284e 11
-                 !word loop-1                              ;; @@2850 11
-                 !word exit-1                              ;; @@2852 11
-                 !word directory-1                         ;; @@2854 11
-                 !word dsave-1                             ;; @@2856 11
-                 !word dload-1                             ;; @@2858 11
-                 !word header-1                            ;; @@285a 11
-                 !word scratch-1                           ;; @@285c 11
-                 !word collect-1                           ;; @@285e 11
-                 !word dcopy-1                             ;; @@2860 11
-                 !word rename-1                            ;; @@2862 11
-                 !word backup-1                            ;; @@2864 11
-                 !word delete-1                            ;; @@2866 11
-                 !word renumber-1                          ;; @@2868 11
-                 !word key-1                               ;; @@286a 11
-                 !word _monitor-1                          ;; @@286c 11
-                 !word bank-1                             ; escape ;; @@286e 11
-                 !word filter-1                           ; escape ;; @@2870 11
-                 !word play-1                             ; escape ;; @@2872 11
-                 !word tempo-1                            ; escape ;; @@2874 11
- ;; @@2876 11
-                 !word movspr-1                           ; escape ;; @@2876 11
-                 !word sprite-1                           ; escape ;; @@2878 11
-                 !word sprcolor-1                         ; escape ;; @@287a 11
- ;; @@287c 11
-                 !word rreg-1                             ; escape ;; @@287c 11
-                 !word envelope-1                         ; escape ;; @@287e 11
-                 !word sleep-1                            ; escape ;; @@2880 11
-                 !word directory-1                        ; escape ;; @@2882 11
-                 !word dopen-1                            ; escape ;; @@2884 11
-                 !word append-1                           ; escape ;; @@2886 11
-                 !word dclose-1                           ; escape ;; @@2888 11
-                 !word bsave-1                            ; escape ;; @@288a 11
-                 !word bload-1                            ; escape ;; @@288c 11
-                 !word record-1                           ; escape ;; @@288e 11
-                 !word concat-1                           ; escape ;; @@2890 11
-                 !word dverify-1                          ; escape ;; @@2892 11
-                 !word dclear-1                           ; escape ;; @@2894 11
- ;; @@2896 11
-                 !word sprsav-1                           ; escape ;; @@2896 11
-                 !word collision-1                        ; escape ;; @@2898 11
- ;; @@289a 11
-                 !word data-1                             ; escape - BEGIN ;; @@289a 11
-                 !word data-1                             ; escape - BEND ;; @@289c 11
-                 !word window-1                           ; escape ;; @@289e 11
-                 !word boot-1                             ; escape ;; @@28a0 11
- ;; @@28a2 11
-                 !word bad_command-1                       ;; @@28a2 11
-; .word  set_width-1 ;escape - WIDTH ;; @@28a4 11
- ;; @@28a4 11
-                 !word bad_command-1                       ;; @@28a4 11
-; .word  sprdef-1  ;escape - Sprite Definition mode ;; @@28a6 11
- ;; @@28a6 11
-                 !word bad_command-1                      ; escape - QUIT - unimplemented command ;; @@28a6 11
-                 !word dma-1                              ; escape ;; @@28a8 11
-                 !word 0                                  ; placeholder to skip over the space character ;; @@28aa 11
-                 !word dma-1                              ; escape ;; @@28ac 11
-                 !word 0                                  ; placeholder to skip over the quote character ;; @@28ae 11
-                 !word dma-1                              ; escape ;; @@28b0 11
-                 !word bad_command-1                      ; escape - OFF - unimplemented command ;; @@28b2 11
-                 !word fast-1                             ; escape ;; @@28b4 11
-                 !word slow-1                             ; escape ;; @@28b6 11
-                 !word type-1                             ; escape (C65: type SEQ file) ;; @@28b8 11
-                 !word bverify-1                          ; escape (C65: verify BINary file) ;; @@28ba 11
-                 !word snerr-1                            ; escape (C65: kludge- dirECTORY) ;; @@28bc 11
-                 !word scratch-1                          ; escape (C65: erase alias for scratch) ;; @@28be 11
-                 !word find-1                             ; escape (C65: find BASIC text) ;; @@28c0 11
-                 !word change-1                           ; escape (C65: change BASIC text) ;; @@28c2 11
- ;; @@28c4 11
-                 !word C65__set-1                         ; escape (C65: multi-purpose command) ;; @@28c4 11
-                 !word Screen-1                           ; escape (C65: SCREEN) ;; @@28c6 11
-                 !word C65__polygon-1                     ; escape (C65: POLYGON) ;; @@28c8 11
-                 !word C65__ellipse-1                     ; escape (C65: ELLIPSE) ;; @@28ca 11
-                 !word C65__Viewport-1                    ; escape (C65: VIEWPORT) ;; @@28cc 11
-                 !word C65__copy-1                        ; escape (C65: GCOPY) ;; @@28ce 11
-                 !word C65__setpen-1                      ; escape (C65: PEN) ;; @@28d0 11
-                 !word C65__setpalette-1                  ; escape (C65: PALETTE) ;; @@28d2 11
-                 !word C65__setdmode-1                    ; escape (C65: DMODE) ;; @@28d4 11
-                 !word C65__setdpat-1                     ; escape (C65: DPAT) ;; @@28d6 11
-                 !word header-1                           ; format alias for header command [911017] ;; @@28d8 11
-                 !word genlock-1                          ; [910108] ;; @@28da 11
- ;; @@28dc 11
-stmdsp2                                                    ;; @@28dc 11
-                 !word foreground-1                       ; this is the 128th command!  [910109] ;; @@28dc 11
-                 !word 0                                  ; placeholder to skip over the colon character ;; @@28de 11
-                 !word background-1                        ;; @@28e0 11
-                 !word border-1                            ;; @@28e2 11
-                 !word highlight-1                         ;; @@28e4 11
-                 !word mouse-1                            ; [910122] ;; @@28e6 11
-                 !word rmouse-1                           ; [910123] ;; @@28e8 11
-                 !word disk-1                             ; [910123] ;; @@28ea 11
-                 !word cursor-1                           ; [910228] ;; @@28ec 11
-                 !word rcursor-1                          ; [910228] ;; @@28ee 11
-                 !word loadiff-1                          ; [910402] ;; @@28f0 11
-                 !word saveiff-1                          ; [910930] ;; @@28f2 11
-                 !word edit-1                             ; [910620] ;; @@28f4 11
- ;; @@28f6 11
-; .page ;; @@28f6 11
-fundsp                                                     ;; @@28f6 11
-                 !word sgn                                 ;; @@28f6 11
-                 !word int                                 ;; @@28f8 11
-                 !word abs                                 ;; @@28fa 11
-                 !word usrpok                              ;; @@28fc 11
-                 !word fre                                 ;; @@28fe 11
-                 !word pos                                 ;; @@2900 11
-                 !word sqr                                 ;; @@2902 11
-                 !word rnd                                 ;; @@2904 11
-                 !word log                                 ;; @@2906 11
-                 !word exp                                 ;; @@2908 11
-                 !word cos                                 ;; @@290a 11
-                 !word sin                                 ;; @@290c 11
-                 !word tan                                 ;; @@290e 11
-                 !word atn                                 ;; @@2910 11
-                 !word peek                                ;; @@2912 11
-                 !word len                                 ;; @@2914 11
-                 !word strd                                ;; @@2916 11
-                 !word val                                 ;; @@2918 11
-                 !word asc                                 ;; @@291a 11
-                 !word chrd                                ;; @@291c 11
-                 !word leftd                               ;; @@291e 11
-                 !word rightd                              ;; @@2920 11
-                 !word midd                                ;; @@2922 11
-                 !word rgraphic                           ; [910701] ;; @@2924 11
-                 !word rcolor                             ; [910701] ;; @@2926 11
-                 !word 0                                  ; placeholder for escape function token ;; @@2928 11
-                 !word joy                                 ;; @@292a 11
-                 !word rpen                               ; was rdot     [910820] ;; @@292c 11
-                 !word dcml                               ; dec ;; @@292e 11
-                 !word hexd                                ;; @@2930 11
-                 !word errd                                ;; @@2932 11
-                 !word pot                                ; escape ;; @@2934 11
-                 !word bump                               ; escape ;; @@2936 11
-                 !word lpen                               ; escape ;; @@2938 11
-                 !word rsppos                             ; escape ;; @@293a 11
-                 !word rsprite                            ; escape ;; @@293c 11
-                 !word rspcolor                           ; escape ;; @@293e 11
-                 !word xor                                ; escape ;; @@2940 11
-                 !word rwindow                            ; escape ;; @@2942 11
-                 !word pointer                            ; escape ;; @@2944 11
-                 !word mod                                ; escape c65     [910402] ;; @@2946 11
-                 !word pixel                              ; escape c65     [910820] ;; @@2948 11
-                 !word rpalette                           ; escape c65     [910820] ;; @@294a 11
- ;; @@294c 11
-; .page ;; @@294c 11
-optab            !text 121                                 ;; @@294c 11
-                 !word faddt-1                             ;; @@294d 11
-                 !text 121                                 ;; @@294f 11
-                 !word fsubt-1                             ;; @@2950 11
-                 !text 123                                 ;; @@2952 11
-                 !word fmultt-1                            ;; @@2953 11
-                 !text 123                                 ;; @@2955 11
-                 !word fdivt-1                             ;; @@2956 11
-                 !text 127                                 ;; @@2958 11
-                 !word fpwrt-1                             ;; @@2959 11
-                 !text 80                                  ;; @@295b 11
-                 !word andop-1                             ;; @@295c 11
-                 !text 70                                  ;; @@295e 11
-                 !word orop-1                              ;; @@295f 11
-negtab           !text 125                                 ;; @@2961 11
-                 !word negop-1                             ;; @@2962 11
-                 !text 90                                  ;; @@2964 11
-                 !word notop-1                             ;; @@2965 11
-ptdorl           !text 100                                 ;; @@2967 11
-                 !word dorel-1                             ;; @@2968 11
- ;; @@296a 11
-;.end ;; @@296a 11
-; .page ;; @@296a 11
-; .subttl  Keyword Equates ;; @@296a 11
- ;; @@296a 11
-end_token        = $80                                    ; v2 commands ;; @@296a 11
-for_token        = $81                                     ;; @@296a 11
-next_token       = $82                                     ;; @@296a 11
-data_token       = $83                                     ;; @@296a 11
-input_token      = $84                                     ;; @@296a 11
-goto_token       = $89                                     ;; @@296a 11
-run_token        = $8a                                     ;; @@296a 11
-restore_token    = $8c                                     ;; @@296a 11
-gosub_token      = $8d                                     ;; @@296a 11
-rem_token        = $8f                                     ;; @@296a 11
-on_token         = $91                                     ;; @@296a 11
-load_token       = $93                                     ;; @@296a 11
-save_token       = $94                                     ;; @@296a 11
-verify_token     = $95                                     ;; @@296a 11
-def_token        = $96                                     ;; @@296a 11
-print_token      = $99                                     ;; @@296a 11
-clr_token        = $9c                                     ;; @@296a 11
-sys_token        = $9e                                     ;; @@296a 11
-open_token       = $9f                                     ;; @@296a 11
-close_token      = $a0                                     ;; @@296a 11
-new_token        = $a2                                     ;; @@296a 11
-tab_token        = $a3                                     ;; @@296a 11
-to_token         = $a4                                     ;; @@296a 11
-fn_token         = $a5                                     ;; @@296a 11
-spc_token        = $a6                                     ;; @@296a 11
-then_token       = $a7                                     ;; @@296a 11
-not_token        = $a8                                     ;; @@296a 11
-step_token       = $a9                                     ;; @@296a 11
-plus_token       = $aa                                    ; operators ;; @@296a 11
-minus_token      = $ab                                     ;; @@296a 11
-greater_token    = $b1                                     ;; @@296a 11
-equal_token      = $b2                                     ;; @@296a 11
-less_token       = $b3                                     ;; @@296a 11
-first_function_token = $b4                                    ; v2 functions ;; @@296a 11
-left_token       = $c8                                     ;; @@296a 11
-mid_token        = $ca                                     ;; @@296a 11
-go_token         = $cb                                    ; kludges ;; @@296a 11
-rgraphic_token   = $cc                                    ; first new v7 token ;; @@296a 11
-esc_function_token = $ce                                     ;; @@296a 11
-err_token        = $d3                                     ;; @@296a 11
-instr_token      = $d4                                     ;; @@296a 11
-last_function_token = $d4                                     ;; @@296a 11
-else_token       = $d5                                     ;; @@296a 11
-resume_token     = $d6                                     ;; @@296a 11
-trap_token       = $d7                                     ;; @@296a 11
-color_token      = $e7                                     ;; @@296a 11
-do_token         = $eb                                     ;; @@296a 11
-loop_token       = $ec                                     ;; @@296a 11
-key_token        = $f9                                     ;; @@296a 11
-monitor_token    = $fa                                     ;; @@296a 11
-using_token      = $fb                                     ;; @@296a 11
-until_token      = $fc                                     ;; @@296a 11
-while_token      = $fd                                     ;; @@296a 11
-esc_command_token = $fe                                     ;; @@296a 11
-; .page ;; @@296a 11
-first_esc_command_token = $02                                     ;; @@296a 11
-collision_token  = $17                                     ;; @@296a 11
-begin_token      = $18                                     ;; @@296a 11
-bend_token       = $19                                     ;; @@296a 11
-off_token        = $24                                     ;; @@296a 11
-ectory_token     = $29                                     ;; @@296a 11
-set_token        = $2d                                     ;; @@296a 11
-pic_token        = $37                                     ;; @@296a 11
-disk_token       = $40                                     ;; @@296a 11
-last_esc_command_token = $45                                    ; <<<< last_command_token ;; @@296a 11
- ;; @@296a 11
-first_esc_function_token = $02                                     ;; @@296a 11
-pointer_token    = $0a                                     ;; @@296a 11
-last_esc_function_token = $0d                                    ; [910820] ;; @@296a 11
- ;; @@296a 11
-; .page ;; @@296a 11
-; .subttl Error Messages ;; @@296a 11
- ;; @@296a 11
-ok_error_message                                           ;; @@296a 11
-                 !text "O",'K'+$80                        ; 0 for ERR$ [910911] ;; @@296a 11
-error_message_list                                           ;; @@296c 11
-                 !text "TOO MANY FILE",'S'+$80            ; 1 ;; @@296c 11
-                 !text "FILE OPE",'N'+$80                 ; 2 ;; @@297a 11
-                 !text "FILE NOT OPE",'N'+$80             ; 3 ;; @@2983 11
-                 !text "FILE NOT FOUN",'D'+$80            ; 4 ;; @@2990 11
-                 !text "DEVICE NOT PRESEN",'T'+$80        ; 5 ;; @@299e 11
-                 !text "NOT INPUT FIL",'E'+$80            ; 6 ;; @@29b0 11
-                 !text "NOT OUTPUT FIL",'E'+$80           ; 7 ;; @@29be 11
-                 !text "MISSING FILE NAM",'E'+$80         ; 8 ;; @@29cd 11
-                 !text "ILLEGAL DEVICE NUMBE",'R'+$80     ; 9 ;; @@29de 11
-                 !text "NEXT WITHOUT FO",'R'+$80          ; 10 ;; @@29f3 11
-                 !text "SYNTA",'X'+$80                    ; 11 ;; @@2a03 11
-                 !text "RETURN WITHOUT GOSU",'B'+$80      ; 12 ;; @@2a09 11
-                 !text "OUT OF DAT",'A'+$80               ; 13 ;; @@2a1d 11
-                 !text "ILLEGAL QUANTIT",'Y'+$80          ; 14 ;; @@2a28 11
-                 !text "OVERFLO",'W'+$80                  ; 15 ;; @@2a38 11
-                 !text "OUT OF MEMOR",'Y'+$80             ; 16 ;; @@2a40 11
-                 !text "UNDEF",$27,"D STATEMEN",'T'+$80   ; 17 ;; @@2a4d 11
-                 !text "BAD SUBSCRIP",'T'+$80             ; 18 ;; @@2a5e 11
-                 !text "REDIM",$27,"D ARRA",'Y'+$80       ; 19 ;; @@2a6b 11
-                 !text "DIVISION BY ZER",'O'+$80          ; 20 ;; @@2a78 11
-                 !text "ILLEGAL DIREC",'T'+$80            ; 21 ;; @@2a88 11
-                 !text "TYPE MISMATC",'H'+$80             ; 22 ;; @@2a96 11
-                 !text "STRING TOO LON",'G'+$80           ; 23 ;; @@2aa3 11
-                 !text "FILE DAT",'A'+$80                 ; 24 ;; @@2ab2 11
-                 !text "FORMULA TOO COMPLE",'X'+$80       ; 25 ;; @@2abb 11
-                 !text "CAN",$27,"T CONTINU",'E'+$80      ; 26 ;; @@2ace 11
-                 !text "UNDEF'D FUNCTIO",'N'+$80          ; 27 ;; @@2adc 11
-                 !text "VERIF",'Y'+$80                    ; 28 ;; @@2aec 11
-                 !text "LOA",'D'+$80                      ; 29 ;; @@2af2 11
-                 !text "BREA",'K'+$80                     ; 30 ???? null & space [910925] ;; @@2af6 11
-                 !text "CAN'T RESUM",'E'+$80              ; 31 ;; @@2afb 11
-                 !text "LOOP NOT FOUN",'D'+$80            ; 32 ;; @@2b07 11
-                 !text "LOOP WITHOUT D",'O'+$80           ; 33 ;; @@2b15 11
-                 !text "DIRECT MODE ONL",'Y'+$80          ; 34 ;; @@2b24 11
-; .byte 'NO GRAPHICS ARE','A'+$80   ;35 ;; @@2b34 11
-                 !text "SCREEN NOT OPE",'N'+$80           ; 35    [911001] ;; @@2b34 11
-                 !text "BAD DIS",'K'+$80                  ; 36 ???? used for failed bootsys ;; @@2b43 11
-                 !text "BEND NOT FOUN",'D'+$80            ; 37 ;; @@2b4b 11
-                 !text "LINE NUMBER TOO LARG",'E'+$80     ; 38 ;; @@2b59 11
-                 !text "UNRESOLVED REFERENC",'E'+$80      ; 39 ;; @@2b6e 11
-                 !text "UNIMPLEMENTED COMMAN",'D'+$80     ; 40 ;; @@2b82 11
-                 !text "FILE REA",'D'+$80                 ; 41 ;; @@2b97 11
-                 !text "EDIT MOD",'E'+$80                 ; 42    [910620] ;; @@2ba0 11
- ;; @@2ba9 11
-; .page ;; @@2ba9 11
-; .subttl  Error Message Numbers ;; @@2ba9 11
- ;; @@2ba9 11
-errtmf           = 1                                       ;; @@2ba9 11
-errfno           = 3                                       ;; @@2ba9 11
-errfnf           = 4                                       ;; @@2ba9 11
-err_missing_fname = 8                                       ;; @@2ba9 11
-err_illegal_device = 9                                       ;; @@2ba9 11
-errnf            = 10                                      ;; @@2ba9 11
-errsn            = 11                                      ;; @@2ba9 11
-errrg            = 12                                      ;; @@2ba9 11
-errod            = 13                                      ;; @@2ba9 11
-errfc            = 14                                      ;; @@2ba9 11
-errov            = 15                                      ;; @@2ba9 11
-errom            = 16                                      ;; @@2ba9 11
-errus            = 17                                      ;; @@2ba9 11
-errbs            = 18                                      ;; @@2ba9 11
-errdd            = 19                                      ;; @@2ba9 11
-errdvo           = 20                                      ;; @@2ba9 11
-errid            = 21                                      ;; @@2ba9 11
-errtm            = 22                                      ;; @@2ba9 11
-errls            = 23                                      ;; @@2ba9 11
-errbd            = 24                                      ;; @@2ba9 11
-errst            = 25                                      ;; @@2ba9 11
-errcn            = 26                                      ;; @@2ba9 11
-erruf            = 27                                      ;; @@2ba9 11
-ervfy            = 28                                      ;; @@2ba9 11
-erload           = 29                                      ;; @@2ba9 11
-erbrk            = 30                                      ;; @@2ba9 11
-errcr            = 31                                      ;; @@2ba9 11
-errlnf           = 32                                      ;; @@2ba9 11
-errlwd           = 33                                      ;; @@2ba9 11
-erroid           = 34                                      ;; @@2ba9 11
-errng            = 35                                      ;; @@2ba9 11
-errbdk           = 36                                      ;; @@2ba9 11
-err_no_bend      = 37                                      ;; @@2ba9 11
-err_too_large    = 38                                      ;; @@2ba9 11
-err_ref          = 39                                      ;; @@2ba9 11
-err_bad_command  = 40                                      ;; @@2ba9 11
-err_file_read    = 41                                      ;; @@2ba9 11
-edit_mode_error  = 42                                     ; [910620] ;; @@2ba9 11
-last_error_message = 42                                     ; # of last error msg ;; @@2ba9 11
- ;; @@2ba9 11
-;.end ;; @@2ba9 11
-; .page ;; @@2ba9 11
-; .subttl Error message output ;; @@2ba9 11
- ;; @@2ba9 11
-; Routine to translate error message # in .a ;; @@2ba9 11
-; into address of string containing message in index2 ;; @@2ba9 11
- ;; @@2ba9 11
-erstup           tax                                      ; error set up ;; @@2ba9 11
-                 ldy #0                                   ; start with address of first error message ;; @@2baa 11
-                 lda #<error_message_list                  ;; @@2bac 11
-                 sta index2                                ;; @@2bae 11
-                 lda #>error_message_list                  ;; @@2bb0 11
-                 sta index2+1                              ;; @@2bb2 11
- ;; @@2bb4 11
-_local_1010_1    dex                                       ;; @@2bb4 11
-                 bmi _local_1010_4                        ; finished when .x decrements out ;; @@2bb5 11
- ;; @@2bb7 11
-_local_1010_2    lda (index2),y                           ; look at msg, and find end (msb set) (ind.ok) ;; @@2bb7 11
-                 inw index2                                ;; @@2bb9 11
-                 and #$ff                                 ; was msb set? ;; @@2bbb 11
-                 bpl _local_1010_2                        ; no, not end of message ;; @@2bbd 11
-                 bra _local_1010_1                        ; yes, tick off another msg ;; @@2bbf 11
- ;; @@2bc1 11
-_local_1010_4    rts                                       ;; @@2bc1 11
- ;; @@2bc2 11
-;.end ;; @@2bc2 11
-; .page ;; @@2bc2 11
-; .subttl Execute Dispatcher ;; @@2bc2 11
- ;; @@2bc2 11
-; Here for new statement. Character -> by txtptr is ':' or eol. The adr of ;; @@2bc2 11
-; this loc is left on the stack when a statement is executed so that it can ;; @@2bc2 11
-; merely do a rts when it is done. ;; @@2bc2 11
-; Get char, exit via xeqcm3, and return to newstt. ;; @@2bc2 11
- ;; @@2bc2 11
+keyword_list                                              
+                 !text "EN",'D'+$80                       ; $80
+                 !text "FO",'R'+$80                       ; $81
+                 !text "NEX",'T'+$80                      ; $82
+                 !text "DAT",'A'+$80                      ; $83
+                 !text "INPUT",'#'+$80                    ; $84
+                 !text "INPU",'T'+$80                     ; $85
+                 !text "DI",'M'+$80                       ; $86
+                 !text "REA",'D'+$80                      ; $87
+                 !text "LE",'T'+$80                       ; $88
+                 !text "GOT",'O'+$80                      ; $89
+                 !text "RU",'N'+$80                       ; $8A
+                 !text "I",'F'+$80                        ; $8B
+                 !text "RESTOR",'E'+$80                   ; $8C
+                 !text "GOSU",'B'+$80                     ; $8D
+                 !text "RETUR",'N'+$80                    ; $8E
+                 !text "RE",'M'+$80                       ; $8F
+                 !text "STO",'P'+$80                      ; $90
+                 !text "O",'N'+$80                        ; $91
+                 !text "WAI",'T'+$80                      ; $92
+                 !text "LOA",'D'+$80                      ; $93
+                 !text "SAV",'E'+$80                      ; $94
+                 !text "VERIF",'Y'+$80                    ; $95
+                 !text "DE",'F'+$80                       ; $96
+                 !text "POK",'E'+$80                      ; $97
+                 !text "PRINT",'#'+$80                    ; $98
+                 !text "PRIN",'T'+$80                     ; $99
+                 !text "CON",'T'+$80                      ; $9A
+                 !text "LIS",'T'+$80                      ; $9B
+                 !text "CL",'R'+$80                       ; $9C
+                 !text "CM",'D'+$80                       ; $9D
+                 !text "SY",'S'+$80                       ; $9E
+                 !text "OPE",'N'+$80                      ; $9F
+                 !text "CLOS",'E'+$80                     ; $A0
+                 !text "GE",'T'+$80                       ; $A1
+                 !text "NE",'W'+$80                       ; $A2
+                 !text "TAB",'('+$80                      ; $A3
+                 !text "T",'O'+$80                        ; $A4
+                 !text "F",'N'+$80                        ; $A5
+                 !text "SPC",'('+$80                      ; $A6
+                 !text "THE",'N'+$80                      ; $A7
+                 !text "NO",'T'+$80                       ; $A8
+                 !text "STE",'P'+$80                      ; $A9
+                 !text '+'+$80                            ; $AA operators
+                 !text '-'+$80                            ; $AB
+                 !text '*'+$80                            ; $AC
+                 !text '/'+$80                            ; $AD
+                 !text '^'+$80                            ; $AE
+                 !text "AN",'D'+$80                       ; $AF
+                 !text "O",'R'+$80                        ; $B0
+                 !text '>'+$80                            ; $B1
+                 !text '='+$80                            ; $B2
+                 !text '<'+$80                            ; $B3
+                 !text "SG",'N'+$80                       ; $B4 first numeric function
+                 !text "IN",'T'+$80                       ; $B5
+                 !text "AB",'S'+$80                       ; $B6
+                 !text "US",'R'+$80                       ; $B7
+                 !text "FR",'E'+$80                       ; $B8
+                 !text "PO",'S'+$80                       ; $B9
+                 !text "SQ",'R'+$80                       ; $BA
+                 !text "RN",'D'+$80                       ; $BB
+                 !text "LO",'G'+$80                       ; $BC
+                 !text "EX",'P'+$80                       ; $BD
+                 !text "CO",'S'+$80                       ; $BE
+                 !text "SI",'N'+$80                       ; $BF
+                 !text "TA",'N'+$80                       ; $C0
+                 !text "AT",'N'+$80                       ; $C1
+                 !text "PEE",'K'+$80                      ; $C2
+                 !text "LE",'N'+$80                       ; $C3
+                 !text "STR",'$'+$80                      ; $C4
+                 !text "VA",'L'+$80                       ; $C5
+                 !text "AS",'C'+$80                       ; $C6 last numeric function
+                 !text "CHR",'$'+$80                      ; $C7 last single-arg function
+                 !text "LEFT",'$'+$80                     ; $C8
+                 !text "RIGHT",'$'+$80                    ; $C9
+                 !text "MID",'$'+$80                      ; $CA
+                 !text "G",'O'+$80                        ; $CB
+; beginning of new C128 keywords------------
+                 !text "RGRAPHI",'C'+$80                  ; $CC was 'rgr'   [910701]
+                 !text "RCOLO",'R'+$80                    ; $CD was 'rclr'   [910701]
+                 !text $80                                ; $CE null to skip over escape_function token
+                 !text "JO",'Y'+$80                       ; $CF
+                 !text "RPE",'N'+$80                      ; $D0 (was rdot in c128)
+                 !text "DE",'C'+$80                       ; $D1
+                 !text "HEX",'$'+$80                      ; $D2
+                 !text "ERR",'$'+$80                      ; $D3
+                 !text "INST",'R'+$80                     ; $D4 last function
+
+                 !text "ELS",'E'+$80                      ; $D5
+                 !text "RESUM",'E'+$80                    ; $D6
+                 !text "TRA",'P'+$80                      ; $D7
+                 !text "TRO",'N'+$80                      ; $D8
+                 !text "TROF",'F'+$80                     ; $D9
+                 !text "SOUN",'D'+$80                     ; $DA
+                 !text "VO",'L'+$80                       ; $DB
+                 !text "AUT",'O'+$80                      ; $DC
+                 !text "PUDE",'F'+$80                     ; $DD
+                 !text "GRAPHI",'C'+$80                   ; $DE
+                 !text "PAIN",'T'+$80                     ; $DF
+                 !text "CHA",'R'+$80                      ; $E0
+                 !text "BO",'X'+$80                       ; $E1
+                 !text "CIRCL",'E'+$80                    ; $E2
+                 !text "PAST",'E'+$80                     ; $E3 (was gshape in C128)
+                 !text "CU",'T'+$80                       ; $E4 (was sshape in C128)
+                 !text "LIN",'E'+$80                      ; $E5 (was draw in C128)
+                 !text "LOCAT",'E'+$80                    ; $E6
+                 !text "COLO",'R'+$80                     ; $E7
+                 !text "SCNCL",'R'+$80                    ; $E8
+                 !text "SCAL",'E'+$80                     ; $E9
+                 !text "HEL",'P'+$80                      ; $EA
+                 !text "D",'O'+$80                        ; $EB
+                 !text "LOO",'P'+$80                      ; $EC
+                 !text "EXI",'T'+$80                      ; $ED
+                 !text "DI",'R'+$80                       ; $EE
+                 !text "DSAV",'E'+$80                     ; $EF
+                 !text "DLOA",'D'+$80                     ; $F0
+                 !text "HEADE",'R'+$80                    ; $F1
+                 !text "SCRATC",'H'+$80                   ; $F2
+                 !text "COLLEC",'T'+$80                   ; $F3
+                 !text "COP",'Y'+$80                      ; $F4
+                 !text "RENAM",'E'+$80                    ; $F5
+                 !text "BACKU",'P'+$80                    ; $F6
+                 !text "DELET",'E'+$80                    ; $F7
+                 !text "RENUMBE",'R'+$80                  ; $F8
+                 !text "KE",'Y'+$80                       ; $F9
+                 !text "MONITO",'R'+$80                   ; $FA
+                 !text "USIN",'G'+$80                     ; $FB
+                 !text "UNTI",'L'+$80                     ; $FC
+                 !text "WHIL",'E'+$80                     ; $FD
+                 !text 0                                  ; $FE skip over the escape_command token
+
+;.end
+
+; .page
+; .subttl Escape Tokens and Keywords
+
+; Escape Command Tokens
+
+esc_command_list                                          
+                 !text "BAN",'K'+$80                      ; $02: set bank number
+                 !text "FILTE",'R'+$80                    ; $03: set up filter
+                 !text "PLA",'Y'+$80                      ; $04: play a tune
+                 !text "TEMP",'O'+$80                     ; $05: set rate for playing
+                 !text "MOVSP",'R'+$80                    ; $06: sprite position/movement
+                 !text "SPRIT",'E'+$80                    ; $07: turn on/set up sprite
+                 !text "SPRCOLO",'R'+$80                  ; $08: set sprite multicolor registers
+                 !text "RRE",'G'+$80                      ; $09: retreive register values after 'SYS'
+                 !text "ENVELOP",'E'+$80                  ; $0A: set up SID envelopes
+                 !text "SLEE",'P'+$80                     ; $0B: delay
+                 !text "CATALO",'G'+$80                   ; $0C: disk directory
+                 !text "DOPE",'N'+$80                     ; $0D: open a disk file
+                 !text "APPEN",'D'+$80                    ; $0E: open a disk file for appending
+                 !text "DCLOS",'E'+$80                    ; $0F: close a file opened w/ DOPEN
+                 !text "BSAV",'E'+$80                     ; $10: binary (non-program) save
+                 !text "BLOA",'D'+$80                     ; $11: binary load
+                 !text "RECOR",'D'+$80                    ; $12:
+                 !text "CONCA",'T'+$80                    ; $13: concatenate 2 files
+                 !text "DVERIF",'Y'+$80                   ; $14: verify a saved program
+                 !text "DCLEA",'R'+$80                    ; $15: re-initialize a drive
+                 !text "SPRSA",'V'+$80                    ; $16: sprite/string to sprite/string
+                 !text "COLLISIO",'N'+$80                 ; $17: set traps for sprite & light pen collisions
+                 !text "BEGI",'N'+$80                     ; $18: mark start of a b-block
+                 !text "BEN",'D'+$80                      ; $19: ..and its end, too!
+                 !text "WINDO",'W'+$80                    ; $1A: set screen window
+                 !text "BOO",'T'+$80                      ; $1B: load&run ML or autoboot a disk
+                 !text "WIDT",'H'+$80                     ; $1C: single/double width drawing
+                 !text "SPRDE",'F'+$80                    ; $1D: define a sprite
+                 !text "QUI",'T'+$80                      ; $1E: (UNIMPLEMENTED)
+                 !text "DM",'A'+$80                       ; $1F: access memory
+                 !text ' '+$80                            ; $20: POISON - space character
+                 !text "DM",'A'+$80                       ; $21: access memory
+                 !text ' '+$80                            ; $22: POISON - quote character
+                 !text "DM",'A'+$80                       ; $23: access memory
+                 !text "OF",'F'+$80                       ; $24: KEY OFF
+                 !text "FAS",'T'+$80                      ; $25: go to 2 MHz. mode
+                 !text "SLO",'W'+$80                      ; $26: go to 1 MHz. mode
+                 !text "TYP",'E'+$80                      ; $27: type SEQ file
+                 !text "BVERIF",'Y'+$80                   ; $28: verify a saved program
+                 !text "ECTOR",'Y'+$80                    ; $29: dirECTORY
+                 !text "ERAS",'E'+$80                     ; $2A: alias for scratch
+                 !text "FIN",'D'+$80                      ; $2B: find string
+                 !text "CHANG",'E'+$80                    ; $2C: change string
+                 !text "SE",'T'+$80                       ; $2D:
+                 !text "SCREE",'N'+$80                    ; $2E:
+                 !text "POLYGO",'N'+$80                   ; $2F:
+                 !text "ELLIPS",'E'+$80                   ; $30:
+                 !text "VIEWPOR",'T'+$80                  ; $31:
+                 !text "GCOP",'Y'+$80                     ; $32:
+                 !text "PE",'N'+$80                       ; $33:
+                 !text "PALETT",'E'+$80                   ; $34:
+                 !text "DMOD",'E'+$80                     ; $35:
+                 !text "DPA",'T'+$80                      ; $36:
+                 !text "FORMA",'T'+$80                    ; $37: alias for HEADER command  [911017]
+                 !text "GENLOC",'K'+$80                   ; $38:     [910108]
+                 !text "FOREGROUN",'D'+$80                ; $39:     [910109]
+                 !text ' '+$80                            ; $3A: POISON - colon character  "
+                 !text "BACKGROUN",'D'+$80                ; $3B:     "
+                 !text "BORDE",'R'+$80                    ; $3C:     "
+                 !text "HIGHLIGH",'T'+$80                 ; $3D:     "
+                 !text "MOUS",'E'+$80                     ; $3E:     [910122]
+                 !text "RMOUS",'E'+$80                    ; $3F: return coordinates of mouse [910123]
+                 !text "DIS",'K'+$80                      ; $40:     [910123]
+                 !text "CURSO",'R'+$80                    ; $41:     [910228]
+                 !text "RCURSO",'R'+$80                   ; $42: return cursor position  [910228]
+                 !text "LOADIF",'F'+$80                   ; $43: load IFF picture from disk [910402]
+                 !text "SAVEIF",'F'+$80                   ; $44: save IFF picture to   disk [910402]
+                 !text "EDI",'T'+$80                      ; $45: Edit mode on/off   [910620]
+
+                 !text 0                                  ; End marker
+;(don't forget to change last_command_token!)
+; .page
+; Escape Function Tokens
+
+esc_function_list                                          
+                 !text "PO",'T'+$80                       ; $02: return paddle value
+                 !text "BUM",'P'+$80                      ; $03: read sprite collision
+                 !text "LPE",'N'+$80                      ; $04: read light pen value
+                 !text "RSPPO",'S'+$80                    ; $05: read sprite position
+                 !text "RSPRIT",'E'+$80                   ; $06: read sprite value
+                 !text "RSPCOLO",'R'+$80                  ; $07: read sprite multicolor value
+                 !text "XO",'R'+$80                       ; $08: exclusive or
+                 !text "RWINDO",'W'+$80                   ; $09: read window size
+                 !text "POINTE",'R'+$80                   ; $0a: return address of descriptor
+                 !text "MO",'D'+$80                       ; $0b: modulus    [910402]
+                 !text "PIXE",'L'+$80                     ; $0c: return BP data at pixel  [910820]
+                 !text "RPALETT",'E'+$80                  ; $0d: return RGB component of color [910820]
+                 !text 0                                  
+
+;.end
+; .page
+; .subttl Jump Table For Dispatch Routine
+stmdsp                                                    
+                 !word end-1                              
+                 !word for-1                              
+                 !word next-1                             
+                 !word data-1                             
+                 !word inputn-1                           
+                 !word input-1                            
+                 !word dim-1                              
+                 !word read-1                             
+                 !word let-1                              
+                 !word goto-1                             
+                 !word run-1                              
+                 !word if-1                               
+                 !word restor-1                           
+                 !word gosub-1                            
+                 !word return-1                           
+                 !word rem-1                              
+                 !word stop-1                             
+                 !word ongoto-1                           
+                 !word wait-1                             
+                 !word load-1                             
+                 !word save-1                             
+                 !word verify-1                           
+                 !word def-1                              
+                 !word poke-1                             
+                 !word printn-1                           
+                 !word print-1                            
+                 !word cont-1                             
+                 !word list-1                             
+                 !word clear-1                            
+                 !word cmd-1                              
+                 !word sys-1                              
+                 !word open-1                             
+                 !word close-1                            
+                 !word get-1                              
+                 !word new-1                              
+
+                 !word else-1                             
+                 !word resume-1                           
+                 !word trap-1                             
+                 !word tron-1                             
+                 !word troff-1                            
+                 !word sound-1                            
+                 !word volume-1                           
+                 !word auto-1                             
+                 !word puctrl-1                           
+                 !word graphic-1                          
+
+                 !word C65__paint-1                       
+                 !word C65__char-1                        
+                 !word C65__box-1                         
+                 !word C65__circle-1                      
+                 !word C65__paste-1                       ; gshape
+                 !word C65__cut-1                         ; sshape
+                 !word C65__line-1                        ; draw
+
+                 !word bad_command-1                      ; escape - SYSTEM - unimplemented command
+; .word  locate-1
+
+                 !word color-1                            
+                 !word scnclr-1                           
+
+                 !word bad_command-1                      ; escape - SYSTEM - unimplemented command
+; .word  scale-1
+
+                 !word help-1                             
+                 !word do-1                               
+                 !word loop-1                             
+                 !word exit-1                             
+                 !word directory-1                        
+                 !word dsave-1                            
+                 !word dload-1                            
+                 !word header-1                           
+                 !word scratch-1                          
+                 !word collect-1                          
+                 !word dcopy-1                            
+                 !word rename-1                           
+                 !word backup-1                           
+                 !word delete-1                           
+                 !word renumber-1                         
+                 !word key-1                              
+                 !word _monitor-1                         
+                 !word bank-1                             ; escape
+                 !word filter-1                           ; escape
+                 !word play-1                             ; escape
+                 !word tempo-1                            ; escape
+
+                 !word movspr-1                           ; escape
+                 !word sprite-1                           ; escape
+                 !word sprcolor-1                         ; escape
+
+                 !word rreg-1                             ; escape
+                 !word envelope-1                         ; escape
+                 !word sleep-1                            ; escape
+                 !word directory-1                        ; escape
+                 !word dopen-1                            ; escape
+                 !word append-1                           ; escape
+                 !word dclose-1                           ; escape
+                 !word bsave-1                            ; escape
+                 !word bload-1                            ; escape
+                 !word record-1                           ; escape
+                 !word concat-1                           ; escape
+                 !word dverify-1                          ; escape
+                 !word dclear-1                           ; escape
+
+                 !word sprsav-1                           ; escape
+                 !word collision-1                        ; escape
+
+                 !word data-1                             ; escape - BEGIN
+                 !word data-1                             ; escape - BEND
+                 !word window-1                           ; escape
+                 !word boot-1                             ; escape
+
+                 !word bad_command-1                      
+; .word  set_width-1 ;escape - WIDTH
+
+                 !word bad_command-1                      
+; .word  sprdef-1  ;escape - Sprite Definition mode
+
+                 !word bad_command-1                      ; escape - QUIT - unimplemented command
+                 !word dma-1                              ; escape
+                 !word 0                                  ; placeholder to skip over the space character
+                 !word dma-1                              ; escape
+                 !word 0                                  ; placeholder to skip over the quote character
+                 !word dma-1                              ; escape
+                 !word bad_command-1                      ; escape - OFF - unimplemented command
+                 !word fast-1                             ; escape
+                 !word slow-1                             ; escape
+                 !word type-1                             ; escape (C65: type SEQ file)
+                 !word bverify-1                          ; escape (C65: verify BINary file)
+                 !word snerr-1                            ; escape (C65: kludge- dirECTORY)
+                 !word scratch-1                          ; escape (C65: erase alias for scratch)
+                 !word find-1                             ; escape (C65: find BASIC text)
+                 !word change-1                           ; escape (C65: change BASIC text)
+
+                 !word C65__set-1                         ; escape (C65: multi-purpose command)
+                 !word Screen-1                           ; escape (C65: SCREEN)
+                 !word C65__polygon-1                     ; escape (C65: POLYGON)
+                 !word C65__ellipse-1                     ; escape (C65: ELLIPSE)
+                 !word C65__Viewport-1                    ; escape (C65: VIEWPORT)
+                 !word C65__copy-1                        ; escape (C65: GCOPY)
+                 !word C65__setpen-1                      ; escape (C65: PEN)
+                 !word C65__setpalette-1                  ; escape (C65: PALETTE)
+                 !word C65__setdmode-1                    ; escape (C65: DMODE)
+                 !word C65__setdpat-1                     ; escape (C65: DPAT)
+                 !word header-1                           ; format alias for header command [911017]
+                 !word genlock-1                          ; [910108]
+
+stmdsp2                                                   
+                 !word foreground-1                       ; this is the 128th command!  [910109]
+                 !word 0                                  ; placeholder to skip over the colon character
+                 !word background-1                       
+                 !word border-1                           
+                 !word highlight-1                        
+                 !word mouse-1                            ; [910122]
+                 !word rmouse-1                           ; [910123]
+                 !word disk-1                             ; [910123]
+                 !word cursor-1                           ; [910228]
+                 !word rcursor-1                          ; [910228]
+                 !word loadiff-1                          ; [910402]
+                 !word saveiff-1                          ; [910930]
+                 !word edit-1                             ; [910620]
+
+; .page
+fundsp                                                    
+                 !word sgn                                
+                 !word int                                
+                 !word abs                                
+                 !word usrpok                             
+                 !word fre                                
+                 !word pos                                
+                 !word sqr                                
+                 !word rnd                                
+                 !word log                                
+                 !word exp                                
+                 !word cos                                
+                 !word sin                                
+                 !word tan                                
+                 !word atn                                
+                 !word peek                               
+                 !word len                                
+                 !word strd                               
+                 !word val                                
+                 !word asc                                
+                 !word chrd                               
+                 !word leftd                              
+                 !word rightd                             
+                 !word midd                               
+                 !word rgraphic                           ; [910701]
+                 !word rcolor                             ; [910701]
+                 !word 0                                  ; placeholder for escape function token
+                 !word joy                                
+                 !word rpen                               ; was rdot     [910820]
+                 !word dcml                               ; dec
+                 !word hexd                               
+                 !word errd                               
+                 !word pot                                ; escape
+                 !word bump                               ; escape
+                 !word lpen                               ; escape
+                 !word rsppos                             ; escape
+                 !word rsprite                            ; escape
+                 !word rspcolor                           ; escape
+                 !word xor                                ; escape
+                 !word rwindow                            ; escape
+                 !word pointer                            ; escape
+                 !word mod                                ; escape c65     [910402]
+                 !word pixel                              ; escape c65     [910820]
+                 !word rpalette                           ; escape c65     [910820]
+
+; .page
+optab            !text 121                                
+                 !word faddt-1                            
+                 !text 121                                
+                 !word fsubt-1                            
+                 !text 123                                
+                 !word fmultt-1                           
+                 !text 123                                
+                 !word fdivt-1                            
+                 !text 127                                
+                 !word fpwrt-1                            
+                 !text 80                                 
+                 !word andop-1                            
+                 !text 70                                 
+                 !word orop-1                             
+negtab           !text 125                                
+                 !word negop-1                            
+                 !text 90                                 
+                 !word notop-1                            
+ptdorl           !text 100                                
+                 !word dorel-1                            
+
+;.end
+; .page
+; .subttl  Keyword Equates
+
+end_token        = $80                                    ; v2 commands
+for_token        = $81                                    
+next_token       = $82                                    
+data_token       = $83                                    
+input_token      = $84                                    
+goto_token       = $89                                    
+run_token        = $8a                                    
+restore_token    = $8c                                    
+gosub_token      = $8d                                    
+rem_token        = $8f                                    
+on_token         = $91                                    
+load_token       = $93                                    
+save_token       = $94                                    
+verify_token     = $95                                    
+def_token        = $96                                    
+print_token      = $99                                    
+clr_token        = $9c                                    
+sys_token        = $9e                                    
+open_token       = $9f                                    
+close_token      = $a0                                    
+new_token        = $a2                                    
+tab_token        = $a3                                    
+to_token         = $a4                                    
+fn_token         = $a5                                    
+spc_token        = $a6                                    
+then_token       = $a7                                    
+not_token        = $a8                                    
+step_token       = $a9                                    
+plus_token       = $aa                                    ; operators
+minus_token      = $ab                                    
+greater_token    = $b1                                    
+equal_token      = $b2                                    
+less_token       = $b3                                    
+first_function_token = $b4                                    ; v2 functions
+left_token       = $c8                                    
+mid_token        = $ca                                    
+go_token         = $cb                                    ; kludges
+rgraphic_token   = $cc                                    ; first new v7 token
+esc_function_token = $ce                                    
+err_token        = $d3                                    
+instr_token      = $d4                                    
+last_function_token = $d4                                    
+else_token       = $d5                                    
+resume_token     = $d6                                    
+trap_token       = $d7                                    
+color_token      = $e7                                    
+do_token         = $eb                                    
+loop_token       = $ec                                    
+key_token        = $f9                                    
+monitor_token    = $fa                                    
+using_token      = $fb                                    
+until_token      = $fc                                    
+while_token      = $fd                                    
+esc_command_token = $fe                                    
+; .page
+first_esc_command_token = $02                                    
+collision_token  = $17                                    
+begin_token      = $18                                    
+bend_token       = $19                                    
+off_token        = $24                                    
+ectory_token     = $29                                    
+set_token        = $2d                                    
+pic_token        = $37                                    
+disk_token       = $40                                    
+last_esc_command_token = $45                                    ; <<<< last_command_token
+
+first_esc_function_token = $02                                    
+pointer_token    = $0a                                    
+last_esc_function_token = $0d                                    ; [910820]
+
+; .page
+; .subttl Error Messages
+
+ok_error_message                                          
+                 !text "O",'K'+$80                        ; 0 for ERR$ [910911]
+error_message_list                                          
+                 !text "TOO MANY FILE",'S'+$80            ; 1
+                 !text "FILE OPE",'N'+$80                 ; 2
+                 !text "FILE NOT OPE",'N'+$80             ; 3
+                 !text "FILE NOT FOUN",'D'+$80            ; 4
+                 !text "DEVICE NOT PRESEN",'T'+$80        ; 5
+                 !text "NOT INPUT FIL",'E'+$80            ; 6
+                 !text "NOT OUTPUT FIL",'E'+$80           ; 7
+                 !text "MISSING FILE NAM",'E'+$80         ; 8
+                 !text "ILLEGAL DEVICE NUMBE",'R'+$80     ; 9
+                 !text "NEXT WITHOUT FO",'R'+$80          ; 10
+                 !text "SYNTA",'X'+$80                    ; 11
+                 !text "RETURN WITHOUT GOSU",'B'+$80      ; 12
+                 !text "OUT OF DAT",'A'+$80               ; 13
+                 !text "ILLEGAL QUANTIT",'Y'+$80          ; 14
+                 !text "OVERFLO",'W'+$80                  ; 15
+                 !text "OUT OF MEMOR",'Y'+$80             ; 16
+                 !text "UNDEF",$27,"D STATEMEN",'T'+$80   ; 17
+                 !text "BAD SUBSCRIP",'T'+$80             ; 18
+                 !text "REDIM",$27,"D ARRA",'Y'+$80       ; 19
+                 !text "DIVISION BY ZER",'O'+$80          ; 20
+                 !text "ILLEGAL DIREC",'T'+$80            ; 21
+                 !text "TYPE MISMATC",'H'+$80             ; 22
+                 !text "STRING TOO LON",'G'+$80           ; 23
+                 !text "FILE DAT",'A'+$80                 ; 24
+                 !text "FORMULA TOO COMPLE",'X'+$80       ; 25
+                 !text "CAN",$27,"T CONTINU",'E'+$80      ; 26
+                 !text "UNDEF'D FUNCTIO",'N'+$80          ; 27
+                 !text "VERIF",'Y'+$80                    ; 28
+                 !text "LOA",'D'+$80                      ; 29
+                 !text "BREA",'K'+$80                     ; 30 ???? null & space [910925]
+                 !text "CAN'T RESUM",'E'+$80              ; 31
+                 !text "LOOP NOT FOUN",'D'+$80            ; 32
+                 !text "LOOP WITHOUT D",'O'+$80           ; 33
+                 !text "DIRECT MODE ONL",'Y'+$80          ; 34
+; .byte 'NO GRAPHICS ARE','A'+$80   ;35
+                 !text "SCREEN NOT OPE",'N'+$80           ; 35    [911001]
+                 !text "BAD DIS",'K'+$80                  ; 36 ???? used for failed bootsys
+                 !text "BEND NOT FOUN",'D'+$80            ; 37
+                 !text "LINE NUMBER TOO LARG",'E'+$80     ; 38
+                 !text "UNRESOLVED REFERENC",'E'+$80      ; 39
+                 !text "UNIMPLEMENTED COMMAN",'D'+$80     ; 40
+                 !text "FILE REA",'D'+$80                 ; 41
+                 !text "EDIT MOD",'E'+$80                 ; 42    [910620]
+
+; .page
+; .subttl  Error Message Numbers
+
+errtmf           = 1                                      
+errfno           = 3                                      
+errfnf           = 4                                      
+err_missing_fname = 8                                      
+err_illegal_device = 9                                      
+errnf            = 10                                     
+errsn            = 11                                     
+errrg            = 12                                     
+errod            = 13                                     
+errfc            = 14                                     
+errov            = 15                                     
+errom            = 16                                     
+errus            = 17                                     
+errbs            = 18                                     
+errdd            = 19                                     
+errdvo           = 20                                     
+errid            = 21                                     
+errtm            = 22                                     
+errls            = 23                                     
+errbd            = 24                                     
+errst            = 25                                     
+errcn            = 26                                     
+erruf            = 27                                     
+ervfy            = 28                                     
+erload           = 29                                     
+erbrk            = 30                                     
+errcr            = 31                                     
+errlnf           = 32                                     
+errlwd           = 33                                     
+erroid           = 34                                     
+errng            = 35                                     
+errbdk           = 36                                     
+err_no_bend      = 37                                     
+err_too_large    = 38                                     
+err_ref          = 39                                     
+err_bad_command  = 40                                     
+err_file_read    = 41                                     
+edit_mode_error  = 42                                     ; [910620]
+last_error_message = 42                                     ; # of last error msg
+
+;.end
+; .page
+; .subttl Error message output
+
+; Routine to translate error message # in .a
+; into address of string containing message in index2
+
+erstup           tax                                      ; error set up
+                 ldy #0                                   ; start with address of first error message
+                 lda #<error_message_list                 
+                 sta index2                               
+                 lda #>error_message_list                 
+                 sta index2+1                             
+
+_local_1010_1    dex                                      
+                 bmi _local_1010_4                        ; finished when .x decrements out
+
+_local_1010_2    lda (index2),y                           ; look at msg, and find end (msb set) (ind.ok)
+                 inw index2                               
+                 and #$ff                                 ; was msb set?
+                 bpl _local_1010_2                        ; no, not end of message
+                 bra _local_1010_1                        ; yes, tick off another msg
+
+_local_1010_4    rts                                      
+
+;.end
+; .page
+; .subttl Execute Dispatcher
+
+; Here for new statement. Character -> by txtptr is ':' or eol. The adr of
+; this loc is left on the stack when a statement is executed so that it can
+; merely do a rts when it is done.
+; Get char, exit via xeqcm3, and return to newstt.
+

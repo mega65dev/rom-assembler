@@ -1,99 +1,99 @@
-paoc15           jsr frmstr                               ; do frmevl, frestr. return with len in a, index =~string ;; @@69b8 197
-                 jsr getspa                               ; ????fixes old PET bug- load"string",val(chr$(56)) [910917] ;; @@69bb 197
-; ldx index1 ;; @@69be 197
-; ldy index1+1 ;; @@69be 197
-                 jsr _setnam                              ; bank always set at plsv ;; @@69be 197
-;fall into dschk     [900801] ;; @@69c1 197
- ;; @@69c1 197
- ;; @@69c1 197
- ;; @@69c1 197
-dschk            php                                      ; check if current device >=8, and clear DS if so ;; @@69c1 197
-                 pha                                       ;; @@69c2 197
-                 lda _fa                                   ;; @@69c3 197
-                 cmp #1                                    ;; @@69c5 197
-                 bne _local_1196_10                        ;; @@69c7 197
-                 lda _default_drive                        ;; @@69c9 197
-                 sta _fa                                   ;; @@69cc 197
-_local_1196_10   cmp #8                                   ; ????     [900807] ;; @@69ce 197
-                 bcc _local_1196_20                        ;; @@69d0 197
-                 sta dosfa                                ; also make last DOS device = current device ;; @@69d2 197
-                 jsr Clear_DS                              ;; @@69d5 197
-_local_1196_20   pla                                       ;; @@69d8 197
-                 plp                                       ;; @@69d9 197
-                 rts                                       ;; @@69da 197
- ;; @@69db 197
-; .page ;; @@69db 197
-;k_readst ;; @@69db 197
-; jsr put_io_in_map ;; @@69db 197
-; jmp _readst ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
-;k_setlfs ;; @@69db 197
-; jsr put_io_in_map ;; @@69db 197
-; jmp _setlfs ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
-;k_setnam ;; @@69db 197
-; jsr put_io_in_map ;; @@69db 197
-; jmp _setnam ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
-;k_basin ;; @@69db 197
-; jsr put_io_in_map ;; @@69db 197
-; jmp _basin ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
-;k_bsout ;; @@69db 197
-; jsr put_io_in_map ;; @@69db 197
-; jmp _bsout ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
-;k_clrch ;; @@69db 197
-; jsr put_io_in_map ;; @@69db 197
-; jmp _clrch ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
-;k_close ;; @@69db 197
-; jsr put_io_in_map ;; @@69db 197
-; jmp _close ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
-;k_clall ;; @@69db 197
-; jsr put_io_in_map ;; @@69db 197
-; jmp _clall ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
-;k_primm ;; @@69db 197
-; jsr put_io_in_map ;; @@69db 197
-; jmp _primm ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
-;k_setbank ;; @@69db 197
-; jsr put_io_in_map ;; @@69db 197
-; jmp _setbank ;; @@69db 197
-; rts ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
-;k_plot ;; @@69db 197
-; sta sw_rom_ram0  ;???? ;; @@69db 197
-; jmp _plot ;; @@69db 197
- ;; @@69db 197
- ;; @@69db 197
-;k_stop ;; @@69db 197
-; jsr put_io_in_map ;; @@69db 197
-; jmp _stop ;; @@69db 197
- ;; @@69db 197
-;.end ;; @@69db 197
-; .page ;; @@69db 197
-; .subttl  PRINT USING ;; @@69db 197
-; Print Using - Formatted print routine ;; @@69db 197
-; ;; @@69db 197
-; Entered by cmd, print, or print# ;; @@69db 197
-; Syntax:  PRINT USING"****";a;b;c ;; @@69db 197
- ;; @@69db 197
+paoc15           jsr frmstr                               ; do frmevl, frestr. return with len in a, index =~string
+                 jsr getspa                               ; ????fixes old PET bug- load"string",val(chr$(56)) [910917]
+; ldx index1
+; ldy index1+1
+                 jsr _setnam                              ; bank always set at plsv
+;fall into dschk     [900801]
+
+
+
+dschk            php                                      ; check if current device >=8, and clear DS if so
+                 pha                                      
+                 lda _fa                                  
+                 cmp #1                                   
+                 bne _local_1196_10                       
+                 lda _default_drive                       
+                 sta _fa                                  
+_local_1196_10   cmp #8                                   ; ????     [900807]
+                 bcc _local_1196_20                       
+                 sta dosfa                                ; also make last DOS device = current device
+                 jsr Clear_DS                             
+_local_1196_20   pla                                      
+                 plp                                      
+                 rts                                      
+
+; .page
+;k_readst
+; jsr put_io_in_map
+; jmp _readst
+
+
+
+;k_setlfs
+; jsr put_io_in_map
+; jmp _setlfs
+
+
+
+;k_setnam
+; jsr put_io_in_map
+; jmp _setnam
+
+
+
+;k_basin
+; jsr put_io_in_map
+; jmp _basin
+
+
+;k_bsout
+; jsr put_io_in_map
+; jmp _bsout
+
+
+;k_clrch
+; jsr put_io_in_map
+; jmp _clrch
+
+
+
+;k_close
+; jsr put_io_in_map
+; jmp _close
+
+
+
+;k_clall
+; jsr put_io_in_map
+; jmp _clall
+
+
+
+;k_primm
+; jsr put_io_in_map
+; jmp _primm
+
+
+;k_setbank
+; jsr put_io_in_map
+; jmp _setbank
+; rts
+
+
+;k_plot
+; sta sw_rom_ram0  ;????
+; jmp _plot
+
+
+;k_stop
+; jsr put_io_in_map
+; jmp _stop
+
+;.end
+; .page
+; .subttl  PRINT USING
+; Print Using - Formatted print routine
+;
+; Entered by cmd, print, or print#
+; Syntax:  PRINT USING"****";a;b;c
+

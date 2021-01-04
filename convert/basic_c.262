@@ -1,39 +1,39 @@
-rcursor          sec                                      ; new [910228] ;; @@7d81 262
-                 jsr _plot                                ; get current cursor position & save it ;; @@7d82 262
-                 stx srow                                  ;; @@7d85 262
-                 sty column                                ;; @@7d87 262
- ;; @@7d89 262
-                 ldx #0                                   ; just like RREG and RMOUSE... ;; @@7d89 262
-                 stx count                                 ;; @@7d8b 262
-_local_1261_50   jsr chrgot                               ; Get a variable name from variable list ;; @@7d8d 262
-                 beq _local_1261_90                       ; eol- exit ;; @@7d90 262
-                 cmp #','                                 ;  ;; @@7d92 262
-                 beq _local_1261_70                       ; null- skip this arg ;; @@7d94 262
-                 jsr ptrget                               ; Get pointer to target variable ;; @@7d96 262
-                 sta forpnt                               ; set up so we can share LET code ;; @@7d99 262
-                 sty forpnt+1                              ;; @@7d9b 262
-                 lda valtyp                               ; what kind of variable name did ptrget find? ;; @@7d9d 262
-                 +lbne chkerr                             ; string- type mismatch error ;; @@7d9f 262
- ;; @@7da2 262
-_local_1261_60   ldx count                                ; Make assignment ;; @@7da2 262
-                 ldy column,x                             ; low byte ;; @@7da4 262
-                 lda #0                                   ; high byte ;; @@7da6 262
-                 jsr givayf                               ; float it ;; @@7da8 262
-                 lda intflg                               ; set flags for type of var (int/float) ;; @@7dab 262
-                 jsr qintgr                               ; use part of LET to do the work ;; @@7dad 262
- ;; @@7db0 262
-_local_1261_70   inc count                                ; Next assignment ;; @@7db0 262
-                 ldx count                                 ;; @@7db2 262
-                 cpx #2                                   ; there are 2 possible ;; @@7db4 262
-                 bcs _local_1261_90                       ; done 2, exit ;; @@7db6 262
-                 jsr chrgot                               ; check terminator ;; @@7db8 262
-                 beq _local_1261_90                       ; eol- exit ;; @@7dbb 262
-                 jsr chkcom                               ; check delimiter ;; @@7dbd 262
-                 bra _local_1261_50                       ; loop until done ;; @@7dc0 262
- ;; @@7dc2 262
-_local_1261_90   rts                                       ;; @@7dc2 262
- ;; @@7dc3 262
-;.end ;; @@7dc3 262
-; .page ;; @@7dc3 262
-; .subttl  AutoScroll ;; @@7dc3 262
- ;; @@7dc3 262
+rcursor          sec                                      ; new [910228]
+                 jsr _plot                                ; get current cursor position & save it
+                 stx srow                                 
+                 sty column                               
+
+                 ldx #0                                   ; just like RREG and RMOUSE...
+                 stx count                                
+_local_1261_50   jsr chrgot                               ; Get a variable name from variable list
+                 beq _local_1261_90                       ; eol- exit
+                 cmp #','                                 ; 
+                 beq _local_1261_70                       ; null- skip this arg
+                 jsr ptrget                               ; Get pointer to target variable
+                 sta forpnt                               ; set up so we can share LET code
+                 sty forpnt+1                             
+                 lda valtyp                               ; what kind of variable name did ptrget find?
+                 +lbne chkerr                             ; string- type mismatch error
+
+_local_1261_60   ldx count                                ; Make assignment
+                 ldy column,x                             ; low byte
+                 lda #0                                   ; high byte
+                 jsr givayf                               ; float it
+                 lda intflg                               ; set flags for type of var (int/float)
+                 jsr qintgr                               ; use part of LET to do the work
+
+_local_1261_70   inc count                                ; Next assignment
+                 ldx count                                
+                 cpx #2                                   ; there are 2 possible
+                 bcs _local_1261_90                       ; done 2, exit
+                 jsr chrgot                               ; check terminator
+                 beq _local_1261_90                       ; eol- exit
+                 jsr chkcom                               ; check delimiter
+                 bra _local_1261_50                       ; loop until done
+
+_local_1261_90   rts                                      
+
+;.end
+; .page
+; .subttl  AutoScroll
+

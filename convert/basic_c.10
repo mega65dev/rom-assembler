@@ -1,58 +1,58 @@
-reser            sta index1+1                              ;; @@23f4 10
-                 sty index1                                ;; @@23f6 10
-                 ldy #0                                    ;; @@23f8 10
-                 sty count                                 ;; @@23fa 10
-                 dey                                       ;; @@23fc 10
-_local_1009_10   iny                                       ;; @@23fd 10
-_local_1009_20   lda (txtptr),y                           ; assumes common memory ;; @@23fe 10
-                 bmi _local_1009_70                       ; abrieviation    [900510] ;; @@2400 10
-                 sec                                       ;; @@2402 10
-                 sbc (index1),y                           ; does letter match? (ind.ok) ;; @@2403 10
-                 beq _local_1009_10                       ; yes...continue ;; @@2405 10
-                 cmp #$80                                 ; end of word? ;; @@2407 10
-                 beq _local_1009_60                       ; yes...c set...done ;; @@2409 10
- ;; @@240b 10
- ;; @@240b 10
-;  find next word ;; @@240b 10
- ;; @@240b 10
-_local_1009_30   lda (index1),y                           ; ind.ok ;; @@240b 10
-                 bmi _local_1009_40                       ; found end of current ;; @@240d 10
-                 iny                                       ;; @@240f 10
-                 bne _local_1009_30                        ;; @@2410 10
-_local_1009_40   iny                                      ; start of next ;; @@2412 10
-                 inc count                                ; value of token ;; @@2413 10
-                 clc                                       ;; @@2415 10
-                 tya                                       ;; @@2416 10
-                 adc index1                                ;; @@2417 10
-                 sta index1                                ;; @@2419 10
-                 bcc _local_1009_50                        ;; @@241b 10
-                 inc index1+1                              ;; @@241d 10
-_local_1009_50   clc                                       ;; @@241f 10
-                 ldy #0                                    ;; @@2420 10
-                 lda (index1),y                           ; end of list? ind.ok ;; @@2422 10
-                 bne _local_1009_20                       ; no ;; @@2424 10
- ;; @@2426 10
- ;; @@2426 10
-;  yes...carry clear...fail ;; @@2426 10
- ;; @@2426 10
-_local_1009_60   ora count                                ; .a=$80 if match ;; @@2426 10
-                 sta count                                ; token is formed ;; @@2428 10
-                 rts                                       ;; @@242a 10
- ;; @@242b 10
- ;; @@242b 10
-; special case- last character is shifted (necessary for 'diR' compatibility) ;; @@242b 10
- ;; @@242b 10
-_local_1009_70   sec                                      ; allow last chr to be shifted   [900510] ;; @@242b 10
-                 sbc (index1),y                           ; does letter match? (ind.ok) ;; @@242c 10
-                 beq _local_1009_80                       ; yes- end of word ;; @@242e 10
-                 cmp #$80                                 ; end of word? ;; @@2430 10
-                 beq _local_1009_60                       ; yes ;; @@2432 10
-                 bne _local_1009_30                       ; no- next word ;; @@2434 10
- ;; @@2436 10
-_local_1009_80   lda #$80                                 ; last chr is shifted & so is end of current word ;; @@2436 10
-                 bra _local_1009_60                        ;; @@2438 10
- ;; @@243a 10
-;.end ;; @@243a 10
-; .page ;; @@243a 10
-; .subttl Non-Escape Keyword List ;; @@243a 10
- ;; @@243a 10
+reser            sta index1+1                             
+                 sty index1                               
+                 ldy #0                                   
+                 sty count                                
+                 dey                                      
+_local_1009_10   iny                                      
+_local_1009_20   lda (txtptr),y                           ; assumes common memory
+                 bmi _local_1009_70                       ; abrieviation    [900510]
+                 sec                                      
+                 sbc (index1),y                           ; does letter match? (ind.ok)
+                 beq _local_1009_10                       ; yes...continue
+                 cmp #$80                                 ; end of word?
+                 beq _local_1009_60                       ; yes...c set...done
+
+
+;  find next word
+
+_local_1009_30   lda (index1),y                           ; ind.ok
+                 bmi _local_1009_40                       ; found end of current
+                 iny                                      
+                 bne _local_1009_30                       
+_local_1009_40   iny                                      ; start of next
+                 inc count                                ; value of token
+                 clc                                      
+                 tya                                      
+                 adc index1                               
+                 sta index1                               
+                 bcc _local_1009_50                       
+                 inc index1+1                             
+_local_1009_50   clc                                      
+                 ldy #0                                   
+                 lda (index1),y                           ; end of list? ind.ok
+                 bne _local_1009_20                       ; no
+
+
+;  yes...carry clear...fail
+
+_local_1009_60   ora count                                ; .a=$80 if match
+                 sta count                                ; token is formed
+                 rts                                      
+
+
+; special case- last character is shifted (necessary for 'diR' compatibility)
+
+_local_1009_70   sec                                      ; allow last chr to be shifted   [900510]
+                 sbc (index1),y                           ; does letter match? (ind.ok)
+                 beq _local_1009_80                       ; yes- end of word
+                 cmp #$80                                 ; end of word?
+                 beq _local_1009_60                       ; yes
+                 bne _local_1009_30                       ; no- next word
+
+_local_1009_80   lda #$80                                 ; last chr is shifted & so is end of current word
+                 bra _local_1009_60                       
+
+;.end
+; .page
+; .subttl Non-Escape Keyword List
+

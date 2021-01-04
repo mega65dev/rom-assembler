@@ -1,152 +1,152 @@
-testwd                                                     ;; @@3e0b 74
-                 !text goto_token,run_token,gosub_token,then_token  ;; @@3e0b 74
-                 !text restore_token,resume_token,trap_token,else_token  ;; @@3e0f 74
- ;; @@3e13 74
-renumber                                                   ;; @@3e13 74
-                 jsr errind                               ; allowed only in direct mode ;; @@3e13 74
- ;; @@3e16 74
-; Set up default values for n1, n2, and n3 ;; @@3e16 74
- ;; @@3e16 74
-                 lda #0                                   ; line #10... ;; @@3e16 74
-                 ldx #10                                   ;; @@3e18 74
-                 stx renum_tmp_1                          ; default renum origin (n1) ;; @@3e1a 74
-                 sta renum_tmp_1+1                         ;; @@3e1d 74
-                 stx renum_tmp_2                          ; default increment (n2) ;; @@3e20 74
-                 sta renum_tmp_2+1                         ;; @@3e23 74
-                 sta hightr                               ; default start line # (n3) ;; @@3e26 74
-                 sta hightr+1                              ;; @@3e28 74
- ;; @@3e2a 74
-                 jsr chrgot                               ; any parameters? ;; @@3e2a 74
-                 beq ren_pass_1                           ; no... ;; @@3e2d 74
- ;; @@3e2f 74
- ;; @@3e2f 74
-; Check for new starting line number (n1) ;; @@3e2f 74
- ;; @@3e2f 74
-                 jsr linget                               ; check for a number ;; @@3e2f 74
-                 lda endchr                               ; was there one? ;; @@3e32 74
-                 beq renum_10                             ; no...use default ;; @@3e34 74
-                 lda linnum                                ;; @@3e36 74
-                 ldx linnum+1                              ;; @@3e38 74
-                 sta renum_tmp_1                           ;; @@3e3a 74
-                 stx renum_tmp_1+1                         ;; @@3e3d 74
- ;; @@3e40 74
-; Check for new increment ;; @@3e40 74
- ;; @@3e40 74
-renum_10                                                   ;; @@3e40 74
-                 jsr optwrd                               ; an increment given? ;; @@3e40 74
-                 bcc renum_30                             ; no...use default ;; @@3e43 74
- ;; @@3e45 74
-                 sty renum_tmp_2                           ;; @@3e45 74
-                 sta renum_tmp_2+1                         ;; @@3e48 74
-                 ora renum_tmp_2                          ; increment must be >0 ;; @@3e4b 74
-                 +lbeq fcerr                              ; illegal quantity error ;; @@3e4e 74
- ;; @@3e51 74
-; Check for starting line number ;; @@3e51 74
- ;; @@3e51 74
-renum_30                                                   ;; @@3e51 74
-                 jsr optwrd                               ; starting line number given? ;; @@3e51 74
-                 bcc ren_pass_1                           ; no... ;; @@3e54 74
- ;; @@3e56 74
-                 sty hightr                                ;; @@3e56 74
-                 sty linnum                                ;; @@3e58 74
-                 sta hightr+1                              ;; @@3e5a 74
-                 sta linnum+1                              ;; @@3e5c 74
-                 jsr FindLine                             ; test for illegal renumber range ;; @@3e5e 74
-                 lda lowtr                                ; (n1 must be >= n3) ;; @@3e61 74
-                 ldx lowtr+1                               ;; @@3e63 74
-                 sta highds                               ; pointer to first statement to renumber ;; @@3e65 74
-                 stx highds+1                              ;; @@3e67 74
-                 lda renum_tmp_1                           ;; @@3e69 74
-                 ldx renum_tmp_1+1                         ;; @@3e6c 74
-                 sta linnum                                ;; @@3e6f 74
-                 stx linnum+1                              ;; @@3e71 74
-                 jsr FindLine                             ; lowtr = ptr to 1st stmt to be overlapped ;; @@3e73 74
-                 sec                                       ;; @@3e76 74
-                 lda lowtr                                ; can't be smaller ;; @@3e77 74
-                 sbc highds                                ;; @@3e79 74
-                 lda lowtr+1                               ;; @@3e7b 74
-                 sbc highds+1                              ;; @@3e7d 74
-                 +lbcc fcerr                              ; bad... ;; @@3e7f 74
- ;; @@3e82 74
-; .page ;; @@3e82 74
-;*********************************************************************** ;; @@3e82 74
-;**************  R E N U M B E R    P A S S    O N E  ****************** ;; @@3e82 74
-;*********************************************************************** ;; @@3e82 74
- ;; @@3e82 74
-; Pass 1 makes sure that the renumbered program will not have any line numbers ;; @@3e82 74
-; greater than 63999 (however, nothing is actually renumbered in this pass). ;; @@3e82 74
- ;; @@3e82 74
-ren_pass_1                                                 ;; @@3e82 74
-                 jsr tto                                  ; save txtptr for restoration when done ;; @@3e82 74
-                 jsr n1_reset                             ; put n1 in FAC, reset txtptr ;; @@3e85 74
-                 jsr chargt                               ; skip low link ;; @@3e88 74
-                 iny                                      ; (.y=1) ;; @@3e8b 74
-                 jsr indtxt                               ; skip high link ;; @@3e8c 74
-                 beq ren_pass_2                           ; end of program => begin pass 2 (assumes txttab > 0) ;; @@3e8f 74
- ;; @@3e91 74
-r_pass1_10                                                 ;; @@3e91 74
-                 iny                                      ; (.y=2) ;; @@3e91 74
-                 jsr indtxt                               ; line number low ;; @@3e92 74
-                 sec                                       ;; @@3e95 74
-                 sbc hightr                               ; in line range which is to be renumbered? ;; @@3e96 74
-                 iny                                      ; (.y=3) ;; @@3e98 74
-                 jsr indtxt                               ; line number high ;; @@3e99 74
-                 sbc hightr+1                              ;; @@3e9c 74
-                 bcs r_pass1_20                           ; yes => fake renumbering ;; @@3e9e 74
-                 jsr set_next                             ; goto next line ;; @@3ea0 74
-                 bne r_pass1_10                           ; if z=0 then not end-of-text => keep going ;; @@3ea3 74
-                 beq ren_pass_2                           ; else end ;; @@3ea5 74
- ;; @@3ea7 74
-r_pass1_20                                                 ;; @@3ea7 74
-                 jsr set_next                             ; goto next line ;; @@3ea7 74
-                 beq ren_pass_2                           ; if z=1 then end-of-text => exit ;; @@3eaa 74
-                 jsr new_num                              ; create next line number ;; @@3eac 74
-                 bcs r_pass1_30                           ; if c=1 then it wrapped => error ;; @@3eaf 74
-                 cmp #>63999                              ; can't have lines > 63999 ;; @@3eb1 74
-                 bcc r_pass1_20                           ; if c=0 then ok ;; @@3eb3 74
- ;; @@3eb5 74
-r_pass1_30                                                ; renumbering will generate an illegal line # ;; @@3eb5 74
-                 ldx #err_too_large                       ; 'line number too large' error ;; @@3eb5 74
-                 +lbra error                               ;; @@3eb7 74
- ;; @@3eba 74
-set_next                                                   ;; @@3eba 74
-                 ldy #0                                   ; set for next BASIC line ;; @@3eba 74
-                 jsr indtxt                               ; low link ;; @@3ebc 74
-                 tax                                       ;; @@3ebf 74
-                 iny                                      ; (.y=1) ;; @@3ec0 74
-                 jsr indtxt                               ; high link ;; @@3ec1 74
-                 beq set_end                              ; if z=1 then end of program => exit ;; @@3ec4 74
-                 stx txtptr                                ;; @@3ec6 74
-                 sta txtptr+1                              ;; @@3ec8 74
-set_end          rts                                       ;; @@3eca 74
- ;; @@3ecb 74
-; .page ;; @@3ecb 74
-;*********************************************************************** ;; @@3ecb 74
-;**************  R E N U M B E R    P A S S    T W O  ****************** ;; @@3ecb 74
-;*********************************************************************** ;; @@3ecb 74
- ;; @@3ecb 74
-; Pass 2 checks if the renumbered program will be too long and also ;; @@3ecb 74
-; checks for non-existant line number destinations. ;; @@3ecb 74
- ;; @@3ecb 74
-ren_pass_2                                                 ;; @@3ecb 74
-                 bbr4 runmod,_local_1073_10               ; skip pass two and three if plain text (edit mode) [910620] ;; @@3ecb 74
-                 jsr n1_reset                             ; yes- just setup up starting line # and reset txtptr ;; @@3ece 74
-                 bra ren_pass_4                           ; then renumber just the text's line numbers ;; @@3ed1 74
- ;; @@3ed3 74
-_local_1073_10   lda #$01                                 ; set flag for 'pass 2' ;; @@3ed3 74
-                 sta z_p_temp_1                            ;; @@3ed5 74
-                 lda text_top                             ; copy top-of-text pointer for later use ;; @@3ed7 74
-                 ldx text_top+1                           ; (we don't want to change original here) ;; @@3ed9 74
-                 sta fndpnt                                ;; @@3edb 74
-                 stx fndpnt+1                              ;; @@3edd 74
-                 jsr imbed_lines                          ; search for imbedded lines (but don't change) ;; @@3edf 74
- ;; @@3ee2 74
- ;; @@3ee2 74
- ;; @@3ee2 74
-;*********************************************************************** ;; @@3ee2 74
-;************  R E N U M B E R    P A S S    T H R E E  **************** ;; @@3ee2 74
-;*********************************************************************** ;; @@3ee2 74
- ;; @@3ee2 74
-; Pass 3 actually renumbers the imbedded destination line numbers ;; @@3ee2 74
-; which follow goto, gosub, trap, etc. ;; @@3ee2 74
- ;; @@3ee2 74
+testwd                                                    
+                 !text goto_token,run_token,gosub_token,then_token 
+                 !text restore_token,resume_token,trap_token,else_token 
+
+renumber                                                  
+                 jsr errind                               ; allowed only in direct mode
+
+; Set up default values for n1, n2, and n3
+
+                 lda #0                                   ; line #10...
+                 ldx #10                                  
+                 stx renum_tmp_1                          ; default renum origin (n1)
+                 sta renum_tmp_1+1                        
+                 stx renum_tmp_2                          ; default increment (n2)
+                 sta renum_tmp_2+1                        
+                 sta hightr                               ; default start line # (n3)
+                 sta hightr+1                             
+
+                 jsr chrgot                               ; any parameters?
+                 beq ren_pass_1                           ; no...
+
+
+; Check for new starting line number (n1)
+
+                 jsr linget                               ; check for a number
+                 lda endchr                               ; was there one?
+                 beq renum_10                             ; no...use default
+                 lda linnum                               
+                 ldx linnum+1                             
+                 sta renum_tmp_1                          
+                 stx renum_tmp_1+1                        
+
+; Check for new increment
+
+renum_10                                                  
+                 jsr optwrd                               ; an increment given?
+                 bcc renum_30                             ; no...use default
+
+                 sty renum_tmp_2                          
+                 sta renum_tmp_2+1                        
+                 ora renum_tmp_2                          ; increment must be >0
+                 +lbeq fcerr                              ; illegal quantity error
+
+; Check for starting line number
+
+renum_30                                                  
+                 jsr optwrd                               ; starting line number given?
+                 bcc ren_pass_1                           ; no...
+
+                 sty hightr                               
+                 sty linnum                               
+                 sta hightr+1                             
+                 sta linnum+1                             
+                 jsr FindLine                             ; test for illegal renumber range
+                 lda lowtr                                ; (n1 must be >= n3)
+                 ldx lowtr+1                              
+                 sta highds                               ; pointer to first statement to renumber
+                 stx highds+1                             
+                 lda renum_tmp_1                          
+                 ldx renum_tmp_1+1                        
+                 sta linnum                               
+                 stx linnum+1                             
+                 jsr FindLine                             ; lowtr = ptr to 1st stmt to be overlapped
+                 sec                                      
+                 lda lowtr                                ; can't be smaller
+                 sbc highds                               
+                 lda lowtr+1                              
+                 sbc highds+1                             
+                 +lbcc fcerr                              ; bad...
+
+; .page
+;***********************************************************************
+;**************  R E N U M B E R    P A S S    O N E  ******************
+;***********************************************************************
+
+; Pass 1 makes sure that the renumbered program will not have any line numbers
+; greater than 63999 (however, nothing is actually renumbered in this pass).
+
+ren_pass_1                                                
+                 jsr tto                                  ; save txtptr for restoration when done
+                 jsr n1_reset                             ; put n1 in FAC, reset txtptr
+                 jsr chargt                               ; skip low link
+                 iny                                      ; (.y=1)
+                 jsr indtxt                               ; skip high link
+                 beq ren_pass_2                           ; end of program => begin pass 2 (assumes txttab > 0)
+
+r_pass1_10                                                
+                 iny                                      ; (.y=2)
+                 jsr indtxt                               ; line number low
+                 sec                                      
+                 sbc hightr                               ; in line range which is to be renumbered?
+                 iny                                      ; (.y=3)
+                 jsr indtxt                               ; line number high
+                 sbc hightr+1                             
+                 bcs r_pass1_20                           ; yes => fake renumbering
+                 jsr set_next                             ; goto next line
+                 bne r_pass1_10                           ; if z=0 then not end-of-text => keep going
+                 beq ren_pass_2                           ; else end
+
+r_pass1_20                                                
+                 jsr set_next                             ; goto next line
+                 beq ren_pass_2                           ; if z=1 then end-of-text => exit
+                 jsr new_num                              ; create next line number
+                 bcs r_pass1_30                           ; if c=1 then it wrapped => error
+                 cmp #>63999                              ; can't have lines > 63999
+                 bcc r_pass1_20                           ; if c=0 then ok
+
+r_pass1_30                                                ; renumbering will generate an illegal line #
+                 ldx #err_too_large                       ; 'line number too large' error
+                 +lbra error                              
+
+set_next                                                  
+                 ldy #0                                   ; set for next BASIC line
+                 jsr indtxt                               ; low link
+                 tax                                      
+                 iny                                      ; (.y=1)
+                 jsr indtxt                               ; high link
+                 beq set_end                              ; if z=1 then end of program => exit
+                 stx txtptr                               
+                 sta txtptr+1                             
+set_end          rts                                      
+
+; .page
+;***********************************************************************
+;**************  R E N U M B E R    P A S S    T W O  ******************
+;***********************************************************************
+
+; Pass 2 checks if the renumbered program will be too long and also
+; checks for non-existant line number destinations.
+
+ren_pass_2                                                
+                 bbr4 runmod,_local_1073_10               ; skip pass two and three if plain text (edit mode) [910620]
+                 jsr n1_reset                             ; yes- just setup up starting line # and reset txtptr
+                 bra ren_pass_4                           ; then renumber just the text's line numbers
+
+_local_1073_10   lda #$01                                 ; set flag for 'pass 2'
+                 sta z_p_temp_1                           
+                 lda text_top                             ; copy top-of-text pointer for later use
+                 ldx text_top+1                           ; (we don't want to change original here)
+                 sta fndpnt                               
+                 stx fndpnt+1                             
+                 jsr imbed_lines                          ; search for imbedded lines (but don't change)
+
+
+
+;***********************************************************************
+;************  R E N U M B E R    P A S S    T H R E E  ****************
+;***********************************************************************
+
+; Pass 3 actually renumbers the imbedded destination line numbers
+; which follow goto, gosub, trap, etc.
+

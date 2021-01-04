@@ -1,52 +1,52 @@
-stradj           ldy #0                                    ;; @@3767 53
-                 jsr indin1_ram1                          ; push length on stack ;; @@3769 53
-                 pha                                       ;; @@376c 53
-                 beq _local_1052_50                       ; if length=0 do nothing ;; @@376d 53
-                 iny                                       ;; @@376f 53
-                 jsr indin1_ram1                          ; get low byte (into .x) ;; @@3770 53
-                 tax                                       ;; @@3773 53
-                 iny                                       ;; @@3774 53
-                 jsr indin1_ram1                          ; get high byte ;; @@3775 53
-                 cmp max_mem_1+1                           ;; @@3778 53
-                 bcc _local_1052_10                       ; ok ;; @@377a 53
-                 bne _local_1052_50                       ; if above top of memory ;; @@377c 53
-                 cpx max_mem_1                            ; msb the same, test lsb ;; @@377e 53
-                 bcs _local_1052_50                       ; if above top of memory ;; @@3780 53
- ;; @@3782 53
-_local_1052_10   cmp fretop+1                              ;; @@3782 53
-                 bcc _local_1052_50                       ; if below fretop ;; @@3784 53
-                 bne _local_1052_20                        ;; @@3786 53
-                 cpx fretop                                ;; @@3788 53
-                 bcc _local_1052_50                       ; if below fretop ;; @@378a 53
- ;; @@378c 53
-_local_1052_20   cmp dsdesc+2                              ;; @@378c 53
-                 bne _local_1052_30                       ; fix ;; @@378e 53
-                 cpx dsdesc+1                              ;; @@3790 53
-                 beq _local_1052_50                        ;; @@3792 53
- ;; @@3794 53
-_local_1052_30   stx index                                ; ok set pointer ;; @@3794 53
-                 sta index+1                               ;; @@3796 53
-                 pla                                      ; get back length ;; @@3798 53
-                 tax                                      ; into x also ;; @@3799 53
-                 clc                                       ;; @@379a 53
-                 adc index                                 ;; @@379b 53
-                 sta index                                 ;; @@379d 53
-                 bcc _local_1052_40                        ;; @@379f 53
-                 inc index+1                               ;; @@37a1 53
-_local_1052_40   sec                                      ; carry set ;; @@37a3 53
-                 rts                                       ;; @@37a4 53
- ;; @@37a5 53
-_local_1052_50   pla                                      ; clean up stack ;; @@37a5 53
-                 clc                                       ;; @@37a6 53
-                 rts                                       ;; @@37a7 53
- ;; @@37a8 53
-;.end ;; @@37a8 53
-; .page ;; @@37a8 53
-; .subttl PRINT  PRINT#  CMD ;; @@37a8 53
- ;; @@37a8 53
-;*********************************************************** ;; @@37a8 53
-;* ;; @@37a8 53
-;* PRINT   PRINT#   CMD ;; @@37a8 53
-;* ;; @@37a8 53
-;********************************************************** ;; @@37a8 53
- ;; @@37a8 53
+stradj           ldy #0                                   
+                 jsr indin1_ram1                          ; push length on stack
+                 pha                                      
+                 beq _local_1052_50                       ; if length=0 do nothing
+                 iny                                      
+                 jsr indin1_ram1                          ; get low byte (into .x)
+                 tax                                      
+                 iny                                      
+                 jsr indin1_ram1                          ; get high byte
+                 cmp max_mem_1+1                          
+                 bcc _local_1052_10                       ; ok
+                 bne _local_1052_50                       ; if above top of memory
+                 cpx max_mem_1                            ; msb the same, test lsb
+                 bcs _local_1052_50                       ; if above top of memory
+
+_local_1052_10   cmp fretop+1                             
+                 bcc _local_1052_50                       ; if below fretop
+                 bne _local_1052_20                       
+                 cpx fretop                               
+                 bcc _local_1052_50                       ; if below fretop
+
+_local_1052_20   cmp dsdesc+2                             
+                 bne _local_1052_30                       ; fix
+                 cpx dsdesc+1                             
+                 beq _local_1052_50                       
+
+_local_1052_30   stx index                                ; ok set pointer
+                 sta index+1                              
+                 pla                                      ; get back length
+                 tax                                      ; into x also
+                 clc                                      
+                 adc index                                
+                 sta index                                
+                 bcc _local_1052_40                       
+                 inc index+1                              
+_local_1052_40   sec                                      ; carry set
+                 rts                                      
+
+_local_1052_50   pla                                      ; clean up stack
+                 clc                                      
+                 rts                                      
+
+;.end
+; .page
+; .subttl PRINT  PRINT#  CMD
+
+;***********************************************************
+;*
+;* PRINT   PRINT#   CMD
+;*
+;**********************************************************
+

@@ -1,34 +1,34 @@
-find_loop_2                                                ;; @@4304 88
-                 jsr _stop                                ; check stop key ;; @@4304 88
-                 +lbeq find_break                         ; exit if down ;; @@4307 88
- ;; @@430a 88
-                 ldx fndpnt                               ; duh, where are we? ;; @@430a 88
-                 clc                                       ;; @@430c 88
-                 txa                                      ; program: ;; @@430d 88
-                 adc lowtr                                ; txtptr = line start + position in line ;; @@430e 88
-                 sta txtptr                                ;; @@4310 88
-                 lda #0                                    ;; @@4312 88
-                 adc lowtr+1                               ;; @@4314 88
-                 sta txtptr+1                             ; search string: ;; @@4316 88
-                 ldz #0                                   ; at the beginning ;; @@4318 88
- ;; @@431a 88
-_local_1087_40   jsr chargt                               ; get next character from text ;; @@431a 88
-                 beq find_loop                            ; eol (no match this line) ;; @@431d 88
-                 inx                                      ; bump pointer to next character ;; @@431f 88
-                 cmp (fstr1),z                            ; character match?  ind okay- buffer ;; @@4320 88
-                 bne _local_1087_40                       ; no ;; @@4322 88
-                 stx fndpnt                               ; yes- save next position ;; @@4324 88
- ;; @@4326 88
-_local_1087_50   inz                                      ; bump position in search string ;; @@4326 88
-                 cpz fstr1+2                              ; string match? ;; @@4327 88
-                 bcs print_line                           ; yes ;; @@4329 88
-                 jsr chargt                                ;; @@432b 88
-                 beq find_loop                            ; no- eol ;; @@432e 88
-                 cmp (fstr1),z                            ; ind okay- buffer ;; @@4330 88
-                 bne find_loop_2                          ; no- rewind to beginning of search string ;; @@4332 88
-                 beq _local_1087_50                       ; maybe- still more chars to compare ;; @@4334 88
- ;; @@4336 88
- ;; @@4336 88
-; Print the line of text at LOWTR, highlighting the section of code ;; @@4336 88
-; beginning at LOWTR+FNDPNT and running for FIND_COUNT characters. ;; @@4336 88
- ;; @@4336 88
+find_loop_2                                               
+                 jsr _stop                                ; check stop key
+                 +lbeq find_break                         ; exit if down
+
+                 ldx fndpnt                               ; duh, where are we?
+                 clc                                      
+                 txa                                      ; program:
+                 adc lowtr                                ; txtptr = line start + position in line
+                 sta txtptr                               
+                 lda #0                                   
+                 adc lowtr+1                              
+                 sta txtptr+1                             ; search string:
+                 ldz #0                                   ; at the beginning
+
+_local_1087_40   jsr chargt                               ; get next character from text
+                 beq find_loop                            ; eol (no match this line)
+                 inx                                      ; bump pointer to next character
+                 cmp (fstr1),z                            ; character match?  ind okay- buffer
+                 bne _local_1087_40                       ; no
+                 stx fndpnt                               ; yes- save next position
+
+_local_1087_50   inz                                      ; bump position in search string
+                 cpz fstr1+2                              ; string match?
+                 bcs print_line                           ; yes
+                 jsr chargt                               
+                 beq find_loop                            ; no- eol
+                 cmp (fstr1),z                            ; ind okay- buffer
+                 bne find_loop_2                          ; no- rewind to beginning of search string
+                 beq _local_1087_50                       ; maybe- still more chars to compare
+
+
+; Print the line of text at LOWTR, highlighting the section of code
+; beginning at LOWTR+FNDPNT and running for FIND_COUNT characters.
+

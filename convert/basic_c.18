@@ -1,74 +1,74 @@
-break            jsr release_channels                     ; make sure we're in text mode????  [910909] ;; @@2cf6 18
-                 jsr RestoreTextScreen                     ;; @@2cf9 18
-                 jsr highlight_text                       ; ????      [910624] ;; @@2cfc 18
-                 jsr _primm                                ;; @@2cff 18
-                 !text cr,"BREAK",0                        ;; @@2d02 18
-                 +lbra errfin                             ; exit via 'in line #' ;; @@2d09 18
- ;; @@2d0c 18
-do_rts           rts                                       ;; @@2d0c 18
- ;; @@2d0d 18
-;.end ;; @@2d0d 18
-; .page ;; @@2d0d 18
-; .subttl Function Handler ;; @@2d0d 18
- ;; @@2d0d 18
-; At this point, eval has determined that the token in a has to be a ;; @@2d0d 18
-; function.  It must therefor be in the range SGN...MID$ (old BASIC), ;; @@2d0d 18
-; or RGR...INSTR (new extensions).  We will collapse these two disjoint ;; @@2d0d 18
-; blocks into one continuous range. ;; @@2d0d 18
-; ;; @@2d0d 18
-; On entry, we can assume the token is >= 'sgn' ;; @@2d0d 18
- ;; @@2d0d 18
-isfun            cmp #esc_function_token                  ; is this an escape function? ;; @@2d0d 18
-                 beq do_esc_fn                            ; yes ;; @@2d0f 18
-                 cmp #last_function_token+1                ;; @@2d11 18
-                 bcs snerr1                               ; no- must be syntax error ;; @@2d13 18
-                 cmp #mid_token+1                          ;; @@2d15 18
-                 bcc _local_1017_1                        ; no need to adjust ;; @@2d17 18
-                 sbc #rgraphic_token-mid_token-1           ;; @@2d19 18
- ;; @@2d1b 18
-_local_1017_1    pha                                      ; save token ;; @@2d1b 18
-                 tax                                       ;; @@2d1c 18
-                 jsr chrget                               ; set up for synchk. ;; @@2d1d 18
-                 cpx #instr_token-1                       ; look for (adjusted) instr token ;; @@2d20 18
-                 beq _local_1017_2                        ; yes ;; @@2d22 18
-                 cpx #rgraphic_token-1                    ; look for rgraphic which now takes 2 args [910801] ;; @@2d24 18
-                 +lbeq rgraphic                           ; yes ;; @@2d26 18
- ;; @@2d29 18
-                 cpx #mid_token+1                          ;; @@2d29 18
-                 bcs oknorm                               ; LEFT$,RIGHT$,MID$ require multiple args ;; @@2d2b 18
-                 cpx #left_token                          ; is it past last single-arg function? ;; @@2d2d 18
-                 bcc oknorm                               ; no, must be normal function ;; @@2d2f 18
- ;; @@2d31 18
- ;; @@2d31 18
-; Most functions take a single argument.  The return address of these functions ;; @@2d31 18
-; is CHKNUM, which ascertains that VALTYP=0 (numeric).  Normal functions which ;; @@2d31 18
-; return string results (eg. CHR$) must pop off that return address and return ;; @@2d31 18
-; directly to FRMEVL. ;; @@2d31 18
-; ;; @@2d31 18
-; The so called "funny" functions can take more than one argument, the first ;; @@2d31 18
-; of which must be string and the second of which must be a number between 0 ;; @@2d31 18
-; and 255.  The closed parenthesis must be checked and return is directly to ;; @@2d31 18
-; FRMEVL with the text pointer pointing beyond the ")".  The pointer to the ;; @@2d31 18
-; description of the string argument is stored on the stack underneath the ;; @@2d31 18
-; value of the integer argument. ;; @@2d31 18
- ;; @@2d31 18
-_local_1017_2    jsr chkopn                               ; check for an open parenthesis ;; @@2d31 18
-                 jsr frmevl                               ; eat open paren and first argument ;; @@2d34 18
-                 jsr chkcom                               ; two args so comma must delimit ;; @@2d37 18
-                 jsr chkstr                               ; make sure first was string ;; @@2d3a 18
- ;; @@2d3d 18
-                 pla                                      ; check token ;; @@2d3d 18
-                 cmp #instr_token-1                       ; special case: INSTR() bails out here ;; @@2d3e 18
-                 +lbeq instr                               ;; @@2d40 18
-                 ldx facmo+1                              ; push address of string arg1 ;; @@2d43 18
-                 phx                                       ;; @@2d45 18
-                 ldx facmo                                 ;; @@2d46 18
-                 phx                                       ;; @@2d48 18
-                 pha                                      ; push token ;; @@2d49 18
-                 jsr getbyt                               ; get arg2 ;; @@2d4a 18
-                 pla                                      ; retrieve token ;; @@2d4d 18
-                 phx                                      ; push value of arg2 ;; @@2d4e 18
-                 bra fingo                                ; go set up to evaluate fn ;; @@2d4f 18
- ;; @@2d51 18
- ;; @@2d51 18
- ;; @@2d51 18
+break            jsr release_channels                     ; make sure we're in text mode????  [910909]
+                 jsr RestoreTextScreen                    
+                 jsr highlight_text                       ; ????      [910624]
+                 jsr _primm                               
+                 !text cr,"BREAK",0                       
+                 +lbra errfin                             ; exit via 'in line #'
+
+do_rts           rts                                      
+
+;.end
+; .page
+; .subttl Function Handler
+
+; At this point, eval has determined that the token in a has to be a
+; function.  It must therefor be in the range SGN...MID$ (old BASIC),
+; or RGR...INSTR (new extensions).  We will collapse these two disjoint
+; blocks into one continuous range.
+;
+; On entry, we can assume the token is >= 'sgn'
+
+isfun            cmp #esc_function_token                  ; is this an escape function?
+                 beq do_esc_fn                            ; yes
+                 cmp #last_function_token+1               
+                 bcs snerr1                               ; no- must be syntax error
+                 cmp #mid_token+1                         
+                 bcc _local_1017_1                        ; no need to adjust
+                 sbc #rgraphic_token-mid_token-1          
+
+_local_1017_1    pha                                      ; save token
+                 tax                                      
+                 jsr chrget                               ; set up for synchk.
+                 cpx #instr_token-1                       ; look for (adjusted) instr token
+                 beq _local_1017_2                        ; yes
+                 cpx #rgraphic_token-1                    ; look for rgraphic which now takes 2 args [910801]
+                 +lbeq rgraphic                           ; yes
+
+                 cpx #mid_token+1                         
+                 bcs oknorm                               ; LEFT$,RIGHT$,MID$ require multiple args
+                 cpx #left_token                          ; is it past last single-arg function?
+                 bcc oknorm                               ; no, must be normal function
+
+
+; Most functions take a single argument.  The return address of these functions
+; is CHKNUM, which ascertains that VALTYP=0 (numeric).  Normal functions which
+; return string results (eg. CHR$) must pop off that return address and return
+; directly to FRMEVL.
+;
+; The so called "funny" functions can take more than one argument, the first
+; of which must be string and the second of which must be a number between 0
+; and 255.  The closed parenthesis must be checked and return is directly to
+; FRMEVL with the text pointer pointing beyond the ")".  The pointer to the
+; description of the string argument is stored on the stack underneath the
+; value of the integer argument.
+
+_local_1017_2    jsr chkopn                               ; check for an open parenthesis
+                 jsr frmevl                               ; eat open paren and first argument
+                 jsr chkcom                               ; two args so comma must delimit
+                 jsr chkstr                               ; make sure first was string
+
+                 pla                                      ; check token
+                 cmp #instr_token-1                       ; special case: INSTR() bails out here
+                 +lbeq instr                              
+                 ldx facmo+1                              ; push address of string arg1
+                 phx                                      
+                 ldx facmo                                
+                 phx                                      
+                 pha                                      ; push token
+                 jsr getbyt                               ; get arg2
+                 pla                                      ; retrieve token
+                 phx                                      ; push value of arg2
+                 bra fingo                                ; go set up to evaluate fn
+
+
+

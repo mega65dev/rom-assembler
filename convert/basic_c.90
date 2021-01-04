@@ -1,46 +1,46 @@
-find_exit                                                  ;; @@4408 90
-                 jsr crdo                                 ; normal exit ;; @@4408 90
-                 pla                                       ;; @@440b 90
-                 sta helper                               ; restore token highlight status ;; @@440c 90
-                 rmb5 helper                              ; remove 'find' flag ;; @@440e 90
-                 +lbra direct_mode_exit                   ; done ;; @@4410 90
- ;; @@4413 90
- ;; @@4413 90
- ;; @@4413 90
-find_omerr                                                ; out of memory ;; @@4413 90
-                 ldx #errom                                ;; @@4413 90
-                 !text $2c                                 ;; @@4415 90
-find_errlen                                               ; string too long ;; @@4416 90
-                 ldx #errls                                ;; @@4416 90
-                 sec                                       ;; @@4418 90
-                 !text $89                                 ;; @@4419 90
-find_break                                                ; stop key break ;; @@441a 90
-                 clc                                       ;; @@441a 90
-                 pla                                       ;; @@441b 90
-                 sta helper                               ; restore token highlight status ;; @@441c 90
-                 rmb5 helper                              ; remove 'find' flag ;; @@441e 90
-                 +lbcc break_exit                         ; [910925] ;; @@4420 90
-                 +lbra error                               ;; @@4423 90
- ;; @@4426 90
- ;; @@4426 90
-delimit_string                                            ; command is in buffer, .x = ptr to strptr ;; @@4426 90
-                 sta match                                ; delimiter character ;; @@4426 90
-                 lda txtptr                               ; point to first character in string ;; @@4428 90
-                 inc                                      ; (never wraps- string in input buffer) ;; @@442a 90
-                 sta fstr1,x                              ; set pointer to string data ;; @@442b 90
-                 lda txtptr+1                              ;; @@442d 90
-                 sta fstr1+1,x                             ;; @@442f 90
-                 lda #$ff                                 ; set string length ;; @@4431 90
-                 sta fstr1+2,x                             ;; @@4433 90
- ;; @@4435 90
-_local_1089_10   inc fstr1+2,x                             ;; @@4435 90
-                 jsr chargt                               ; build string ;; @@4437 90
-                 +lbeq snerr                              ; error if eol encountered inside string ;; @@443a 90
-                 cmp match                                 ;; @@443d 90
-                 bne _local_1089_10                       ; continue until matching delimiter found ;; @@443f 90
-                 rts                                       ;; @@4441 90
- ;; @@4442 90
-;.end ;; @@4442 90
-; .page ;; @@4442 90
-; .subttl  PUDEF ;; @@4442 90
- ;; @@4442 90
+find_exit                                                 
+                 jsr crdo                                 ; normal exit
+                 pla                                      
+                 sta helper                               ; restore token highlight status
+                 rmb5 helper                              ; remove 'find' flag
+                 +lbra direct_mode_exit                   ; done
+
+
+
+find_omerr                                                ; out of memory
+                 ldx #errom                               
+                 !text $2c                                
+find_errlen                                               ; string too long
+                 ldx #errls                               
+                 sec                                      
+                 !text $89                                
+find_break                                                ; stop key break
+                 clc                                      
+                 pla                                      
+                 sta helper                               ; restore token highlight status
+                 rmb5 helper                              ; remove 'find' flag
+                 +lbcc break_exit                         ; [910925]
+                 +lbra error                              
+
+
+delimit_string                                            ; command is in buffer, .x = ptr to strptr
+                 sta match                                ; delimiter character
+                 lda txtptr                               ; point to first character in string
+                 inc                                      ; (never wraps- string in input buffer)
+                 sta fstr1,x                              ; set pointer to string data
+                 lda txtptr+1                             
+                 sta fstr1+1,x                            
+                 lda #$ff                                 ; set string length
+                 sta fstr1+2,x                            
+
+_local_1089_10   inc fstr1+2,x                            
+                 jsr chargt                               ; build string
+                 +lbeq snerr                              ; error if eol encountered inside string
+                 cmp match                                
+                 bne _local_1089_10                       ; continue until matching delimiter found
+                 rts                                      
+
+;.end
+; .page
+; .subttl  PUDEF
+

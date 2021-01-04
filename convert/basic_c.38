@@ -1,28 +1,28 @@
-p1l010           ldy lstpnt                                ;; @@3388 38
-                 and #$7f                                  ;; @@338a 38
- ;; @@338c 38
-p1l015           cmp #':'                                 ; end-of-stmt?     [900516] ;; @@338c 38
-                 bne _local_1037_5                        ; no ;; @@338e 38
-                 bbr7 helper,_local_1037_5                ; yes, but skip e-o-s check if not HELP... ;; @@3390 38
-                 bbs7 dores,_local_1037_5                 ; or ':' is inside quotes ;; @@3393 38
-                 jsr highlight_done                       ; yes, restore normal text color ;; @@3396 38
-                 lda #':'                                  ;; @@3399 38
- ;; @@339b 38
-_local_1037_5    jsr outch                                ; outdo ;; @@339b 38
-                 cmp #'"'                                 ; if quote character, toggle quote-switch ;; @@339e 38
-                 bne _local_1037_10                        ;; @@33a0 38
-                 lda dores                                 ;; @@33a2 38
-                 eor #$ff                                  ;; @@33a4 38
-                 sta dores                                 ;; @@33a6 38
- ;; @@33a8 38
-_local_1037_10   iny                                      ; point to next character (should never wrap) ;; @@33a8 38
-                 bbs0 helper,_local_1037_15               ; branch if highlighting tokens ;; @@33a9 38
-                 bbs5 helper,_local_1037_15               ; branch if called by FIND/CHANGE ;; @@33ac 38
-                 bbr7 helper,_local_1037_20               ; branch if called by LIST or HELP satisfied ;; @@33af 38
-_local_1037_15   jsr helpsb                                ;; @@33b2 38
- ;; @@33b5 38
-_local_1037_20   jsr indlow                                ;; @@33b5 38
-                 +lbeq highlight_done                     ; finished when trailing null is found ;; @@33b8 38
-                 jmp (iqplop)                             ; usually points to nqplop ;; @@33bb 38
- ;; @@33be 38
-; .page ;; @@33be 38
+p1l010           ldy lstpnt                               
+                 and #$7f                                 
+
+p1l015           cmp #':'                                 ; end-of-stmt?     [900516]
+                 bne _local_1037_5                        ; no
+                 bbr7 helper,_local_1037_5                ; yes, but skip e-o-s check if not HELP...
+                 bbs7 dores,_local_1037_5                 ; or ':' is inside quotes
+                 jsr highlight_done                       ; yes, restore normal text color
+                 lda #':'                                 
+
+_local_1037_5    jsr outch                                ; outdo
+                 cmp #'"'                                 ; if quote character, toggle quote-switch
+                 bne _local_1037_10                       
+                 lda dores                                
+                 eor #$ff                                 
+                 sta dores                                
+
+_local_1037_10   iny                                      ; point to next character (should never wrap)
+                 bbs0 helper,_local_1037_15               ; branch if highlighting tokens
+                 bbs5 helper,_local_1037_15               ; branch if called by FIND/CHANGE
+                 bbr7 helper,_local_1037_20               ; branch if called by LIST or HELP satisfied
+_local_1037_15   jsr helpsb                               
+
+_local_1037_20   jsr indlow                               
+                 +lbeq highlight_done                     ; finished when trailing null is found
+                 jmp (iqplop)                             ; usually points to nqplop
+
+; .page

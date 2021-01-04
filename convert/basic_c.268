@@ -1,37 +1,37 @@
-ScreenDef                                                  ;; @@af66 268
-                 jsr chrget                               ; advance past token ;; @@af66 268
- ;; @@af69 268
-C65__screendef                                             ;; @@af69 268
-                 jsr getbyt                               ; get screen number ;; @@af69 268
-                 cpx #4                                   ; range 0-3   [910711] ;; @@af6c 268
-                 bcs _local_1267_10                        ;; @@af6e 268
-                 stx GKI__parm1                           ; screen# ;; @@af70 268
- ;; @@af73 268
-                 jsr combyt                               ; get width ;; @@af73 268
-                 cpx #3                                   ; range 0-2 ???? 1280 mode ???? ;; @@af76 268
-                 bcs _local_1267_10                        ;; @@af78 268
-                 stx GKI__parm2                           ; width ;; @@af7a 268
- ;; @@af7d 268
-                 jsr combyt                               ; get height ;; @@af7d 268
-                 cpx #2                                   ; range 0-1 ;; @@af80 268
-                 bcs _local_1267_10                        ;; @@af82 268
-                 stx GKI__parm3                           ; height ;; @@af84 268
- ;; @@af87 268
-                 jsr combyt                               ; get depth (# bitplanes) ;; @@af87 268
-                 dex                                      ; convert 1-8 to 0-7 ;; @@af8a 268
-                 cpx #8                                   ; range 0-7 ;; @@af8b 268
-_local_1267_10   +lbcs fcerr                              ; illegal quantity error ;; @@af8d 268
-                 stx GKI__parm4                           ; depth ;; @@af90 268
- ;; @@af93 268
-                 jmp ($8006)                              ; bra screendef ;; @@af93 268
- ;; @@af96 268
-; .page ;; @@af96 268
-;***************************************************************** ;; @@af96 268
-;* SCREEN OPEN  open a graphic screen for viewing or drawing ;; @@af96 268
-;* ;; @@af96 268
-;*  Syntax : SCREEN OPEN screen# ;; @@af96 268
-;* ;; @@af96 268
-;*           parm1 = screen#      0-3    [910711] ;; @@af96 268
-;***************************************************************** ;; @@af96 268
- ;; @@af96 268
- ;; @@af96 268
+ScreenDef                                                 
+                 jsr chrget                               ; advance past token
+
+C65__screendef                                            
+                 jsr getbyt                               ; get screen number
+                 cpx #4                                   ; range 0-3   [910711]
+                 bcs _local_1267_10                       
+                 stx GKI__parm1                           ; screen#
+
+                 jsr combyt                               ; get width
+                 cpx #3                                   ; range 0-2 ???? 1280 mode ????
+                 bcs _local_1267_10                       
+                 stx GKI__parm2                           ; width
+
+                 jsr combyt                               ; get height
+                 cpx #2                                   ; range 0-1
+                 bcs _local_1267_10                       
+                 stx GKI__parm3                           ; height
+
+                 jsr combyt                               ; get depth (# bitplanes)
+                 dex                                      ; convert 1-8 to 0-7
+                 cpx #8                                   ; range 0-7
+_local_1267_10   +lbcs fcerr                              ; illegal quantity error
+                 stx GKI__parm4                           ; depth
+
+                 jmp ($8006)                              ; bra screendef
+
+; .page
+;*****************************************************************
+;* SCREEN OPEN  open a graphic screen for viewing or drawing
+;*
+;*  Syntax : SCREEN OPEN screen#
+;*
+;*           parm1 = screen#      0-3    [910711]
+;*****************************************************************
+
+

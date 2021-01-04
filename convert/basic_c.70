@@ -1,28 +1,28 @@
-highlight_text                                            ; nasty kludge to colorize error or found text ;; @@3cdc 70
-                 bit highlight_save                        ;; @@3cdc 70
-                 bpl _local_1069_10                       ; (unless it's already highlighted) ;; @@3cdf 70
-                 lda _color                               ; save current (normal) color ;; @@3ce1 70
-                 sta highlight_save                       ; msb=0 to mark highlight_save valid ;; @@3ce3 70
-                 lda highlight_color                       ;; @@3ce6 70
-                 sta _color                               ; change color to highlight ;; @@3ce9 70
-_local_1069_10   rts                                       ;; @@3ceb 70
- ;; @@3cec 70
-;.end ;; @@3cec 70
-; .page ;; @@3cec 70
-; .subttl  GOSUB  GOTO ;; @@3cec 70
- ;; @@3cec 70
-; GOSUB-  Push text pointer, line #, & gosub token on stack: ;; @@3cec 70
-; ;; @@3cec 70
-;  (bottom) highest memory ;; @@3cec 70
-;=========================================================== ;; @@3cec 70
-;  txtptr+1 address of next statement ;; @@3cec 70
-;  txtptr ;; @@3cec 70
-;  ======== ;; @@3cec 70
-;  curlin+1 current line number ;; @@3cec 70
-;  curlin ;; @@3cec 70
-;  ======== ;; @@3cec 70
-;  'gosub' token <== (tos) top of stack pointer ;; @@3cec 70
-;=========================================================== ;; @@3cec 70
-;  (top of stack) lowest memory ;; @@3cec 70
- ;; @@3cec 70
- ;; @@3cec 70
+highlight_text                                            ; nasty kludge to colorize error or found text
+                 bit highlight_save                       
+                 bpl _local_1069_10                       ; (unless it's already highlighted)
+                 lda _color                               ; save current (normal) color
+                 sta highlight_save                       ; msb=0 to mark highlight_save valid
+                 lda highlight_color                      
+                 sta _color                               ; change color to highlight
+_local_1069_10   rts                                      
+
+;.end
+; .page
+; .subttl  GOSUB  GOTO
+
+; GOSUB-  Push text pointer, line #, & gosub token on stack:
+;
+;  (bottom) highest memory
+;===========================================================
+;  txtptr+1 address of next statement
+;  txtptr
+;  ========
+;  curlin+1 current line number
+;  curlin
+;  ========
+;  'gosub' token <== (tos) top of stack pointer
+;===========================================================
+;  (top of stack) lowest memory
+
+

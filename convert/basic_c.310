@@ -1,54 +1,54 @@
-docord           jsr chrget                               ; skip over comma ;; @@bc54 310
-                 inc vtemp4                               ; point to y-destination ;; @@bc57 310
-                 inc vtemp4                                ;; @@bc5a 310
-                 jsr cordsb                               ; get y-paramter ;; @@bc5d 310
-; ldx vtemp4 ;; @@bc60 310
-; dex ;; @@bc60 310
-; dex ;; @@bc60 310
-; jsr scalxy       ;scale the values ;; @@bc60 310
-                 ldy #ypos-vwork                           ;; @@bc60 310
-                 ldx vtemp4                                ;; @@bc62 310
-                 inx                                       ;; @@bc65 310
-                 inx                                       ;; @@bc66 310
- ;; @@bc67 310
-docor1           dex                                       ;; @@bc67 310
-                 dex                                       ;; @@bc68 310
-                 lsr vtemp5                                ;; @@bc69 310
-                 bcc docor2                               ; skip if not relative ;; @@bc6c 310
-                 jsr addtwo                               ; add to current position ;; @@bc6e 310
-                 sta vwork,x                               ;; @@bc71 310
-                 tya                                       ;; @@bc74 310
-                 sta vwork+1,x                             ;; @@bc75 310
- ;; @@bc78 310
-docor2           ldy #xpos-vwork                           ;; @@bc78 310
-                 cpx vtemp4                                ;; @@bc7a 310
-                 beq docor1                               ; loop to do x-coordinate ;; @@bc7d 310
-                 clc                                       ;; @@bc7f 310
-                 rts                                       ;; @@bc80 310
- ;; @@bc81 310
-; ;; @@bc81 310
-; CORDSB -- Get the next 2-byte parameter ;; @@bc81 310
-; ;; @@bc81 310
- ;; @@bc81 310
-cordsb           jsr chrgot                               ; read character ;; @@bc81 310
-                 cmp #plus_token                          ; check if relative - plus sign ;; @@bc84 310
-                 beq _local_1309_10                       ; skip if yes ;; @@bc86 310
-                 cmp #minus_token                          ;; @@bc88 310
-                 beq _local_1309_10                       ; skip if relative - minus sign ;; @@bc8a 310
-                 clc                                      ; .c=1 if relative coord, .c=0 if absolute ;; @@bc8c 310
-_local_1309_10   rol vtemp5                               ; save coord type for later ;; @@bc8d 310
-                 jsr frmnum                                ;; @@bc90 310
-                 jsr getsad                               ; get signed 2 byte coordinate (y,a), do rts ;; @@bc93 310
-                 ldx vtemp4                                ;; @@bc96 310
-                 sta vwork+1,x                            ; save 2-byte parameter ;; @@bc99 310
-                 tya                                       ;; @@bc9c 310
-                 sta vwork,x                               ;; @@bc9d 310
-                 rts                                       ;; @@bca0 310
- ;; @@bca1 310
-;.end ;; @@bca1 310
-; .page ;; @@bca1 310
-;GRAPHICS11.SRC ;; @@bca1 310
- ;; @@bca1 310
-;  ANGVAL  -- Table of angle values on 10 degree boundaries ;; @@bca1 310
-;  Values based as fraction of 65536 ;; @@bca1 310
- ;; @@bca1 310
+docord           jsr chrget                               ; skip over comma
+                 inc vtemp4                               ; point to y-destination
+                 inc vtemp4                               
+                 jsr cordsb                               ; get y-paramter
+; ldx vtemp4
+; dex
+; dex
+; jsr scalxy       ;scale the values
+                 ldy #ypos-vwork                          
+                 ldx vtemp4                               
+                 inx                                      
+                 inx                                      
+
+docor1           dex                                      
+                 dex                                      
+                 lsr vtemp5                               
+                 bcc docor2                               ; skip if not relative
+                 jsr addtwo                               ; add to current position
+                 sta vwork,x                              
+                 tya                                      
+                 sta vwork+1,x                            
+
+docor2           ldy #xpos-vwork                          
+                 cpx vtemp4                               
+                 beq docor1                               ; loop to do x-coordinate
+                 clc                                      
+                 rts                                      
+
+;
+; CORDSB -- Get the next 2-byte parameter
+;
+
+cordsb           jsr chrgot                               ; read character
+                 cmp #plus_token                          ; check if relative - plus sign
+                 beq _local_1309_10                       ; skip if yes
+                 cmp #minus_token                         
+                 beq _local_1309_10                       ; skip if relative - minus sign
+                 clc                                      ; .c=1 if relative coord, .c=0 if absolute
+_local_1309_10   rol vtemp5                               ; save coord type for later
+                 jsr frmnum                               
+                 jsr getsad                               ; get signed 2 byte coordinate (y,a), do rts
+                 ldx vtemp4                               
+                 sta vwork+1,x                            ; save 2-byte parameter
+                 tya                                      
+                 sta vwork,x                              
+                 rts                                      
+
+;.end
+; .page
+;GRAPHICS11.SRC
+
+;  ANGVAL  -- Table of angle values on 10 degree boundaries
+;  Values based as fraction of 65536
+

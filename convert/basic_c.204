@@ -1,89 +1,89 @@
-errf             lda #'*'                                 ; format error ;; @@6b8c 204
-stout            jsr cdout                                ; fill field with stars ;; @@6b8e 204
-                 bne stout                                 ;; @@6b91 204
-                 rts                                       ;; @@6b93 204
- ;; @@6b94 204
- ;; @@6b94 204
-ahp              tay                                      ; output no if swe=0 ;; @@6b94 204
-                 beq hup                                   ;; @@6b95 204
-ldvn             lda vn                                    ;; @@6b97 204
-                 bne hup                                  ; vn<>0 ;; @@6b9a 204
-                 dec swe                                  ; add extra 0 ;; @@6b9c 204
-                 inc z_p_temp_1                           ; before decimal point ;; @@6b9f 204
-                 bra hup                                   ;; @@6ba1 204
- ;; @@6ba3 204
-; .page ;; @@6ba3 204
-; Using- shift decimal point ;; @@6ba3 204
- ;; @@6ba3 204
-shpn             sec                                       ;; @@6ba3 204
-                 lda vf                                    ;; @@6ba4 204
-                 sbc vn                                    ;; @@6ba7 204
-                 beq rdy                                  ; format o.k ;; @@6baa 204
-                 ldy point                                 ;; @@6bac 204
-                 bcc pntl                                 ; vf<vn ;; @@6bae 204
-                 sta hulp                                  ;; @@6bb0 204
- ;; @@6bb2 204
-incy             cpy enr                                  ; end of no reached? ;; @@6bb2 204
-                 beq ity                                   ;; @@6bb5 204
-                 bcs nos1                                 ; yes... ;; @@6bb7 204
- ;; @@6bb9 204
-ity              iny                                       ;; @@6bb9 204
-nos1             inc vn                                    ;; @@6bba 204
-nos4             jsr eado                                 ; adjust exponent ;; @@6bbd 204
-                 dec hulp                                 ; ready? ;; @@6bc0 204
-                 bne incy                                 ; no... ;; @@6bc2 204
-                 beq poit                                  ;; @@6bc4 204
- ;; @@6bc6 204
-pntl             eor #$ff                                  ;; @@6bc6 204
-                 adc #1                                    ;; @@6bc8 204
-                 sta hulp                                 ; =vn-vf ;; @@6bca 204
- ;; @@6bcc 204
-decy             cpy bnr                                  ; begin of no? ;; @@6bcc 204
-                 beq inz1                                 ; yes... ;; @@6bcf 204
-                 dey                                       ;; @@6bd1 204
-                 dec vn                                    ;; @@6bd2 204
-                 bra inz2                                  ;; @@6bd5 204
- ;; @@6bd7 204
- ;; @@6bd7 204
-inz1             inc z_p_temp_1                           ; add leading zeros ;; @@6bd7 204
-inz2             lda #$80                                  ;; @@6bd9 204
-nos3             jsr eadj                                 ; adjust exponent ;; @@6bdb 204
-                 dec hulp                                 ; ready? ;; @@6bde 204
-                 bne decy                                 ; no... ;; @@6be0 204
- ;; @@6be2 204
-poit             sty point                                ; decimal point pointer ;; @@6be2 204
-rdy              rts                                       ;; @@6be4 204
- ;; @@6be5 204
-; .page ;; @@6be5 204
-; Using- adjust exponent ;; @@6be5 204
- ;; @@6be5 204
-sexp             bne retrn                                ; no over/underflow ;; @@6be5 204
-                 eor #$09                                 ; .a is 0 or 9 ;; @@6be7 204
-                 sta fbuffr,x                             ; digit back in exp ;; @@6be9 204
-                 dex                                      ; = 0 or 9 ;; @@6bec 204
-                 cpx uexp                                  ;; @@6bed 204
-                 rts                                       ;; @@6bf0 204
- ;; @@6bf1 204
- ;; @@6bf1 204
-eado             lda #0                                    ;; @@6bf1 204
-eadj             ldx uexp                                  ;; @@6bf3 204
-                 inx                                       ;; @@6bf6 204
-                 bit etof                                 ; e-to-f flag on? ;; @@6bf7 204
-                 bmi _local_1203_20                       ; yes... ;; @@6bfa 204
-                 eor usgn                                  ;; @@6bfc 204
-                 beq _local_1203_20                       ; ++ or -- ;; @@6bff 204
- ;; @@6c01 204
-_local_1203_10   jsr tag3                                 ; inc exp, overflow? ;; @@6c01 204
-                 jsr sexp                                 ; digit 0 if yes ;; @@6c04 204
-                 bcs _local_1203_10                       ; try second digit ;; @@6c07 204
-                 +lbra overr                              ; exp>99 ;; @@6c09 204
- ;; @@6c0c 204
-_local_1203_20   lda fbuffr,x                              ;; @@6c0c 204
-                 dec fbuffr,x                             ; decrement exp ;; @@6c0f 204
-                 cmp #'0'                                 ; underflow on digit? ;; @@6c12 204
-                 jsr sexp                                 ; set digit=9 if yes... ;; @@6c14 204
-                 bcs _local_1203_20                       ; try 2nd digit ;; @@6c17 204
-                 bit etof                                 ; flag off? ;; @@6c19 204
-                 bpl et3                                  ; yes... ;; @@6c1c 204
-                 sty point                                ; decimal point pointer ;; @@6c1e 204
- ;; @@6c20 204
+errf             lda #'*'                                 ; format error
+stout            jsr cdout                                ; fill field with stars
+                 bne stout                                
+                 rts                                      
+
+
+ahp              tay                                      ; output no if swe=0
+                 beq hup                                  
+ldvn             lda vn                                   
+                 bne hup                                  ; vn<>0
+                 dec swe                                  ; add extra 0
+                 inc z_p_temp_1                           ; before decimal point
+                 bra hup                                  
+
+; .page
+; Using- shift decimal point
+
+shpn             sec                                      
+                 lda vf                                   
+                 sbc vn                                   
+                 beq rdy                                  ; format o.k
+                 ldy point                                
+                 bcc pntl                                 ; vf<vn
+                 sta hulp                                 
+
+incy             cpy enr                                  ; end of no reached?
+                 beq ity                                  
+                 bcs nos1                                 ; yes...
+
+ity              iny                                      
+nos1             inc vn                                   
+nos4             jsr eado                                 ; adjust exponent
+                 dec hulp                                 ; ready?
+                 bne incy                                 ; no...
+                 beq poit                                 
+
+pntl             eor #$ff                                 
+                 adc #1                                   
+                 sta hulp                                 ; =vn-vf
+
+decy             cpy bnr                                  ; begin of no?
+                 beq inz1                                 ; yes...
+                 dey                                      
+                 dec vn                                   
+                 bra inz2                                 
+
+
+inz1             inc z_p_temp_1                           ; add leading zeros
+inz2             lda #$80                                 
+nos3             jsr eadj                                 ; adjust exponent
+                 dec hulp                                 ; ready?
+                 bne decy                                 ; no...
+
+poit             sty point                                ; decimal point pointer
+rdy              rts                                      
+
+; .page
+; Using- adjust exponent
+
+sexp             bne retrn                                ; no over/underflow
+                 eor #$09                                 ; .a is 0 or 9
+                 sta fbuffr,x                             ; digit back in exp
+                 dex                                      ; = 0 or 9
+                 cpx uexp                                 
+                 rts                                      
+
+
+eado             lda #0                                   
+eadj             ldx uexp                                 
+                 inx                                      
+                 bit etof                                 ; e-to-f flag on?
+                 bmi _local_1203_20                       ; yes...
+                 eor usgn                                 
+                 beq _local_1203_20                       ; ++ or --
+
+_local_1203_10   jsr tag3                                 ; inc exp, overflow?
+                 jsr sexp                                 ; digit 0 if yes
+                 bcs _local_1203_10                       ; try second digit
+                 +lbra overr                              ; exp>99
+
+_local_1203_20   lda fbuffr,x                             
+                 dec fbuffr,x                             ; decrement exp
+                 cmp #'0'                                 ; underflow on digit?
+                 jsr sexp                                 ; set digit=9 if yes...
+                 bcs _local_1203_20                       ; try 2nd digit
+                 bit etof                                 ; flag off?
+                 bpl et3                                  ; yes...
+                 sty point                                ; decimal point pointer
+

@@ -1,88 +1,88 @@
-multrt           rts                                       ;; @@60cb 172
- ;; @@60cc 172
-; .page ;; @@60cc 172
-; Unpack a ROM constant into the FAC ;; @@60cc 172
- ;; @@60cc 172
-romupk           sta index1                                ;; @@60cc 172
-                 sty index1+1                              ;; @@60ce 172
-                 ldy #4                                    ;; @@60d0 172
-                 lda (index1),y                           ; it's in ROM, so ok to use ind ;; @@60d2 172
-                 sta arglo                                 ;; @@60d4 172
-                 dey                                       ;; @@60d6 172
-                 lda (index1),y                            ;; @@60d7 172
-                 sta argmo                                 ;; @@60d9 172
-                 dey                                       ;; @@60db 172
-                 lda (index1),y                            ;; @@60dc 172
-                 sta argmoh                                ;; @@60de 172
-                 dey                                       ;; @@60e0 172
-                 lda (index1),y                            ;; @@60e1 172
-                 sta argsgn                                ;; @@60e3 172
-                 eor facsgn                                ;; @@60e5 172
-                 sta arisgn                                ;; @@60e7 172
-                 lda argsgn                                ;; @@60e9 172
-                 ora #$80                                  ;; @@60eb 172
-                 sta argho                                 ;; @@60ed 172
-                 dey                                       ;; @@60ef 172
-                 lda (index1),y                            ;; @@60f0 172
-                 sta argexp                                ;; @@60f2 172
-                 lda facexp                               ; sets code of facexp ;; @@60f4 172
-                 rts                                       ;; @@60f6 172
- ;; @@60f7 172
-; .page ;; @@60f7 172
-; Unpack a RAM constant into the FAC ;; @@60f7 172
- ;; @@60f7 172
-conupk           sta index1                                ;; @@60f7 172
-                 sty index1+1                              ;; @@60f9 172
- ;; @@60fb 172
-; lda mmu_config_reg ;; @@60fb 172
-; pha   ;preserve caller's memory config???? ;; @@60fb 172
- ;; @@60fb 172
-                 ldy #4                                    ;; @@60fb 172
-                 jsr indin1_ram1                           ;; @@60fd 172
-                 sta arglo                                 ;; @@6100 172
-                 dey                                       ;; @@6102 172
-                 jsr indin1_ram1                           ;; @@6103 172
-                 sta argmo                                 ;; @@6106 172
-                 dey                                       ;; @@6108 172
-                 jsr indin1_ram1                           ;; @@6109 172
-                 sta argmoh                                ;; @@610c 172
-                 dey                                       ;; @@610e 172
-                 jsr indin1_ram1                           ;; @@610f 172
-                 sta argsgn                                ;; @@6112 172
-                 eor facsgn                                ;; @@6114 172
-                 sta arisgn                                ;; @@6116 172
-                 lda argsgn                                ;; @@6118 172
-                 ora #$80                                  ;; @@611a 172
-                 sta argho                                 ;; @@611c 172
-                 dey                                       ;; @@611e 172
-                 jsr indin1_ram1                           ;; @@611f 172
-                 sta argexp                                ;; @@6122 172
- ;; @@6124 172
-; pla ;; @@6124 172
-; sta mmu_config_reg ;restore caller's memory config???? ;; @@6124 172
- ;; @@6124 172
-                 lda facexp                               ; set codes of facexp ;; @@6124 172
-                 rts                                       ;; @@6126 172
- ;; @@6127 172
-; .page ;; @@6127 172
-; Check special cases and add exponents for FMULT, FDIV ;; @@6127 172
- ;; @@6127 172
-muldiv                                                     ;; @@6127 172
-                 lda argexp                               ; exp of arg=0? ;; @@6127 172
-mldexp           beq zeremv                               ; so we get zero exponent ;; @@6129 172
-                 clc                                       ;; @@612b 172
-                 adc facexp                               ; result is in (a) ;; @@612c 172
-                 bcc _local_1171_10                       ; find (c) xor (n) ;; @@612e 172
-                 +lbmi overr                              ; overflow if bits match ;; @@6130 172
-                 clc                                       ;; @@6133 172
-                 !text $2c                                 ;; @@6134 172
- ;; @@6135 172
-_local_1171_10   bpl zeremv                               ; underflow ;; @@6135 172
-                 adc #$80                                 ; add bias ;; @@6137 172
-                 sta facexp                                ;; @@6139 172
-                 +lbeq zeroml                             ; zero the rest of it ;; @@613b 172
-                 lda arisgn                                ;; @@613e 172
-                 sta facsgn                               ; arisgn is result's sign ;; @@6140 172
-                 rts                                      ; done ;; @@6142 172
- ;; @@6143 172
- ;; @@6143 172
+multrt           rts                                      
+
+; .page
+; Unpack a ROM constant into the FAC
+
+romupk           sta index1                               
+                 sty index1+1                             
+                 ldy #4                                   
+                 lda (index1),y                           ; it's in ROM, so ok to use ind
+                 sta arglo                                
+                 dey                                      
+                 lda (index1),y                           
+                 sta argmo                                
+                 dey                                      
+                 lda (index1),y                           
+                 sta argmoh                               
+                 dey                                      
+                 lda (index1),y                           
+                 sta argsgn                               
+                 eor facsgn                               
+                 sta arisgn                               
+                 lda argsgn                               
+                 ora #$80                                 
+                 sta argho                                
+                 dey                                      
+                 lda (index1),y                           
+                 sta argexp                               
+                 lda facexp                               ; sets code of facexp
+                 rts                                      
+
+; .page
+; Unpack a RAM constant into the FAC
+
+conupk           sta index1                               
+                 sty index1+1                             
+
+; lda mmu_config_reg
+; pha   ;preserve caller's memory config????
+
+                 ldy #4                                   
+                 jsr indin1_ram1                          
+                 sta arglo                                
+                 dey                                      
+                 jsr indin1_ram1                          
+                 sta argmo                                
+                 dey                                      
+                 jsr indin1_ram1                          
+                 sta argmoh                               
+                 dey                                      
+                 jsr indin1_ram1                          
+                 sta argsgn                               
+                 eor facsgn                               
+                 sta arisgn                               
+                 lda argsgn                               
+                 ora #$80                                 
+                 sta argho                                
+                 dey                                      
+                 jsr indin1_ram1                          
+                 sta argexp                               
+
+; pla
+; sta mmu_config_reg ;restore caller's memory config????
+
+                 lda facexp                               ; set codes of facexp
+                 rts                                      
+
+; .page
+; Check special cases and add exponents for FMULT, FDIV
+
+muldiv                                                    
+                 lda argexp                               ; exp of arg=0?
+mldexp           beq zeremv                               ; so we get zero exponent
+                 clc                                      
+                 adc facexp                               ; result is in (a)
+                 bcc _local_1171_10                       ; find (c) xor (n)
+                 +lbmi overr                              ; overflow if bits match
+                 clc                                      
+                 !text $2c                                
+
+_local_1171_10   bpl zeremv                               ; underflow
+                 adc #$80                                 ; add bias
+                 sta facexp                               
+                 +lbeq zeroml                             ; zero the rest of it
+                 lda arisgn                               
+                 sta facsgn                               ; arisgn is result's sign
+                 rts                                      ; done
+
+

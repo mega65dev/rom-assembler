@@ -1,52 +1,52 @@
-play_rts                                                   ;; @@4768 104
-                 rts                                       ;; @@4768 104
- ;; @@4769 104
-; .page ;; @@4769 104
-play_one_character                                           ;; @@4769 104
-                 cmp #' '                                 ; spaces are a 'no-op' ;; @@4769 104
-                 beq play_rts                              ;; @@476b 104
- ;; @@476d 104
-_local_1103_5    cmp #'A'                                 ; note name a-g? ;; @@476d 104
-                 bcc _local_1103_10                        ;; @@476f 104
-                 cmp #'H'                                  ;; @@4771 104
-                 +lbcc play_note                          ; yes...play it ;; @@4773 104
- ;; @@4776 104
-_local_1103_10   ldx #4                                   ; test for notes,'w,h,q,i,s' ;; @@4776 104
-_local_1103_20   cmp notes,x                               ;; @@4778 104
-                 +lbeq set_note_length                     ;; @@477b 104
-                 dex                                       ;; @@477e 104
-                 bpl _local_1103_20                        ;; @@477f 104
- ;; @@4781 104
-                 cmp #'R'                                 ; rest? ;; @@4781 104
-                 +lbeq play_rest                           ;; @@4783 104
-                 cmp #'.'                                 ; dotted note? ;; @@4786 104
-                 +lbeq play_dot                            ;; @@4788 104
- ;; @@478b 104
-                 ldx #5                                   ; test for v,o,t,x,u,m commands ;; @@478b 104
-_local_1103_30   cmp mutabl,x                              ;; @@478d 104
-                 +lbeq play_command                        ;; @@4790 104
-                 dex                                       ;; @@4793 104
-                 bpl _local_1103_30                       ; test all 5 characters in table ;; @@4794 104
- ;; @@4796 104
-                 cmp #'#'                                 ; sharp? ;; @@4796 104
-                 +lbeq play_sharp                          ;; @@4798 104
-                 cmp #'$'                                 ; flat? ;; @@479b 104
-                 +lbeq play_flat                           ;; @@479d 104
- ;; @@47a0 104
-; .page ;; @@47a0 104
-; Must be a digit here for Octave, Voice, envelope (T), filter (X), or volume (U) ;; @@47a0 104
- ;; @@47a0 104
-                 sec                                       ;; @@47a0 104
-                 sbc #'0'                                 ; mask nybble ;; @@47a1 104
-                 cmp #10                                  ; must be in range 0..9 ;; @@47a3 104
-                 +lbcs play_bad_value                      ;; @@47a5 104
- ;; @@47a8 104
-                 asl flag                                 ; octave, voice, envelope, filter, or volume? ;; @@47a8 104
-                 bcs set_voice                             ;; @@47ab 104
-                 asl flag                                 ; octave, envelope, filter, or volume? ;; @@47ad 104
-                 bcs set_octave                            ;; @@47b0 104
-                 asl flag                                 ; envelope, filter, or volume? ;; @@47b2 104
-                 bcs set_envelope                          ;; @@47b5 104
-                 asl flag                                 ; filter or volume? ;; @@47b7 104
-                 bcc set_volume                            ;; @@47ba 104
- ;; @@47bc 104
+play_rts                                                  
+                 rts                                      
+
+; .page
+play_one_character                                          
+                 cmp #' '                                 ; spaces are a 'no-op'
+                 beq play_rts                             
+
+_local_1103_5    cmp #'A'                                 ; note name a-g?
+                 bcc _local_1103_10                       
+                 cmp #'H'                                 
+                 +lbcc play_note                          ; yes...play it
+
+_local_1103_10   ldx #4                                   ; test for notes,'w,h,q,i,s'
+_local_1103_20   cmp notes,x                              
+                 +lbeq set_note_length                    
+                 dex                                      
+                 bpl _local_1103_20                       
+
+                 cmp #'R'                                 ; rest?
+                 +lbeq play_rest                          
+                 cmp #'.'                                 ; dotted note?
+                 +lbeq play_dot                           
+
+                 ldx #5                                   ; test for v,o,t,x,u,m commands
+_local_1103_30   cmp mutabl,x                             
+                 +lbeq play_command                       
+                 dex                                      
+                 bpl _local_1103_30                       ; test all 5 characters in table
+
+                 cmp #'#'                                 ; sharp?
+                 +lbeq play_sharp                         
+                 cmp #'$'                                 ; flat?
+                 +lbeq play_flat                          
+
+; .page
+; Must be a digit here for Octave, Voice, envelope (T), filter (X), or volume (U)
+
+                 sec                                      
+                 sbc #'0'                                 ; mask nybble
+                 cmp #10                                  ; must be in range 0..9
+                 +lbcs play_bad_value                     
+
+                 asl flag                                 ; octave, voice, envelope, filter, or volume?
+                 bcs set_voice                            
+                 asl flag                                 ; octave, envelope, filter, or volume?
+                 bcs set_octave                           
+                 asl flag                                 ; envelope, filter, or volume?
+                 bcs set_envelope                         
+                 asl flag                                 ; filter or volume?
+                 bcc set_volume                           
+

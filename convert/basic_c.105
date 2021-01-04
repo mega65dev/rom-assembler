@@ -1,32 +1,32 @@
-set_filter                                                 ;; @@47bc 105
-                 jsr wait_for_all_quiet                   ; [910722] ;; @@47bc 105
-                 cmp #2                                    ;; @@47bf 105
-                 +lbcs play_bad_value                     ; value too large ;; @@47c1 105
-                 lsr                                      ; .c=on/off ;; @@47c4 105
-                 ldy voice                                ; 0-5 ;; @@47c5 105
-                 ldx filter_offset,y                      ; 0 0 0 4 4 4 ;; @@47c8 105
-                 lda filters1+2,x                         ; get current filter data for this SID  [910612] ;; @@47cb 105
-                 ora vbits,y                              ; update filter voice bit ;; @@47ce 105
-                 bcs _local_1104_20                       ; branch to turn filter on ;; @@47d1 105
-                 eor vbits,y                              ; else, turn filter off   [910612] ;; @@47d3 105
- ;; @@47d6 105
-_local_1104_20   sta filters1+2,x                          ;; @@47d6 105
-; lda filters1+3,x ;why????     [910612] ;; @@47d9 105
-; sta filters1+4,x ;save new filter-type/volume ;; @@47d9 105
- ;; @@47d9 105
-; jsr put_io_in_map ;; @@47d9 105
-                 lda SID_offset,y                         ; get hardware offset for current voice ;; @@47d9 105
-                 and #$f0                                 ; $00 or $20 ;; @@47dc 105
-                 tay                                       ;; @@47de 105
-; jsr go_slow  ;      [910716] 4567R7A ;; @@47df 105
-                 ldz #3                                    ;; @@47df 105
-_local_1104_30   lda filters1,x                           ; update the hardware ;; @@47e1 105
-                 sta sid1+21,y                             ;; @@47e4 105
-                 inx                                       ;; @@47e7 105
-                 iny                                       ;; @@47e8 105
-                 dez                                       ;; @@47e9 105
-                 bpl _local_1104_30                        ;; @@47ea 105
-; jsr go_fast  ;      [910716] 4567R7A ;; @@47ec 105
-                 bra clear_flag                           ; always ;; @@47ec 105
- ;; @@47ee 105
-; .page ;; @@47ee 105
+set_filter                                                
+                 jsr wait_for_all_quiet                   ; [910722]
+                 cmp #2                                   
+                 +lbcs play_bad_value                     ; value too large
+                 lsr                                      ; .c=on/off
+                 ldy voice                                ; 0-5
+                 ldx filter_offset,y                      ; 0 0 0 4 4 4
+                 lda filters1+2,x                         ; get current filter data for this SID  [910612]
+                 ora vbits,y                              ; update filter voice bit
+                 bcs _local_1104_20                       ; branch to turn filter on
+                 eor vbits,y                              ; else, turn filter off   [910612]
+
+_local_1104_20   sta filters1+2,x                         
+; lda filters1+3,x ;why????     [910612]
+; sta filters1+4,x ;save new filter-type/volume
+
+; jsr put_io_in_map
+                 lda SID_offset,y                         ; get hardware offset for current voice
+                 and #$f0                                 ; $00 or $20
+                 tay                                      
+; jsr go_slow  ;      [910716] 4567R7A
+                 ldz #3                                   
+_local_1104_30   lda filters1,x                           ; update the hardware
+                 sta sid1+21,y                            
+                 inx                                      
+                 iny                                      
+                 dez                                      
+                 bpl _local_1104_30                       
+; jsr go_fast  ;      [910716] 4567R7A
+                 bra clear_flag                           ; always
+
+; .page

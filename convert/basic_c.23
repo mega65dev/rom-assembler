@@ -1,7 +1,7 @@
-errfin           ldy curlin+1                             ; direct mode? ;; @@2ed9 23
-                 iny                                       ;; @@2edb 23
-                 beq _local_1022_10                       ; yes...no line # ;; @@2edc 23
-                 jsr inprt                                 ;; @@2ede 23
-_local_1022_10   jsr highlight_done                       ; restore normal text color????    [910624] ;; @@2ee1 23
- ;; @@2ee4 23
-; .page ;; @@2ee4 23
+errfin           ldy curlin+1                             ; direct mode?
+                 iny                                      
+                 beq _local_1022_10                       ; yes...no line #
+                 jsr inprt                                
+_local_1022_10   jsr highlight_done                       ; restore normal text color????    [910624]
+
+; .page

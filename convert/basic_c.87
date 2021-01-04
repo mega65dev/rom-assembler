@@ -1,32 +1,32 @@
-find_loop                                                  ;; @@42cf 87
-                 ldy #0                                   ; move to next line (copy link bytes to lowtr) ;; @@42cf 87
-                 jsr indlow                                ;; @@42d1 87
-                 tax                                       ;; @@42d4 87
-                 iny                                       ;; @@42d5 87
-                 jsr indlow                                ;; @@42d6 87
-                 stx lowtr                                 ;; @@42d9 87
-                 sta lowtr+1                               ;; @@42db 87
- ;; @@42dd 87
-find_loop_1                                                ;; @@42dd 87
-                 ldy #1                                    ;; @@42dd 87
-                 jsr indlow                               ; check link ;; @@42df 87
-                 bne _local_1086_10                       ; not null- continue ;; @@42e2 87
-                 dey                                       ;; @@42e4 87
-                 jsr indlow                                ;; @@42e5 87
-                 +lbeq find_exit                          ; null- exit ;; @@42e8 87
- ;; @@42eb 87
-_local_1086_10   ldy #2                                    ;; @@42eb 87
-                 jsr indlow                               ; check line number ;; @@42ed 87
-                 tax                                       ;; @@42f0 87
-                 iny                                       ;; @@42f1 87
-                 jsr indlow                                ;; @@42f2 87
-                 cmp linnum+1                              ;; @@42f5 87
-                 bne _local_1086_20                        ;; @@42f7 87
-                 cpx linnum                                ;; @@42f9 87
-                 beq _local_1086_30                       ; line is <= last line requested, continue ;; @@42fb 87
-_local_1086_20   +lbcs find_exit                          ; line is >  last line requested, exit ;; @@42fd 87
- ;; @@4300 87
-_local_1086_30   ldx #3                                   ; set initial position - 1 (past link & line#) ;; @@4300 87
-                 stx fndpnt                                ;; @@4302 87
- ;; @@4304 87
-; .page ;; @@4304 87
+find_loop                                                 
+                 ldy #0                                   ; move to next line (copy link bytes to lowtr)
+                 jsr indlow                               
+                 tax                                      
+                 iny                                      
+                 jsr indlow                               
+                 stx lowtr                                
+                 sta lowtr+1                              
+
+find_loop_1                                               
+                 ldy #1                                   
+                 jsr indlow                               ; check link
+                 bne _local_1086_10                       ; not null- continue
+                 dey                                      
+                 jsr indlow                               
+                 +lbeq find_exit                          ; null- exit
+
+_local_1086_10   ldy #2                                   
+                 jsr indlow                               ; check line number
+                 tax                                      
+                 iny                                      
+                 jsr indlow                               
+                 cmp linnum+1                             
+                 bne _local_1086_20                       
+                 cpx linnum                               
+                 beq _local_1086_30                       ; line is <= last line requested, continue
+_local_1086_20   +lbcs find_exit                          ; line is >  last line requested, exit
+
+_local_1086_30   ldx #3                                   ; set initial position - 1 (past link & line#)
+                 stx fndpnt                               
+
+; .page

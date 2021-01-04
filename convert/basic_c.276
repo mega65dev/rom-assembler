@@ -1,73 +1,73 @@
-disk_renum_cmd   !text "M-W",119,0,2                      ; Renumber Drive command ;; @@b27f 276
- ;; @@b285 276
-; .page ;; @@b285 276
- ;; @@b285 276
-;  GetDiskNum - Get a (required) disk number and check it ;; @@b285 276
- ;; @@b285 276
-getdisknum_1                                               ;; @@b285 276
-                 jsr chrget                               ; skip current character ;; @@b285 276
-getdisknum                                                 ;; @@b288 276
-                 jsr getbyt                               ; get number in .x ;; @@b288 276
-                 cpx #8                                   ; check range (8-30) ;; @@b28b 276
-                 +lbcc fcerr                               ;; @@b28d 276
-                 cpx #31                                   ;; @@b290 276
-                 +lbcs fcerr                               ;; @@b292 276
-                 rts                                      ; returns only if okay ;; @@b295 276
- ;; @@b296 276
- ;; @@b296 276
- ;; @@b296 276
-;  SendDiskCmd - Send command in SAVRAM to disk, length in .A ;; @@b296 276
- ;; @@b296 276
-SendDiskCmd                                                ;; @@b296 276
-; lda #   ; command string length ;; @@b296 276
-                 ldx #<savram                             ; address ;; @@b296 276
-                 ldy #>savram                              ;; @@b298 276
-                 jsr _setnam                               ;; @@b29a 276
-                 ldx #sys_bank                            ; ???? sysbank ???? ;; @@b29d 276
-                 jsr _setbank                              ;; @@b29f 276
-                 jsr _clrch                               ; Restore normal channels, establish our's ;; @@b2a2 276
-                 ldx dosfa                                ; fa ;; @@b2a5 276
-                 lda #doslfn                              ; la (reserved la) ;; @@b2a8 276
-                 ldy #$6f                                 ; sa (command channel) ;; @@b2aa 276
-                 jsr _setlfs                               ;; @@b2ac 276
-                 jsr _open                                ; open channel & send command ;; @@b2af 276
-                 lda #doslfn                              ; close it already ;; @@b2b2 276
-                 sec                                      ; not a real close ;; @@b2b4 276
-                 jsr _close                                ;; @@b2b5 276
-                 +lbra Clear_DS                           ; Exit ;; @@b2b8 276
- ;; @@b2bb 276
-; .page ;; @@b2bb 276
-;  SET VERIFY <ON | OFF> Set DOS verify-after-write mode for 3.5" drives ;; @@b2bb 276
- ;; @@b2bb 276
-verify_mode                                                ;; @@b2bb 276
-                 jsr chrget                               ; eat 'verify' token, get next  new [910429] ;; @@b2bb 276
-                 cmp #on_token                             ;; @@b2be 276
-                 sec                                       ;; @@b2c0 276
-                 beq _local_1275_10                       ; turn verify on (.c=1) ;; @@b2c1 276
-                 jsr chkesc                                ;; @@b2c3 276
-                 cmp #off_token                           ; turn cursor off (.c=0) ;; @@b2c6 276
-                 +lbne snerr                               ;; @@b2c8 276
-                 clc                                       ;; @@b2cb 276
- ;; @@b2cc 276
-;  Open disk command channel & pass it 'verify' command ;; @@b2cc 276
- ;; @@b2cc 276
-_local_1275_10   php                                      ; Save mode ;; @@b2cc 276
-                 jsr chkeos                               ; eat 'on/off' token, error if not eos ;; @@b2cd 276
- ;; @@b2d0 276
-                 ldx #4-1                                  ;; @@b2d0 276
-_local_1275_20   lda verify_cmd,x                         ; move command to RAM, setup for open ;; @@b2d2 276
-                 sta savram,x                              ;; @@b2d5 276
-                 dex                                       ;; @@b2d8 276
-                 bpl _local_1275_20                        ;; @@b2d9 276
- ;; @@b2db 276
-                 lda #0                                   ; form on/off flag ;; @@b2db 276
-                 plp                                       ;; @@b2dd 276
-                 rol                                       ;; @@b2de 276
-                 ora #$30                                  ;; @@b2df 276
-                 sta savram+4                              ;; @@b2e1 276
- ;; @@b2e4 276
-                 lda #5                                   ; command string length ;; @@b2e4 276
-                 jsr SendDiskCmd                          ; Send command ;; @@b2e6 276
-                 +lbra close_out_1                        ; common error check & exit path ???? ;; @@b2e9 276
- ;; @@b2ec 276
- ;; @@b2ec 276
+disk_renum_cmd   !text "M-W",119,0,2                      ; Renumber Drive command
+
+; .page
+
+;  GetDiskNum - Get a (required) disk number and check it
+
+getdisknum_1                                              
+                 jsr chrget                               ; skip current character
+getdisknum                                                
+                 jsr getbyt                               ; get number in .x
+                 cpx #8                                   ; check range (8-30)
+                 +lbcc fcerr                              
+                 cpx #31                                  
+                 +lbcs fcerr                              
+                 rts                                      ; returns only if okay
+
+
+
+;  SendDiskCmd - Send command in SAVRAM to disk, length in .A
+
+SendDiskCmd                                               
+; lda #   ; command string length
+                 ldx #<savram                             ; address
+                 ldy #>savram                             
+                 jsr _setnam                              
+                 ldx #sys_bank                            ; ???? sysbank ????
+                 jsr _setbank                             
+                 jsr _clrch                               ; Restore normal channels, establish our's
+                 ldx dosfa                                ; fa
+                 lda #doslfn                              ; la (reserved la)
+                 ldy #$6f                                 ; sa (command channel)
+                 jsr _setlfs                              
+                 jsr _open                                ; open channel & send command
+                 lda #doslfn                              ; close it already
+                 sec                                      ; not a real close
+                 jsr _close                               
+                 +lbra Clear_DS                           ; Exit
+
+; .page
+;  SET VERIFY <ON | OFF> Set DOS verify-after-write mode for 3.5" drives
+
+verify_mode                                               
+                 jsr chrget                               ; eat 'verify' token, get next  new [910429]
+                 cmp #on_token                            
+                 sec                                      
+                 beq _local_1275_10                       ; turn verify on (.c=1)
+                 jsr chkesc                               
+                 cmp #off_token                           ; turn cursor off (.c=0)
+                 +lbne snerr                              
+                 clc                                      
+
+;  Open disk command channel & pass it 'verify' command
+
+_local_1275_10   php                                      ; Save mode
+                 jsr chkeos                               ; eat 'on/off' token, error if not eos
+
+                 ldx #4-1                                 
+_local_1275_20   lda verify_cmd,x                         ; move command to RAM, setup for open
+                 sta savram,x                             
+                 dex                                      
+                 bpl _local_1275_20                       
+
+                 lda #0                                   ; form on/off flag
+                 plp                                      
+                 rol                                      
+                 ora #$30                                 
+                 sta savram+4                             
+
+                 lda #5                                   ; command string length
+                 jsr SendDiskCmd                          ; Send command
+                 +lbra close_out_1                        ; common error check & exit path ????
+
+

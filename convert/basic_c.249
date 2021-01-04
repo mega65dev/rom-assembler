@@ -1,37 +1,37 @@
-optw99           clc                                       ;; @@7906 249
-                 rts                                       ;; @@7907 249
- ;; @@7908 249
-; .page ;; @@7908 249
-comsad           jsr chkcom                               ; get a comma & signed 2-byte arg in y,a   [910307] ;; @@7908 249
-                 +lbra sadwrd                              ;; @@790b 249
- ;; @@790e 249
- ;; @@790e 249
- ;; @@790e 249
-optsad           jsr chrgot                               ; get a comma & optional, signed 2-byte arg in y,a [910307] ;; @@790e 249
-                 beq _local_1248_10                       ; eol, therefore this arg is not specified ;; @@7911 249
-                 jsr chkcom                               ; eat comma ;; @@7913 249
-                 cmp #','                                 ; is next a comma too? ;; @@7916 249
-                 beq _local_1248_10                       ; yes, therefore this arg is not specified ;; @@7918 249
-                 jsr sadwrd                               ; get signed word ;; @@791a 249
-                 sec                                       ;; @@791d 249
-                 rts                                       ;; @@791e 249
- ;; @@791f 249
-_local_1248_10   lda #0                                   ; default optional arg to zero ;; @@791f 249
-                 tay                                       ;; @@7921 249
-                 clc                                       ;; @@7922 249
-                 rts                                       ;; @@7923 249
- ;; @@7924 249
-; .page ;; @@7924 249
-;***************************************************************** ;; @@7924 249
-;  OPTBYT - get an optional 1 byte value in x. ;; @@7924 249
-; ;; @@7924 249
-;  Enter with default value in x. ;; @@7924 249
-; ;; @@7924 249
-;      case 1 : pointer at end of line: ;; @@7924 249
-;   return default x. ;; @@7924 249
-;      case 2 : pointer is at comma, next non-blank is also a comma: ;; @@7924 249
-;   return default x. ;; @@7924 249
-;      case 3 : pointer is at comma, next non-blank is not a comma: ;; @@7924 249
-;   get byte in x. ;; @@7924 249
-;***************************************************************** ;; @@7924 249
- ;; @@7924 249
+optw99           clc                                      
+                 rts                                      
+
+; .page
+comsad           jsr chkcom                               ; get a comma & signed 2-byte arg in y,a   [910307]
+                 +lbra sadwrd                             
+
+
+
+optsad           jsr chrgot                               ; get a comma & optional, signed 2-byte arg in y,a [910307]
+                 beq _local_1248_10                       ; eol, therefore this arg is not specified
+                 jsr chkcom                               ; eat comma
+                 cmp #','                                 ; is next a comma too?
+                 beq _local_1248_10                       ; yes, therefore this arg is not specified
+                 jsr sadwrd                               ; get signed word
+                 sec                                      
+                 rts                                      
+
+_local_1248_10   lda #0                                   ; default optional arg to zero
+                 tay                                      
+                 clc                                      
+                 rts                                      
+
+; .page
+;*****************************************************************
+;  OPTBYT - get an optional 1 byte value in x.
+;
+;  Enter with default value in x.
+;
+;      case 1 : pointer at end of line:
+;   return default x.
+;      case 2 : pointer is at comma, next non-blank is also a comma:
+;   return default x.
+;      case 3 : pointer is at comma, next non-blank is not a comma:
+;   get byte in x.
+;*****************************************************************
+

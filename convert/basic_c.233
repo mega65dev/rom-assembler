@@ -1,150 +1,150 @@
-trans            jsr sendp                                ; build string to output ;; @@73f9 233
-                 jsr _clrch                                ;; @@73fc 233
-                 ldx #sys_bank                            ; name is in system space, bank0 ????  [910620] ;; @@73ff 233
-                 txa                                       ;; @@7401 233
-                 jsr _setbank                              ;; @@7402 233
-                 jsr _open                                ; send it... ;; @@7405 233
-                 php                                      ; save error status (.c) ;; @@7408 233
-                 pha                                      ; save error code (if any) ;; @@7409 233
-                 lda dosla                                 ;; @@740a 233
-                 sec                                       ;; @@740d 233
-                 jsr _close                               ; special close... ;; @@740e 233
-                 pla                                      ; pop error ;; @@7411 233
-                 plp                                      ; pop error status ;; @@7412 233
-                 +lbcs erexit                             ; ...branch if there was an error opening ;; @@7413 233
-                 rts                                       ;; @@7416 233
- ;; @@7417 233
-;.end ;; @@7417 233
-; .page ;; @@7417 233
-; .subttl  DOS 2 ;; @@7417 233
- ;; @@7417 233
-; This is the DOS parser routine which looks at lines passed to it and ;; @@7417 233
-; verifies that the syntax is proper.  -mgm 7/23/79- ;; @@7417 233
-; ;; @@7417 233
-; Entry  (dosprs) ;; @@7417 233
-; a = parsts bit which must be zero. ;; @@7417 233
-; ;; @@7417 233
-; Exit  a = parsts as follows ;; @@7417 233
-; ;; @@7417 233
-;    --------------------------------- ;; @@7417 233
-;    | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 | ;; @@7417 233
-;    --------------------------------- ;; @@7417 233
-;      ^   ^   ^   ^   ^   ^   ^   ^ ;; @@7417 233
-;      |   |   |   |   |   |   |   |_____ fn1 set for the first filename ;; @@7417 233
-;      |   |   |   |   |   |   |_______ fn2 set for second filename ;; @@7417 233
-;      |   |   |   |   |   |_________ la set when #lfn parsed ;; @@7417 233
-;      |   |   |   |   |___________ fa set for device number ;; @@7417 233
-;      |   |   |   |_____________ d1 set for first disk unit ;; @@7417 233
-;      |   |   |_______________ d2 set for second disk unit ;; @@7417 233
-;      |   |_________________ dosrcl set for record size ;; @@7417 233
-;      |___________________ @ set when @ encountered ;; @@7417 233
-; ;; @@7417 233
-; The following are the vaild bit patterns for parsts after parsing for the ;; @@7417 233
-; various keywords: ;; @@7417 233
-; ;; @@7417 233
-;       7 6 5 4  3 2 1 0 ;; @@7417 233
-; ;; @@7417 233
-;     header  0 0 0 *  * 0 0 1 ;; @@7417 233
-;     collect 0 0 0 *  * 0 0 0 ;; @@7417 233
-;     dclear  0 0 0 *  * 0 0 0 ;; @@7417 233
-;     backup  0 0 1 1  * 0 0 0 ;; @@7417 233
-;     copy    0 0 1 1  * 0 0 0 ;; @@7417 233
-;      or..   0 0 * *  * 0 1 1 ;; @@7417 233
-;     concat  0 0 * *  * 0 1 1 ;; @@7417 233
-;     bsave   * 0 0 *  * 0 0 1 ;; @@7417 233
-;     dsave   * 0 0 *  * 0 0 1 ;; @@7417 233
-;     bload   0 0 0 *  * 0 0 1 ;; @@7417 233
-;     dload   0 0 0 *  * 0 0 1 ;; @@7417 233
-;     dverify 0 0 0 *  * 0 0 1 ;; @@7417 233
-;     catalog 0 0 0 *  * 0 0 * ;; @@7417 233
-;     rename  0 0 0 *  * 0 1 1 ;; @@7417 233
-;     append  0 0 0 *  * 1 0 1 ;; @@7417 233
-;     scratch 0 0 0 *  * 0 0 1 ;; @@7417 233
-;     dopen   * * 0 *  * 1 0 1 ;; @@7417 233
-;     dclose  0 0 0 0  * * 0 0 ;; @@7417 233
-;             ^ ^ ^ ^  ^ ^ ^ ^ ;; @@7417 233
-;             @ l d d  f l f f ;; @@7417 233
-;             r r 2 1  a a n n ;; @@7417 233
-;             p e          2 1 ;; @@7417 233
-;             l l ;; @@7417 233
-; ;; @@7417 233
-;      "0" bits are required to be clear ;; @@7417 233
-;      "1" bits are required to be set ;; @@7417 233
-;      "*" bits are optional parameters ;; @@7417 233
-; .page ;; @@7417 233
-; Entry (dosprs): ;; @@7417 233
-;  parstx shall be set to prevent any auxiliary options to be specified. ;; @@7417 233
-; ;; @@7417 233
-; Entry (dosprx): ;; @@7417 233
-;  .x = parstx bits which must be zero. ;; @@7417 233
-; ;; @@7417 233
-; Exit:  .x = parstx as follows: ;; @@7417 233
-; ;; @@7417 233
-;     --------------------------------- ;; @@7417 233
-;     | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 | ;; @@7417 233
-;     --------------------------------- ;; @@7417 233
-;       ^   ^   ^   ^   ^   ^   ^   ^____ bnk is set for bank option ;; @@7417 233
-;       |   |   |   |   |   |   | ______ offl set for 1st address ;; @@7417 233
-;       |   |   |   |   |   |_________ offh set for 2nd address ;; @@7417 233
-;       |   |   |   |   |___________ unused ;; @@7417 233
-;       |   |   |   |_____________ unused ;; @@7417 233
-;       |   |   |_______________ unused ;; @@7417 233
-;       |   |_________________ unused ;; @@7417 233
-;       |___________________ unused ;; @@7417 233
-; ;; @@7417 233
-; The following are the valid bit patterns for parstx after parsing for the ;; @@7417 233
-; various keywords.  These options are allowed for load/save commands only. ;; @@7417 233
-; ;; @@7417 233
-;    7 6 5 4  3 2 1 0 ;; @@7417 233
-; ;; @@7417 233
-;   bsave   0 0 0 0  0 1 1 * ;; @@7417 233
-;   bload   0 0 0 0  0 0 * * ;; @@7417 233
-;   bverify 0 0 0 0  0 0 * * ;; @@7417 233
-;   [auto]boot 0 0 0 0  0 0 * * ;; @@7417 233
-;    ^ ^ ^ ^  ^ ^ ^ ^ ;; @@7417 233
-;    ? ? ? ?  ? o o b ;; @@7417 233
-;        f f n ;; @@7417 233
-;        h l k ;; @@7417 233
-; ;; @@7417 233
-;      "0" bits are required to be clear ;; @@7417 233
-;      "1" bits are required to be set ;; @@7417 233
-;      "*" bits are optional parameters ;; @@7417 233
- ;; @@7417 233
-dostbl           !word $ffff,$ffff                        ; default start/end address ;; @@7417 233
-                 !text doslfn,dosffn,$6f                  ; default la/fa/sa ;; @@741b 233
- ;; @@741e 233
-; .page ;; @@741e 233
-dospar           lda #0                                   ; DOS Parser ;; @@741e 233
- ;; @@7420 233
-dosprs                                                    ; special error flag entry ;; @@7420 233
-                 ldx #$ff                                 ; no aux options! ;; @@7420 233
- ;; @@7422 233
-dosprx                                                    ; spec aux error flag entry ;; @@7422 233
-                 pha                                      ; save error flags ;; @@7422 233
-                 phx                                       ;; @@7423 233
-                 lda #0                                    ;; @@7424 233
-                 sta parsts                               ; reset parser status/option words ;; @@7426 233
-                 sta parstx                                ;; @@7428 233
- ;; @@742a 233
-                 ldx #dosspc                              ; clear DOS scratch area   [900522] ;; @@742a 233
-_local_1232_10   sta xcnt-1,x                              ;; @@742c 233
-                 dex                                      ; no filenames, null lengths ;; @@742f 233
-                 bne _local_1232_10                        ;; @@7430 233
- ;; @@7432 233
-                 ldx #dossa-dosofl                        ; set some defaults from table ;; @@7432 233
-_local_1232_20   lda dostbl,x                              ;; @@7434 233
-                 sta dosofl,x                             ; start/end adr = $FFFF, la/fa/sa ;; @@7437 233
-                 dex                                       ;; @@743a 233
-                 bpl _local_1232_20                        ;; @@743b 233
- ;; @@743d 233
-                 ldx _default_drive                       ; set default device   [900522] ;; @@743d 233
-                 stx dosfa                                 ;; @@7440 233
-                 ldx current_bank                         ; set current bank ;; @@7443 233
-                 stx dosbnk                                ;; @@7446 233
- ;; @@7449 233
-                 jsr chrgot                               ; get next character from command string ;; @@7449 233
-                 bne parse1                               ; if eol stick with defaults, else begin parsing ;; @@744c 233
- ;; @@744e 233
- ;; @@744e 233
-; Done parsing, check for errors, return if everything okay ;; @@744e 233
- ;; @@744e 233
+trans            jsr sendp                                ; build string to output
+                 jsr _clrch                               
+                 ldx #sys_bank                            ; name is in system space, bank0 ????  [910620]
+                 txa                                      
+                 jsr _setbank                             
+                 jsr _open                                ; send it...
+                 php                                      ; save error status (.c)
+                 pha                                      ; save error code (if any)
+                 lda dosla                                
+                 sec                                      
+                 jsr _close                               ; special close...
+                 pla                                      ; pop error
+                 plp                                      ; pop error status
+                 +lbcs erexit                             ; ...branch if there was an error opening
+                 rts                                      
+
+;.end
+; .page
+; .subttl  DOS 2
+
+; This is the DOS parser routine which looks at lines passed to it and
+; verifies that the syntax is proper.  -mgm 7/23/79-
+;
+; Entry  (dosprs)
+; a = parsts bit which must be zero.
+;
+; Exit  a = parsts as follows
+;
+;    ---------------------------------
+;    | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
+;    ---------------------------------
+;      ^   ^   ^   ^   ^   ^   ^   ^
+;      |   |   |   |   |   |   |   |_____ fn1 set for the first filename
+;      |   |   |   |   |   |   |_______ fn2 set for second filename
+;      |   |   |   |   |   |_________ la set when #lfn parsed
+;      |   |   |   |   |___________ fa set for device number
+;      |   |   |   |_____________ d1 set for first disk unit
+;      |   |   |_______________ d2 set for second disk unit
+;      |   |_________________ dosrcl set for record size
+;      |___________________ @ set when @ encountered
+;
+; The following are the vaild bit patterns for parsts after parsing for the
+; various keywords:
+;
+;       7 6 5 4  3 2 1 0
+;
+;     header  0 0 0 *  * 0 0 1
+;     collect 0 0 0 *  * 0 0 0
+;     dclear  0 0 0 *  * 0 0 0
+;     backup  0 0 1 1  * 0 0 0
+;     copy    0 0 1 1  * 0 0 0
+;      or..   0 0 * *  * 0 1 1
+;     concat  0 0 * *  * 0 1 1
+;     bsave   * 0 0 *  * 0 0 1
+;     dsave   * 0 0 *  * 0 0 1
+;     bload   0 0 0 *  * 0 0 1
+;     dload   0 0 0 *  * 0 0 1
+;     dverify 0 0 0 *  * 0 0 1
+;     catalog 0 0 0 *  * 0 0 *
+;     rename  0 0 0 *  * 0 1 1
+;     append  0 0 0 *  * 1 0 1
+;     scratch 0 0 0 *  * 0 0 1
+;     dopen   * * 0 *  * 1 0 1
+;     dclose  0 0 0 0  * * 0 0
+;             ^ ^ ^ ^  ^ ^ ^ ^
+;             @ l d d  f l f f
+;             r r 2 1  a a n n
+;             p e          2 1
+;             l l
+;
+;      "0" bits are required to be clear
+;      "1" bits are required to be set
+;      "*" bits are optional parameters
+; .page
+; Entry (dosprs):
+;  parstx shall be set to prevent any auxiliary options to be specified.
+;
+; Entry (dosprx):
+;  .x = parstx bits which must be zero.
+;
+; Exit:  .x = parstx as follows:
+;
+;     ---------------------------------
+;     | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
+;     ---------------------------------
+;       ^   ^   ^   ^   ^   ^   ^   ^____ bnk is set for bank option
+;       |   |   |   |   |   |   | ______ offl set for 1st address
+;       |   |   |   |   |   |_________ offh set for 2nd address
+;       |   |   |   |   |___________ unused
+;       |   |   |   |_____________ unused
+;       |   |   |_______________ unused
+;       |   |_________________ unused
+;       |___________________ unused
+;
+; The following are the valid bit patterns for parstx after parsing for the
+; various keywords.  These options are allowed for load/save commands only.
+;
+;    7 6 5 4  3 2 1 0
+;
+;   bsave   0 0 0 0  0 1 1 *
+;   bload   0 0 0 0  0 0 * *
+;   bverify 0 0 0 0  0 0 * *
+;   [auto]boot 0 0 0 0  0 0 * *
+;    ^ ^ ^ ^  ^ ^ ^ ^
+;    ? ? ? ?  ? o o b
+;        f f n
+;        h l k
+;
+;      "0" bits are required to be clear
+;      "1" bits are required to be set
+;      "*" bits are optional parameters
+
+dostbl           !word $ffff,$ffff                        ; default start/end address
+                 !text doslfn,dosffn,$6f                  ; default la/fa/sa
+
+; .page
+dospar           lda #0                                   ; DOS Parser
+
+dosprs                                                    ; special error flag entry
+                 ldx #$ff                                 ; no aux options!
+
+dosprx                                                    ; spec aux error flag entry
+                 pha                                      ; save error flags
+                 phx                                      
+                 lda #0                                   
+                 sta parsts                               ; reset parser status/option words
+                 sta parstx                               
+
+                 ldx #dosspc                              ; clear DOS scratch area   [900522]
+_local_1232_10   sta xcnt-1,x                             
+                 dex                                      ; no filenames, null lengths
+                 bne _local_1232_10                       
+
+                 ldx #dossa-dosofl                        ; set some defaults from table
+_local_1232_20   lda dostbl,x                             
+                 sta dosofl,x                             ; start/end adr = $FFFF, la/fa/sa
+                 dex                                      
+                 bpl _local_1232_20                       
+
+                 ldx _default_drive                       ; set default device   [900522]
+                 stx dosfa                                
+                 ldx current_bank                         ; set current bank
+                 stx dosbnk                               
+
+                 jsr chrgot                               ; get next character from command string
+                 bne parse1                               ; if eol stick with defaults, else begin parsing
+
+
+; Done parsing, check for errors, return if everything okay
+

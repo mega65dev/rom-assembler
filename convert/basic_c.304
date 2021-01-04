@@ -1,108 +1,108 @@
-rspmod           !text 21,39,27,29,23,28                  ; VIC registers associated with arg# ;; @@ba3f 304
- ;; @@ba45 304
-;.end ;; @@ba45 304
-; .page ;; @@ba45 304
-; .subttl RSPCOLOR Function ;; @@ba45 304
- ;; @@ba45 304
-;****************************************************************** ;; @@ba45 304
-;* RSPCOLOR - return sprite multicolor reg's ;; @@ba45 304
-;* ;; @@ba45 304
-;* Syntax : RSPCOLOR (argument) ;; @@ba45 304
-;* ;; @@ba45 304
-;* Where  : argument = [1..2] ;; @@ba45 304
-;*   1 : return multicolor #1 ;; @@ba45 304
-;*   2 : return multicolor #2 ;; @@ba45 304
-;****************************************************************** ;; @@ba45 304
- ;; @@ba45 304
-rspcolor                                                   ;; @@ba45 304
-                 jsr chkcls                               ; check for closing paren ;; @@ba45 304
-                 jsr conint                               ; get arg in .X ;; @@ba48 304
-                 dex                                      ; adjust [1..2] to [0..1 ;; @@ba4b 304
-                 cpx #2                                    ;; @@ba4c 304
-                 +lbcs fcerr                              ; value error ;; @@ba4e 304
- ;; @@ba51 304
-; jsr put_io_in_map ;; @@ba51 304
-                 lda vic+37,x                              ;; @@ba51 304
-                 and #$0f                                  ;; @@ba54 304
-                 tay                                       ;; @@ba56 304
-; iny  ;range 0-15     [910724] ;; @@ba57 304
-                 +lbra sngflt                             ; float 1 byte arg in .Y ;; @@ba57 304
- ;; @@ba5a 304
-;.end ;; @@ba5a 304
-; .page ;; @@ba5a 304
-; .subttl RSPPOS Function ;; @@ba5a 304
- ;; @@ba5a 304
-;****************************************************************** ;; @@ba5a 304
-;* RSPPOS - Return sprite location / speed data ;; @@ba5a 304
-;* ;; @@ba5a 304
-;* Syntax:  RSPPOS (sprite_number, argument) ;; @@ba5a 304
-;* ;; @@ba5a 304
-;* Where:   sprite_number = [0..7] ;; @@ba5a 304
-;*    argument = [0..2] ;; @@ba5a 304
-;*   0 : return X position ;; @@ba5a 304
-;*   1 : return Y position ;; @@ba5a 304
-;*   2 : return current speed ;; @@ba5a 304
-;****************************************************************** ;; @@ba5a 304
- ;; @@ba5a 304
-rsppos           jsr conint                               ; get first arg, sprite #, in .X ;; @@ba5a 304
-; dex  ;adjust [1..8] to [0..7]   [910220] ;; @@ba5d 304
-                 cpx #8  ; (318018-03 mod                 ; fab) ;; @@ba5d 304
-                 bcs _local_1303_1                        ; value error ;; @@ba5f 304
- ;; @@ba61 304
-                 phx                                      ; save sprite number ;; @@ba61 304
-; jsr chkcom ;check for proper delimiter ;; @@ba62 304
-; jsr getbyt ;do frmevl, get 1 byte arg (arg) in .X ;; @@ba62 304
-                 jsr combyt                               ; [910820] ;; @@ba62 304
-                 jsr chkcls                               ; look for closing paren ;; @@ba65 304
-                 cpx #3                                    ;; @@ba68 304
-_local_1303_1    +lbcs fcerr                              ; value error ;; @@ba6a 304
- ;; @@ba6d 304
-                 ply                                      ; sprite number ;; @@ba6d 304
-                 cpx #2                                    ;; @@ba6e 304
-                 bne _local_1303_10                       ; branch if x or y position ;; @@ba70 304
- ;; @@ba72 304
-                 ldx sproff,y                             ; get offset into speed data ;; @@ba72 304
-                 ldy sprite_data,x                        ; get speed data ;; @@ba75 304
-                 +lbra sngflt                             ; go float 1 byte arg in .Y ;; @@ba78 304
- ;; @@ba7b 304
-; Get msb of sprite position (in case this is for x position) ;; @@ba7b 304
- ;; @@ba7b 304
-_local_1303_10   sei                                       ;; @@ba7b 304
-                 lda sbits,y                              ; get bit mask for this sprite ;; @@ba7c 304
-                 and vic+16                               ; ???vic_save ;; @@ba7f 304
-                 beq _local_1303_20                        ;; @@ba82 304
-                 lda #1                                   ; change any non-zero to a '1' ;; @@ba84 304
-_local_1303_20   pha                                      ; save msb ;; @@ba86 304
- ;; @@ba87 304
-                 tya                                      ; y = sprite# * 2 ;; @@ba87 304
-                 asl                                       ;; @@ba88 304
-                 tay                                       ;; @@ba89 304
-                 txa                                      ; see if this is y position ;; @@ba8a 304
-                 lsr                                      ; .C = 0 for x pos'n, 1 for y pos'n ;; @@ba8b 304
-                 bcc _local_1303_30                       ; branch if x pos'n ;; @@ba8c 304
- ;; @@ba8e 304
-                 iny                                      ; adjust pointer to point to y pos'n in register data ;; @@ba8e 304
-                 pla                                       ;; @@ba8f 304
-                 lda #0                                   ; ..and force 'msb' to be zero ;; @@ba90 304
-                 pha                                       ;; @@ba92 304
- ;; @@ba93 304
-_local_1303_30   lda vic,y                                ; get correct location lsb   ???vic_save ;; @@ba93 304
-                 cli                                       ;; @@ba96 304
-                 tay                                       ;; @@ba97 304
-                 pla                                      ; ..and get msb, ;; @@ba98 304
-                 +lbra nosflt                             ; ..and go float 2 byte value in y,a ;; @@ba99 304
- ;; @@ba9c 304
-;.end ;; @@ba9c 304
-; .page ;; @@ba9c 304
-; .subttl BUMP Function ;; @@ba9c 304
- ;; @@ba9c 304
-;****************************************************************** ;; @@ba9c 304
-;* BUMP - read sprite collision ;; @@ba9c 304
-;* ;; @@ba9c 304
-;* Syntax : BUMP (argument) ;; @@ba9c 304
-;* ;; @@ba9c 304
-;* Where  : argument = [1..2] ;; @@ba9c 304
-;*   1 : sprite/sprite collision ;; @@ba9c 304
-;*   2 : sprite/background collision ;; @@ba9c 304
-;****************************************************************** ;; @@ba9c 304
- ;; @@ba9c 304
+rspmod           !text 21,39,27,29,23,28                  ; VIC registers associated with arg#
+
+;.end
+; .page
+; .subttl RSPCOLOR Function
+
+;******************************************************************
+;* RSPCOLOR - return sprite multicolor reg's
+;*
+;* Syntax : RSPCOLOR (argument)
+;*
+;* Where  : argument = [1..2]
+;*   1 : return multicolor #1
+;*   2 : return multicolor #2
+;******************************************************************
+
+rspcolor                                                  
+                 jsr chkcls                               ; check for closing paren
+                 jsr conint                               ; get arg in .X
+                 dex                                      ; adjust [1..2] to [0..1
+                 cpx #2                                   
+                 +lbcs fcerr                              ; value error
+
+; jsr put_io_in_map
+                 lda vic+37,x                             
+                 and #$0f                                 
+                 tay                                      
+; iny  ;range 0-15     [910724]
+                 +lbra sngflt                             ; float 1 byte arg in .Y
+
+;.end
+; .page
+; .subttl RSPPOS Function
+
+;******************************************************************
+;* RSPPOS - Return sprite location / speed data
+;*
+;* Syntax:  RSPPOS (sprite_number, argument)
+;*
+;* Where:   sprite_number = [0..7]
+;*    argument = [0..2]
+;*   0 : return X position
+;*   1 : return Y position
+;*   2 : return current speed
+;******************************************************************
+
+rsppos           jsr conint                               ; get first arg, sprite #, in .X
+; dex  ;adjust [1..8] to [0..7]   [910220]
+                 cpx #8  ; (318018-03 mod                 ; fab)
+                 bcs _local_1303_1                        ; value error
+
+                 phx                                      ; save sprite number
+; jsr chkcom ;check for proper delimiter
+; jsr getbyt ;do frmevl, get 1 byte arg (arg) in .X
+                 jsr combyt                               ; [910820]
+                 jsr chkcls                               ; look for closing paren
+                 cpx #3                                   
+_local_1303_1    +lbcs fcerr                              ; value error
+
+                 ply                                      ; sprite number
+                 cpx #2                                   
+                 bne _local_1303_10                       ; branch if x or y position
+
+                 ldx sproff,y                             ; get offset into speed data
+                 ldy sprite_data,x                        ; get speed data
+                 +lbra sngflt                             ; go float 1 byte arg in .Y
+
+; Get msb of sprite position (in case this is for x position)
+
+_local_1303_10   sei                                      
+                 lda sbits,y                              ; get bit mask for this sprite
+                 and vic+16                               ; ???vic_save
+                 beq _local_1303_20                       
+                 lda #1                                   ; change any non-zero to a '1'
+_local_1303_20   pha                                      ; save msb
+
+                 tya                                      ; y = sprite# * 2
+                 asl                                      
+                 tay                                      
+                 txa                                      ; see if this is y position
+                 lsr                                      ; .C = 0 for x pos'n, 1 for y pos'n
+                 bcc _local_1303_30                       ; branch if x pos'n
+
+                 iny                                      ; adjust pointer to point to y pos'n in register data
+                 pla                                      
+                 lda #0                                   ; ..and force 'msb' to be zero
+                 pha                                      
+
+_local_1303_30   lda vic,y                                ; get correct location lsb   ???vic_save
+                 cli                                      
+                 tay                                      
+                 pla                                      ; ..and get msb,
+                 +lbra nosflt                             ; ..and go float 2 byte value in y,a
+
+;.end
+; .page
+; .subttl BUMP Function
+
+;******************************************************************
+;* BUMP - read sprite collision
+;*
+;* Syntax : BUMP (argument)
+;*
+;* Where  : argument = [1..2]
+;*   1 : sprite/sprite collision
+;*   2 : sprite/background collision
+;******************************************************************
+

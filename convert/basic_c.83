@@ -1,51 +1,51 @@
-delete           bcc delete_line                          ; branch if a number (assume range parameter) ;; @@41e8 83
-                 cmp #minus_token                          ;; @@41ea 83
-                 beq delete_line                          ; branch if a dash (assume range parameter) ;; @@41ec 83
-                 +lbra scratch                            ; branch if string (assume filename or U#) ;; @@41ee 83
- ;; @@41f1 83
-delete_line                                                ;; @@41f1 83
-                 jsr errind                               ; direct mode only command ;; @@41f1 83
-                 jsr chrgot                               ; requires line# or range, no default ;; @@41f4 83
-                 +lbeq snerr                              ; error, none given ;; @@41f7 83
- ;; @@41fa 83
-                 jsr range                                ; parse range, find starting line, ptr to ending line ;; @@41fa 83
-                 lda lowtr                                 ;; @@41fd 83
-                 ldx lowtr+1                               ;; @@41ff 83
-                 sta index1                               ; (destination) ;; @@4201 83
-                 stx index1+1                              ;; @@4203 83
- ;; @@4205 83
-                 jsr FindLine                             ; find ending line ;; @@4205 83
-                 bcc _local_1082_20                       ; branch if not found ;; @@4208 83
-                 ldy #1                                    ;; @@420a 83
-                 jsr indlow                               ; if eot, use this ptr.  else, need ptr to next ;; @@420c 83
-                 dey                                       ;; @@420f 83
-                 tax                                      ; save it in case of swap ;; @@4210 83
-                 bne _local_1082_10                       ; branch if not eot (end-of-text) ;; @@4211 83
-                 jsr indlow                                ;; @@4213 83
-                 beq _local_1082_20                       ; branch if eot (null link bytes) ;; @@4216 83
- ;; @@4218 83
-_local_1082_10   jsr indlow                                ;; @@4218 83
-                 sta lowtr                                ; (source) ;; @@421b 83
-                 stx lowtr+1                               ;; @@421d 83
- ;; @@421f 83
-_local_1082_20   lda lowtr                                ; check that start <= end ;; @@421f 83
-                 sec                                       ;; @@4221 83
-                 sbc index1                               ; calculate delta ;; @@4222 83
-                 sta count                                ; (count) ;; @@4224 83
-                 lda lowtr+1                              ; (does not catch case where ;; @@4226 83
-                 sbc index1+1                             ; start>end when end=start+1, ;; @@4228 83
-                 sta argmo                                ; but it does no harm) ;; @@422a 83
-                 ora count                                 ;; @@422c 83
-                 beq fix_links                            ; all done- nothing to move!? ;; @@422e 83
-                 +lbcc snerr                              ; error- bad range (start > end) ;; @@4230 83
- ;; @@4233 83
-                 lda text_top                             ; setup for common DMA move routine: [900530] ;; @@4233 83
-                 ldx text_top+1                            ;; @@4235 83
-                 sta index2                               ; index2 = top ;; @@4237 83
-                 stx index2+1                             ; index1 = destination ;; @@4239 83
-; count  = delta ;; @@423b 83
- ;; @@423b 83
-                 jsr movedown                             ; delete the text, then relink & exit ;; @@423b 83
- ;; @@423e 83
- ;; @@423e 83
- ;; @@423e 83
+delete           bcc delete_line                          ; branch if a number (assume range parameter)
+                 cmp #minus_token                         
+                 beq delete_line                          ; branch if a dash (assume range parameter)
+                 +lbra scratch                            ; branch if string (assume filename or U#)
+
+delete_line                                               
+                 jsr errind                               ; direct mode only command
+                 jsr chrgot                               ; requires line# or range, no default
+                 +lbeq snerr                              ; error, none given
+
+                 jsr range                                ; parse range, find starting line, ptr to ending line
+                 lda lowtr                                
+                 ldx lowtr+1                              
+                 sta index1                               ; (destination)
+                 stx index1+1                             
+
+                 jsr FindLine                             ; find ending line
+                 bcc _local_1082_20                       ; branch if not found
+                 ldy #1                                   
+                 jsr indlow                               ; if eot, use this ptr.  else, need ptr to next
+                 dey                                      
+                 tax                                      ; save it in case of swap
+                 bne _local_1082_10                       ; branch if not eot (end-of-text)
+                 jsr indlow                               
+                 beq _local_1082_20                       ; branch if eot (null link bytes)
+
+_local_1082_10   jsr indlow                               
+                 sta lowtr                                ; (source)
+                 stx lowtr+1                              
+
+_local_1082_20   lda lowtr                                ; check that start <= end
+                 sec                                      
+                 sbc index1                               ; calculate delta
+                 sta count                                ; (count)
+                 lda lowtr+1                              ; (does not catch case where
+                 sbc index1+1                             ; start>end when end=start+1,
+                 sta argmo                                ; but it does no harm)
+                 ora count                                
+                 beq fix_links                            ; all done- nothing to move!?
+                 +lbcc snerr                              ; error- bad range (start > end)
+
+                 lda text_top                             ; setup for common DMA move routine: [900530]
+                 ldx text_top+1                           
+                 sta index2                               ; index2 = top
+                 stx index2+1                             ; index1 = destination
+; count  = delta
+
+                 jsr movedown                             ; delete the text, then relink & exit
+
+
+

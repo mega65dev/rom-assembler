@@ -1,19 +1,19 @@
-header           jsr dospar                               ; parse the line ;; @@724b 226
-                 jsr chk1                                 ; check parameter errors ;; @@724e 226
-                 and #$01                                  ;; @@7251 226
-                 cmp #$01                                  ;; @@7253 226
-                 +lbne snerr                              ; if required parameters not present ;; @@7255 226
- ;; @@7258 226
-                 jsr _clall                               ; close all files ;; @@7258 226
-                 jsr are_you_sure                         ; confirm if in direct mode ;; @@725b 226
-                 bne header_rts                           ; exit if 'no' response ;; @@725e 226
-                 ldy #fhed                                ; tabld index ;; @@7260 226
-                 lda #4                                   ; length ;; @@7262 226
-                 ldx dosdid                               ; check for diskid ;; @@7264 226
-                 beq _local_1225_10                        ;; @@7267 226
-                 lda #6                                   ; length with id ;; @@7269 226
- ;; @@726b 226
-_local_1225_10   jsr trans                                ; build and send command ;; @@726b 226
-;fall into 'print_dos_error' ;; @@726e 226
- ;; @@726e 226
-; .page ;; @@726e 226
+header           jsr dospar                               ; parse the line
+                 jsr chk1                                 ; check parameter errors
+                 and #$01                                 
+                 cmp #$01                                 
+                 +lbne snerr                              ; if required parameters not present
+
+                 jsr _clall                               ; close all files
+                 jsr are_you_sure                         ; confirm if in direct mode
+                 bne header_rts                           ; exit if 'no' response
+                 ldy #fhed                                ; tabld index
+                 lda #4                                   ; length
+                 ldx dosdid                               ; check for diskid
+                 beq _local_1225_10                       
+                 lda #6                                   ; length with id
+
+_local_1225_10   jsr trans                                ; build and send command
+;fall into 'print_dos_error'
+
+; .page

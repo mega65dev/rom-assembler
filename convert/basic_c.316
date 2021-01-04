@@ -1,34 +1,34 @@
-Sprite_CLR                                                 ;; @@bed4 316
-                 jsr chkeos                               ; eat CLR token, check eos   [910717] new ;; @@bed4 316
-Sprite_CLR_1                                               ;; @@bed7 316
-                 php                                       ;; @@bed7 316
-                 sei                                       ;; @@bed8 316
-                 lda #0                                    ;; @@bed9 316
-                 sta vic+21                               ; Turn off all sprites ;; @@bedb 316
-                 sta vic+23                               ; Unexpand them     [910828] ;; @@bede 316
-                 sta vic+27                               ; Sprite priority ;; @@bee1 316
-                 sta vic+28                               ; Hires sprites ;; @@bee4 316
-                 sta vic+29                                ;; @@bee7 316
- ;; @@beea 316
-                 ldx #init_as_0                           ; Init sprite tables ;; @@beea 316
-_local_1315_40   sta sprite_data,x                         ;; @@beec 316
-                 dex                                       ;; @@beef 316
-                 bpl _local_1315_40                        ;; @@bef0 316
- ;; @@bef2 316
-                 lda #sprite_base/64+7                    ; Set up sprite pointers ;; @@bef2 316
-                 ldy #7                                    ;; @@bef4 316
-_local_1315_10   bbr7 _mode,_local_1315_20                 ;; @@bef6 316
-                 sta sprite_ptrs_40,y                     ; 40 col screen ;; @@bef9 316
-                 bra _local_1315_30                        ;; @@befc 316
-_local_1315_20   sta sprite_ptrs_80,y                     ; 80 col screen ;; @@befe 316
-_local_1315_30   dec                                       ;; @@bf01 316
-                 dey                                       ;; @@bf02 316
-                 bpl _local_1315_10                        ;; @@bf03 316
- ;; @@bf05 316
-                 plp                                       ;; @@bf05 316
-; rts ;; @@bf06 316
- ;; @@bf06 316
-;.end ;; @@bf06 316
-; .page ;; @@bf06 316
-; .subttl BASIC NMI Handler ;; @@bf06 316
- ;; @@bf06 316
+Sprite_CLR                                                
+                 jsr chkeos                               ; eat CLR token, check eos   [910717] new
+Sprite_CLR_1                                              
+                 php                                      
+                 sei                                      
+                 lda #0                                   
+                 sta vic+21                               ; Turn off all sprites
+                 sta vic+23                               ; Unexpand them     [910828]
+                 sta vic+27                               ; Sprite priority
+                 sta vic+28                               ; Hires sprites
+                 sta vic+29                               
+
+                 ldx #init_as_0                           ; Init sprite tables
+_local_1315_40   sta sprite_data,x                        
+                 dex                                      
+                 bpl _local_1315_40                       
+
+                 lda #sprite_base/64+7                    ; Set up sprite pointers
+                 ldy #7                                   
+_local_1315_10   bbr7 _mode,_local_1315_20                
+                 sta sprite_ptrs_40,y                     ; 40 col screen
+                 bra _local_1315_30                       
+_local_1315_20   sta sprite_ptrs_80,y                     ; 80 col screen
+_local_1315_30   dec                                      
+                 dey                                      
+                 bpl _local_1315_10                       
+
+                 plp                                      
+; rts
+
+;.end
+; .page
+; .subttl BASIC NMI Handler
+

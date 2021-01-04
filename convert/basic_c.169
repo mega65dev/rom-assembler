@@ -1,22 +1,22 @@
-fadflt           bcs normal                               ; here if signs differ. if carry, FAC is set ok ;; @@5e24 169
-                 jsr negfac                               ; negate (FAC) ;; @@5e26 169
- ;; @@5e29 169
-normal           ldy #0                                    ;; @@5e29 169
-                 tya                                       ;; @@5e2b 169
-                 clc                                       ;; @@5e2c 169
- ;; @@5e2d 169
-_local_1168_10   ldx facho                                 ;; @@5e2d 169
-                 bne norm1                                 ;; @@5e2f 169
-                 ldx facho+1                              ; shift 8 bits at a time for speed ;; @@5e31 169
-                 stx facho                                 ;; @@5e33 169
-                 ldx facmoh+1                              ;; @@5e35 169
-                 stx facmoh                                ;; @@5e37 169
-                 ldx facmo+1                               ;; @@5e39 169
-                 stx facmo                                 ;; @@5e3b 169
-                 ldx facov                                 ;; @@5e3d 169
-                 stx faclo                                 ;; @@5e3f 169
-                 sty facov                                 ;; @@5e41 169
-                 adc #8                                    ;; @@5e43 169
-                 cmp #32                                   ;; @@5e45 169
-                 bne _local_1168_10                        ;; @@5e47 169
- ;; @@5e49 169
+fadflt           bcs normal                               ; here if signs differ. if carry, FAC is set ok
+                 jsr negfac                               ; negate (FAC)
+
+normal           ldy #0                                   
+                 tya                                      
+                 clc                                      
+
+_local_1168_10   ldx facho                                
+                 bne norm1                                
+                 ldx facho+1                              ; shift 8 bits at a time for speed
+                 stx facho                                
+                 ldx facmoh+1                             
+                 stx facmoh                               
+                 ldx facmo+1                              
+                 stx facmo                                
+                 ldx facov                                
+                 stx faclo                                
+                 sty facov                                
+                 adc #8                                   
+                 cmp #32                                  
+                 bne _local_1168_10                       
+

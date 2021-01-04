@@ -1,9 +1,9 @@
-verify           lda #1                                   ; verify flag ;; @@6887 193
-                 !text $2c                                ; skip two bytes ;; @@6889 193
- ;; @@688a 193
-load             lda #0                                   ; load flag ;; @@688a 193
-                 sta verck                                 ;; @@688c 193
-_local_1192_1    bbr4 runmod,_local_1192_2                ; Error if in Edit mode     [910620] ;; @@688e 193
-                 +lbra edit_err                            ;; @@6891 193
-_local_1192_2    jsr plsv                                 ; parse parameters, dschk ;; @@6894 193
- ;; @@6897 193
+verify           lda #1                                   ; verify flag
+                 !text $2c                                ; skip two bytes
+
+load             lda #0                                   ; load flag
+                 sta verck                                
+_local_1192_1    bbr4 runmod,_local_1192_2                ; Error if in Edit mode     [910620]
+                 +lbra edit_err                           
+_local_1192_2    jsr plsv                                 ; parse parameters, dschk
+

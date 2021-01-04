@@ -1,57 +1,57 @@
-linget           ldx #0                                   ; enter with CHRGET flags set ;; @@322e 34
-                 stx endchr                               ; flags line # input ;; @@3230 34
-                 stx linnum                               ; init line # to 0 ;; @@3232 34
-                 stx linnum+1                              ;; @@3234 34
- ;; @@3236 34
-_local_1033_10   bcs _local_1033_40                       ; it's not a digit, do rts ;; @@3236 34
-_local_1033_15   inc endchr                               ; indicate line # input ;; @@3238 34
-                 sbc #$2f                                 ; '0'-1 since .c=0 ;; @@323a 34
-                 sta charac                               ; save for later ;; @@323c 34
-                 lda linnum+1                              ;; @@323e 34
-                 sta index                                 ;; @@3240 34
-                 cmp #25                                  ; line number will be < 64000? ;; @@3242 34
-                 bcc _local_1033_20                       ; yes, continue ;; @@3244 34
-                 bbs1 helper,_local_1033_40               ; no, if called by AutoScroll it's okay ;; @@3246 34
-                 +lbra snerr                              ; else syntax error ;; @@3249 34
- ;; @@324c 34
-_local_1033_20   lda linnum                                ;; @@324c 34
-                 asl                                      ; multiply by 10 ;; @@324e 34
-                 rol index                                 ;; @@324f 34
-                 asl                                       ;; @@3251 34
-                 rol index                                 ;; @@3252 34
-                 adc linnum                                ;; @@3254 34
-                 sta linnum                                ;; @@3256 34
-                 lda index                                 ;; @@3258 34
-                 adc linnum+1                              ;; @@325a 34
-                 sta linnum+1                              ;; @@325c 34
-                 asl linnum                                ;; @@325e 34
-                 rol linnum+1                              ;; @@3260 34
-                 lda linnum                                ;; @@3262 34
-                 adc charac                               ; add in digit ;; @@3264 34
-                 sta linnum                                ;; @@3266 34
-                 bcc _local_1033_30                        ;; @@3268 34
-                 inc linnum+1                              ;; @@326a 34
-_local_1033_30                                             ;; @@326c 34
-; jsr chrget  ;ALLOW SPACES to terminate number  [910620] ;; @@326c 34
-; bra _local_1033_10 ;; @@326c 34
-                 inw txtptr                               ; get next character from text ;; @@326c 34
-                 ldy #0                                   ; re-get current character from text ;; @@326e 34
-                 jsr indtxt                               ; lda (txtptr),y from RAM0 ;; @@3270 34
-                 cmp #' '                                 ; space=eol    [910708] ;; @@3273 34
-                 beq _local_1033_50                        ;; @@3275 34
-                 cmp #':'                                 ;  ;; @@3277 34
-                 bcs _local_1033_40                       ; eol ;; @@3279 34
-                 sec                                       ;; @@327b 34
-                 sbc #'0'                                 ; alpha or numeric? ;; @@327c 34
-                 sec                                       ;; @@327e 34
-                 sbc #$d0                                  ;; @@327f 34
-                 bcc _local_1033_15                       ; numeric ;; @@3281 34
-_local_1033_40   rts                                      ; exit ;; @@3283 34
- ;; @@3284 34
-_local_1033_50   jsr chargt                               ; terminating character is a space, eat it just this once ;; @@3284 34
-                 +lbra chrtst                             ; return with flags set appropriately (esp. for 'range') ;; @@3287 34
- ;; @@328a 34
-;.end ;; @@328a 34
-; .page ;; @@328a 34
-; .subttl LIST ;; @@328a 34
- ;; @@328a 34
+linget           ldx #0                                   ; enter with CHRGET flags set
+                 stx endchr                               ; flags line # input
+                 stx linnum                               ; init line # to 0
+                 stx linnum+1                             
+
+_local_1033_10   bcs _local_1033_40                       ; it's not a digit, do rts
+_local_1033_15   inc endchr                               ; indicate line # input
+                 sbc #$2f                                 ; '0'-1 since .c=0
+                 sta charac                               ; save for later
+                 lda linnum+1                             
+                 sta index                                
+                 cmp #25                                  ; line number will be < 64000?
+                 bcc _local_1033_20                       ; yes, continue
+                 bbs1 helper,_local_1033_40               ; no, if called by AutoScroll it's okay
+                 +lbra snerr                              ; else syntax error
+
+_local_1033_20   lda linnum                               
+                 asl                                      ; multiply by 10
+                 rol index                                
+                 asl                                      
+                 rol index                                
+                 adc linnum                               
+                 sta linnum                               
+                 lda index                                
+                 adc linnum+1                             
+                 sta linnum+1                             
+                 asl linnum                               
+                 rol linnum+1                             
+                 lda linnum                               
+                 adc charac                               ; add in digit
+                 sta linnum                               
+                 bcc _local_1033_30                       
+                 inc linnum+1                             
+_local_1033_30                                            
+; jsr chrget  ;ALLOW SPACES to terminate number  [910620]
+; bra _local_1033_10
+                 inw txtptr                               ; get next character from text
+                 ldy #0                                   ; re-get current character from text
+                 jsr indtxt                               ; lda (txtptr),y from RAM0
+                 cmp #' '                                 ; space=eol    [910708]
+                 beq _local_1033_50                       
+                 cmp #':'                                 ; 
+                 bcs _local_1033_40                       ; eol
+                 sec                                      
+                 sbc #'0'                                 ; alpha or numeric?
+                 sec                                      
+                 sbc #$d0                                 
+                 bcc _local_1033_15                       ; numeric
+_local_1033_40   rts                                      ; exit
+
+_local_1033_50   jsr chargt                               ; terminating character is a space, eat it just this once
+                 +lbra chrtst                             ; return with flags set appropriately (esp. for 'range')
+
+;.end
+; .page
+; .subttl LIST
+

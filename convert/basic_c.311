@@ -1,58 +1,58 @@
-angval                                                     ;; @@bca1 311
-                 !text $00,$00                            ; sine 00 degrees -  .0000 ;; @@bca1 311
-                 !text $2c,$71                            ; sine 10 degrees -  .1736 ;; @@bca3 311
-                 !text $57,$8d                            ; sine 20 degrees -  .3420 ;; @@bca5 311
-                 !text $80,$00                            ; sine 30 degrees -  .5000 ;; @@bca7 311
-                 !text $a4,$8f                            ; sine 40 degrees -  .6428 ;; @@bca9 311
-                 !text $c4,$19                            ; sine 50 degrees -  .7660 ;; @@bcab 311
-                 !text $dd,$b2                            ; sine 60 degrees -  .8660 ;; @@bcad 311
-                 !text $f0,$90                            ; sine 70 degrees -  .9397 ;; @@bcaf 311
-                 !text $fc,$1c                            ; sine 80 degrees -  .9848 ;; @@bcb1 311
-                 !text $ff,$ff                            ; sine 90 degrees - 1.0000 ;; @@bcb3 311
- ;; @@bcb5 311
-;  INCVAL  -- Table of incremental values between 10 degrees ;; @@bcb5 311
-;  Values based on fraction of 65536 ;; @@bcb5 311
- ;; @@bcb5 311
-incval                                                     ;; @@bcb5 311
-                 !text $04,$72                            ; 01 - 09 degrees -  .01739 ;; @@bcb5 311
-                 !text $04,$50                            ; 11 - 19 degrees -  .01692 ;; @@bcb7 311
-                 !text $04,$0b                            ; 21 - 29 degrees -  .01592 ;; @@bcb9 311
-                 !text $03,$a8                            ; 31 - 39 degrees -  .01443 ;; @@bcbb 311
-                 !text $03,$28                            ; 41 - 49 degrees -  .01252 ;; @@bcbd 311
-                 !text $02,$90                            ; 51 - 59 degrees -  .01023 ;; @@bcbf 311
-                 !text $01,$e3                            ; 61 - 69 degrees -  .00762 ;; @@bcc1 311
-                 !text $01,$28                            ; 71 - 79 degrees -  .00477 ;; @@bcc3 311
-                 !text $00,$63                            ; 81 - 89 degrees -  .00179 ;; @@bcc5 311
- ;; @@bcc7 311
-;.end ;; @@bcc7 311
-; .page ;; @@bcc7 311
-; .subttl  EDIT Mode ;; @@bcc7 311
- ;; @@bcc7 311
-; Edit mode is simply a poor man's word processor.  Text is entered normally ;; @@bcc7 311
-; as if the user were typing in a program, but tokenization is turned off. ;; @@bcc7 311
-; This affects only that text which follows a line number.  CRUNCH and QPLOP ;; @@bcc7 311
-; test for this mode, and deal with the text accordingly.  RUN, GOTO, etc. ;; @@bcc7 311
-; test for this mode and error-out if it's enabled.  LOADing a text file ;; @@bcc7 311
-; will automatically add line numbers, SAVEing a text file will remove them. ;; @@bcc7 311
-; ;; @@bcc7 311
-; Syntax:  EDIT < ON | OFF > ;; @@bcc7 311
-; ;; @@bcc7 311
-; F. Bowen        [910620] ;; @@bcc7 311
- ;; @@bcc7 311
-edit             jsr errind                               ; direct mode only command ;; @@bcc7 311
-                 cmp #on_token                             ;; @@bcca 311
-                 bne _local_1310_10                        ;; @@bccc 311
-                 lda #%00010000                           ; EDIT ON ;; @@bcce 311
-                 bra _local_1310_30                       ; (this kills trace mode, too) ;; @@bcd0 311
- ;; @@bcd2 311
-_local_1310_10   jsr chkesc                               ; [910930] ;; @@bcd2 311
-; cmp #esc_command_token ;; @@bcd5 311
-; bne _local_1310_20 ;; @@bcd5 311
-; jsr chrget ;; @@bcd5 311
-                 cmp #off_token                            ;; @@bcd5 311
-_local_1310_20   +lbne snerr                               ;; @@bcd7 311
-                 lda #0                                   ; EDIT OFF ;; @@bcda 311
-_local_1310_30   sta runmod                                ;; @@bcdc 311
-                 jmp chrget                               ; exit ;; @@bcde 311
- ;; @@bce1 311
- ;; @@bce1 311
+angval                                                    
+                 !text $00,$00                            ; sine 00 degrees -  .0000
+                 !text $2c,$71                            ; sine 10 degrees -  .1736
+                 !text $57,$8d                            ; sine 20 degrees -  .3420
+                 !text $80,$00                            ; sine 30 degrees -  .5000
+                 !text $a4,$8f                            ; sine 40 degrees -  .6428
+                 !text $c4,$19                            ; sine 50 degrees -  .7660
+                 !text $dd,$b2                            ; sine 60 degrees -  .8660
+                 !text $f0,$90                            ; sine 70 degrees -  .9397
+                 !text $fc,$1c                            ; sine 80 degrees -  .9848
+                 !text $ff,$ff                            ; sine 90 degrees - 1.0000
+
+;  INCVAL  -- Table of incremental values between 10 degrees
+;  Values based on fraction of 65536
+
+incval                                                    
+                 !text $04,$72                            ; 01 - 09 degrees -  .01739
+                 !text $04,$50                            ; 11 - 19 degrees -  .01692
+                 !text $04,$0b                            ; 21 - 29 degrees -  .01592
+                 !text $03,$a8                            ; 31 - 39 degrees -  .01443
+                 !text $03,$28                            ; 41 - 49 degrees -  .01252
+                 !text $02,$90                            ; 51 - 59 degrees -  .01023
+                 !text $01,$e3                            ; 61 - 69 degrees -  .00762
+                 !text $01,$28                            ; 71 - 79 degrees -  .00477
+                 !text $00,$63                            ; 81 - 89 degrees -  .00179
+
+;.end
+; .page
+; .subttl  EDIT Mode
+
+; Edit mode is simply a poor man's word processor.  Text is entered normally
+; as if the user were typing in a program, but tokenization is turned off.
+; This affects only that text which follows a line number.  CRUNCH and QPLOP
+; test for this mode, and deal with the text accordingly.  RUN, GOTO, etc.
+; test for this mode and error-out if it's enabled.  LOADing a text file
+; will automatically add line numbers, SAVEing a text file will remove them.
+;
+; Syntax:  EDIT < ON | OFF >
+;
+; F. Bowen        [910620]
+
+edit             jsr errind                               ; direct mode only command
+                 cmp #on_token                            
+                 bne _local_1310_10                       
+                 lda #%00010000                           ; EDIT ON
+                 bra _local_1310_30                       ; (this kills trace mode, too)
+
+_local_1310_10   jsr chkesc                               ; [910930]
+; cmp #esc_command_token
+; bne _local_1310_20
+; jsr chrget
+                 cmp #off_token                           
+_local_1310_20   +lbne snerr                              
+                 lda #0                                   ; EDIT OFF
+_local_1310_30   sta runmod                               
+                 jmp chrget                               ; exit
+
+
