@@ -1,13 +1,13 @@
 ScreenOpen                                              
-                jsr chrget                              ; advance past Open token
+                jsr     chrget                          ; advance past Open token
 
 C65__screenopen                                         
-                jsr getbyt                              ; get screen# in .x
-                cpx #4                                  ; range 0-3   [910711]
-                +lbcs fcerr                             ; branch if out of range
+                jsr     getbyt                          ; get screen# in .x
+                cpx     #4                              ; range 0-3   [910711]
+                +lbcs   fcerr                           ; branch if out of range
 
-                stx GKI__parm1                          
-                jmp ($8008)                             ; screenopen    [910826]
+                stx     GKI__parm1                      
+                jmp     ($8008)                         ; screenopen    [910826]
 
 ; bcs NoGraphicArea ; bad ???? let user catch via RGRAPHIC
 ; rts
@@ -23,17 +23,17 @@ C65__screenopen
 
 
 ScreenClose                                             
-                jsr chrget                              ; advance past Close token
+                jsr     chrget                          ; advance past Close token
 
 C65__screenclose                                        
-                jsr getbyt                              ; get screen#
-                cpx #4                                  ; range 0-3   [910711]
-                +lbcs fcerr                             ; branch if out of range
-                stx GKI__parm1                          
+                jsr     getbyt                          ; get screen#
+                cpx     #4                              ; range 0-3   [910711]
+                +lbcs   fcerr                           ; branch if out of range
+                stx     GKI__parm1                      
 
-                jmp ($800a)                             ; bra screenclose
+                jmp     ($800a)                         ; bra screenclose
 
-;[[command.pen]]
+;[[command.graphics.pen]]
 
 ;*****************************************************************
 ;* PEN
@@ -45,19 +45,19 @@ C65__screenclose
 ;*****************************************************************
 
 C65__setpen                                             
-                jsr getbyt                              ; get pen#
-                cpx #3                                  ; range 0-2
-                +lbcs fcerr                             ; branch if out of range
-                stx GKI__parm1                          
+                jsr     getbyt                          ; get pen#
+                cpx     #3                              ; range 0-2
+                +lbcs   fcerr                           ; branch if out of range
+                stx     GKI__parm1                      
 
-                jsr combyt                              ; get color reg#
+                jsr     combyt                          ; get color reg#
 ;???? error check for max color allowed
 ; for the current screen.
-                stx GKI__parm2                          
+                stx     GKI__parm2                      
 
-                jmp ($8010)                             ; bra setpen
+                jmp     ($8010)                         ; bra setpen
 
-;[[command.dmode]]
+;[[command.graphics.dmode]]
 
 
 ;*****************************************************************
@@ -73,35 +73,35 @@ C65__setpen
 ;*******************************************************************
 
 C65__setdmode                                           
-                jsr getbyt                              ; jam mode
-                cpx #2                                  
-                bcs l269_1                              
-                stx GKI__parm1                          
+                jsr     getbyt                          ; jam mode
+                cpx     #2                              
+                bcs     l269_1                          
+                stx     GKI__parm1                      
 
-                jsr combyt                              ; complement (xor) mode
-                cpx #2                                  ; (ignores jam mode if set)
-                bcs l269_1                              
-                stx GKI__parm2                          
+                jsr     combyt                          ; complement (xor) mode
+                cpx     #2                              ; (ignores jam mode if set)
+                bcs     l269_1                          
+                stx     GKI__parm2                      
 
-                jsr combyt                              ; stencil mode (not implemented)
-                cpx #2                                  
-                bcs l269_1                              
-                stx GKI__parm3                          
+                jsr     combyt                          ; stencil mode (not implemented)
+                cpx     #2                              
+                bcs     l269_1                          
+                stx     GKI__parm3                      
 
-                jsr combyt                              ; style mode
-                cpx #4                                  ; 0=solid, 1=pattern, 2=tile (not implemented), 3=reserved
-                bcs l269_1                              
-                stx GKI__parm4                          
+                jsr     combyt                          ; style mode
+                cpx     #4                              ; 0=solid, 1=pattern, 2=tile (not implemented), 3=reserved
+                bcs     l269_1                          
+                stx     GKI__parm4                      
 
-                jsr combyt                              ; thickness mode (not implemented)
+                jsr     combyt                          ; thickness mode (not implemented)
 ; dex   ; adjust to 0-7     [911003]
-                cpx #8+1                                
-l269_1          +lbcs fcerr                             ; illegal quantity error
-                stx GKI__parm5                          
+                cpx     #8+1                            
+l269_1          +lbcs   fcerr                           ; illegal quantity error
+                stx     GKI__parm5                      
 
-                jmp ($8014)                             ; bra setdmode
+                jmp     ($8014)                         ; bra setdmode
 
-;[[command.dpat]]
+;[[command.graphics.dpat]]
 
 
 ;*****************************************************************

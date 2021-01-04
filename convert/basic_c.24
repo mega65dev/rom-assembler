@@ -1,16 +1,16 @@
 ready_1                                                 
-                lda #%10000000                          
-                jsr _setmsg                             ; turn Kernel messages on
-                lda #%11000000                          
-                trb runmod                              ; turn run modes off, leave trace mode on????
+                lda     #%10000000                      
+                jsr     _setmsg                         ; turn Kernel messages on
+                lda     #%11000000                      
+                trb     runmod                          ; turn run modes off, leave trace mode on????
 
 ready_2                                                 
-                bbs4 runmod,l24_1                       ; print appropriate system prompt
-                jsr _primm                              ; Program mode: print 'ready.'
+                bbs4    runmod,l24_1                    ; print appropriate system prompt
+                jsr     _primm                          ; Program mode: print 'ready.'
                 !text cr,"READY.",cr,0                  
-                bra main                                
+                bra     main                            
 
-l24_1           jsr _primm                              ; Edit mode: print 'ok.'
+l24_1           jsr     _primm                          ; Edit mode: print 'ok.'
                 !text cr,"OK.",cr,0                     
 
 

@@ -1,42 +1,42 @@
 p3code                                                  
                 inx                                     
-                lda fbuffr+1,x                          ; get character from number
-                beq l79_3                               ; end of number
+                lda     fbuffr+1,x                      ; get character from number
+                beq     l79_3                           ; end of number
 
                 pha                                     ; save digit from new number
-                jsr chargt                              ; get digit from old number
-                cmp #':'                                ; command terminator or letter?
-                bcs l79_1                               
-                cmp #' '                                ; space? (fix for goto10 :rem)
-                beq l79_1                               
+                jsr     chargt                          ; get digit from old number
+                cmp     #':'                            ; command terminator or letter?
+                bcs     l79_1                           
+                cmp     #' '                            ; space? (fix for goto10 :rem)
+                beq     l79_1                           
                 sec                                     
-                sbc #'0'                                ; number?
+                sbc     #'0'                            ; number?
                 sec                                     
-                sbc #$d0                                
-                bcc l79_2                               ; digit...move on
+                sbc     #$d0                            
+                bcc     l79_2                           ; digit...move on
 
-l79_1           jsr move_init                           ; other char...move up
-                jsr moveup                              
-                inw text_top                            
+l79_1           jsr     move_init                       ; other char...move up
+                jsr     moveup                          
+                inw     text_top                        
 
 l79_2           pla                                     
                 phx                                     
-                ldy #0                                  
-                jsr sta_far_txt                         ; put new digit in new number (bleed-thru)
+                ldy     #0                              
+                jsr     sta_far_txt                     ; put new digit in new number (bleed-thru)
                 plx                                     
-                bra p3code                              
+                bra     p3code                          
 
 
-l79_3           jsr chrget                              
-                bcs iline_20                            ; old stuff after # is other char
+l79_3           jsr     chrget                          
+                bcs     iline_20                        ; old stuff after # is other char
 
-l79_4           jsr move_init                           ; digit...move down
-                jsr movedown                            
-                dew text_top                            
-                jsr chrgot                              
-                bcc l79_4                               ; still digits...
+l79_4           jsr     move_init                       ; digit...move down
+                jsr     movedown                        
+                dew     text_top                        
+                jsr     chrgot                          
+                bcc     l79_4                           ; still digits...
 
-                bra iline_20                            ; branch always
+                bra     iline_20                        ; branch always
 
 
 ;*************************** FORM_LINE *********************************

@@ -3574,7 +3574,7 @@ FindLink
 4$	rts		;exit, line found	(.c=1)
 
 ;.end
-;[[command.line.get]]
+;[[command.text.get]]
 
 	.page
 	.subttl LinGet
@@ -4371,7 +4371,7 @@ ongoto
 	rts			;either end of line or syntax error
 
 ;.end
-;[[command.let]]
+;[[command.let.standard]]
 	.page
 	.subttl LET
 
@@ -4584,7 +4584,7 @@ stradj	ldy #0
 	rts
 
 ;.end
-;[[command.printcmd]]
+;[[command.text,print]]
 	.page
 	.subttl PRINT  PRINT#  CMD
 
@@ -4729,7 +4729,7 @@ outqst	lda #'?'
 
 ;.end
 	.page
-;[[command.inputs]]
+;[[command.text.input]]
 	.subttl INPUT  GET  READ  LINPUT
 
 get	jsr errdir		;direct mode illegal
@@ -5326,7 +5326,7 @@ rreg	lda #0
 50$	rts
 
 ;.end
-;[[command.midstring]]
+;[[command.let.midstring]]
 	.page
 	.subttl MID$
 
@@ -7490,7 +7490,7 @@ bank	jsr getbyt	;get bank number in .x
 
 
 ;.end
-;[[command.play]]
+;[[command.sound.play]]
 	.page
 	.subttl  PLAY
 
@@ -7947,7 +7947,7 @@ filter_offset
 voltab	.byte 0,1,3,5,7,8,10,12,14,15
 
 ;.end
-;[[command.filter]]
+;[[command.sound.filter]]
 	.page
 	.subttl  FILTER
 
@@ -8044,7 +8044,7 @@ filter	jsr getbyt		;get left/right SID				[910612]
 
 ;.end
 	.page
-;[[command.envelope]]
+;[[command.sound.envelope]]
 	.subttl  ENVELOPE
 
 ;****************************************************************
@@ -8140,7 +8140,7 @@ volrts
 
 ;.end
 	.page
-;[[command.volume]]
+;[[command.sound.volume]]
 	.subttl  VOLUME
 
 ;***************************************************************
@@ -8207,7 +8207,7 @@ volume	beq snerr		;stereo parameters				[910612]
 	rts
 
 ;.end
-;[[command.sound]]
+;[[command.sound.sound]]
 	.page
 	.subttl  SOUND
 
@@ -8381,7 +8381,7 @@ sound	cmp #clr_token		;SOUND CLR:	init sound/music environment	[910717]
 	rts
 
 ;.end
-;[[command.window]]
+;[[command.text.window]]
 	.page
 	.subttl  WINDOW
 
@@ -10771,7 +10771,7 @@ raddc  .byte @150,@50,@261,@106,0
 
 ;.end
 	.page
-;[[math.ext1]]
+;[[math.utils]]
 	.subttl Math Package (CODE12)
 
 n32768	.byte $90,$80,0,0,0
@@ -11688,7 +11688,7 @@ slr1	dex			;.x = ptr to temp. string descriptor
 	rts
 
 ;.end
-;[[math.ext2]]
+;[[math.parameters]]
 	.page
 	.subttl  Floating Point Math Package (CODE17)
 
@@ -11731,7 +11731,7 @@ getsad			;get a signed 2-byte value in (y,a), ///entry from sprcor
 	rts		;it's all done
 
 ;.end
-;[[math.ext3]]
+;[[math.addsub]]
 	.page
 	.subttl Floating Point Math Package (CODE18)
 
@@ -12633,7 +12633,7 @@ fcomp	sta index2
 20$	bra fcomps	;a part of sign sets up (a)
 
 ;.end
-;[[math.ext4]]
+;[[math.integer]]
 	.page
 	.subttl Floating Point Math Package (CODE21)
 
@@ -12870,7 +12870,7 @@ fin_chrget_2
 10$	rts
 
 ;.end
-;[[math.ext5]]
+;[[math.convert]]
 	.page
 	.subttl Floating Point Math Package (CODE22,23)
 
@@ -13136,7 +13136,7 @@ negop			;/// entry point
 negrts	rts
 
 ;.end
-;[[math.ext6]]
+;[[math.logarithms]]
 	.page
 	.subttl Floating Point Math Package (CODE24)
 
@@ -13263,7 +13263,7 @@ poly1	jsr mov2f	;save FAC (rounds, .y=0)
 	rts		;yes
 
 ;.end
-;[[math.ext7]]
+;[[math.trigonometry]]
 	.page
 	.subttl Floating Point Math Package (TRIG)
 
@@ -13919,7 +13919,7 @@ dschk	php			;check if current device >=8, and clear DS if so
 ;	jmp _stop
 
 ;.end
-;[[command.print.using]]
+;[[command.text.printusing]]
 	.page
 	.subttl  PRINT USING
 ; Print Using	- Formatted print routine
@@ -17483,7 +17483,7 @@ AutoSearch
 	.messg ***ROM OVERFLOW: $7F00
 	.endif
 ;.end
-;[[command.screen]]
+;[[command.graphics.screen]]
 	.page
 	.subttl  GRAPHIC Interface
 
@@ -17713,7 +17713,7 @@ c65.screenclose
 
 	jmp ($800a)		;bra screenclose
 
-;[[command.pen]]
+;[[command.graphics.pen]]
 	.page
 ;*****************************************************************
 ;*	PEN
@@ -17737,7 +17737,7 @@ c65.setpen
 
 	jmp ($8010)		;bra setpen
 
-;[[command.dmode]]
+;[[command.graphics.dmode]]
 
 	.page
 ;*****************************************************************
@@ -17781,7 +17781,7 @@ c65.setdmode
 
 	jmp ($8014)		;bra setdmode
 
-;[[command.dpat]]
+;[[command.graphics.dpat]]
 
 	.page
 ;*****************************************************************
@@ -17832,7 +17832,7 @@ c65.setdpat
 
 20$	jmp ($8016)		;bra setdpat
 
-;[[command.palette]]
+;[[command.graphics.palette]]
 
 	.page
 ;*****************************************************************
@@ -17904,7 +17904,7 @@ set_palette
 	bcs set_palette		;	yes- loop
 	rts
 
-;[[command.line]]
+;[[command.graphics.line]]
 	.page
 ;*****************************************************************
 ;*	LINE		draw a dot, a line or a stick shape
@@ -17958,7 +17958,7 @@ c65.line
 	bcs 1$			;	yes, continue
 	rts
 
-;[[command.box]]
+;[[command.graphics.box]]
 	.page
 ;*****************************************************************
 ;*	BOX			draw a 4-sided figure
@@ -18015,7 +18015,7 @@ c65.box
 
 	jmp ($801a)		;bra box
 
-;[[command.circle]]
+;[[command.graphics.circle]]
 	.page
 ;*****************************************************************
 ;*	CIRCLE			draw a Circle
@@ -18053,7 +18053,7 @@ c65.circle
 	jmp ($801c)		;bra circle
 
 	.page
-;[[command.ellipse]]
+;[[command.graphics.ellipse]]
 	.subttl  ELLIPSE
 
 ;*****************************************************************
@@ -18097,7 +18097,7 @@ c65.ellipse
 
 	jmp ($8020)		;bra ellipse
 
-;[[command.polygon]]
+;[[command.graphics.polygon]]
 	.page
 	.subttl  POLYGON
 
@@ -18172,7 +18172,7 @@ c65.polygon			;changed BASIC syntax to something more reasonable	[910923] FAB
 
 	jmp ($801e)		;bra polygon
 
-;[[command.set]]
+;[[command.graphics.set]]
 	.page
 	.subttl  SET multipurpose command
 
@@ -18312,7 +18312,7 @@ verify_mode
 verify_cmd	.byte 'U0>V'	;Verify on/off command
 
 ;.end
-;[[command.char]]
+;[[command.graphics.char]]
 	.page
 	.subttl  CHAR
 
@@ -18386,7 +18386,7 @@ c65.char
 
 40$	rts
 
-;[[command.paint]]
+;[[command.graphics.paint]]
 	.page
 	.subttl  PAINT
 
@@ -18448,7 +18448,7 @@ c65.paint			;						new [910228] FAB
 	beq error		;		stack overflow, say 'out of memory'
 	bra break_exit		;		user hit stop key
 
-;[[command.loadiff]]
+;[[command.graphics.loadiff]]
 	.page
 	.subttl   LOAD/SAVE IFF
 
@@ -18491,7 +18491,7 @@ exit_GKI_disk_op
 	bcs error		;	must be I/O or file data error
 	rts			;	load was successful
 
-;[[command.saveiff]]
+;[[command.graphics.saveiff]]
 	.page
 ;*****************************************************************
 ;*
@@ -18533,7 +18533,7 @@ saveiff
 ;	rts			;	load was successful
 
 ;.end
-;[[command.viewport]]
+;[[command.graphics.viewport]]
 	.page
 	.subttl   VIEWPORT Commands
 
@@ -18580,7 +18580,7 @@ c65.cut
 c65.paste
 	jmp bad_command
 
-;[[command.genlock]]
+;[[command.graphics.genlock]]
 	.page
 	.subttl  GENLOCK
 
@@ -18638,7 +18638,7 @@ genlock	sta GKI.parm1		;save token as flag for set palette			[910107]
 	sta _red,x
 	bra 25$			;	loop
 
-;[[command.color]]
+;[[command.graphics.color]]
 
 	.page
 	.subttl  COLOR Control
@@ -18755,7 +18755,7 @@ chkeos				;Check for next byte = end of statement, error if not
 
 
 ;.end
-;[[command.sprite]]
+;[[command.graphics.sprite]]
 	.page
 	.subttl SPRITE Commands and Functions
 
@@ -18868,7 +18868,7 @@ get_sprite_number
 	rts
 
 ;.end
-;[[command.movspr]]
+;[[command.graphics.movspr]]
 	.page
 	.subttl MOVSPR Command
 
@@ -19217,7 +19217,7 @@ movspr_line
 	cli
 	rts			;done!
 
-;[[command.sprcor]]
+;[[command.graphics.sprcor]]
 
 	.page
 ;  SPRCOR  --	Get sprite position coordinate
@@ -19271,7 +19271,7 @@ chkcom_1
 sproff	.byte 0,11,22,33,44,55,66,77	;sprite offsets into speed table
 
 ;.end
-;[[command.sprcolor]]
+;[[command.graphics.sprcolor]]
 	.page
 	.subttl SPRCOLOR Command
 
@@ -19418,7 +19418,7 @@ desc_free				;free temporary descriptor, set up pointers to string.
 	rts				;return w/ x=len, (a,y)==> string
 
 ;.end
-;[[command.collision]]
+;[[command.graphics.collision]]
 	.page
 	.subttl COLLISION Command
 
@@ -19457,7 +19457,7 @@ collision
 	rts
 
 ;.end
-;[[function.rcolor]]
+;[[function.graphics.rcolor]]
 	.page
 	.subttl  RCOLOR Function
 
@@ -19491,7 +19491,7 @@ rcolor	jsr conint      	;evaluate integer argument, put in .X
 color_source
 	.word  vic+33,_color,highlight_color,vic+32
 
-;[[function.rgraphic]]
+;[[function.graphics.rgraphic]]
 	.page
 	.subttl Graphic Functions
 
@@ -19563,7 +19563,7 @@ rgraphic
 	jsr PopParms		;restore Graphics parameters & LINNUM
 	rts
 
-;[[function.pixel]]	
+;[[function.graphics.pixel]]	
 	.page
 ; Return the color of a given X,Y pixel location on the drawscreen		[910801]
 ; 	PIXEL (x,y)
@@ -19585,7 +19585,7 @@ pixel	jsr CheckGraphicMode	;verify screen open
 	jsr PopParms		;restore graphics parameters
 	rts
 
-;[[function.rpen]]
+;[[function.graphics.rpen]]
 	.page
 ; Return the color of a drawscreen's PEN 					[910820]
 ; 	RPEN (pen#)	where pen# = 0,1,2
@@ -19607,7 +19607,7 @@ rpen	jsr CheckGraphicMode	;verify screen open
 	rts
 
 	.page
-;[[function.rpalette]]
+;[[function.graphics.rpalette]]
 ; Return the R,G, or B component of a color					[910820]
 ;	RPALETTE (screen#, color#, rgb)
 
@@ -19676,7 +19676,7 @@ PopParms			;						[910820]
 	rts
 
 ;.end
-;[[function.rsprite]]
+;[[function.graphics.rsprite]]
 	.page
 	.subttl RSPRITE Function
 
@@ -19759,7 +19759,7 @@ rspcolor
 	bra sngflt	;float 1 byte arg in .Y
 
 ;.end
-;[[function.rsppos]]
+;[[function.graphics.rsppos]]
 	.page
 	.subttl RSPPOS Function
 
@@ -19824,7 +19824,7 @@ rsppos	jsr conint	;get first arg, sprite #, in .X
 	bra nosflt	;..and go float 2 byte value in y,a
 
 ;.end
-;[[function.bump]]
+;[[function.graphics.bump]]
 	.page
 	.subttl BUMP Function
 

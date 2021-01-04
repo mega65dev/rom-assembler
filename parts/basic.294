@@ -1,7 +1,7 @@
 sproff .byte 0,11,22,33,44,55,66,77 ;sprite offsets into speed table 
  
 ;.end 
-;[[command.sprcolor]] 
+;[[command.graphics.sprcolor]] 
  .page 
  .subttl SPRCOLOR Command 
  

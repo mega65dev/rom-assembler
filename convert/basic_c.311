@@ -40,20 +40,20 @@ incval
 ;
 ; F. Bowen        [910620]
 
-edit            jsr errind                              ; direct mode only command
-                cmp #on_token                           
-                bne l311_1                              
-                lda #%00010000                          ; EDIT ON
-                bra l311_3                              ; (this kills trace mode, too)
+edit            jsr     errind                          ; direct mode only command
+                cmp     #on_token                       
+                bne     l311_1                          
+                lda     #%00010000                      ; EDIT ON
+                bra     l311_3                          ; (this kills trace mode, too)
 
-l311_1          jsr chkesc                              ; [910930]
+l311_1          jsr     chkesc                          ; [910930]
 ; cmp #esc_command_token
 ; bne l311_2
 ; jsr chrget
-                cmp #off_token                          
-l311_2          +lbne snerr                             
-                lda #0                                  ; EDIT OFF
-l311_3          sta runmod                              
-                jmp chrget                              ; exit
+                cmp     #off_token                      
+l311_2          +lbne   snerr                           
+                lda     #0                              ; EDIT OFF
+l311_3          sta     runmod                          
+                jmp     chrget                          ; exit
 
 

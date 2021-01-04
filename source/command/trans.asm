@@ -1,21 +1,39 @@
+; ********************************************************************************************
+; ********************************************************************************************
+;
+;	Name :      trans.asm
+;	Purpose :   ..
+;	Created :   15th Nov 1991
+;	Updated :   4th Jan 2021
+;	Authors :   Fred Bowen
+;
+; ********************************************************************************************
+; ********************************************************************************************
 
 
 ; Trans subroutine
 
-trans           jsr sendp                               ; build string to output
-                jsr _clrch
-                ldx #sys_bank                           ; name is in system space, bank0 ????  [910620]
+trans           jsr     sendp                           ; build string to output
+                jsr     _clrch
+                ldx     #sys_bank                       ; name is in system space, bank0 ????  [910620]
                 txa
-                jsr _setbank
-                jsr _open                               ; send it...
+                jsr     _setbank
+                jsr     _open                           ; send it...
                 php                                     ; save error status (.c)
                 pha                                     ; save error code (if any)
-                lda dosla
+                lda     dosla
                 sec
-                jsr _close                              ; special close...
+                jsr     _close                          ; special close...
                 pla                                     ; pop error
                 plp                                     ; pop error status
-                +lbcs erexit                            ; ...branch if there was an error opening
+                +lbcs   erexit                          ; ...branch if there was an error opening
                 rts
 
 ;.end
+
+; ********************************************************************************************
+;
+;	Date		Changes
+;	====		=======
+;
+; ********************************************************************************************

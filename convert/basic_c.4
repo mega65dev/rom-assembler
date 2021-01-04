@@ -1,9 +1,9 @@
 init_vectors                                            
-                ldx #l4_3-l4_2-1                        
-l4_1            lda l4_2,x                              
-                sta vectors_begin,x                     
+                ldx     #l4_3-l4_2-1                    
+l4_1            lda     l4_2,x                          
+                sta     vectors_begin,x                 
                 dex                                     
-                bpl l4_1                                
+                bpl     l4_1                            
 
                 rts                                     
 

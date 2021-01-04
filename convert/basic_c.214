@@ -1,42 +1,42 @@
-isp             cmp #'+'                                ; plus?
-                bne chom                                ; no...
-                lda sno                                 ; sign neg?
-                bpl spos                                ; yes...
-                lda #'+'                                
-                sta sno                                 
+isp             cmp     #'+'                            ; plus?
+                bne     chom                            ; no...
+                lda     sno                             ; sign neg?
+                bpl     spos                            ; yes...
+                lda     #'+'                            
+                sta     sno                             
 
-spos            lda posp                                ; + or - already?
-                bne ero                                 
-                ror posp                                ; make posp neg/clc
-                sty endfd                               ; end field pointer
-                inc cform                               ; correct counter
+spos            lda     posp                            ; + or - already?
+                bne     ero                             
+                ror     posp                            ; make posp neg/clc
+                sty     endfd                           ; end field pointer
+                inc     cform                           ; correct counter
 trts            rts                                     
 
 
-chom            cmp #'-'                                ; minus?
-                beq spos                                ; yes...
+chom            cmp     #'-'                            ; minus?
+                beq     spos                            ; yes...
                 sec                                     
-efo             sty endfd                               ; end field pointer
-                dec endfd                               
+efo             sty     endfd                           ; end field pointer
+                dec     endfd                           
                 rts                                     
 
 
 ; Using- comp: compare .a with symbols
 
-comp            cmp #'+'                                
-                beq rt                                  
-                cmp #'-'                                
-                beq rt                                  
+comp            cmp     #'+'                            
+                beq     rt                              
+                cmp     #'-'                            
+                beq     rt                              
 
-com1            cmp #'.'                                
-                beq rt                                  
+com1            cmp     #'.'                            
+                beq     rt                              
 
-com2            cmp #'='                                
-                beq rt                                  
-                cmp #'>'                                
-                beq rt                                  
-                cmp #'#'                                
-                bne rt                                  
+com2            cmp     #'='                            
+                beq     rt                              
+                cmp     #'>'                            
+                beq     rt                              
+                cmp     #'#'                            
+                bne     rt                              
                 clc                                     
 rt              rts                                     
 
@@ -49,98 +49,98 @@ rt              rts
 ;
 ; Usage: INSTR(a$,b${,n})
 
-instr           lda facmo                               ; save pointer to temporary descriptors
-                sta tmpdes                              
-                lda facmo+1                             
-                sta tmpdes+1                            
+instr           lda     facmo                           ; save pointer to temporary descriptors
+                sta     tmpdes                          
+                lda     facmo+1                         
+                sta     tmpdes+1                        
 
-                jsr frmevl                              ; get next arg
-                jsr chkstr                              ; must be string
-                lda facmo                               
-                sta tmpdes+2                            
-                lda facmo+1                             
-                sta tmpdes+3                            
+                jsr     frmevl                          ; get next arg
+                jsr     chkstr                          ; must be string
+                lda     facmo                           
+                sta     tmpdes+2                        
+                lda     facmo+1                         
+                sta     tmpdes+3                        
 
-                ldx #1                                  ; default starting position
-                stx faclo                               
-                jsr chrgot                              
-                cmp #')'                                ; any length argument?
-                beq l214_1                              ; branch if not
-                jsr combyt                              ; else go get a one byte argument
+                ldx     #1                              ; default starting position
+                stx     faclo                           
+                jsr     chrgot                          
+                cmp     #')'                            ; any length argument?
+                beq     l214_1                          ; branch if not
+                jsr     combyt                          ; else go get a one byte argument
 
-l214_1          jsr chkcls                              ; look for )
-                ldx faclo                               
-                +lbeq fcerr                             ; starting position can't be 0
+l214_1          jsr     chkcls                          ; look for )
+                ldx     faclo                           
+                +lbeq   fcerr                           ; starting position can't be 0
                 dex                                     
-                stx positn                              
+                stx     positn                          
 
-                ldx #3                                  ; copy 'pointers to temp descriptors' to zero page
-l214_2          lda tmpdes,x                            
-                sta ptarg1,x                            
+                ldx     #3                              ; copy 'pointers to temp descriptors' to zero page
+l214_2          lda     tmpdes,x                        
+                sta     ptarg1,x                        
                 dex                                     
-                bpl l214_2                              
+                bpl     l214_2                          
 
-                ldy #2                                  ; now get the descriptors
-l214_3          lda #ptarg1                             
-                jsr lda_far_ram1                        ; lda (ptarg1),y
-                sta str1,y                              
-                lda #ptarg2                             
-                jsr lda_far_ram1                        ; lda (ptarg2),y
-                sta str2,y                              
+                ldy     #2                              ; now get the descriptors
+l214_3          lda     #ptarg1                         
+                jsr     lda_far_ram1                    ; lda (ptarg1),y
+                sta     str1,y                          
+                lda     #ptarg2                         
+                jsr     lda_far_ram1                    ; lda (ptarg2),y
+                sta     str2,y                          
                 dey                                     
-                bpl l214_3                              
+                bpl     l214_3                          
 
-                lda str2                                ; check if string 2 is null
-                beq l214_8                              ; if so, return 0
+                lda     str2                            ; check if string 2 is null
+                beq     l214_8                          ; if so, return 0
 
-l214_4          lda #0                                  
-                sta match                               
+l214_4          lda     #0                              
+                sta     match                           
                 clc                                     
-                lda str2                                ; length of string 2
-                adc positn                              
-                bcs l214_8                              ; too long, not found
-                cmp str1                                ; see if > length of string 1
-                bcc l214_5                              ; < len string 1
-                bne l214_8                              ; must be >, not found
+                lda     str2                            ; length of string 2
+                adc     positn                          
+                bcs     l214_8                          ; too long, not found
+                cmp     str1                            ; see if > length of string 1
+                bcc     l214_5                          ; < len string 1
+                bne     l214_8                          ; must be >, not found
 
-l214_5          ldy match                               
-                cpy str2                                ; if match len = str len, then found
-                beq l214_7                              
+l214_5          ldy     match                           
+                cpy     str2                            ; if match len = str len, then found
+                beq     l214_7                          
                 tya                                     
                 clc                                     
-                adc positn                              ; compare str1(s+p+m) with str2(m)
+                adc     positn                          ; compare str1(s+p+m) with str2(m)
                 tay                                     
-                lda #str1+1                             
-                jsr lda_far_ram1                        ; lda (str1+1),y
-                sta syntmp                              
-                ldy match                               
-                lda #str2+1                             
-                jsr lda_far_ram1                        ; lda (str2+1),y
-                cmp syntmp                              
-                beq l214_6                              
-                inc positn                              ; not the same, start over from next positn
-                bra l214_4                              ; always
+                lda     #str1+1                         
+                jsr     lda_far_ram1                    ; lda (str1+1),y
+                sta     syntmp                          
+                ldy     match                           
+                lda     #str2+1                         
+                jsr     lda_far_ram1                    ; lda (str2+1),y
+                cmp     syntmp                          
+                beq     l214_6                          
+                inc     positn                          ; not the same, start over from next positn
+                bra     l214_4                          ; always
 
-l214_6          inc match                               ; count characters that match
-                bra l214_5                              ; always
+l214_6          inc     match                           ; count characters that match
+                bra     l214_5                          ; always
 
 
-l214_7          inc positn                              ; found
-                lda positn                              
+l214_7          inc     positn                          ; found
+                lda     positn                          
                 !text $2c                               
 
-l214_8          lda #0                                  ; not found
+l214_8          lda     #0                              ; not found
 ; sta sw_rom_ram0 ;????
                 pha                                     
-                lda tmpdes+2                            ; free temp descriptors
-                ldy tmpdes+3                            
-                jsr fretmp                              
+                lda     tmpdes+2                        ; free temp descriptors
+                ldy     tmpdes+3                        
+                jsr     fretmp                          
 ; sta sw_rom_ram0 ;????
-                lda tmpdes                              
-                ldy tmpdes+1                            
-                jsr fretmp                              
+                lda     tmpdes                          
+                ldy     tmpdes+1                        
+                jsr     fretmp                          
                 ply                                     
-                +lbra sngflt                            ; float 1 byte in .y
+                +lbra   sngflt                          ; float 1 byte in .y
 
 ;.end
 

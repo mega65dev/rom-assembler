@@ -7,7 +7,7 @@ negop   ;/// entry point
 negrts rts 
  
 ;.end 
-;[[math.ext6]] 
+;[[math.logarithms]] 
  .page 
  .subttl Floating Point Math Package (CODE24) 
  

@@ -1,13 +1,13 @@
 strini                                                  
-                ldx facmo                               ; get facmo to store in dscpnt
-                ldy facmo+1                             
-                stx dscpnt                              ; retain the descriptor pointer
-                sty dscpnt+1                            
+                ldx     facmo                           ; get facmo to store in dscpnt
+                ldy     facmo+1                         
+                stx     dscpnt                          ; retain the descriptor pointer
+                sty     dscpnt+1                        
 
-strspa          jsr getspa                              ; get string space
-                stx dsctmp+1                            ; save location
-                sty dsctmp+2                            
-                sta dsctmp                              ; save length
+strspa          jsr     getspa                          ; get string space
+                stx     dsctmp+1                        ; save location
+                sty     dsctmp+2                        
+                sta     dsctmp                          ; save length
                 rts                                     ; done
 
 
@@ -21,36 +21,36 @@ strspa          jsr getspa                              ; get string space
 ; literal is pointed to by (strng2).
 
 
-strlit          ldx #'"'                                ; assume string ends on quote
-                stx charac                              
-                stx endchr                              
+strlit          ldx     #'"'                            ; assume string ends on quote
+                stx     charac                          
+                stx     endchr                          
 
-strlt2          sta strng1                              ; save pointer to string
-                sty strng1+1                            
-                sta dsctmp+1                            ; in case no strcpy
-                sty dsctmp+2                            
+strlt2          sta     strng1                          ; save pointer to string
+                sty     strng1+1                        
+                sta     dsctmp+1                        ; in case no strcpy
+                sty     dsctmp+2                        
 
-                ldy #255                                ; initialize character count
+                ldy     #255                            ; initialize character count
 strget          iny                                     
-                jsr indst1                              ; get character
-                beq l156_2                              ; if zero
-                cmp charac                              ; this terminator?
-                beq l156_1                              ; yes
-                cmp endchr                              
-                bne strget                              ; look further
+                jsr     indst1                          ; get character
+                beq     l156_2                          ; if zero
+                cmp     charac                          ; this terminator?
+                beq     l156_1                          ; yes
+                cmp     endchr                          
+                bne     strget                          ; look further
 
-l156_1          cmp #'"'                                ; strfin.  quote?
-                beq l156_3                              
+l156_1          cmp     #'"'                            ; strfin.  quote?
+                beq     l156_3                          
 
 l156_2          clc                                     
-l156_3          sty dsctmp                              ; no, back up. retain count
+l156_3          sty     dsctmp                          ; no, back up. retain count
                 tya                                     
-                adc strng1                              ; wishing to set (txtptr)
-                sta strng2                              
-                ldx strng1+1                            
-                bcc l156_4                              
+                adc     strng1                          ; wishing to set (txtptr)
+                sta     strng2                          
+                ldx     strng1+1                        
+                bcc     l156_4                          
                 inx                                     
-l156_4          stx strng2+1                            
+l156_4          stx     strng2+1                        
                 tya                                     
 
 

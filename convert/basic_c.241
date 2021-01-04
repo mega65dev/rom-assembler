@@ -1,19 +1,19 @@
-rid             lda dosdid                              ; include id
-                sta dosstr,x                            
+rid             lda     dosdid                          ; include id
+                sta     dosstr,x                        
                 inx                                     
-                lda dosdid+1                            
-                bra sdp5                                ; always
+                lda     dosdid+1                        
+                bra     sdp5                            ; always
 
 
-rwrt            lda dosrcl                              ; check for L or W
-                beq l241_1                              ; zero then write
-                lda #'L'                                
-                bra sdp5                                ; always
+rwrt            lda     dosrcl                          ; check for L or W
+                beq     l241_1                          ; zero then write
+                lda     #'L'                            
+                bra     sdp5                            ; always
 
-l241_1          lda #'S'                                ; send W,S
-                sta dosrcl                              
-                lda #'W'                                
-                bra sdp5                                ; always
+l241_1          lda     #'S'                            ; send W,S
+                sta     dosrcl                          
+                lda     #'W'                            
+                bra     sdp5                            ; always
 
 
 

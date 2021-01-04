@@ -1,84 +1,84 @@
 done            pla                                     ; get aux error flag
-                and parstx                              ; repeated or illegal params?
-                +lbne snerr                             ; yes- report syntax error
+                and     parstx                          ; repeated or illegal params?
+                +lbne   snerr                           ; yes- report syntax error
                 pla                                     ; get error flags
-                jsr prmrpt                              
-                lda parsts                              
-                ldx parstx                              
+                jsr     prmrpt                          
+                lda     parsts                          
+                ldx     parstx                          
                 rts                                     
 
 
 ; Parse given parameters.  what it is  example
 ;     -------------------- ---------
-parse1          cmp #'"'                                
-                +lbeq name1                             ; explicit filename "file"
-                cmp #'('                                
-                +lbeq name1                             ; evaluate filename (f$)
-                cmp #'#'                                
-                beq logadr                              ; logical file number #1
-                cmp #'U'                                
-                beq unit1                               ; unit number  U8
-                cmp #'D'                                
-                beq drv1                                ; drive number  D0
-                cmp #'P'                                
-                +lbeq doffl                             ; load/save address P1234
-                cmp #'B'                                
-                beq dbank1                              ; load/save bank   B0
-                cmp #'W'                                
-                beq reclen                              ; write mode  W
-                cmp #'L'                                
-                beq reclen                              ; record length  L80
-                cmp #'R'                                
-                +lbeq recover                           ; recover mode  R
-                cmp #'I'                                
-                beq ident                               ; ID   Ixx
-                cmp #on_token                           
+parse1          cmp     #'"'                            
+                +lbeq   name1                           ; explicit filename "file"
+                cmp     #'('                            
+                +lbeq   name1                           ; evaluate filename (f$)
+                cmp     #'#'                            
+                beq     logadr                          ; logical file number #1
+                cmp     #'U'                            
+                beq     unit1                           ; unit number  U8
+                cmp     #'D'                            
+                beq     drv1                            ; drive number  D0
+                cmp     #'P'                            
+                +lbeq   doffl                           ; load/save address P1234
+                cmp     #'B'                            
+                beq     dbank1                          ; load/save bank   B0
+                cmp     #'W'                            
+                beq     reclen                          ; write mode  W
+                cmp     #'L'                            
+                beq     reclen                          ; record length  L80
+                cmp     #'R'                            
+                +lbeq   recover                         ; recover mode  R
+                cmp     #'I'                            
+                beq     ident                           ; ID   Ixx
+                cmp     #on_token                       
 ; beq on1   ; ON token  ON
 
-                +lbne snerr                             ; none of these, syntax error
+                +lbne   snerr                           ; none of these, syntax error
 
 
-on1             jsr on                                  
-                +lbra del1                              
+on1             jsr     on                              
+                +lbra   del1                            
 
 
-unit1           jsr unit                                ; do unit# parsing
-                +lbra del1                              ; always
+unit1           jsr     unit                            ; do unit# parsing
+                +lbra   del1                            ; always
 
 
-dbank1          jsr dbank                               
-                +lbra del1                              ; always
+dbank1          jsr     dbank                           
+                +lbra   del1                            ; always
 
 
-logadr          lda #4                                  
-                jsr prmrpt                              ; check for repeated parameter
-                jsr gtbytc                              ; getval
+logadr          lda     #4                              
+                jsr     prmrpt                          ; check for repeated parameter
+                jsr     gtbytc                          ; getval
                 txa                                     ; cpx #0
-                +lbeq fcerr                             ; if illegal value
-                stx dosla                               
-                lda #4                                  ; set logical address flag
-                +lbra del1                              ; get next parameter
+                +lbeq   fcerr                           ; if illegal value
+                stx     dosla                           
+                lda     #4                              ; set logical address flag
+                +lbra   del1                            ; get next parameter
 
 
 reclen          tax                                     ; save char
-                lda #$40                                
-                jsr prmrpt                              ; check for repeated parameter
-                cpx #'W'                                
-                bne l234_1                              
-                jsr chrget                              
-                bra l234_4                              ; set parsts
+                lda     #$40                            
+                jsr     prmrpt                          ; check for repeated parameter
+                cpx     #'W'                            
+                bne     l234_1                          
+                jsr     chrget                          
+                bra     l234_4                          ; set parsts
 
-l234_1          ldx #1                                  ; a kludge to allow  DOPEN#lf,"relfile",L  [911024]
-                jsr chrget                              
-                beq l234_2                              ; eol? open existing rel file
-                jsr getbyt                              ; get reclen (was getval)
-l234_2          stx dosrcl                              ; store parcel
+l234_1          ldx     #1                              ; a kludge to allow  DOPEN#lf,"relfile",L  [911024]
+                jsr     chrget                          
+                beq     l234_2                          ; eol? open existing rel file
+                jsr     getbyt                          ; get reclen (was getval)
+l234_2          stx     dosrcl                          ; store parcel
                 txa                                     ; cpx #0
-                beq l234_3                              ; zero illegal dosrcl
+                beq     l234_3                          ; zero illegal dosrcl
                 inx                                     ; cpx #255
-l234_3          +lbeq fcerr                             ; illegal dosrcl
+l234_3          +lbeq   fcerr                           ; illegal dosrcl
 
-l234_4          lda #$40                                ; set dosrcl flag &
-                +lbra del1                              
+l234_4          lda     #$40                            ; set dosrcl flag &
+                +lbra   del1                            
 
 

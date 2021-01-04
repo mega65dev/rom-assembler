@@ -1,43 +1,43 @@
-pixel           jsr CheckGraphicMode                    ; verify screen open
-                jsr PushParms                           ; preserve Graphics parameters & LINNUM  [910820]
+pixel           jsr     CheckGraphicMode                ; verify screen open
+                jsr     PushParms                       ; preserve Graphics parameters & LINNUM  [910820]
 
-                jsr getsad                              ; get x
-                sty GKI__parm1                          
-                sta GKI__parm2                          
-                jsr comsad                              ; get y
-                sty GKI__parm3                          
-                sta GKI__parm4                          
-                jsr chkcls                              ; check for closing parens
+                jsr     getsad                          ; get x
+                sty     GKI__parm1                      
+                sta     GKI__parm2                      
+                jsr     comsad                          ; get y
+                sty     GKI__parm3                      
+                sta     GKI__parm4                      
+                jsr     chkcls                          ; check for closing parens
 
-                jsr ($8032)                             ; get Bitplane data at pixel (x,y), returned in .y
-                jsr sngflt                              ; go float 1 byte arg in .Y
+                jsr     ($8032)                         ; get Bitplane data at pixel (x,y), returned in .y
+                jsr     sngflt                          ; go float 1 byte arg in .Y
 
-                jsr PopParms                            ; restore graphics parameters
+                jsr     PopParms                        ; restore graphics parameters
                 rts                                     
 
-;[[function.rpen]]
+;[[function.graphics.rpen]]
 
 ; Return the color of a drawscreen's PEN      [910820]
 ;  RPEN (pen#) where pen# = 0,1,2
 
-rpen            jsr CheckGraphicMode                    ; verify screen open
-                jsr PushParms                           ; preserve Graphics parameters & LINNUM  [910820]
+rpen            jsr     CheckGraphicMode                ; verify screen open
+                jsr     PushParms                       ; preserve Graphics parameters & LINNUM  [910820]
 
-                jsr conint                              ; get 1 byte arg in .x (old style single arg function)
-                cpx #3                                  
-                bcs l299_1                              ; illegal pen #?
-                stx GKI__parm1                          
+                jsr     conint                          ; get 1 byte arg in .x (old style single arg function)
+                cpx     #3                              
+                bcs     l299_1                          ; illegal pen #?
+                stx     GKI__parm1                      
 
-                jsr ($8036)                             ; convert to logical color# (palette index#)
-l299_1          +lbcs fcerr                             ; drawscreen not set or illegal quantity somewhere
+                jsr     ($8036)                         ; convert to logical color# (palette index#)
+l299_1          +lbcs   fcerr                           ; drawscreen not set or illegal quantity somewhere
 
-                jsr sngflt                              ; go float 1 byte arg in .Y
+                jsr     sngflt                          ; go float 1 byte arg in .Y
 
-                jsr PopParms                            ; restore graphics parameters
+                jsr     PopParms                        ; restore graphics parameters
                 rts                                     
 
 
-;[[function.rpalette]]
+;[[function.graphics.rpalette]]
 ; Return the R,G, or B component of a color     [910820]
 ; RPALETTE (screen#, color#, rgb)
 

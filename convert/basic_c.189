@@ -1,45 +1,45 @@
-boot            cmp #sys_token                          ; BOOTSYS?      [910111]
-                bne l189_1                              ; no
-                jsr chrget                              ; yes- eat token
-                jsr _bootsys                            ; attempt to boot a new OS
-                bcc l189_4                              ; returned to us after successful install
-                ldx #errbdk                             ; bootsys failed, report 'bad disk'????
-                +lbra error                             
+boot            cmp     #sys_token                      ; BOOTSYS?      [910111]
+                bne     l189_1                          ; no
+                jsr     chrget                          ; yes- eat token
+                jsr     _bootsys                        ; attempt to boot a new OS
+                bcc     l189_4                          ; returned to us after successful install
+                ldx     #errbdk                         ; bootsys failed, report 'bad disk'????
+                +lbra   error                           
 
-l189_1          bbr4 runmod,l189_2                      ; Error if in Edit mode     [910620]
-                +lbra edit_err                          
+l189_1          bbr4    runmod,l189_2                   ; Error if in Edit mode     [910620]
+                +lbra   edit_err                        
 
-l189_2          lda #0                                  ; BOOT "filename"     [910417]
-                sta verck                               ; want 'load', not 'verify'
-                lda #$e6                                ; set up parameters for DOS parser like BLOAD
-                ldx #$fc                                
-                jsr dosprx                              ; parse the command
-                bbr0 parsts,l189_5                      ; was there a filename?  branch if not
-                jsr bload_boot                          ; yes- bload it
-                +lbcs erexit                            ; load error
+l189_2          lda     #0                              ; BOOT "filename"     [910417]
+                sta     verck                           ; want 'load', not 'verify'
+                lda     #$e6                            ; set up parameters for DOS parser like BLOAD
+                ldx     #$fc                            
+                jsr     dosprx                          ; parse the command
+                bbr0    parsts,l189_5                   ; was there a filename?  branch if not
+                jsr     bload_boot                      ; yes- bload it
+                +lbcs   erexit                          ; load error
 
 ; ldx current_bank ;assume no B(ank) arg was given    [910114]
 ; bbr0 parstx,l189_3  ; correct, use current setup
-                ldx dosbnk                              ; else use given bank number
-l189_3          stx _bank                               
-                lda _starting_addr                      ; set up address BLOAD loaded to
-                sta _pclo                               
-                lda _starting_addr+1                    
-                sta _pchi                               
-                jsr _jsr_far                            ; call it
+                ldx     dosbnk                          ; else use given bank number
+l189_3          stx     _bank                           
+                lda     _starting_addr                  ; set up address BLOAD loaded to
+                sta     _pclo                           
+                lda     _starting_addr+1                
+                sta     _pchi                           
+                jsr     _jsr_far                        ; call it
 l189_4          rts                                     
 
-l189_5          ldy #$ff                                
+l189_5          ldy     #$ff                            
 l189_6          iny                                     ; Copy default filename from ROM into buffer
-                lda autoboot_filename,y                 
-                sta savram,y                            
-                bne l189_6                              ; null terminated
+                lda     autoboot_filename,y             
+                sta     savram,y                        
+                bne     l189_6                          ; null terminated
 
-                sty dosf1l                              ; length not counting terminator
-                smb6 runmod                             ; set flag for load not to go to ready
-                jsr dload_boot                          ; Load it
-                +lbcs erexit                            ; error if problems
-                +lbra run_a_program                     ; else go run it
+                sty     dosf1l                          ; length not counting terminator
+                smb6    runmod                          ; set flag for load not to go to ready
+                jsr     dload_boot                      ; Load it
+                +lbcs   erexit                          ; error if problems
+                +lbra   run_a_program                   ; else go run it
 
 
 ; AUTOBOOT_CSG Runs a system diagnostic if PB0 is low after initialization.

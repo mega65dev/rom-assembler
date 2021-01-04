@@ -2,21 +2,21 @@ optw99          clc
                 rts                                     
 
 
-comsad          jsr chkcom                              ; get a comma & signed 2-byte arg in y,a   [910307]
-                +lbra sadwrd                            
+comsad          jsr     chkcom                          ; get a comma & signed 2-byte arg in y,a   [910307]
+                +lbra   sadwrd                          
 
 
 
-optsad          jsr chrgot                              ; get a comma & optional, signed 2-byte arg in y,a [910307]
-                beq l249_1                              ; eol, therefore this arg is not specified
-                jsr chkcom                              ; eat comma
-                cmp #','                                ; is next a comma too?
-                beq l249_1                              ; yes, therefore this arg is not specified
-                jsr sadwrd                              ; get signed word
+optsad          jsr     chrgot                          ; get a comma & optional, signed 2-byte arg in y,a [910307]
+                beq     l249_1                          ; eol, therefore this arg is not specified
+                jsr     chkcom                          ; eat comma
+                cmp     #','                            ; is next a comma too?
+                beq     l249_1                          ; yes, therefore this arg is not specified
+                jsr     sadwrd                          ; get signed word
                 sec                                     
                 rts                                     
 
-l249_1          lda #0                                  ; default optional arg to zero
+l249_1          lda     #0                              ; default optional arg to zero
                 tay                                     
                 clc                                     
                 rts                                     

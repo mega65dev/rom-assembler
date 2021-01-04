@@ -1,10 +1,10 @@
 ReadSystemClock                                         
-                jsr _ReadTime                           ; get packed BCD, y=hrs, x=min, a=sec, z=tenths
+                jsr     _ReadTime                       ; get packed BCD, y=hrs, x=min, a=sec, z=tenths
 ; (assumes system clock was set properly!)
-                stz time                                ; tenths  0-9
-                sta time+1                              ; seconds  0-59
-                stx time+2                              ; minutes  0-59
-                sty time+3                              ; hours  0-59
+                stz     time                            ; tenths  0-9
+                sta     time+1                          ; seconds  0-59
+                stx     time+2                          ; minutes  0-59
+                sty     time+3                          ; hours  0-59
                 rts                                     
 
 
@@ -12,42 +12,42 @@ ReadSystemClock
 ;     A   *  (B,C)  ->      (D,E,F)
 
 TimeMultiply                                            
-                lda time,x                              ; convert packed BCD to binary
-                and #$0f                                
-                sta facho                               
-                lda time,x                              ; 10x = 8x + 2x
-                and #$f0                                
+                lda     time,x                          ; convert packed BCD to binary
+                and     #$0f                            
+                sta     facho                           
+                lda     time,x                          ; 10x = 8x + 2x
+                and     #$f0                            
                 lsr                                     ; msd x 8
-                sta time,x                              
+                sta     time,x                          
                 lsr                                     
                 lsr                                     ; msd x 2
                 clc                                     
-                adc facho                               ; lsd
-                adc time,x                              
-                sta time,x                              ; can't overflow ($99->153)
+                adc     facho                           ; lsd
+                adc     time,x                          
+                sta     time,x                          ; can't overflow ($99->153)
 
                 txa                                     ; make a word pointer from byte pointer
                 asl                                     
                 tay                                     
-                lda TimeFactor-2,y                      ; multiplicand = TimeFactor,y  (2 bytes)
-                sta multiplicand                        ; multiplier = Time,x x (1 byte)
-                lda TimeFactor-1,y                      ; -----------
-                sta multiplicand+1                      
-                lda #0                                  ; product lo   (3 bytes)
-                sta product+1                           ; mid
-                sta product+2                           ; hi
+                lda     TimeFactor-2,y                  ; multiplicand = TimeFactor,y  (2 bytes)
+                sta     multiplicand                    ; multiplier = Time,x x (1 byte)
+                lda     TimeFactor-1,y                  ; -----------
+                sta     multiplicand+1                  
+                lda     #0                              ; product lo   (3 bytes)
+                sta     product+1                       ; mid
+                sta     product+2                       ; hi
 
-                ldy #16                                 ; 16-bit multiplicand
+                ldy     #16                             ; 16-bit multiplicand
 l135_1          asl                                     
-                row product+1                           
-                row multiplicand                        ; multiplier * multiplicand -> product
-                bcc l135_2                              
+                row     product+1                       
+                row     multiplicand                    ; multiplier * multiplicand -> product
+                bcc     l135_2                          
                 clc                                     
-                adc time,x                              
-                bcc l135_2                              
-                inw product+1                           ; (does no error check, since using time factors
+                adc     time,x                          
+                bcc     l135_2                          
+                inw     product+1                       ; (does no error check, since using time factors
 l135_2          dey                                     ; in ROM and maximum time multiplier of 59 there
-                bne l135_1                              ; is no danger of overflow)
+                bne     l135_1                          ; is no danger of overflow)
 
 ; sta product
                 rts                                     ; (.X is preserved)

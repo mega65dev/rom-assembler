@@ -1,38 +1,38 @@
-stradj          ldy #0                                  
-                jsr indin1_ram1                         ; push length on stack
+stradj          ldy     #0                              
+                jsr     indin1_ram1                     ; push length on stack
                 pha                                     
-                beq l53_5                               ; if length=0 do nothing
+                beq     l53_5                           ; if length=0 do nothing
                 iny                                     
-                jsr indin1_ram1                         ; get low byte (into .x)
+                jsr     indin1_ram1                     ; get low byte (into .x)
                 tax                                     
                 iny                                     
-                jsr indin1_ram1                         ; get high byte
-                cmp max_mem_1+1                         
-                bcc l53_1                               ; ok
-                bne l53_5                               ; if above top of memory
-                cpx max_mem_1                           ; msb the same, test lsb
-                bcs l53_5                               ; if above top of memory
+                jsr     indin1_ram1                     ; get high byte
+                cmp     max_mem_1+1                     
+                bcc     l53_1                           ; ok
+                bne     l53_5                           ; if above top of memory
+                cpx     max_mem_1                       ; msb the same, test lsb
+                bcs     l53_5                           ; if above top of memory
 
-l53_1           cmp fretop+1                            
-                bcc l53_5                               ; if below fretop
-                bne l53_2                               
-                cpx fretop                              
-                bcc l53_5                               ; if below fretop
+l53_1           cmp     fretop+1                        
+                bcc     l53_5                           ; if below fretop
+                bne     l53_2                           
+                cpx     fretop                          
+                bcc     l53_5                           ; if below fretop
 
-l53_2           cmp dsdesc+2                            
-                bne l53_3                               ; fix
-                cpx dsdesc+1                            
-                beq l53_5                               
+l53_2           cmp     dsdesc+2                        
+                bne     l53_3                           ; fix
+                cpx     dsdesc+1                        
+                beq     l53_5                           
 
-l53_3           stx index                               ; ok set pointer
-                sta index+1                             
+l53_3           stx     index                           ; ok set pointer
+                sta     index+1                         
                 pla                                     ; get back length
                 tax                                     ; into x also
                 clc                                     
-                adc index                               
-                sta index                               
-                bcc l53_4                               
-                inc index+1                             
+                adc     index                           
+                sta     index                           
+                bcc     l53_4                           
+                inc     index+1                         
 l53_4           sec                                     ; carry set
                 rts                                     
 
@@ -41,7 +41,7 @@ l53_5           pla                                     ; clean up stack
                 rts                                     
 
 ;.end
-;[[command.printcmd]]
+;[[command.text,print]]
 
 
 

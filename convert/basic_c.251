@@ -13,11 +13,11 @@ basic_irq
 ; cmp #%10000001
 ; bne collision_irq ; no, go check other VIC interrupts
 
-                lda irq_wrap_flag                       ; filter out wrapped IRQ calls (allows interruptable code)
-                beq l251_1                              ; it's ok
+                lda     irq_wrap_flag                   ; filter out wrapped IRQ calls (allows interruptable code)
+                beq     l251_1                          ; it's ok
                 rts                                     ; exit- we're already handling one interrupt
 
-l251_1          inc irq_wrap_flag                       ; shut the door
+l251_1          inc     irq_wrap_flag                   ; shut the door
                 cli                                     ; but leave the window open
 
 

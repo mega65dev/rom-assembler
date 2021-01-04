@@ -5,56 +5,56 @@ autoboot_filename
 
 
 erexit          tax                                     ; set termination flags
-                +lbne error                             ; normal error
-                +lbra break_exit                        ; user break
+                +lbne   error                           ; normal error
+                +lbra   break_exit                      ; user break
 
 
 
-outch           jsr _bsout                              
-                bcs erexit                              
+outch           jsr     _bsout                          
+                bcs     erexit                          
                 rts                                     
 
 
 
-inchr           jsr _basin                              
-                bcs erexit                              
+inchr           jsr     _basin                          
+                bcs     erexit                          
                 rts                                     
 
 
 coout                                                   
 ; jsr put_io_in_map
-                jsr _chkout                             
-                jsr dschk                               ; see if device # >=4, and clear DS if so
-                bcs erexit                              ; take error exit of there was one
+                jsr     _chkout                         
+                jsr     dschk                           ; see if device # >=4, and clear DS if so
+                bcs     erexit                          ; take error exit of there was one
                 rts                                     
 
 
 coin                                                    
 ; jsr put_io_in_map
-                jsr _chkin                              
-                jsr dschk                               ; see if device # >=4, and clear DS if so
-                bcs erexit                              
+                jsr     _chkin                          
+                jsr     dschk                           ; see if device # >=4, and clear DS if so
+                bcs     erexit                          
                 rts                                     
 
 cgetl                                                   
 ; jsr put_io_in_map
-                jsr _getin                              
-                +lbcs break_exit                        ; 'stop' key was pressed
+                jsr     _getin                          
+                +lbcs   break_exit                      ; 'stop' key was pressed
                 rts                                     
 
 
-save            jsr plsv                                ; parse parameters, dschk
+save            jsr     plsv                            ; parse parameters, dschk
 
 
 savenp                                                  ; Save Program (from DSave)
-                ldx text_top                            ; ending address
-                ldy text_top+1                          
-                lda #<txttab                            ; pointer to start address
+                ldx     text_top                        ; ending address
+                ldy     text_top+1                      
+                lda     #<txttab                        ; pointer to start address
 
 
 savenb                                                  ; Save Binary (from BSave & KEY SAVE)
 ; jsr put_io_in_map
-                jsr _savesp                             ; save it
+                jsr     _savesp                         ; save it
 
 ; Any changes to the following code must be duplicated at:
 ;  bload
@@ -64,17 +64,17 @@ exit_disk_op
 exit_disk_operation                                        
                 php                                     ; preserve kernel error status (.c)
                 pha                                     ; preserve kernel error # (.a)
-                jsr print_dos_error                     ; print DOS error msg if any only in direct mode
+                jsr     print_dos_error                 ; print DOS error msg if any only in direct mode
                 pla                                     
                 plp                                     
-                bcc l192_3                              ; branch if no error (rts)
-                bbs7 runmod,l192_2                      ; branch if run mode (erexit)
-                cmp #errfnf                             ; is it 'file not found' catch-all?
-                bne l192_1                              ; no  (erexit)
-                sta errnum                              ; yes- save error # for 'er'
-                ora #$80                                ; but no errdis
+                bcc     l192_3                          ; branch if no error (rts)
+                bbs7    runmod,l192_2                   ; branch if run mode (erexit)
+                cmp     #errfnf                         ; is it 'file not found' catch-all?
+                bne     l192_1                          ; no  (erexit)
+                sta     errnum                          ; yes- save error # for 'er'
+                ora     #$80                            ; but no errdis
 l192_1          sec                                     
-l192_2          bcs erexit                              ; exit if kernel problem (rts)
+l192_2          bcs     erexit                          ; exit if kernel problem (rts)
 l192_3          rts                                     
 
 

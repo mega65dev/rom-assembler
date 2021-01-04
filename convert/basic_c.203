@@ -1,48 +1,48 @@
-sswe            jsr shpn                                ; shift decimal point
-                jsr uround                              ; round number
-                jsr shpn                                ; shift again if necessary
+sswe            jsr     shpn                            ; shift decimal point
+                jsr     uround                          ; round number
+                jsr     shpn                            ; shift again if necessary
 
-hup             +lbra chout                             ; output number
+hup             +lbra   chout                           ; output number
 
 
 
-cff             ldy uexp                                ; exponent in no?
-                beq l203_2                              ; no...
-                sta hulp                                ; delete exponent
+cff             ldy     uexp                            ; exponent in no?
+                beq     l203_2                          ; no...
+                sta     hulp                            ; delete exponent
                 sec                                     ; adjust decimal point
-                ror etof                                ; set e-to-f flag
-                ldy point                               
-                lda usgn                                ; exec nos3 or nos4
-                bpl l203_1                              ; depends on sign of exp
-                jsr nos3                                
-                bra l203_3                              
+                ror     etof                            ; set e-to-f flag
+                ldy     point                           
+                lda     usgn                            ; exec nos3 or nos4
+                bpl     l203_1                          ; depends on sign of exp
+                jsr     nos3                            
+                bra     l203_3                          
 
-l203_1          jsr nos4                                
+l203_1          jsr     nos4                            
 
-l203_2          ldy point                               ; at start of no?
-                beq l203_3                              ; yes...
-                jsr cho                                 ; no = 0 ?
-                beq l203_4                              ; yes...no round
+l203_2          ldy     point                           ; at start of no?
+                beq     l203_3                          ; yes...
+                jsr     cho                             ; no = 0 ?
+                beq     l203_4                          ; yes...no round
 
-l203_3          jsr uround                              
-                bra l203_5                              
+l203_3          jsr     uround                          
+                bra     l203_5                          
 
-l203_4          dec vn                                  ; adjust...no was 0
+l203_4          dec     vn                              ; adjust...no was 0
 l203_5          sec                                     
-                lda vf                                  
-                sbc vn                                  
-                bcc errf                                ; no fit...error
-                sta swe                                 ; save difference
-                ldy posp                                ; + or -?
-                bne ahp                                 ; yes...
-                ldy sno                                 ; get sign
-                bmi ahp                                 ; positive...
+                lda     vf                              
+                sbc     vn                              
+                bcc     errf                            ; no fit...error
+                sta     swe                             ; save difference
+                ldy     posp                            ; + or -?
+                bne     ahp                             ; yes...
+                ldy     sno                             ; get sign
+                bmi     ahp                             ; positive...
                 tay                                     
-                beq errf                                ; no room for sign
+                beq     errf                            ; no room for sign
                 dey                                     
-                bne ldvn                                ; swe<>1
-                lda nf                                  
-                ora vn                                  ; both zero?
-                bne hup                                 ; no...
+                bne     ldvn                            ; swe<>1
+                lda     nf                              
+                ora     vn                              ; both zero?
+                bne     hup                             ; no...
 
 

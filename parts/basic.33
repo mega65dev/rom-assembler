@@ -47,7 +47,7 @@ FindLink
 4$ rts  ;exit, line found (.c=1) 
  
 ;.end 
-;[[command.line.get]] 
+;[[command.text.get]] 
  
  .page 
  .subttl LinGet 

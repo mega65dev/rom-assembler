@@ -11,6 +11,9 @@
 
 import re,os
 
+def headerLine(title,desc):
+	return ";\t{0:11} {1}".format(title+" :",desc)
+
 currentFile = None												# File being created
 sourceList = []													# List of source files.
 sourceCode = {}													# Code for each source file.
@@ -27,7 +30,17 @@ for src in [x.rstrip() for x in open("tmp/basic.asm").readlines()]:
 		currentFile = m.group(1)
 		assert currentFile not in sourceCode,"Duplicate "+currentFile
 		sourceList.append(currentFile)
-		sourceCode[currentFile] = []
+		starBar = "; "+('*')*92
+		header = [starBar,starBar,";"]
+		header.append(headerLine("Name",currentFile.split(".")[-1]+".asm"))
+		header.append(headerLine("Purpose",".."))
+		header.append(headerLine("Created","15th Nov 1991"))
+		header.append(headerLine("Updated","4th Jan 2021"))
+		header.append(headerLine("Authors","Fred Bowen"))
+
+		header = header + [";",starBar,starBar]
+		sourceCode[currentFile] = header
+
 	else:
 		sourceCode[currentFile].append(src)
 #
@@ -42,6 +55,11 @@ for s in sourceList:
 			os.makedirs(path)
 	h = open("source"+os.sep+os.sep.join(target),"w")
 	h.write("\n".join(sourceCode[s]))
+	h.write("\n\n")
+	h.write(starBar+"\n;\n")
+	h.write(";\tDate\t\tChanges\n")
+	h.write(";\t====\t\t=======\n")
+	h.write(";\n{0}\n".format(starBar))
 	h.close()
 	includes.append(os.sep.join(target))
 #

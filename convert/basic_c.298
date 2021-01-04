@@ -1,26 +1,26 @@
-rcolor          jsr conint                              ; evaluate integer argument, put in .X
+rcolor          jsr     conint                          ; evaluate integer argument, put in .X
 ; jsr put_io_in_map
 
-                cpx #4                                  
-                +lbcs fcerr                             ; illegal qty
+                cpx     #4                              
+                +lbcs   fcerr                           ; illegal qty
                 txa                                     
                 asl                                     ; make into word pointer
                 tax                                     
-                lda color_source,x                      ; get address of source
-                sta grapnt                              
-                lda color_source+1,x                    
-                sta grapnt+1                            
-                ldy #0                                  
-                lda (grapnt),y                          ; read source (aways system space or I/O????)
-                and #$0f                                ; mask unused bits
+                lda     color_source,x                  ; get address of source
+                sta     grapnt                          
+                lda     color_source+1,x                
+                sta     grapnt+1                        
+                ldy     #0                              
+                lda     (grapnt),y                      ; read source (aways system space or I/O????)
+                and     #$0f                            ; mask unused bits
                 tay                                     
 ; iny   ; make color match keytops
-                +lbra sngflt                            ; float 1 byte in .Y
+                +lbra   sngflt                          ; float 1 byte in .Y
 
 color_source                                            
                 !word vic+33,_color,highlight_color,vic+32
 
-;[[function.rgraphic]]
+;[[function.graphics.rgraphic]]
 
 
 
@@ -43,56 +43,56 @@ color_source
 rgraphic                                                
 ; jsr CheckGraphicMode ;verify screen open
                 pla                                     ; remove token from stack
-                jsr PushParms                           ; preserve Graphics parameters & LINNUM  [910820]
+                jsr     PushParms                       ; preserve Graphics parameters & LINNUM  [910820]
 
-                jsr chkopn                              ; check for open paren
-                jsr getbyt                              ; get screen # in .X
-                stx GKI__parm1                          
-                jsr combyt                              ; get param # in .X
-                cpx #10+1                               ; [911028]
-                bcs l298_1                              ; illegal param #
+                jsr     chkopn                          ; check for open paren
+                jsr     getbyt                          ; get screen # in .X
+                stx     GKI__parm1                      
+                jsr     combyt                          ; get param # in .X
+                cpx     #10+1                           ; [911028]
+                bcs     l298_1                          ; illegal param #
                 phx                                     
-                jsr chkcls                              ; check for closing parens
+                jsr     chkcls                          ; check for closing parens
 
-                jsr ($8038)                             ; read screen params
-l298_1          +lbcs fcerr                             ; bad input????
+                jsr     ($8038)                         ; read screen params
+l298_1          +lbcs   fcerr                           ; bad input????
 
-                lda GKI__parm2                          
+                lda     GKI__parm2                      
                 plx                                     ; get back desired param #
                 dex                                     
-                bpl l298_2                              
-                eor #$80                                ; make 0=closed, 1=open, >1=invalid
+                bpl     l298_2                          
+                eor     #$80                            ; make 0=closed, 1=open, >1=invalid
                 lsr                                     
                 lsr                                     
-                bra l298_3                              ; return screen open status
+                bra     l298_3                          ; return screen open status
 
 l298_2          dex                                     
-                bpl l298_5                              
+                bpl     l298_5                          
 l298_3          lsr                                     
 l298_4          lsr                                     
                 lsr                                     
                 lsr                                     
-                and #3                                  
-                bra l298_8                              ; return width, height
+                and     #3                              
+                bra     l298_8                          ; return width, height
 
 l298_5          dex                                     
-                bpl l298_6                              
-                and #8                                  
-                bra l298_4                              
+                bpl     l298_6                          
+                and     #8                              
+                bra     l298_4                          
 l298_6          dex                                     
-                bpl l298_7                              
-                and #7                                  ; return depth
+                bpl     l298_7                          
+                and     #7                              ; return depth
                 inc                                     ; make depth 1-8
-                bra l298_8                              
+                bra     l298_8                          
 
-l298_7          lda GKI__parm3,x                        ; return bp bask, banks, etc.
+l298_7          lda     GKI__parm3,x                    ; return bp bask, banks, etc.
 l298_8          tay                                     
-                jsr sngflt                              ; float 1 byte arg in .y
+                jsr     sngflt                          ; float 1 byte arg in .y
 
-                jsr PopParms                            ; restore Graphics parameters & LINNUM
+                jsr     PopParms                        ; restore Graphics parameters & LINNUM
                 rts                                     
 
-;[[function.pixel]]
+;[[function.graphics.pixel]]
 
 ; Return the color of a given X,Y pixel location on the drawscreen  [910801]
 ;  PIXEL (x,y)

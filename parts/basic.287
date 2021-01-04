@@ -7,7 +7,7 @@ get_sprite_number
  rts 
  
 ;.end 
-;[[command.movspr]] 
+;[[command.graphics.movspr]] 
  .page 
  .subttl MOVSPR Command 
  

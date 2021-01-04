@@ -1,57 +1,57 @@
 play_sharp                                              
-                lda #1                                  
+                lda     #1                              
                 !text $2c                               
 play_flat                                               
-                lda #$ff                                
-                sta sharp                               
+                lda     #$ff                            
+                sta     sharp                           
                 rts                                     
 
 
 play_note_1                                             ; play a note
-                sta pitch+1                             
-                lda #0                                  ; flag 'not rest'
+                sta     pitch+1                         
+                lda     #0                              ; flag 'not rest'
                 !text $2c                               ; hop
 play_rest                                               
-                lda #$ff                                ; flag 'rest'
+                lda     #$ff                            ; flag 'rest'
                 pha                                     ; save flag
-                ldx voice                               
-                ldy times2,x                            ; y=x*2
-l111_1          lda voices+1,y                          ; test if there is a note playing
-                bpl l111_1                              ; and loop if so
+                ldx     voice                           
+                ldy     times2,x                        ; y=x*2
+l111_1          lda     voices+1,y                      ; test if there is a note playing
+                bpl     l111_1                          ; and loop if so
 
                 sei                                     
-                lda ntime                               ; load counter for current length
-                sta voices,y                            
-                lda ntime+1                             
-                sta voices+1,y                          
-                lda dnote                               ; test if this is a dotted note
-                beq l111_2                              ; no
-                lda ntime+1                             
+                lda     ntime                           ; load counter for current length
+                sta     voices,y                        
+                lda     ntime+1                         
+                sta     voices+1,y                      
+                lda     dnote                           ; test if this is a dotted note
+                beq     l111_2                          ; no
+                lda     ntime+1                         
                 lsr                                     ; duration is 1.5 x current length
                 pha                                     
-                lda ntime                               
+                lda     ntime                           
                 ror                                     
                 clc                                     
-                adc voices,y                            
-                sta voices,y                            
+                adc     voices,y                        
+                sta     voices,y                        
                 pla                                     
-                adc voices+1,y                          
-                sta voices+1,y                          
+                adc     voices+1,y                      
+                sta     voices+1,y                      
 
 l111_2          pla                                     ; test if this is a rest
-                bmi l111_3                              ; and branch if so- clear play flags and exit [910722]
+                bmi     l111_3                          ; and branch if so- clear play flags and exit [910722]
 
 ; jsr put_io_in_map
 ; jsr go_slow  ;      [910716] 4567R7A
-                ldy SID_offset,x                        ; get offset to voice hardware
-                lda pitch                               
-                sta sid1,y                              
-                lda pitch+1                             
-                sta sid1+1,y                            
-                lda #$08                                ; reset this voice
-                sta sid1+4,y                            
-                lda waveform,x                          ; and finally, turn on gate
-                sta sid1+4,y                            
+                ldy     SID_offset,x                    ; get offset to voice hardware
+                lda     pitch                           
+                sta     sid1,y                          
+                lda     pitch+1                         
+                sta     sid1+1,y                        
+                lda     #$08                            ; reset this voice
+                sta     sid1+4,y                        
+                lda     waveform,x                      ; and finally, turn on gate
+                sta     sid1+4,y                        
 ; jsr go_fast  ;      [910716] 4567R7A
 l111_3          cli                                     
 

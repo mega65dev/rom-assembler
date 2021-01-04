@@ -1,26 +1,26 @@
 foreground                                              
-                jsr getnyb                              ; Set text foreground color
-                stx _color                              
+                jsr     getnyb                          ; Set text foreground color
+                stx     _color                          
                 rts                                     
 
 
 
 highlight                                               
-                +lbeq snerr                             ; missing args??     [911017]
-                cmp #','                                
-                beq l284_1                              ; options byte only
+                +lbeq   snerr                           ; missing args??     [911017]
+                cmp     #','                            
+                beq     l284_1                          ; options byte only
 
-                jsr getbyt                              ; Set text highlight color
-                stx highlight_color                     
+                jsr     getbyt                          ; Set text highlight color
+                stx     highlight_color                 
 
-l284_1          jsr optzer                              ; set options:     [911001]
-                bcc l284_2                              ; comma but no value not given??
+l284_1          jsr     optzer                          ; set options:     [911001]
+                bcc     l284_2                          ; comma but no value not given??
                 txa                                     
-                and #3                                  ; 0= error msgs only
+                and     #3                              ; 0= error msgs only
                 asl                                     ; 1= REMs
                 asl                                     ; 2= tokens
                 asl                                     
-                sta helper                              
+                sta     helper                          
 l284_2          rts                                     
 
 

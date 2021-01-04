@@ -1,23 +1,23 @@
 Suck_DS                                                 
-                ldx dosfa                               ; fa
-                lda #doslfn                             ; la (reserved la)
-                ldy #$6f                                ; sa (command channel)
-                jsr _setlfs                             
-                lda #0                                  ; no name (so no setbank)
-                jsr _setnam                             
-                jsr _open                               ; get command channel
-                ldx #doslfn                             
-                jsr _chkin                              
-                bcs l246_2                              ; skip input if problem
+                ldx     dosfa                           ; fa
+                lda     #doslfn                         ; la (reserved la)
+                ldy     #$6f                            ; sa (command channel)
+                jsr     _setlfs                         
+                lda     #0                              ; no name (so no setbank)
+                jsr     _setnam                         
+                jsr     _open                           ; get command channel
+                ldx     #doslfn                         
+                jsr     _chkin                          
+                bcs     l246_2                          ; skip input if problem
 
-l246_1          jsr _basin                              ; read disk error message
-                cmp #cr                                 
-                bne l246_1                              ; loop until eol
+l246_1          jsr     _basin                          ; read disk error message
+                cmp     #cr                             
+                bne     l246_1                          ; loop until eol
 
-l246_2          jsr _clrch                              ; shut down command channel
-                lda #doslfn                             
+l246_2          jsr     _clrch                          ; shut down command channel
+                lda     #doslfn                         
                 sec                                     ; not a real close
-                jmp _close                              ; close it
+                jmp     _close                          ; close it
 
 
 ; R-U-sure subroutine

@@ -18,7 +18,7 @@ fin_chrget_2
 10$ rts 
  
 ;.end 
-;[[math.ext5]] 
+;[[math.convert]] 
  .page 
  .subttl Floating Point Math Package (CODE22,23) 
  

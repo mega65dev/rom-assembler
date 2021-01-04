@@ -68,28 +68,28 @@ init_sound_sprites                                        ; [910523]
 ; bpl 30$
 ; inc voice  ;set default voice (0)
 ;-----
-                jsr Sound_CLR_1                         ; [910724]
+                jsr     Sound_CLR_1                     ; [910724]
 
-                lda #%11100111                          ; [910626]
-                trb helper                              ; reset LIST/HELP/FIND flags
-                tsb highlight_save                      ; mark saved color as invalid
+                lda     #%11100111                      ; [910626]
+                trb     helper                          ; reset LIST/HELP/FIND flags
+                tsb     highlight_save                  ; mark saved color as invalid
 
-                lda #0                                  ; [910523] F018A
-                ldx #12+12-1                            ; init DMA lists
-l2_1            sta dma1_cmd,x                          
+                lda     #0                              ; [910523] F018A
+                ldx     #12+12-1                        ; init DMA lists
+l2_1            sta     dma1_cmd,x                      
                 dex                                     
-                bpl l2_1                                
+                bpl     l2_1                            
 
 ; stop_sprites   ;Stop all moving sprites (a=0)   [910523]
-                ldy #7                                  ; for sprites 0...7
-l2_2            ldx sproff,y                            ; get table offset
-                sta sprite_data,x                       ; reset speed for this sprite
+                ldy     #7                              ; for sprites 0...7
+l2_2            ldx     sproff,y                        ; get table offset
+                sta     sprite_data,x                   ; reset speed for this sprite
                 dey                                     
-                bpl l2_2                                ; loop until done
+                bpl     l2_2                            ; loop until done
 
-                sta vic+21                              ; Turn off all sprites    [910717]
+                sta     vic+21                          ; Turn off all sprites    [910717]
 
-                sta irq_wrap_flag                       ; enable BASIC IRQ handler
+                sta     irq_wrap_flag                   ; enable BASIC IRQ handler
 ; sta nmi_wrap_flag ;enable BASIC NMI handler   [910523]
                 rts                                     ; (removed)    [910826]
 

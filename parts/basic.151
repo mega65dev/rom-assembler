@@ -3,7 +3,7 @@ raddc  .byte @150,@50,@261,@106,0
  
 ;.end 
  .page 
-;[[math.ext1]] 
+;[[math.utils]] 
  .subttl Math Package (CODE12) 
  
 n32768 .byte $90,$80,0,0,0 

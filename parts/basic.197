@@ -90,7 +90,7 @@ dschk php   ;check if current device >=8, and clear DS if so
 ; jmp _stop 
  
 ;.end 
-;[[command.print.using]] 
+;[[command.text.printusing]] 
  .page 
  .subttl  PRINT USING 
 ; Print Using - Formatted print routine 

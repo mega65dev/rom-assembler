@@ -1,36 +1,36 @@
 drwinc          php                                     
-                and #1                                  ; adjust .y for x or y position
-                beq l255_1                              ; 0=x
+                and     #1                              ; adjust .y for x or y position
+                beq     l255_1                          ; 0=x
                 iny                                     ; 1=y
 l255_1          plp                                     
-                bmi l255_2                              ; enter with b7=negative, b6=positive, else zero
-                bvc l255_4                              
+                bmi     l255_2                          ; enter with b7=negative, b6=positive, else zero
+                bvc     l255_4                          
 
-                lda vic,y                               ; positive direction
+                lda     vic,y                           ; positive direction
                 inc                                     
-                sta vic,y                               
-                bra l255_3                              
+                sta     vic,y                           
+                bra     l255_3                          
 
-l255_2          lda vic,y                               ; negative direction
+l255_2          lda     vic,y                           ; negative direction
                 dec                                     
-                sta vic,y                               
-                cmp #$ff                                
+                sta     vic,y                           
+                cmp     #$ff                            
 
-l255_3          bne l255_4                              ; no wrap
+l255_3          bne     l255_4                          ; no wrap
                 tya                                     
-                bit #1                                  
-                bne l255_4                              ; wrap in y okay
+                bit     #1                              
+                bne     l255_4                          ; wrap in y okay
                 lsr                                     
                 tay                                     
-                lda sbits,y                             ; wrap in x- toggle msb
-                eor vic+16                              
-                sta vic+16                              
+                lda     sbits,y                         ; wrap in x- toggle msb
+                eor     vic+16                          
+                sta     vic+16                          
                 tya                                     
                 asl                                     
                 tay                                     
 
 l255_4          tya                                     ; restore y to sprite offset
-                and #$fe                                
+                and     #$fe                            
                 tay                                     
                 rts                                     
 

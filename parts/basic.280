@@ -11,7 +11,7 @@ exit_GKI_disk_op
  bcs error  ; must be I/O or file data error 
  rts   ; load was successful 
  
-;[[command.saveiff]] 
+;[[command.graphics.saveiff]] 
  .page 
 ;***************************************************************** 
 ;* 
@@ -53,7 +53,7 @@ saveiff
 ; rts   ; load was successful 
  
 ;.end 
-;[[command.viewport]] 
+;[[command.graphics.viewport]] 
  .page 
  .subttl   VIEWPORT Commands 
  

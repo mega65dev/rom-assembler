@@ -1,8 +1,8 @@
 mvdone          clc                                     ; update frespc pointer
-                adc frespc                              
-                sta frespc                              
-                bcc l159_1                              
-                inc frespc+1                            
+                adc     frespc                          
+                sta     frespc                          
+                bcc     l159_1                          
+                inc     frespc+1                        
 l159_1          rts                                     
 
 

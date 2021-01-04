@@ -1,44 +1,44 @@
 background                                              
-                jsr getnyb                              ; Set Vic background color
-                stx vic+33                              
+                jsr     getnyb                          ; Set Vic background color
+                stx     vic+33                          
                 rts                                     
 
 
 
 border                                                  
-                jsr getnyb                              ; Set Vic border color
-                stx vic+32                              
+                jsr     getnyb                          ; Set Vic border color
+                stx     vic+32                          
                 rts                                     
 
 
 getcomnyb                                               
-                jsr chkcom                              ; check for comma
+                jsr     chkcom                          ; check for comma
 getnyb                                                  
-                jsr getbyt                              ; Get a nybble, check range (0-15)
+                jsr     getbyt                          ; Get a nybble, check range (0-15)
 chknyb                                                  
-                cpx #16                                 
-                +lbcs fcerr                             
+                cpx     #16                             
+                +lbcs   fcerr                           
                 rts                                     
 
 
 
 chkesc                                                  ; Check for escape token, error if not, else get next token
-                cmp #esc_command_token                  
-                +lbne snerr                             
-                jsr chrget                              
-                +lbeq snerr                             ; eos? report error if so
+                cmp     #esc_command_token              
+                +lbne   snerr                           
+                jsr     chrget                          
+                +lbeq   snerr                           ; eos? report error if so
                 rts                                     
 
 
 
 chkeos                                                  ; Check for next byte = end of statement, error if not
-                jsr chrget                              
-                +lbne snerr                             ; eos? report error if not
+                jsr     chrget                          
+                +lbne   snerr                           ; eos? report error if not
                 rts                                     
 
 
 ;.end
-;[[command.sprite]]
+;[[command.graphics.sprite]]
 
 
 
@@ -56,46 +56,46 @@ chkeos                                                  ; Check for next byte = 
 ;  resolution :== resolution  (0=hires, 1=multicolor)
 ;************************************************************************************
 
-sprite          cmp #clr_token                          ; SPRITE CLR: init environment   [910717]
-                +lbeq Sprite_CLR                        ; yes
-                cmp #save_token                         ; SPRITE SAVE: save sprite data   [911001]
-                beq Sprite_Save                         ; yes
-                cmp #load_token                         ; SPRITE LOAD: load sprite data   [911001]
-                beq Sprite_Load                         ; yes
+sprite          cmp     #clr_token                      ; SPRITE CLR: init environment   [910717]
+                +lbeq   Sprite_CLR                      ; yes
+                cmp     #save_token                     ; SPRITE SAVE: save sprite data   [911001]
+                beq     Sprite_Save                     ; yes
+                cmp     #load_token                     ; SPRITE LOAD: load sprite data   [911001]
+                beq     Sprite_Load                     ; yes
 
-                jsr get_sprite_number                   ; get sprite number in z_p_temp_1
-                jsr optbyt                              ; look for (optional) enable
-                bcc l285_1                              ; none here, don't change
-                ldy #21                                 
-                jsr sprbit                              ; set/clear sprite bit
+                jsr     get_sprite_number               ; get sprite number in z_p_temp_1
+                jsr     optbyt                          ; look for (optional) enable
+                bcc     l285_1                          ; none here, don't change
+                ldy     #21                             
+                jsr     sprbit                          ; set/clear sprite bit
 
-l285_1          jsr optbyt                              ; get (optional) color
-                bcc l285_2                              ; branch if no arg
-                jsr chknyb                              ; [910109]
+l285_1          jsr     optbyt                          ; get (optional) color
+                bcc     l285_2                          ; branch if no arg
+                jsr     chknyb                          ; [910109]
                 txa                                     
-                ldx z_p_temp_1                          ; get back sprite number
+                ldx     z_p_temp_1                      ; get back sprite number
 ; jsr put_io_in_map
-                sta vic+39,x                            
+                sta     vic+39,x                        
 
-l285_2          jsr optbyt                              ; look for (optional) priority
-                bcc l285_3                              
-                ldy #27                                 
-                jsr sprbit                              
+l285_2          jsr     optbyt                          ; look for (optional) priority
+                bcc     l285_3                          
+                ldy     #27                             
+                jsr     sprbit                          
 
-l285_3          jsr optbyt                              ; look for (optional) x expansion
-                bcc l285_4                              
-                ldy #29                                 
-                jsr sprbit                              
+l285_3          jsr     optbyt                          ; look for (optional) x expansion
+                bcc     l285_4                          
+                ldy     #29                             
+                jsr     sprbit                          
 
-l285_4          jsr optbyt                              ; look for (optional) y expansion
-                bcc l285_5                              
-                ldy #23                                 
-                jsr sprbit                              
+l285_4          jsr     optbyt                          ; look for (optional) y expansion
+                bcc     l285_5                          
+                ldy     #23                             
+                jsr     sprbit                          
 
-l285_5          jsr optbyt                              ; look for (optional) resolution
-                bcc l285_6                              
-                ldy #28                                 
-                jsr sprbit                              
+l285_5          jsr     optbyt                          ; look for (optional) resolution
+                bcc     l285_6                          
+                ldy     #28                             
+                jsr     sprbit                          
 
 l285_6          rts                                     
 

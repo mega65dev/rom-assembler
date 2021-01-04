@@ -1,61 +1,61 @@
-getdef          jsr indlow_ram1                         ; get # of dim's from string bank
-                sta count                               ; save a counter
-                lda #0                                  ; zero (curtol)
-                sta curtol                              
+getdef          jsr     indlow_ram1                     ; get # of dim's from string bank
+                sta     count                           ; save a counter
+                lda     #0                              ; zero (curtol)
+                sta     curtol                          
 
-inlpnm          sta curtol+1                            
+inlpnm          sta     curtol+1                        
                 plx                                     ; get low indice
-                stx indice                              
+                stx     indice                          
                 iny                                     
-                jsr indlow_ram1                         
-                sta syntmp                              
+                jsr     indlow_ram1                     
+                sta     syntmp                          
                 pla                                     ; and the high part
-                sta indice+1                            
-                cmp syntmp                              ; compare with max indice
-                bcc inlpn2                              
-                bne bserr7                              ; if greater, "bad subscript" error
+                sta     indice+1                        
+                cmp     syntmp                          ; compare with max indice
+                bcc     inlpn2                          
+                bne     bserr7                          ; if greater, "bad subscript" error
                 iny                                     
-                jsr indlow_ram1                         
-                sta syntmp                              
-                cpx syntmp                              
-                bcc inlpn1                              
+                jsr     indlow_ram1                     
+                sta     syntmp                          
+                cpx     syntmp                          
+                bcc     inlpn1                          
 
-bserr7          +lbra bserr                             
+bserr7          +lbra   bserr                           
 
 
 inlpn2          iny                                     
-inlpn1          lda curtol+1                            ; don't multiply if curtol=0
-                ora curtol                              
+inlpn1          lda     curtol+1                        ; don't multiply if curtol=0
+                ora     curtol                          
                 clc                                     ; prepare to get indice back
-                beq l129_1                              ; get high part of indice back
-                jsr umult                               ; multiply (curtol) by (5&6,lowtr)
+                beq     l129_1                          ; get high part of indice back
+                jsr     umult                           ; multiply (curtol) by (5&6,lowtr)
                 txa                                     
-                adc indice                              ; add in (indice)
+                adc     indice                          ; add in (indice)
                 tax                                     
                 tya                                     
-                ldy index1                              
+                ldy     index1                          
 
-l129_1          adc indice+1                            
-                stx curtol                              
-                dec count                               ; any more?
-                bne inlpnm                              ; yes
-                sta curtol+1                            
-                ldx #5                                  
-                lda varnam                              
-                bpl l129_2                              
+l129_1          adc     indice+1                        
+                stx     curtol                          
+                dec     count                           ; any more?
+                bne     inlpnm                          ; yes
+                sta     curtol+1                        
+                ldx     #5                              
+                lda     varnam                          
+                bpl     l129_2                          
                 dex                                     
-l129_2          lda varnam+1                            
-                bpl l129_3                              
+l129_2          lda     varnam+1                        
+                bpl     l129_3                          
                 dex                                     
                 dex                                     
-l129_3          stx addend                              
-                lda #0                                  
-                jsr umultd                              ; on rts, a & y = hi. x = lo.
+l129_3          stx     addend                          
+                lda     #0                              
+                jsr     umultd                          ; on rts, a & y = hi. x = lo.
                 txa                                     
-                adc arypnt                              
-                sta varpnt                              
+                adc     arypnt                          
+                sta     varpnt                          
                 tya                                     
-                adc arypnt+1                            
-                sta varpnt+1                            
+                adc     arypnt+1                        
+                sta     varpnt+1                        
                 tay                                     
-                lda varpnt                              
+                lda     varpnt                          

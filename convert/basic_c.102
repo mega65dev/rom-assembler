@@ -12,25 +12,25 @@ keychr          !text cr,$8d,$22,esc                    ; special KEY chars- ret
 ;************************************************************************
 
 Key_Change                                              
-                jsr getbyt                              ; get key number (1-16)
-                stx z_p_temp_1                          ; save key number     [910925]
+                jsr     getbyt                          ; get key number (1-16)
+                stx     z_p_temp_1                      ; save key number     [910925]
                 dex                                     
-                cpx #number_fkeys                       
-                +lbcs fcerr                             ; exit - key number invalid
+                cpx     #number_fkeys                   
+                +lbcs   fcerr                           ; exit - key number invalid
 
 ; stx z_p_temp_1 ;save key number
-                jsr chkcom                              ; look for comma
-                jsr frmstr                              ; do frmevl, frestr. returns len in .a, addr in 'index'
+                jsr     chkcom                          ; look for comma
+                jsr     frmstr                          ; do frmevl, frestr. returns len in .a, addr in 'index'
                 tay                                     ; set up for call to do-a-key
-                lda #1                                  ; tell do-a-key that string is in bank 1
-                sta index+2                             
-                lda #index                              ; now .A points to (adr lo, adr hi, bank #)
-                ldx z_p_temp_1                          
+                lda     #1                              ; tell do-a-key that string is in bank 1
+                sta     index+2                         
+                lda     #index                          ; now .A points to (adr lo, adr hi, bank #)
+                ldx     z_p_temp_1                      
 ; inx         [910925]
 key_restore                                             
 ; jsr put_io_in_map
-                jsr _doakey                             ; re-define the key
-                +lbcs omerr                             ; bad return (.c=1)
+                jsr     _doakey                         ; re-define the key
+                +lbcs   omerr                           ; bad return (.c=1)
                 rts                                     ; ok return  (.c=0)
 
 
@@ -39,49 +39,49 @@ key_restore
 ;************************************************************************
 
 Key_load                                                
-                jsr GetLoadChannel                      ; get a channel      [911001]
-                ldy #>_pky_lengths                      
-                lda #<_pky_lengths                      
-                jsr LoadBlock                           ; load it
-                +lbra list_err                          ; release channel, close file, return to main
+                jsr     GetLoadChannel                  ; get a channel      [911001]
+                ldy     #>_pky_lengths                  
+                lda     #<_pky_lengths                  
+                jsr     LoadBlock                       ; load it
+                +lbra   list_err                        ; release channel, close file, return to main
 
 
 GetLoadChannel                                          ; Used by KeyLoad and SpriteLoad    [911001]
-                jsr chrget                              ; eat LOAD token
-                lda #$e6                                ; parse:  filename [,U#] [,D#]
-                jsr dosprs                              ; (like dopen:  0 0 0 *  * 0 0 1 )
-                jsr chk1                                ; check parameters
-                lda #0                                  
-                sta dossa                               ; setup as dload would (0 = load channel)
-                jsr find_la                             ; find an unused LA to use (cannot use reserved one)
-                ldy #fopn                               
-                ldx #4                                  
-                jsr open_file                           ; open the file
-                bcs LoadEOF                             ; exit if problem
-                ldx dosla                               
-                jsr _chkin                              ; get input channel
-                bcs LoadEOF                             ; exit if bad??
-                jsr _basin                              ; waste dummy load address
-                jsr _basin                              
-                jsr _readst                             ; prevent corruption if there's a problem
-                bne LoadERR                             ; exit if problem
+                jsr     chrget                          ; eat LOAD token
+                lda     #$e6                            ; parse:  filename [,U#] [,D#]
+                jsr     dosprs                          ; (like dopen:  0 0 0 *  * 0 0 1 )
+                jsr     chk1                            ; check parameters
+                lda     #0                              
+                sta     dossa                           ; setup as dload would (0 = load channel)
+                jsr     find_la                         ; find an unused LA to use (cannot use reserved one)
+                ldy     #fopn                           
+                ldx     #4                              
+                jsr     open_file                       ; open the file
+                bcs     LoadEOF                         ; exit if problem
+                ldx     dosla                           
+                jsr     _chkin                          ; get input channel
+                bcs     LoadEOF                         ; exit if bad??
+                jsr     _basin                          ; waste dummy load address
+                jsr     _basin                          
+                jsr     _readst                         ; prevent corruption if there's a problem
+                bne     LoadERR                         ; exit if problem
                 clc                                     
                 rts                                     
 
 
 LoadBlock                                               
-                sta highds                              ; where to put data
-                sty highds+1                            
+                sta     highds                          ; where to put data
+                sty     highds+1                        
 LoadBlockNext                                           
-                ldy #0                                  
-l102_1          jsr _basin                              ; read definitions
-                sta (highds),y                          
-                jsr _readst                             ; check channel status
-                bne LoadEOF                             ; exit if eof or error
-                jsr _stop                               
-                beq LoadEOF                             ; exit if stop key down
+                ldy     #0                              
+l102_1          jsr     _basin                          ; read definitions
+                sta     (highds),y                      
+                jsr     _readst                         ; check channel status
+                bne     LoadEOF                         ; exit if eof or error
+                jsr     _stop                           
+                beq     LoadEOF                         ; exit if stop key down
                 iny                                     
-                bne l102_1                              ; continue up to 1 page maximum
+                bne     l102_1                          ; continue up to 1 page maximum
                 clc                                     ; indicate "more"
                 rts                                     
 

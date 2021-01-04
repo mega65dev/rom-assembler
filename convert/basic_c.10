@@ -1,56 +1,56 @@
-reser           sta index1+1                            
-                sty index1                              
-                ldy #0                                  
-                sty count                               
+reser           sta     index1+1                        
+                sty     index1                          
+                ldy     #0                              
+                sty     count                           
                 dey                                     
 l10_1           iny                                     
-l10_2           lda (txtptr),y                          ; assumes common memory
-                bmi l10_7                               ; abrieviation    [900510]
+l10_2           lda     (txtptr),y                      ; assumes common memory
+                bmi     l10_7                           ; abrieviation    [900510]
                 sec                                     
-                sbc (index1),y                          ; does letter match? (ind.ok)
-                beq l10_1                               ; yes...continue
-                cmp #$80                                ; end of word?
-                beq l10_6                               ; yes...c set...done
+                sbc     (index1),y                      ; does letter match? (ind.ok)
+                beq     l10_1                           ; yes...continue
+                cmp     #$80                            ; end of word?
+                beq     l10_6                           ; yes...c set...done
 
 
 ;  find next word
 
-l10_3           lda (index1),y                          ; ind.ok
-                bmi l10_4                               ; found end of current
+l10_3           lda     (index1),y                      ; ind.ok
+                bmi     l10_4                           ; found end of current
                 iny                                     
-                bne l10_3                               
+                bne     l10_3                           
 l10_4           iny                                     ; start of next
-                inc count                               ; value of token
+                inc     count                           ; value of token
                 clc                                     
                 tya                                     
-                adc index1                              
-                sta index1                              
-                bcc l10_5                               
-                inc index1+1                            
+                adc     index1                          
+                sta     index1                          
+                bcc     l10_5                           
+                inc     index1+1                        
 l10_5           clc                                     
-                ldy #0                                  
-                lda (index1),y                          ; end of list? ind.ok
-                bne l10_2                               ; no
+                ldy     #0                              
+                lda     (index1),y                      ; end of list? ind.ok
+                bne     l10_2                           ; no
 
 
 ;  yes...carry clear...fail
 
-l10_6           ora count                               ; .a=$80 if match
-                sta count                               ; token is formed
+l10_6           ora     count                           ; .a=$80 if match
+                sta     count                           ; token is formed
                 rts                                     
 
 
 ; special case- last character is shifted (necessary for 'diR' compatibility)
 
 l10_7           sec                                     ; allow last chr to be shifted   [900510]
-                sbc (index1),y                          ; does letter match? (ind.ok)
-                beq l10_8                               ; yes- end of word
-                cmp #$80                                ; end of word?
-                beq l10_6                               ; yes
-                bne l10_3                               ; no- next word
+                sbc     (index1),y                      ; does letter match? (ind.ok)
+                beq     l10_8                           ; yes- end of word
+                cmp     #$80                            ; end of word?
+                beq     l10_6                           ; yes
+                bne     l10_3                           ; no- next word
 
-l10_8           lda #$80                                ; last chr is shifted & so is end of current word
-                bra l10_6                               
+l10_8           lda     #$80                            ; last chr is shifted & so is end of current word
+                bra     l10_6                           
 
 ;.end
 

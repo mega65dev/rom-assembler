@@ -1,68 +1,68 @@
-datbk           stx txtptr                              ; set for CHRGET
-                sty txtptr+1                            
+datbk           stx     txtptr                          ; set for CHRGET
+                sty     txtptr+1                        
 
-datbk1          bbr7 op,l59_1                           ; no chrgot if LINPUT (want leading spaces) [910513]
-                jsr chargt                              
-                jsr chrtst                              
-                bra l59_2                               
+datbk1          bbr7    op,l59_1                        ; no chrgot if LINPUT (want leading spaces) [910513]
+                jsr     chargt                          
+                jsr     chrtst                          
+                bra     l59_2                           
 
-l59_1           jsr chrget                              ; get next data byte
-l59_2           bbr7 valtyp,l59_8                       ; get value type, input a number if numeric
-                bbr6 input_flag,l59_4                   ; branch if not get, set quote
+l59_1           jsr     chrget                          ; get next data byte
+l59_2           bbr7    valtyp,l59_8                    ; get value type, input a number if numeric
+                bbr6    input_flag,l59_4                ; branch if not get, set quote
                 inx                                     
-                stx txtptr                              
-l59_3           lda #0                                  ; [901212]
-                sta charac                              
-                bra l59_5                               
+                stx     txtptr                          
+l59_3           lda     #0                              ; [901212]
+                sta     charac                          
+                bra     l59_5                           
 
-l59_4           bbs7 op,l59_3                           ; no terminators if LINPUT or LREAD  [901212]
-                sta charac                              ; setqut.  assume quoted string
-                cmp #'"'                                ; terminators ok?
-                beq l59_6                               ; yes (sets .c)
-                lda #':'                                ; set terminators to ":" and...
-                sta charac                              
-                lda #','                                ; ...comma
+l59_4           bbs7    op,l59_3                        ; no terminators if LINPUT or LREAD  [901212]
+                sta     charac                          ; setqut.  assume quoted string
+                cmp     #'"'                            ; terminators ok?
+                beq     l59_6                           ; yes (sets .c)
+                lda     #':'                            ; set terminators to ":" and...
+                sta     charac                          
+                lda     #','                            ; ...comma
 
 l59_5           clc                                     ; resetc
-l59_6           sta endchr                              ; nowget
-                lda txtptr                              
-                ldy txtptr+1                            
-                adc #0                                  ; .c is set properly above
-                bcc l59_7                               
+l59_6           sta     endchr                          ; nowget
+                lda     txtptr                          
+                ldy     txtptr+1                        
+                adc     #0                              ; .c is set properly above
+                bcc     l59_7                           
                 iny                                     
-l59_7           jsr strlt2                              ; make a string descriptor for the value & copy if needed
-                jsr st2txt                              ; copy strng2 to txtptr (st-2-txt... get it?)
-                jsr inpcom                              ; do assignment
-                bra l59_9                               
+l59_7           jsr     strlt2                          ; make a string descriptor for the value & copy if needed
+                jsr     st2txt                          ; copy strng2 to txtptr (st-2-txt... get it?)
+                jsr     inpcom                          ; do assignment
+                bra     l59_9                           
 
-l59_8           bbs7 op,l59_10                          ; error if LINPUT (string input only)  [901212]
-                ldx #0                                  ; numins. flag 'text bank' (0)
-                jsr fin                                 
-                lda intflg                              ; set codes on flags
-                jsr qintgr                              ; go decide on float
+l59_8           bbs7    op,l59_10                       ; error if LINPUT (string input only)  [901212]
+                ldx     #0                              ; numins. flag 'text bank' (0)
+                jsr     fin                             
+                lda     intflg                          ; set codes on flags
+                jsr     qintgr                          ; go decide on float
 
-l59_9           jsr chrgot                              ; strdn2. read last character
-                beq trmok                               ; ":" or EOL is ok
-                cmp #','                                ; a comma?
-                beq trmok                               
+l59_9           jsr     chrgot                          ; strdn2. read last character
+                beq     trmok                           ; ":" or EOL is ok
+                cmp     #','                            ; a comma?
+                beq     trmok                           
 
-                lda input_flag                          ; is this get, read, or input?
-                beq l59_11                              ; input
-                bmi l59_10                              ; read
-                ldx channl                              ; get. if not kbd, go use 'bad file data error'
-                bne l59_12                              
+                lda     input_flag                      ; is this get, read, or input?
+                beq     l59_11                          ; input
+                bmi     l59_10                          ; read
+                ldx     channl                          ; get. if not kbd, go use 'bad file data error'
+                bne     l59_12                          
 
-l59_10          ldx #errtm                              ; tmerr. 'get from kbd' or 'read' saw a bad type
-                bra l59_13                              ; always
+l59_10          ldx     #errtm                          ; tmerr. 'get from kbd' or 'read' saw a bad type
+                bra     l59_13                          ; always
 
-l59_11          lda channl                              
-                beq l59_14                              ; do again if keybd input
-l59_12          ldx #errbd                              ; input saw bad file data
-l59_13          +lbra error                             
+l59_11          lda     channl                          
+                beq     l59_14                          ; do again if keybd input
+l59_12          ldx     #errbd                          ; input saw bad file data
+l59_13          +lbra   error                           
 
 
-l59_14          jsr highlight_text                      ; [911119]
-                jsr _primm                              
+l59_14          jsr     highlight_text                  ; [911119]
+                jsr     _primm                          
                 !text "?REDO FROM START",cr,0           
-                jsr highlight_done                      ; [911119]
+                jsr     highlight_done                  ; [911119]
 

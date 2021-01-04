@@ -59,7 +59,7 @@ AutoSearch
  .messg ***ROM OVERFLOW: $7F00 
  .endif 
 ;.end 
-;[[command.screen]] 
+;[[command.graphics.screen]] 
  .page 
  .subttl  GRAPHIC Interface 
  

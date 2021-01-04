@@ -1,40 +1,40 @@
 play_note                                               
                 sec                                     
-                sbc #'A'                                
+                sbc     #'A'                            
                 tax                                     
-                lda scalen,x                            ; note #0-11
+                lda     scalen,x                        ; note #0-11
                 tax                                     
-                lda #6                                  
+                lda     #6                              
                 sec                                     
-                sbc octave                              
+                sbc     octave                          
                 tay                                     
                 txa                                     
                 clc                                     
-                adc sharp                               
-                bpl l109_1                              ; added sharp or nat
-                lda #11                                 ; underflow
+                adc     sharp                           
+                bpl     l109_1                          ; added sharp or nat
+                lda     #11                             ; underflow
                 iny                                     ; bump octave down
-l109_1          cmp #12                                 ; overflow?
-                bcc l109_2                              ; no...
-                lda #0                                  
+l109_1          cmp     #12                             ; overflow?
+                bcc     l109_2                          ; no...
+                lda     #0                              
                 dey                                     ; bump octave up
 l109_2          tax                                     
-                lda scalel,x                            
-                sta pitch                               
+                lda     scalel,x                        
+                sta     pitch                           
 
-                bit _pal_ntsc                           ; determine if PAL or NTSC system
-                bmi l109_3                              ; ...branch if PAL
-                lda scaleh,x                            ; continue as before patch
-                bra l109_4                              
+                bit     _pal_ntsc                       ; determine if PAL or NTSC system
+                bmi     l109_3                          ; ...branch if PAL
+                lda     scaleh,x                        ; continue as before patch
+                bra     l109_4                          
 
-l109_3          lda scalelp,x                           ; load from PAL tables
-                sta pitch                               
-                lda scalehp,x                           
+l109_3          lda     scalelp,x                       ; load from PAL tables
+                sta     pitch                           
+                lda     scalehp,x                       
 
 l109_4          dey                                     
-                bmi play_note_1                         ; go play note
+                bmi     play_note_1                     ; go play note
                 lsr                                     
-                ror pitch                               
-                bra l109_4                              
+                ror     pitch                           
+                bra     l109_4                          
 
 

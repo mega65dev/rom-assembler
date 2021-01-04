@@ -37,7 +37,7 @@ C65__box
  
  jmp ($801a)  ;bra box 
  
-;[[command.circle]] 
+;[[command.graphics.circle]] 
  .page 
 ;***************************************************************** 
 ;* CIRCLE   draw a Circle 
@@ -75,7 +75,7 @@ C65__circle
  jmp ($801c)  ;bra circle 
  
  .page 
-;[[command.ellipse]] 
+;[[command.graphics.ellipse]] 
  .subttl  ELLIPSE 
  
 ;***************************************************************** 
@@ -119,7 +119,7 @@ C65__ellipse
  
  jmp ($8020)  ;bra ellipse 
  
-;[[command.polygon]] 
+;[[command.graphics.polygon]] 
  .page 
  .subttl  POLYGON 
  
@@ -194,7 +194,7 @@ C65__polygon   ;changed BASIC syntax to something more reasonable [910923] FAB
  
  jmp ($801e)  ;bra polygon 
  
-;[[command.set]] 
+;[[command.graphics.set]] 
  .page 
  .subttl  SET multipurpose command 
  

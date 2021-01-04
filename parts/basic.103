@@ -70,7 +70,7 @@ bank jsr getbyt ;get bank number in .x
  
  
 ;.end 
-;[[command.play]] 
+;[[command.sound.play]] 
  .page 
  .subttl  PLAY 
  

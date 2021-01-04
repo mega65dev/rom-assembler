@@ -1,18 +1,18 @@
 Clear_DS                                                ; oldclr.
-                lda dsdesc                              ; check for allocation
-                beq l245_1                              ; branch if not allocated
+                lda     dsdesc                          ; check for allocation
+                beq     l245_1                          ; branch if not allocated
 
                 phy                                     ; mark current DS$ string as garbage
                 phx                                     
 ; lda #40   ;   standard DS$ allocation
                 tay                                     
-                ldx #dsdesc+1                           
-                jsr sta_far_ram1                        ; sta (dsdesc+1),y length of garbage
+                ldx     #dsdesc+1                       
+                jsr     sta_far_ram1                    ; sta (dsdesc+1),y length of garbage
                 iny                                     
-                lda #$ff                                
-                jsr sta_far_ram1                        ; sta (dsdesc+1),y garbage flagged
+                lda     #$ff                            
+                jsr     sta_far_ram1                    ; sta (dsdesc+1),y garbage flagged
                 inc                                     
-                sta dsdesc                              ; (0)    kill DS$
+                sta     dsdesc                          ; (0)    kill DS$
                 plx                                     
                 ply                                     
 

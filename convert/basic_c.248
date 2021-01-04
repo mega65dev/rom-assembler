@@ -1,5 +1,5 @@
 response_fake                                           
-                lda #0                                  ; ...or not in direct mode
+                lda     #0                              ; ...or not in direct mode
                 rts                                     
 
 ;.end
@@ -17,15 +17,15 @@ response_fake
 ;   get word in y,a, set c to flag 'non-default'
 ;*****************************************************************
 
-optwrd          jsr chrgot                              
-                beq l248_1                              
-                jsr chkcom                              
-                cmp #','                                
-                beq l248_1                              
-                jsr getwrd                              
+optwrd          jsr     chrgot                          
+                beq     l248_1                          
+                jsr     chkcom                          
+                cmp     #','                            
+                beq     l248_1                          
+                jsr     getwrd                          
                 sec                                     
                 rts                                     
 
-l248_1          lda #0                                  
+l248_1          lda     #0                              
                 tay                                     
 

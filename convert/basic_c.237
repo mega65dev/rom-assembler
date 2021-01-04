@@ -1,48 +1,48 @@
-del1            tsb parsts                              
+del1            tsb     parsts                          
 
-delim1          jsr chrgot                              
-delim2          bne nxxx                                
-                +lbra done                              ; <cr>/<> => done
+delim1          jsr     chrgot                          
+delim2          bne     nxxx                            
+                +lbra   done                            ; <cr>/<> => done
 
 
-next6           cmp #on_token                           
-                +lbeq on1                               
-                cmp #to_token                           ; "to" token
-                +lbne snerr                             ; syntax error
+next6           cmp     #on_token                       
+                +lbeq   on1                             
+                cmp     #to_token                       ; "to" token
+                +lbne   snerr                           ; syntax error
 
 ;  If "to" is not followed by an offset param, then do file2 params.
 ;  Otherwise, do high offset and continue with file0 options.
 
-                jsr chrget                              
-                cmp #'P'                                
-                bne pars22                              
-                beq doffh                               
+                jsr     chrget                          
+                cmp     #'P'                            
+                bne     pars22                          
+                beq     doffh                           
 
 
-nxxx            cmp #','                                
-                bne next6                               
-                jsr chrget                              
-                +lbra parse1                            
+nxxx            cmp     #','                            
+                bne     next6                           
+                jsr     chrget                          
+                +lbra   parse1                          
 
 
-parse2          jsr chrget                              
-pars22          cmp #'D'                                
-                beq l237_1                              
-                cmp #on_token                           ; "on" token
-                beq on2                                 
-                cmp #'U'                                
-                beq unit2                               
-                cmp #'"'                                
-                beq name2                               
-                cmp #'('                                
-                beq name2                               
+parse2          jsr     chrget                          
+pars22          cmp     #'D'                            
+                beq     l237_1                          
+                cmp     #on_token                       ; "on" token
+                beq     on2                             
+                cmp     #'U'                            
+                beq     unit2                           
+                cmp     #'"'                            
+                beq     name2                           
+                cmp     #'('                            
+                beq     name2                           
 
-l237_1          lda #$20                                
-                jsr prmrpt                              ; check for repeated parameter
-                jsr gtbytc                              ; getval
-                cpx #10                                 
-                +lbcs fcerr                             ; illegal drive #  [allow 0: to 9: ????]
-                stx dosds2                              
-                lda #$20                                
-                bra del2                                
+l237_1          lda     #$20                            
+                jsr     prmrpt                          ; check for repeated parameter
+                jsr     gtbytc                          ; getval
+                cpx     #10                             
+                +lbcs   fcerr                           ; illegal drive #  [allow 0: to 9: ????]
+                stx     dosds2                          
+                lda     #$20                            
+                bra     del2                            
 

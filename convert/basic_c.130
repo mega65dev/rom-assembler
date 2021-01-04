@@ -8,17 +8,17 @@ dimrts          rts
 ; (a,b)=(curtol)*(5&6,x).
 
 umult                                                   
-                sty index                               
-                jsr indlow_ram1                         
-                sta addend                              ; low, then high
+                sty     index                           
+                jsr     indlow_ram1                     
+                sta     addend                          ; low, then high
                 dey                                     
-                jsr indlow_ram1                         ; put (5&6,lowtr) in faster memory
+                jsr     indlow_ram1                     ; put (5&6,lowtr) in faster memory
 
-umultd          sta addend+1                            
-                lda #16                                 
-                sta deccnt                              
-                ldx #0                                  ; clear the accs
-                ldy #0                                  ; result initially zero
+umultd          sta     addend+1                        
+                lda     #16                             
+                sta     deccnt                          
+                ldx     #0                              ; clear the accs
+                ldy     #0                              ; result initially zero
 
 umultc          txa                                     
                 asl                                     ; multiply by two
@@ -26,33 +26,33 @@ umultc          txa
                 tya                                     
                 rol                                     
                 tay                                     
-                +lbcs omerr                             ; to much!
-                asl curtol                              
-                rol curtol+1                            
-                bcc umlcnt                              ; nothing in this position to multiply
+                +lbcs   omerr                           ; to much!
+                asl     curtol                          
+                rol     curtol+1                        
+                bcc     umlcnt                          ; nothing in this position to multiply
                 clc                                     
                 txa                                     
-                adc addend                              
+                adc     addend                          
                 tax                                     
                 tya                                     
-                adc addend+1                            
+                adc     addend+1                        
                 tay                                     
-                +lbcs omerr                             ; man, just too much!
+                +lbcs   omerr                           ; man, just too much!
 
-umlcnt          dec deccnt                              ; done?
-                bne umultc                              ; keep it up
+umlcnt          dec     deccnt                          ; done?
+                bne     umultc                          ; keep it up
                 rts                                     ; yes, all done
 
 
-fmaptr          lda count                               
+fmaptr          lda     count                           
                 asl                                     
-                adc #5                                  ; point to entries. ((c) cleared by asl)
-                adc lowtr                               
-                ldy lowtr+1                             
-                bcc l130_1                              
+                adc     #5                              ; point to entries. ((c) cleared by asl)
+                adc     lowtr                           
+                ldy     lowtr+1                         
+                bcc     l130_1                          
                 iny                                     
-l130_1          sta arypnt                              
-                sty arypnt+1                            
+l130_1          sta     arypnt                          
+                sty     arypnt+1                        
                 rts                                     
 
 ;.end

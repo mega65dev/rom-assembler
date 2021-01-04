@@ -1,27 +1,27 @@
 xeqmid                                                  ; handle special case of MID$= (what we call a kludge)
-                lda #>midwrk                            ; midd2-1
+                lda     #>midwrk                        ; midd2-1
                 pha                                     
-                lda #<midwrk                            
+                lda     #<midwrk                        
                 pha                                     
 xeqchr                                                  
-                jmp chrget                              
+                jmp     chrget                          
 
 
 
 
 xeqesc                                                  ; execute escape token
-                jsr chrget                              ; let's have us a look at the second char
-                beq snerr1                              ; oops, there wasn't any!
-                cmp #first_esc_command_token            ; is it one of our esc tokens?
-                bcc l15_1                               ; no, foreign.
-                cmp #last_esc_command_token+1           
-                bcs l15_1                               ; foreign
+                jsr     chrget                          ; let's have us a look at the second char
+                beq     snerr1                          ; oops, there wasn't any!
+                cmp     #first_esc_command_token        ; is it one of our esc tokens?
+                bcc     l15_1                           ; no, foreign.
+                cmp     #last_esc_command_token+1       
+                bcs     l15_1                           ; foreign
 
 ; It's one of our own.  Convert to index into command dispatch table
 
-                adc #monitor_token-else_token+new_token-end_token-first_esc_command_token+2
-                bra xeqcm5                              ; always
+                adc     #monitor_token-else_token+new_token-end_token-first_esc_command_token+2
+                bra     xeqcm5                          ; always
 
 l15_1           sec                                     ; set up flag for a trip into the users code
-                jmp (iescex)                            
+                jmp     (iescex)                        
 

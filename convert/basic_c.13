@@ -1,36 +1,36 @@
-xeqdir          jsr xeqcm3                              
+xeqdir          jsr     xeqcm3                          
 
-newstt          jsr is_stop_key_down                    
-                bbr7 runmod,l13_1                       ; branch if direct mode
+newstt          jsr     is_stop_key_down                
+                bbr7    runmod,l13_1                    ; branch if direct mode
 
 ; In run mode...save txtptr for CONTinue command
 
-                jsr tto                                 ; transfer txtptr to oldtxt
+                jsr     tto                             ; transfer txtptr to oldtxt
                 tsx                                     
-                stx oldstk                              
+                stx     oldstk                          
 
-l13_1           ldy #0                                  
-                jsr indtxt                              ; end of the line?
-                +lbne morsts                            ; no...out of statement
+l13_1           ldy     #0                              
+                jsr     indtxt                          ; end of the line?
+                +lbne   morsts                          ; no...out of statement
 
-l13_2           bit runmod                              ; in direct mode?
-                +lbpl ready                             ; yes, go to ready
-                ldy #2                                  
-                jsr indtxt                              ; end of text?
-                +lbeq ready                             ; yes...finished
+l13_2           bit     runmod                          ; in direct mode?
+                +lbpl   ready                           ; yes, go to ready
+                ldy     #2                              
+                jsr     indtxt                          ; end of text?
+                +lbeq   ready                           ; yes...finished
                 iny                                     ; y=3
-                jsr indtxt                              ; extract line# lo byte
-                sta curlin                              
+                jsr     indtxt                          ; extract line# lo byte
+                sta     curlin                          
                 iny                                     
-                jsr indtxt                              ; extract line # hi byte
-                sta curlin+1                            
+                jsr     indtxt                          ; extract line # hi byte
+                sta     curlin+1                        
                 tya                                     ; y=4
                 clc                                     
-                adc txtptr                              ; point @ character before line start
-                sta txtptr                              
-                bcc l13_3                               
-                inc txtptr+1                            
-l13_3           +lbra xeqcm                             ; execute new line
+                adc     txtptr                          ; point @ character before line start
+                sta     txtptr                          
+                bcc     l13_3                           
+                inc     txtptr+1                        
+l13_3           +lbra   xeqcm                           ; execute new line
 
 
 

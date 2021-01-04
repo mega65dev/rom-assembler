@@ -1,6 +1,6 @@
-cos             lda #<pi2                               ; pointer to pi/2
-                ldy #>pi2                               
-                jsr romadd                              ; add it in.  fall into sine
+cos             lda     #<pi2                           ; pointer to pi/2
+                ldy     #>pi2                           
+                jsr     romadd                          ; add it in.  fall into sine
 
 
 
@@ -13,41 +13,41 @@ cos             lda #<pi2                               ; pointer to pi/2
 ; I or IV.  An approximation polynomial is then used to compute sin(x).
 
 
-sin             jsr movaf                               
-                lda #<twopi                             ; get pointer to divisor
-                ldy #>twopi                             
-                ldx argsgn                              ; get sign of result
-                jsr fdivf                               
-                jsr movaf                               ; get result into ARG
-                jsr int                                 ; integerize FAC
-                lda #0                                  
-                sta arisgn                              ; always have the same sign
-                jsr fsubt                               ; keep only the fractional part
-                lda #<fr4                               ; get pointer to 1/4
-                ldy #>fr4                               
-                jsr romsub                              
-                lda facsgn                              ; save sign for later
+sin             jsr     movaf                           
+                lda     #<twopi                         ; get pointer to divisor
+                ldy     #>twopi                         
+                ldx     argsgn                          ; get sign of result
+                jsr     fdivf                           
+                jsr     movaf                           ; get result into ARG
+                jsr     int                             ; integerize FAC
+                lda     #0                              
+                sta     arisgn                          ; always have the same sign
+                jsr     fsubt                           ; keep only the fractional part
+                lda     #<fr4                           ; get pointer to 1/4
+                ldy     #>fr4                           
+                jsr     romsub                          
+                lda     facsgn                          ; save sign for later
                 pha                                     
-                bpl sin1                                ; first quadrant
-                jsr faddh                               ; add 1/2 to FAC
-                lda facsgn                              ; sign is negative?
-                bmi sin2                                
-                lda tansgn                              ; quads II and III come here
-                eor #$ff                                
-                sta tansgn                              
+                bpl     sin1                            ; first quadrant
+                jsr     faddh                           ; add 1/2 to FAC
+                lda     facsgn                          ; sign is negative?
+                bmi     sin2                            
+                lda     tansgn                          ; quads II and III come here
+                eor     #$ff                            
+                sta     tansgn                          
 
-sin1            jsr negop                               ; if positive, negate it
+sin1            jsr     negop                           ; if positive, negate it
 
-sin2            lda #<fr4                               ; pointer to 1/4
-                ldy #>fr4                               
-                jsr romadd                              ; add it in
+sin2            lda     #<fr4                           ; pointer to 1/4
+                ldy     #>fr4                           
+                jsr     romadd                          ; add it in
                 pla                                     ; get original quadrant
-                bpl l186_1                              
-                jsr negop                               ; if negative, negate result
+                bpl     l186_1                          
+                jsr     negop                           ; if negative, negate result
 
-l186_1          lda #<sincon                            
-                ldy #>sincon                            
-                +lbra polyx                             ; do approximation polyomial
+l186_1          lda     #<sincon                        
+                ldy     #>sincon                        
+                +lbra   polyx                           ; do approximation polyomial
 
 
 

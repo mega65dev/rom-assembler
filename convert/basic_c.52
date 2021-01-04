@@ -1,80 +1,80 @@
-getspt          ldy #2                                  ; get pntr to descriptor
-                jsr indfmo                              
-                cmp dsdesc+2                            ; check for DS$ hi
-                bne dskx2                               ; nope
+getspt          ldy     #2                              ; get pntr to descriptor
+                jsr     indfmo                          
+                cmp     dsdesc+2                        ; check for DS$ hi
+                bne     dskx2                           ; nope
                 pha                                     
                 dey                                     
-                jsr indfmo                              
-                cmp dsdesc+1                            ; check for DS$ lo
-                bne dskx1                               ; nope
-                lda dsdesc                              ; check if len=0
-                beq dskx1                               ; yup
+                jsr     indfmo                          
+                cmp     dsdesc+1                        ; check for DS$ lo
+                bne     dskx1                           ; nope
+                lda     dsdesc                          ; check if len=0
+                beq     dskx1                           ; yup
                 pla                                     ; fall through to copy
 
 
-copy            ldy #0                                  
-                jsr indfmo                              
-                jsr strini                              ; get room to copy string into
-                lda dscpnt                              ; get pointer to old descriptor, so
-                ldy dscpnt+1                            
-                sta strng1                              ; movins can find string
-                sty strng1+1                            
-                jsr movins                              ; copy it
+copy            ldy     #0                              
+                jsr     indfmo                          
+                jsr     strini                          ; get room to copy string into
+                lda     dscpnt                          ; get pointer to old descriptor, so
+                ldy     dscpnt+1                        
+                sta     strng1                          ; movins can find string
+                sty     strng1+1                        
+                jsr     movins                          ; copy it
 
-                lda strng1                              ; fix to free get strings
-                ldy strng1+1                            
-                jsr fretms                              ; free the string, if it is a temp
+                lda     strng1                          ; fix to free get strings
+                ldy     strng1+1                        
+                jsr     fretms                          ; free the string, if it is a temp
 
-                lda #<dsctmp                            
-                ldy #>dsctmp                            
+                lda     #<dsctmp                        
+                ldy     #>dsctmp                        
 
-copyc           sta dscpnt                              
-                sty dscpnt+1                            
-                sta index                               ; index points to new descriptor
-                sty index+1                             
-                jsr fretms                              
+copyc           sta     dscpnt                          
+                sty     dscpnt+1                        
+                sta     index                           ; index points to new descriptor
+                sty     index+1                         
+                jsr     fretms                          
 
 
 ;   Fix the strings by flagging the old string as garbage and the new
 ;   string by pointing it to its new descriptor.
 
-                jsr stradj                              ; set up new string
-                bcc l52_1                               ; leave it alone
-                ldy #0                                  
-                lda forpnt                              ; put in backwards link
+                jsr     stradj                          ; set up new string
+                bcc     l52_1                           ; leave it alone
+                ldy     #0                              
+                lda     forpnt                          ; put in backwards link
                 phx                                     
-                ldx #index                              
-                jsr sta_far_ram1                        
+                ldx     #index                          
+                jsr     sta_far_ram1                    
                 iny                                     
-                lda forpnt+1                            
-                jsr sta_far_ram1                        
+                lda     forpnt+1                        
+                jsr     sta_far_ram1                    
                 plx                                     
 
-l52_1           lda forpnt                              ; fix old string
-                sta index                               
-                lda forpnt+1                            
-                sta index+1                             
-                jsr stradj                              ; point to old string
-                bcc l52_2                               ; in text do not fix
+l52_1           lda     forpnt                          ; fix old string
+                sta     index                           
+                lda     forpnt+1                        
+                sta     index+1                         
+                jsr     stradj                          ; point to old string
+                bcc     l52_2                           ; in text do not fix
                 dey                                     ; restore y
                 phx                                     
-                ldx #index                              
-                lda #$ff                                ; garbage flag
-                jsr sta_far_ram1                        
+                ldx     #index                          
+                lda     #$ff                            ; garbage flag
+                jsr     sta_far_ram1                    
                 dey                                     
                 pla                                     ; (was txa)
                 pha                                     
-                jsr sta_far_ram1                        ; store length
+                jsr     sta_far_ram1                    ; store length
                 plx                                     
 
-l52_2           ldy #2                                  ; set the descriptor
+l52_2           ldy     #2                              ; set the descriptor
                 phx                                     
-                ldx #forpnt                             
-l52_3           lda #dscpnt                             
-                jsr lda_far_ram1                        ; lda (dscpnt),y from RAM1
-                jsr sta_far_ram1                        ; sta (forpnt),y to   RAM1
+                ldx     #forpnt                         
+l52_3           lda     #dscpnt                         
+                jsr     lda_far_ram1                    ; lda (dscpnt),y from RAM1
+                jsr     sta_far_ram1                    ; sta (forpnt),y to   RAM1
                 dey                                     
-                bpl l52_3                               
+                bpl     l52_3                           
                 plx                                     
                 rts                                     
 

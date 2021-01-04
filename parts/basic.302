@@ -19,7 +19,7 @@ PopParms   ;      [910820]
  rts 
  
 ;.end 
-;[[function.rsprite]] 
+;[[function.graphics.rsprite]] 
  .page 
  .subttl RSPRITE Function 
  

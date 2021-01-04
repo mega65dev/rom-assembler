@@ -1,22 +1,22 @@
-eex2            jsr synchr                              ; check character
-                sty z_p_temp_1                          ; clear flag for anaf
-                sty bnr                                 ; set pointer to begin of no
-                jsr frmevl                              ; evaluate expression
-                bbr7 valtyp,conv                        ; branch if numeric
+eex2            jsr     synchr                          ; check character
+                sty     z_p_temp_1                      ; clear flag for anaf
+                sty     bnr                             ; set pointer to begin of no
+                jsr     frmevl                          ; evaluate expression
+                bbr7    valtyp,conv                     ; branch if numeric
 
-                jsr ini                                 ; init counters and flags
-                jsr anaf                                ; analyze format
-                ldx chsn                                ; > or = in format field
-                beq prcha                               ; branch if not
-                ldx #0                                  
+                jsr     ini                             ; init counters and flags
+                jsr     anaf                            ; analyze format
+                ldx     chsn                            ; > or = in format field
+                beq     prcha                           ; branch if not
+                ldx     #0                              
                 sec                                     
-                lda cform                               
-                sbc hulp                                ; .a=room left in field
-                bcc prcha                               ; branch if no room left
-                ldx #'='                                
-                cpx chsn                                ; = in field
-                bne l199_1                              ; branch if not
+                lda     cform                           
+                sbc     hulp                            ; .a=room left in field
+                bcc     prcha                           ; branch if no room left
+                ldx     #'='                            
+                cpx     chsn                            ; = in field
+                bne     l199_1                          ; branch if not
                 lsr                                     ; .a=.a/2
-                adc #0                                  ; add 1 if odd
+                adc     #0                              ; add 1 if odd
 
 l199_1          tax                                     ; store no of blanks in x

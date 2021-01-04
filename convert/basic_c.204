@@ -1,89 +1,89 @@
-errf            lda #'*'                                ; format error
-stout           jsr cdout                               ; fill field with stars
-                bne stout                               
+errf            lda     #'*'                            ; format error
+stout           jsr     cdout                           ; fill field with stars
+                bne     stout                           
                 rts                                     
 
 
 ahp             tay                                     ; output no if swe=0
-                beq hup                                 
-ldvn            lda vn                                  
-                bne hup                                 ; vn<>0
-                dec swe                                 ; add extra 0
-                inc z_p_temp_1                          ; before decimal point
-                bra hup                                 
+                beq     hup                             
+ldvn            lda     vn                              
+                bne     hup                             ; vn<>0
+                dec     swe                             ; add extra 0
+                inc     z_p_temp_1                      ; before decimal point
+                bra     hup                             
 
 
 ; Using- shift decimal point
 
 shpn            sec                                     
-                lda vf                                  
-                sbc vn                                  
-                beq rdy                                 ; format o.k
-                ldy point                               
-                bcc pntl                                ; vf<vn
-                sta hulp                                
+                lda     vf                              
+                sbc     vn                              
+                beq     rdy                             ; format o.k
+                ldy     point                           
+                bcc     pntl                            ; vf<vn
+                sta     hulp                            
 
-incy            cpy enr                                 ; end of no reached?
-                beq ity                                 
-                bcs nos1                                ; yes...
+incy            cpy     enr                             ; end of no reached?
+                beq     ity                             
+                bcs     nos1                            ; yes...
 
 ity             iny                                     
-nos1            inc vn                                  
-nos4            jsr eado                                ; adjust exponent
-                dec hulp                                ; ready?
-                bne incy                                ; no...
-                beq poit                                
+nos1            inc     vn                              
+nos4            jsr     eado                            ; adjust exponent
+                dec     hulp                            ; ready?
+                bne     incy                            ; no...
+                beq     poit                            
 
-pntl            eor #$ff                                
-                adc #1                                  
-                sta hulp                                ; =vn-vf
+pntl            eor     #$ff                            
+                adc     #1                              
+                sta     hulp                            ; =vn-vf
 
-decy            cpy bnr                                 ; begin of no?
-                beq inz1                                ; yes...
+decy            cpy     bnr                             ; begin of no?
+                beq     inz1                            ; yes...
                 dey                                     
-                dec vn                                  
-                bra inz2                                
+                dec     vn                              
+                bra     inz2                            
 
 
-inz1            inc z_p_temp_1                          ; add leading zeros
-inz2            lda #$80                                
-nos3            jsr eadj                                ; adjust exponent
-                dec hulp                                ; ready?
-                bne decy                                ; no...
+inz1            inc     z_p_temp_1                      ; add leading zeros
+inz2            lda     #$80                            
+nos3            jsr     eadj                            ; adjust exponent
+                dec     hulp                            ; ready?
+                bne     decy                            ; no...
 
-poit            sty point                               ; decimal point pointer
+poit            sty     point                           ; decimal point pointer
 rdy             rts                                     
 
 
 ; Using- adjust exponent
 
-sexp            bne retrn                               ; no over/underflow
-                eor #$09                                ; .a is 0 or 9
-                sta fbuffr,x                            ; digit back in exp
+sexp            bne     retrn                           ; no over/underflow
+                eor     #$09                            ; .a is 0 or 9
+                sta     fbuffr,x                        ; digit back in exp
                 dex                                     ; = 0 or 9
-                cpx uexp                                
+                cpx     uexp                            
                 rts                                     
 
 
-eado            lda #0                                  
-eadj            ldx uexp                                
+eado            lda     #0                              
+eadj            ldx     uexp                            
                 inx                                     
-                bit etof                                ; e-to-f flag on?
-                bmi l204_2                              ; yes...
-                eor usgn                                
-                beq l204_2                              ; ++ or --
+                bit     etof                            ; e-to-f flag on?
+                bmi     l204_2                          ; yes...
+                eor     usgn                            
+                beq     l204_2                          ; ++ or --
 
-l204_1          jsr tag3                                ; inc exp, overflow?
-                jsr sexp                                ; digit 0 if yes
-                bcs l204_1                              ; try second digit
-                +lbra overr                             ; exp>99
+l204_1          jsr     tag3                            ; inc exp, overflow?
+                jsr     sexp                            ; digit 0 if yes
+                bcs     l204_1                          ; try second digit
+                +lbra   overr                           ; exp>99
 
-l204_2          lda fbuffr,x                            
-                dec fbuffr,x                            ; decrement exp
-                cmp #'0'                                ; underflow on digit?
-                jsr sexp                                ; set digit=9 if yes...
-                bcs l204_2                              ; try 2nd digit
-                bit etof                                ; flag off?
-                bpl et3                                 ; yes...
-                sty point                               ; decimal point pointer
+l204_2          lda     fbuffr,x                        
+                dec     fbuffr,x                        ; decrement exp
+                cmp     #'0'                            ; underflow on digit?
+                jsr     sexp                            ; set digit=9 if yes...
+                bcs     l204_2                          ; try 2nd digit
+                bit     etof                            ; flag off?
+                bpl     et3                             ; yes...
+                sty     point                           ; decimal point pointer
 

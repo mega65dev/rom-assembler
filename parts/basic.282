@@ -3,7 +3,7 @@ C65__cut
 C65__paste 
  jmp bad_command 
  
-;[[command.genlock]] 
+;[[command.graphics.genlock]] 
  .page 
  .subttl  GENLOCK 
  
@@ -61,7 +61,7 @@ genlock sta GKI__parm1  ;save token as flag for set palette   [910107]
  sta _red,x 
  bra 25$   ; loop 
  
-;[[command.color]] 
+;[[command.graphics.color]] 
  
  .page 
  .subttl  COLOR Control 

@@ -19,7 +19,7 @@ ongoto
  rts   ;either end of line or syntax error 
  
 ;.end 
-;[[command.let]] 
+;[[command.let.standard]] 
  .page 
  .subttl LET 
  

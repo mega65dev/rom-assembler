@@ -1,22 +1,22 @@
-cdout           jsr outch ;outdo                        ; char out
-                dec cform                               ; count it
+cdout           jsr     outch ;outdo                    ; char out
+                dec     cform                           ; count it
                 rts                                     
 
 
 ; Using- anaf: analyze format
 
-anaf            ldy endfd                               ; format pointer
-gfor            jsr ansub                               
-                jsr comp                                ; check special chars
-                bne pchar                               ; no match...
-                sty begfd                               ; save beginning of field
-                bcc ffoun                               ; # was found
+anaf            ldy     endfd                           ; format pointer
+gfor            jsr     ansub                           
+                jsr     comp                            ; check special chars
+                bne     pchar                           ; no match...
+                sty     begfd                           ; save beginning of field
+                bcc     ffoun                           ; # was found
                 tax                                     ; save char
 
-sfur            jsr ansub                               ; get next format char
-                bcs l212_1                              ; stop on wrap-around
-                jsr com1                                ; compare specials
-                beq foun1                               ; found some...
+sfur            jsr     ansub                           ; get next format char
+                bcs     l212_1                          ; stop on wrap-around
+                jsr     com1                            ; compare specials
+                beq     foun1                           ; found some...
 
-l212_1          ldy begfd                               
+l212_1          ldy     begfd                           
                 txa                                     

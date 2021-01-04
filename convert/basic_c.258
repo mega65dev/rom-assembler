@@ -1,13 +1,13 @@
 negate_step                                             
-                lda sound_step_lo,y                     
-                eor #$ff                                
+                lda     sound_step_lo,y                 
+                eor     #$ff                            
                 clc                                     
-                adc #1                                  
-                sta sound_step_lo,y                     
-                lda sound_step_hi,y                     
-                eor #$ff                                
-                adc #0                                  
-                sta sound_step_hi,y                     
+                adc     #1                              
+                sta     sound_step_lo,y                 
+                lda     sound_step_hi,y                 
+                eor     #$ff                            
+                adc     #0                              
+                sta     sound_step_hi,y                 
                 rts                                     
 
 
@@ -15,7 +15,7 @@ negate_step
 ; Here is where BASIC_IRQ exits
 
 basic_irq_end                                           
-                dec irq_wrap_flag                       ; open the door to IRQ
+                dec     irq_wrap_flag                   ; open the door to IRQ
                 cli                                     
                 rts                                     
 
@@ -24,24 +24,24 @@ basic_irq_end
 
 sprsub          pha                                     ; save angle phase
                 clc                                     
-                lda sprite_data+3,x                     ; add low bytes
-                adc sprite_data+7,x                     
-                sta sprite_data+7,x                     
-                lda sprite_data+4,x                     ; add high bytes
-                adc sprite_data+8,x                     
-                sta sprite_data+8,x                     
+                lda     sprite_data+3,x                 ; add low bytes
+                adc     sprite_data+7,x                 
+                sta     sprite_data+7,x                 
+                lda     sprite_data+4,x                 ; add high bytes
+                adc     sprite_data+8,x                 
+                sta     sprite_data+8,x                 
                 pla                                     ; get angle sign
-                bcc l258_3                              ; skip if no carry - do not update position
+                bcc     l258_3                          ; skip if no carry - do not update position
                 lsr                                     
                 lsr                                     ; test if positive or negative
-                lda vic,y                               ; ???vic_save
-                bcs l258_1                              ; skip if negative
-                adc #1                                  ; increment position
-                bra l258_2                              
+                lda     vic,y                           ; ???vic_save
+                bcs     l258_1                          ; skip if negative
+                adc     #1                              ; increment position
+                bra     l258_2                          
 
-l258_1          sbc #1                                  ; decrement position
-                cmp #$ff                                ; set carry if underflow
-l258_2          sta vic,y                               ; decrement position  ???vic_save
+l258_1          sbc     #1                              ; decrement position
+                cmp     #$ff                            ; set carry if underflow
+l258_2          sta     vic,y                           ; decrement position  ???vic_save
 l258_3          rts                                     
 
 ;.end

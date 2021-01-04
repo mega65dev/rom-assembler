@@ -1,28 +1,28 @@
-dcat4           jsr _readst                             ; get status
-                bne dcat10                              ; if bad status
-                jsr _basin                              ; get char
-                beq dcat5                               ; if eol
-                jsr _bsout                              ; echo char
-                bra dcat4                               ; continue to process name until eol or err
+dcat4           jsr     _readst                         ; get status
+                bne     dcat10                          ; if bad status
+                jsr     _basin                          ; get char
+                beq     dcat5                           ; if eol
+                jsr     _bsout                          ; echo char
+                bra     dcat4                           ; continue to process name until eol or err
 
 ; Here on end of name
 
-dcat5           jsr crdo                                ; output new line
-                jsr _stop                               ; check stop key
-                beq dcat11                              ; exit if stop request
+dcat5           jsr     crdo                            ; output new line
+                jsr     _stop                           ; check stop key
+                beq     dcat11                          ; exit if stop request
 
 ; Process next
 
-                ldy #2                                  ; perform 2 times
-                bra dcat3                               
+                ldy     #2                              ; perform 2 times
+                bra     dcat3                           
 
 
 ; Exit directory
 
-dcat10          jsr crdo                                ; flush current line
-dcat11          jsr release_channels                    ; release cmd channel, restore terminal
-                lda #doslfn                             
-                +lbra close_out                         ; [900725]
+dcat10          jsr     crdo                            ; flush current line
+dcat11          jsr     release_channels                ; release cmd channel, restore terminal
+                lda     #doslfn                         
+                +lbra   close_out                       ; [900725]
 
 ;[[command.ldir]]
 
@@ -35,61 +35,61 @@ dcat11          jsr release_channels                    ; release cmd channel, r
 ; Read block count
 
 ldir                                                    
-                lda #$c0                                ; serial bus kludge for open4,4:cmd4:dir ????
-                and $d609                               
-                trb $d609                               ; disable fast serial bus
-                sta sid_speed_flag                      ; but save enables so we can restore them
+                lda     #$c0                            ; serial bus kludge for open4,4:cmd4:dir ????
+                and     $d609                           
+                trb     $d609                           ; disable fast serial bus
+                sta     sid_speed_flag                  ; but save enables so we can restore them
 
-                ldy #3                                  ; loop counter (3=skip fake load adr & link bytes)
-l218_1          sty t3                                  ; save counter
-                ldx #doslfn                             
-                jsr _chkin                              
-                bcs ldir_end                            ; problem??
+                ldy     #3                              ; loop counter (3=skip fake load adr & link bytes)
+l218_1          sty     t3                              ; save counter
+                ldx     #doslfn                         
+                jsr     _chkin                          
+                bcs     ldir_end                        ; problem??
 
-l218_2          jsr _readst                             ; check status
-                bne ldir_end                            ; exit if bad status
-                jsr _basin                              ; get block count
-                sta dosstr                              ; buffer it
-                jsr _basin                              
-                sta dosstr+1                            
-                dec t3                                  
-                bne l218_2                              ; continue eating bytes until we have block count
+l218_2          jsr     _readst                         ; check status
+                bne     ldir_end                        ; exit if bad status
+                jsr     _basin                          ; get block count
+                sta     dosstr                          ; buffer it
+                jsr     _basin                          
+                sta     dosstr+1                        
+                dec     t3                              
+                bne     l218_2                          ; continue eating bytes until we have block count
 
 ; Read filename
 
-                ldx #1                                  ; buffer index-1
+                ldx     #1                              ; buffer index-1
 l218_3          inx                                     
-                jsr _readst                             ; check status
-                bne ldir_end                            ; exit if eof or bad status
-                jsr _basin                              ; buffer next character
-                sta dosstr,x                            
-                bne l218_3                              ; loop until eol (null terminator)
+                jsr     _readst                         ; check status
+                bne     ldir_end                        ; exit if eof or bad status
+                jsr     _basin                          ; buffer next character
+                sta     dosstr,x                        
+                bne     l218_3                          ; loop until eol (null terminator)
 
 ; Print one line of directory
 
-                jsr dcato                               ; get output channel
-                ldx dosstr                              
-                lda dosstr+1                            
-                jsr linprt                              ; print blocks
+                jsr     dcato                           ; get output channel
+                ldx     dosstr                          
+                lda     dosstr+1                        
+                jsr     linprt                          ; print blocks
 
-                lda #' '                                
-                jsr _bsout                              ; print space
+                lda     #' '                            
+                jsr     _bsout                          ; print space
 
-                ldx #2                                  
-l218_4          lda dosstr,x                            
-                beq l218_5                              
-                jsr _bsout                              ; print filename (null terminated)
+                ldx     #2                              
+l218_4          lda     dosstr,x                        
+                beq     l218_5                          
+                jsr     _bsout                          ; print filename (null terminated)
                 inx                                     
-                bne l218_4                              
+                bne     l218_4                          
 
-l218_5          jsr crdo                                ; print return
-                jsr _clrch                              
-                jsr _stop                               ; check stop key
-                beq ldir_end                            ; exit if stop request
+l218_5          jsr     crdo                            ; print return
+                jsr     _clrch                          
+                jsr     _stop                           ; check stop key
+                beq     ldir_end                        ; exit if stop request
 
 ; Continue with next line
 
-                ldy #2                                  ; set to skip fake link bytes
-                bra l218_1                              ; loop
+                ldy     #2                              ; set to skip fake link bytes
+                bra     l218_1                          ; loop
 
 

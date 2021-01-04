@@ -1,25 +1,25 @@
 Sprite_Save                                             ; Just like Key_Save     [911001]
-                jsr GetSaveChannel                      
-                lda #highds                             ; set starting & ending addresses
-                ldy #>sprite_base                       ; start address & pointer to it
-                ldx #<sprite_base                       
-                sty highds+1                            
-                stx highds                              
+                jsr     GetSaveChannel                  
+                lda     #highds                         ; set starting & ending addresses
+                ldy     #>sprite_base                   ; start address & pointer to it
+                ldx     #<sprite_base                   
+                sty     highds+1                        
+                stx     highds                          
                 iny                                     ; end address = start address + 512 + 1
                 iny                                     
                 inx                                     
-                +lbra savenb                            ; [910925]
+                +lbra   savenb                          ; [910925]
 
 
 
 Sprite_Load                                             
-                jsr GetLoadChannel                      ; get a channel      [911001]
-                ldy #>sprite_base                       
-                lda #<sprite_base                       
-                jsr LoadBlock                           ; load first block
-                inc highds+1                            
-                jsr LoadBlockNext                       ; load second block
-                +lbra list_err                          ; release channel, close file, return to main
+                jsr     GetLoadChannel                  ; get a channel      [911001]
+                ldy     #>sprite_base                   
+                lda     #<sprite_base                   
+                jsr     LoadBlock                       ; load first block
+                inc     highds+1                        
+                jsr     LoadBlockNext                   ; load second block
+                +lbra   list_err                        ; release channel, close file, return to main
 
 
 ;  Set or clear a bit in a VIC register
@@ -29,14 +29,14 @@ Sprite_Load
 
 sprbit          txa                                     
                 lsr                                     ; put lsb in .C (0 clear, 1 set sprite bit)
-                +lbne fcerr                             ; only 0 or 1, please.
+                +lbne   fcerr                           ; only 0 or 1, please.
 ; jsr put_io_in_map
-                ldx z_p_temp_1                          ; get sprite number
-                lda sbits,x                             
-                ora vic,y                               
-                bcs l286_1                              
-                eor sbits,x                             
-l286_1          sta vic,y                               
+                ldx     z_p_temp_1                      ; get sprite number
+                lda     sbits,x                         
+                ora     vic,y                           
+                bcs     l286_1                          
+                eor     sbits,x                         
+l286_1          sta     vic,y                           
                 rts                                     
 
 

@@ -1,35 +1,35 @@
-drv1            lda #$10                                
-                jsr prmrpt                              ; check for repeated parameter
-                jsr gtbytc                              ; getval
-                cpx #10                                 
-                +lbcs fcerr                             ; illegal drv# if >9 [allow 0: to 9: ?????]
-                stx dosds1                              
-                stx dosds2                              
-                lda #$10                                
-                +lbra del1                              
+drv1            lda     #$10                            
+                jsr     prmrpt                          ; check for repeated parameter
+                jsr     gtbytc                          ; getval
+                cpx     #10                             
+                +lbcs   fcerr                           ; illegal drv# if >9 [allow 0: to 9: ?????]
+                stx     dosds1                          
+                stx     dosds2                          
+                lda     #$10                            
+                +lbra   del1                            
 
 
-ident           lda #$80                                ; set ID flag
-                tsb dosflags                            
-                +lbne snerr                             ; repeated parameter
-                jsr chrget                              ; get next character
-                cmp #'('                                ; c65: allow I(ID$) syntax  [900710]
-                bne l235_1                              
-                jsr frmstr                              ; get ID from var
-                cmp #2                                  
-                +lbcc err_mfn                           ; if length < 2, error
-                ldy #0                                  
-                jsr indin1_ram1                         ; else grab first two characters
-                sta dosdid                              
+ident           lda     #$80                            ; set ID flag
+                tsb     dosflags                        
+                +lbne   snerr                           ; repeated parameter
+                jsr     chrget                          ; get next character
+                cmp     #'('                            ; c65: allow I(ID$) syntax  [900710]
+                bne     l235_1                          
+                jsr     frmstr                          ; get ID from var
+                cmp     #2                              
+                +lbcc   err_mfn                         ; if length < 2, error
+                ldy     #0                              
+                jsr     indin1_ram1                     ; else grab first two characters
+                sta     dosdid                          
                 iny                                     
-                jsr indin1_ram1                         
-                sta dosdid+1                            
-                bra delim1                              ; continue
+                jsr     indin1_ram1                     
+                sta     dosdid+1                        
+                bra     delim1                          ; continue
 
-l235_1          sta dosdid                              ; m(txtptr => dosdid
-                jsr chrget                              
-                sta dosdid+1                            
-                jsr chrget                              ; continue
-                bra delim2                              
+l235_1          sta     dosdid                          ; m(txtptr => dosdid
+                jsr     chrget                          
+                sta     dosdid+1                        
+                jsr     chrget                          ; continue
+                bra     delim2                          
 
 

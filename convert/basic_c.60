@@ -1,42 +1,42 @@
-ott             lda oldtxt                              
-                ldy oldtxt+1                            
-                sta txtptr                              ; put user back to beginning of input
-                sty txtptr+1                            
+ott             lda     oldtxt                          
+                ldy     oldtxt+1                        
+                sta     txtptr                          ; put user back to beginning of input
+                sty     txtptr+1                        
                 rts                                     
 
 
 
-trmok           ldx #1                                  
-l60_1           lda txtptr,x                            
-                sta inpptr,x                            ; save for more reads
-                lda vartxt,x                            
-                sta txtptr,x                            ; point to variable list
+trmok           ldx     #1                              
+l60_1           lda     txtptr,x                        
+                sta     inpptr,x                        ; save for more reads
+                lda     vartxt,x                        
+                sta     txtptr,x                        ; point to variable list
                 dex                                     
-                bpl l60_1                               
+                bpl     l60_1                           
 
-                jsr chrgot                              ; look at last vartab character
-                beq l60_2                               ; that's the end of the list
-                jsr chkcom                              ; not end. check for comma
-                +lbra inloop                            
+                jsr     chrgot                          ; look at last vartab character
+                beq     l60_2                           ; that's the end of the list
+                jsr     chkcom                          ; not end. check for comma
+                +lbra   inloop                          
 
-l60_2           lda inpptr                              ; put away a new data pntr name
-                ldy inpptr+1                            
-                bbr7 input_flag,l60_3                   
-                sta datptr                              
-                sty datptr+1                            
+l60_2           lda     inpptr                          ; put away a new data pntr name
+                ldy     inpptr+1                        
+                bbr7    input_flag,l60_3                
+                sta     datptr                          
+                sty     datptr+1                        
                 rts                                     
 
-l60_3           ldy #0                                  ; last data chr could have been ',' or ':' but should be null
-                lda #inpptr                             
-                jsr lda_far_ram0                        
-                beq l60_4                               ; it is null
-                lda channl                              ; if not terminal, no type
-                bne l60_4                               
+l60_3           ldy     #0                              ; last data chr could have been ',' or ':' but should be null
+                lda     #inpptr                         
+                jsr     lda_far_ram0                    
+                beq     l60_4                           ; it is null
+                lda     channl                          ; if not terminal, no type
+                bne     l60_4                           
 
-                jsr highlight_text                      ; [911119]
-                jsr _primm                              
+                jsr     highlight_text                  ; [911119]
+                jsr     _primm                          
                 !text "?EXTRA IGNORED", cr,0            
-                jsr highlight_done                      ; [911119]
+                jsr     highlight_done                  ; [911119]
 
 l60_4           rts                                     ; do next statement
 

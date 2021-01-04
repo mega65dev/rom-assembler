@@ -1,39 +1,39 @@
 nqplop                                                  ; <<<<<<< vector entry
-                bpl p1l015                              ; not a token, just print character
-                bbs7 dores,p1l015                       ; branch if inside quotes, print chr as is
+                bpl     p1l015                          ; not a token, just print character
+                bbs7    dores,p1l015                    ; branch if inside quotes, print chr as is
 
 ;  At this point, we know we're talking token.  Scan the token text
 ;  list until the correct text is found, and print that text.
 
-                sta token_saver                         ; save token for REM check   [910626]
-                cmp #esc_command_token                  ; is this an escape token?
-                beq print_esc_cmd                       ; yes- escape command
-                cmp #esc_function_token                 
-                beq print_esc_fn                        ; yes- escape function
-                cmp #pi                                 
-                beq p1l015                              ; no- pi is >$80, but should be printed 'as is'
+                sta     token_saver                     ; save token for REM check   [910626]
+                cmp     #esc_command_token              ; is this an escape token?
+                beq     print_esc_cmd                   ; yes- escape command
+                cmp     #esc_function_token             
+                beq     print_esc_fn                    ; yes- escape function
+                cmp     #pi                             
+                beq     p1l015                          ; no- pi is >$80, but should be printed 'as is'
                 tax                                     
-                sty lstpnt                              ; no- use the token as index into ROM keyword list
-                lda #>keyword_list                      
-                ldy #<keyword_list                      
+                sty     lstpnt                          ; no- use the token as index into ROM keyword list
+                lda     #>keyword_list                  
+                ldy     #<keyword_list                  
 
 ; Scan list pointed to by (y,a) for token in (x), and print token's text
 
-p1l026          sta index1+1                            ; index1 points to token text list in ROM
-                sty index1                              
-                ldy #0                                  ; begin scanning lists for this token's text
+p1l026          sta     index1+1                        ; index1 points to token text list in ROM
+                sty     index1                          
+                ldy     #0                              ; begin scanning lists for this token's text
                 dex                                     
-                bpl p1l070                              ; what luck! it's the first one
+                bpl     p1l070                          ; what luck! it's the first one
 
-l39_1           inw index1                              ; scan text until next command found
-                lda (index1),y                          ; ind.ok (ROM)
-                bpl l39_1                               ; loop until terminal char (msb=1)
+l39_1           inw     index1                          ; scan text until next command found
+                lda     (index1),y                      ; ind.ok (ROM)
+                bpl     l39_1                           ; loop until terminal char (msb=1)
                 dex                                     ; is next text the one we want?
-                bmi l39_1                               ; no, keep scanning
-                inw index1                              ; yes, point to first character
+                bmi     l39_1                           ; no, keep scanning
+                inw     index1                          ; yes, point to first character
 
-                bbr3 helper,p1l070                      ; found text for this token, is it REM?  [910626]
-                lda token_saver                         ; [910628]
-                cmp #rem_token                          
-                beq p1l071                              ; yes, and REM highlighting is enabled
+                bbr3    helper,p1l070                   ; found text for this token, is it REM?  [910626]
+                lda     token_saver                     ; [910628]
+                cmp     #rem_token                      
+                beq     p1l071                          ; yes, and REM highlighting is enabled
 

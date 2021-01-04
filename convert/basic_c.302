@@ -2,24 +2,24 @@ PopParms                                                ; [910820]
                 ply                                     ; Grab return address
                 plz                                     
 
-                ldx #0                                  
+                ldx     #0                              
 l302_1          pla                                     ; Restore Graphics parameters
-                sta GKI__parm1,x                        
+                sta     GKI__parm1,x                    
                 inx                                     
-                cpx #17                                 
-                bcc l302_1                              
+                cpx     #17                             
+                bcc     l302_1                          
 
                 pla                                     ; Restore 'poker' value
-                sta linnum+1                            
+                sta     linnum+1                        
                 pla                                     
-                sta linnum                              
+                sta     linnum                          
 
                 phz                                     ; Restore return address
                 phy                                     
                 rts                                     
 
 ;.end
-;[[function.rsprite]]
+;[[function.graphics.rsprite]]
 
 
 

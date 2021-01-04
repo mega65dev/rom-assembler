@@ -1,23 +1,23 @@
-paoc15          jsr frmstr                              ; do frmevl, frestr. return with len in a, index =~string
-                jsr getspa                              ; ????fixes old PET bug- load"string",val(chr$(56)) [910917]
+paoc15          jsr     frmstr                          ; do frmevl, frestr. return with len in a, index =~string
+                jsr     getspa                          ; ????fixes old PET bug- load"string",val(chr$(56)) [910917]
 ; ldx index1
 ; ldy index1+1
-                jsr _setnam                             ; bank always set at plsv
+                jsr     _setnam                         ; bank always set at plsv
 ;fall into dschk     [900801]
 
 
 
 dschk           php                                     ; check if current device >=8, and clear DS if so
                 pha                                     
-                lda _fa                                 
-                cmp #1                                  
-                bne l197_1                              
-                lda _default_drive                      
-                sta _fa                                 
-l197_1          cmp #8                                  ; ????     [900807]
-                bcc l197_2                              
-                sta dosfa                               ; also make last DOS device = current device
-                jsr Clear_DS                            
+                lda     _fa                             
+                cmp     #1                              
+                bne     l197_1                          
+                lda     _default_drive                  
+                sta     _fa                             
+l197_1          cmp     #8                              ; ????     [900807]
+                bcc     l197_2                          
+                sta     dosfa                           ; also make last DOS device = current device
+                jsr     Clear_DS                        
 l197_2          pla                                     
                 plp                                     
                 rts                                     
@@ -90,7 +90,7 @@ l197_2          pla
 ; jmp _stop
 
 ;.end
-;[[command.print.using]]
+;[[command.text.printusing]]
 
 
 ; Print Using - Formatted print routine

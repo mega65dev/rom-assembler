@@ -2,40 +2,40 @@ qintrt          rts
 
 
 qint1           tay                                     ; put count in counter
-                lda facsgn                              
-                and #$80                                ; get sign bit
-                lsr facho                               ; save first shifted byte
-                ora facho                               
-                sta facho                               
-                jsr rolshf                              ; shift the rest
-                sty bits                                ; zero (bits)
+                lda     facsgn                          
+                and     #$80                            ; get sign bit
+                lsr     facho                           ; save first shifted byte
+                ora     facho                           
+                sta     facho                           
+                jsr     rolshf                          ; shift the rest
+                sty     bits                            ; zero (bits)
                 rts                                     
 
 
 
 ; Greatest Integer Function
 
-int             lda facexp                              
-                cmp #$a0                                
-                bcs intrts                              ; forget it
-                jsr round                               ; round FAC per FACOV (fixes the  INT(.9+.1) -> 0  Microsoft bug.  FAB)
-                jsr qint                                ; INT(FAC)
-                sty facov                               ; clr overflow byte
-                lda facsgn                              
-                sty facsgn                              ; make FAC look positive
-                eor #$80                                ; get complement of sign in carry
+int             lda     facexp                          
+                cmp     #$a0                            
+                bcs     intrts                          ; forget it
+                jsr     round                           ; round FAC per FACOV (fixes the  INT(.9+.1) -> 0  Microsoft bug.  FAB)
+                jsr     qint                            ; INT(FAC)
+                sty     facov                           ; clr overflow byte
+                lda     facsgn                          
+                sty     facsgn                          ; make FAC look positive
+                eor     #$80                            ; get complement of sign in carry
                 rol                                     
-                lda #$a0                                ; @230+8
-                sta facexp                              
-                lda faclo                               
-                sta integr                              
-                +lbra fadflt                            
+                lda     #$a0                            ; @230+8
+                sta     facexp                          
+                lda     faclo                           
+                sta     integr                          
+                +lbra   fadflt                          
 
 
-clrfac          sta facho                               ; make it really zero
-                sta facmoh                              
-                sta facmo                               
-                sta faclo                               
+clrfac          sta     facho                           ; make it really zero
+                sta     facmoh                          
+                sta     facmo                           
+                sta     faclo                           
                 tay                                     
 intrts          rts                                     
 
@@ -52,18 +52,18 @@ intrts          rts
 ; many times to multiply or divide by ten to get the correct number.
 
 
-fin             stx fin_bank                            ; save bank number where string is stored
+fin             stx     fin_bank                        ; save bank number where string is stored
 
-                ldy #0                                  ; zero facsgn, sgnflg
-                ldx #$0a                                ; zero exp and ho (and moh)
-l177_1          sty deccnt,x                            ; zero mo and lo
+                ldy     #0                              ; zero facsgn, sgnflg
+                ldx     #$0a                            ; zero exp and ho (and moh)
+l177_1          sty     deccnt,x                        ; zero mo and lo
                 dex                                     ; zero tenexp and expsgn
-                bpl l177_1                              ; zero deccnt, dptflg
+                bpl     l177_1                          ; zero deccnt, dptflg
 
-                bcc findgq                              ; flags still set from chrget
-                cmp #'-'                                ; a negative sign?
-                bne qplus                               ; no, try plus sign
-                stx sgnflg                              ; it's negative. (x=@377)
-                bra finc                                ; always branches
+                bcc     findgq                          ; flags still set from chrget
+                cmp     #'-'                            ; a negative sign?
+                bne     qplus                           ; no, try plus sign
+                stx     sgnflg                          ; it's negative. (x=@377)
+                bra     finc                            ; always branches
 
 

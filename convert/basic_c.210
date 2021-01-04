@@ -1,43 +1,43 @@
-ispl1           lda sno                                 ; positive?
-                bmi bout                                ; yes...out blank or *
-ispl            lda sno                                 ; output sgn
-                bra out                                 
+ispl1           lda     sno                             ; positive?
+                bmi     bout                            ; yes...out blank or *
+ispl            lda     sno                             ; output sgn
+                bra     out                             
 
 
-zerot           lda z_p_temp_1                          ; # of zeros
-                bne zerot1                              
-                cpx enr                                 ; end of # reached?
-                beq zout                                ; yes...output zero
+zerot           lda     z_p_temp_1                      ; # of zeros
+                bne     zerot1                          
+                cpx     enr                             ; end of # reached?
+                beq     zout                            ; yes...output zero
 
 telx            inx                                     
-                lda fbuffr,x                            ; get digit
+                lda     fbuffr,x                        ; get digit
                 !text $2c                               ; skip
 
-zout            lda #'0'                                ; output zero
+zout            lda     #'0'                            ; output zero
 
-outs            lsr flag                                ; clear comma flag
+outs            lsr     flag                            ; clear comma flag
 
-out             jsr cdout                               ; output character
-                +lbeq rrts                              
-                bra afrm                                ; not ready...
+out             jsr     cdout                           ; output character
+                +lbeq   rrts                            
+                bra     afrm                            ; not ready...
 
 
-zerot1          dec z_p_temp_1                          ; count leading zeros
-                lda dolr                                ; $ flag set?
-                bmi zout                                ; no...output zero
+zerot1          dec     z_p_temp_1                      ; count leading zeros
+                lda     dolr                            ; $ flag set?
+                bmi     zout                            ; no...output zero
 
-                jsr indfrm                              ; take a peek at the next character in the format string
-                cmp #','                                ; if it's a comma, we got problems
-                bne l210_1                              ; ...branch if no comma & resume normal processing
+                jsr     indfrm                          ; take a peek at the next character in the format string
+                cmp     #','                            ; if it's a comma, we got problems
+                bne     l210_1                          ; ...branch if no comma & resume normal processing
 
-                lda blfd                                ; here's the "$,999.99" bug fix:
-                jsr cdout                               ; print a 'fill' character instead of the '$'
+                lda     blfd                            ; here's the "$,999.99" bug fix:
+                jsr     cdout                           ; print a 'fill' character instead of the '$'
                 iny                                     ; and increment format string pointer past comma
 
 l210_1          sec                                     ; resume normal processing
-                ror dolr                                ; clear the dollar flag & go on to print '$'
+                ror     dolr                            ; clear the dollar flag & go on to print '$'
 ; sta sw_rom_ram0 ;????
-                lda pumony                              
-                bra outs                                ; output money symbol
+                lda     pumony                          
+                bra     outs                            ; output money symbol
 
 

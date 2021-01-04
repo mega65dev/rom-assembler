@@ -33,7 +33,7 @@ C65__screenclose
  
  jmp ($800a)  ;bra screenclose 
  
-;[[command.pen]] 
+;[[command.graphics.pen]] 
  .page 
 ;***************************************************************** 
 ;* PEN 
@@ -57,7 +57,7 @@ C65__setpen
  
  jmp ($8010)  ;bra setpen 
  
-;[[command.dmode]] 
+;[[command.graphics.dmode]] 
  
  .page 
 ;***************************************************************** 
@@ -101,7 +101,7 @@ C65__setdmode
  
  jmp ($8014)  ;bra setdmode 
  
-;[[command.dpat]] 
+;[[command.graphics.dpat]] 
  
  .page 
 ;***************************************************************** 

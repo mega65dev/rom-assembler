@@ -1,35 +1,35 @@
 rcursor         sec                                     ; new [910228]
-                jsr _plot                               ; get current cursor position & save it
-                stx srow                                
-                sty column                              
+                jsr     _plot                           ; get current cursor position & save it
+                stx     srow                            
+                sty     column                          
 
-                ldx #0                                  ; just like RREG and RMOUSE...
-                stx count                               
-l262_1          jsr chrgot                              ; Get a variable name from variable list
-                beq l262_4                              ; eol- exit
-                cmp #','                                ; 
-                beq l262_3                              ; null- skip this arg
-                jsr ptrget                              ; Get pointer to target variable
-                sta forpnt                              ; set up so we can share LET code
-                sty forpnt+1                            
-                lda valtyp                              ; what kind of variable name did ptrget find?
-                +lbne chkerr                            ; string- type mismatch error
+                ldx     #0                              ; just like RREG and RMOUSE...
+                stx     count                           
+l262_1          jsr     chrgot                          ; Get a variable name from variable list
+                beq     l262_4                          ; eol- exit
+                cmp     #','                            ; 
+                beq     l262_3                          ; null- skip this arg
+                jsr     ptrget                          ; Get pointer to target variable
+                sta     forpnt                          ; set up so we can share LET code
+                sty     forpnt+1                        
+                lda     valtyp                          ; what kind of variable name did ptrget find?
+                +lbne   chkerr                          ; string- type mismatch error
 
-l262_2          ldx count                               ; Make assignment
-                ldy column,x                            ; low byte
-                lda #0                                  ; high byte
-                jsr givayf                              ; float it
-                lda intflg                              ; set flags for type of var (int/float)
-                jsr qintgr                              ; use part of LET to do the work
+l262_2          ldx     count                           ; Make assignment
+                ldy     column,x                        ; low byte
+                lda     #0                              ; high byte
+                jsr     givayf                          ; float it
+                lda     intflg                          ; set flags for type of var (int/float)
+                jsr     qintgr                          ; use part of LET to do the work
 
-l262_3          inc count                               ; Next assignment
-                ldx count                               
-                cpx #2                                  ; there are 2 possible
-                bcs l262_4                              ; done 2, exit
-                jsr chrgot                              ; check terminator
-                beq l262_4                              ; eol- exit
-                jsr chkcom                              ; check delimiter
-                bra l262_1                              ; loop until done
+l262_3          inc     count                           ; Next assignment
+                ldx     count                           
+                cpx     #2                              ; there are 2 possible
+                bcs     l262_4                          ; done 2, exit
+                jsr     chrgot                          ; check terminator
+                beq     l262_4                          ; eol- exit
+                jsr     chkcom                          ; check delimiter
+                bra     l262_1                          ; loop until done
 
 l262_4          rts                                     
 

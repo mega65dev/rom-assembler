@@ -1,54 +1,54 @@
 dload_boot                                              ; <<<<<<<<<<<<<<<<<< entry for BOOT'AUTOBOOT.C65'
-                lda #0                                  
-                sta dossa                               ; set relocate flag
-                ldy #fopn                               ; table offset
-                lda #4                                  ; ..length
-                jsr sendp                               
+                lda     #0                              
+                sta     dossa                           ; set relocate flag
+                ldy     #fopn                           ; table offset
+                lda     #4                              ; ..length
+                jsr     sendp                           
 
-                lda text_bank                           ; set up banks ???? want text_bank ????  [910620]
-                ldx #sys_bank                           ; fname is in system space, bank0
-                jsr _setbank                            
+                lda     text_bank                       ; set up banks ???? want text_bank ????  [910620]
+                ldx     #sys_bank                       ; fname is in system space, bank0
+                jsr     _setbank                        
 
-                +lbra cld10                             ; finish load, using 'LOAD' code.
+                +lbra   cld10                           ; finish load, using 'LOAD' code.
 
 
 ; BSAVE
 
-bsave           lda #$66                                ; std error flag
-                ldx #$f8                                ; auxiliary error flag (allow bank, start & end address)
-                jsr dosprx                              ; parse options
-                jsr chk2                                ; check required parameters
+bsave           lda     #$66                            ; std error flag
+                ldx     #$f8                            ; auxiliary error flag (allow bank, start & end address)
+                jsr     dosprx                          ; parse options
+                jsr     chk2                            ; check required parameters
 
-                lda parstx                              ; check for starting & ending addresses
-                and #6                                  
-                cmp #6                                  
-                +lbne snerr                             ; ..if not present, syntax error
+                lda     parstx                          ; check for starting & ending addresses
+                and     #6                              
+                cmp     #6                              
+                +lbne   snerr                           ; ..if not present, syntax error
 
-                lda dosofh+1                            ; check that ea>sa
-                cmp dosofl+1                            
-                +lbcc fcerr                             ; ...error
-                bne l224_1                              
-                lda dosofh                              
-                cmp dosofl                              
-                +lbcc fcerr                             ; ...error
-                +lbeq fcerr                             
+                lda     dosofh+1                        ; check that ea>sa
+                cmp     dosofl+1                        
+                +lbcc   fcerr                           ; ...error
+                bne     l224_1                          
+                lda     dosofh                          
+                cmp     dosofl                          
+                +lbcc   fcerr                           ; ...error
+                +lbeq   fcerr                           
 
-l224_1          ldy #fopn                               ; table offset
-                lda #4                                  ; ..length
-                jsr sendp                               
+l224_1          ldy     #fopn                           ; table offset
+                lda     #4                              ; ..length
+                jsr     sendp                           
 
-                lda dosbnk                              ; get requested bank
-                ldx #sys_bank                           ; ..and name will be in system bank
-                jsr _setbank                            ; ..and go set up bank
+                lda     dosbnk                          ; get requested bank
+                ldx     #sys_bank                       ; ..and name will be in system bank
+                jsr     _setbank                        ; ..and go set up bank
 
-                ldx dosofl                              ; start addr
-                ldy dosofl+1                            
-                lda #highds                             ; ..and a pointer to start address
-                stx highds                              
-                sty highds+1                            
-                ldx dosofh                              ; end addr
-                ldy dosofh+1                            
-                +lbra savenb                            
+                ldx     dosofl                          ; start addr
+                ldy     dosofl+1                        
+                lda     #highds                         ; ..and a pointer to start address
+                stx     highds                          
+                sty     highds+1                        
+                ldx     dosofh                          ; end addr
+                ldy     dosofh+1                        
+                +lbra   savenb                          
 
 
 

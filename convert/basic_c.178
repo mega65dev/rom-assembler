@@ -1,72 +1,72 @@
-qplus           cmp #'+'                                ; plus sign?
-                bne fin1                                ; yes, skip it
+qplus           cmp     #'+'                            ; plus sign?
+                bne     fin1                            ; yes, skip it
 
-finc            jsr fin_chrget                          
+finc            jsr     fin_chrget                      
 
-findgq          bcc findig                              
+findgq          bcc     findig                          
 
-fin1            cmp #'.'                                ; the dp?
-                beq findp                               ; no kidding
-                cmp #'E'                                ; exponent follows
-                bne fine                                ; no
+fin1            cmp     #'.'                            ; the dp?
+                beq     findp                           ; no kidding
+                cmp     #'E'                            ; exponent follows
+                bne     fine                            ; no
 
-                jsr fin_chrget                          ; yes, get another, to check sign of exponent
-                bcc fnedg1                              ; is it a digit. (easier than backing up pointer)
-                cmp #minus_token                        ; minus?
-                beq finec1                              ; negate
-                cmp #'-'                                ; minus sign?
-                beq finec1                              
-                cmp #plus_token                         ; plus?
-                beq finec                               
-                cmp #'+'                                ; plus sign?
-                beq finec                               
-                bra finec2                              
+                jsr     fin_chrget                      ; yes, get another, to check sign of exponent
+                bcc     fnedg1                          ; is it a digit. (easier than backing up pointer)
+                cmp     #minus_token                    ; minus?
+                beq     finec1                          ; negate
+                cmp     #'-'                            ; minus sign?
+                beq     finec1                          
+                cmp     #plus_token                     ; plus?
+                beq     finec                           
+                cmp     #'+'                            ; plus sign?
+                beq     finec                           
+                bra     finec2                          
 
-finec1          ror expsgn                              ; turn it on
+finec1          ror     expsgn                          ; turn it on
 
-finec           jsr fin_chrget                          ; get another
+finec           jsr     fin_chrget                      ; get another
 
-fnedg1          bcc finedg                              ; it is a digit
-finec2          bbr7 expsgn,fine                        
-                lda #0                                  
+fnedg1          bcc     finedg                          ; it is a digit
+finec2          bbr7    expsgn,fine                     
+                lda     #0                              
                 sec                                     
-                sbc tenexp                              
-                bra fine1                               
+                sbc     tenexp                          
+                bra     fine1                           
 
-findp           ror dptflg                              
-                bbr6 dptflg,finc                        
+findp           ror     dptflg                          
+                bbr6    dptflg,finc                     
 
-fine            lda tenexp                              
+fine            lda     tenexp                          
 fine1           sec                                     
-                sbc deccnt                              ; get number of places to shift
-                sta tenexp                              
-                beq finqng                              ; negate?
-                bpl finmul                              ; positive, so multiply
+                sbc     deccnt                          ; get number of places to shift
+                sta     tenexp                          
+                beq     finqng                          ; negate?
+                bpl     finmul                          ; positive, so multiply
 
-findiv          jsr div10                               
-                inc tenexp                              ; done?
-                bne findiv                              ; no
-                bra finqng                              ; yes
+findiv          jsr     div10                           
+                inc     tenexp                          ; done?
+                bne     findiv                          ; no
+                bra     finqng                          ; yes
 
 
-finmul          jsr mul10                               
-                dec tenexp                              ; done?
-                bne finmul                              ; no
-finqng          lda sgnflg                              
-                +lbmi negop                             ; if negative, negate and return
+finmul          jsr     mul10                           
+                dec     tenexp                          ; done?
+                bne     finmul                          ; no
+finqng          lda     sgnflg                          
+                +lbmi   negop                           ; if negative, negate and return
                 rts                                     ; if positive, return
 
 
 
 findig          pha                                     
-                bbr7 dptflg,l178_1                      
-                inc deccnt                              
-l178_1          jsr mul10                               
+                bbr7    dptflg,l178_1                   
+                inc     deccnt                          
+l178_1          jsr     mul10                           
                 pla                                     ; get it back
                 sec                                     
-                sbc #'0'                                
-                jsr finlog                              ; add it in
-                bra finc                                
+                sbc     #'0'                            
+                jsr     finlog                          ; add it in
+                bra     finc                            
 
 
 

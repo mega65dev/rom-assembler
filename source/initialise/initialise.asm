@@ -1,3 +1,14 @@
+; ********************************************************************************************
+; ********************************************************************************************
+;
+;	Name :      initialise.asm
+;	Purpose :   ..
+;	Created :   15th Nov 1991
+;	Updated :   4th Jan 2021
+;	Authors :   Fred Bowen
+;
+; ********************************************************************************************
+; ********************************************************************************************
 ; ***************************************************************************************************************
 ; ***************************************************************************************************************
 ;
@@ -62,70 +73,70 @@
                 * = $2000
 
 basic
-                jmp hard_reset
-                jmp soft_reset
-                jmp basic_irq
-                jmp basic_nmi                           ; (removed)    [910523] audio
+                jmp     hard_reset
+                jmp     soft_reset
+                jmp     basic_irq
+                jmp     basic_nmi                       ; (removed)    [910523] audio
 
 soft_reset                                              ; warm start BASIC...
-                jsr release_channels                    ; restore default terminal I/O channels
-                lda #doslfn                             ; restore reserved disk channel
+                jsr     release_channels                ; restore default terminal I/O channels
+                lda     #doslfn                         ; restore reserved disk channel
                 sec                                     ; not a real close
-                jsr _close
-                jsr Clear_DS                            ; zap DS$ just in case
+                jsr     _close
+                jsr     Clear_DS                        ; zap DS$ just in case
 ; (might have been in Monitor or building DS$)
-                jsr init_sound_sprites                  ; init interrupt & dma stuff   [910523]
-                jsr init_stack                          ; restore stack
-                lda #1
-                tsb _init_status                        ; tell Kernel to give BASIC a call at IRQ time
-                bra go_ready                            ; enable IRQ, print READY, and go MAIN
+                jsr     init_sound_sprites              ; init interrupt & dma stuff   [910523]
+                jsr     init_stack                      ; restore stack
+                lda     #1
+                tsb     _init_status                    ; tell Kernel to give BASIC a call at IRQ time
+                bra     go_ready                        ; enable IRQ, print READY, and go MAIN
 
 
 hard_reset
-                jsr init_vectors                        ; init vectors
-                jsr init_storage                        ; init variables, voices,  & download RAM code
-                jsr signon_message                      ; print initialization message
+                jsr     init_vectors                    ; init vectors
+                jsr     init_storage                    ; init variables, voices,  & download RAM code
+                jsr     signon_message                  ; print initialization message
 
-                lda #0                                  ; init bank pointers   [900509]
-                sta text_bank
-                sta helper                              ; reset all LIST flags
-                lda #1
-                sta var_bank
-                lda #2
-                sta highlight_color                     ; set highlight color (2=red)
-                ldx #<basic+3
-                stx _restart_vector                     ; point system restart vector at warm start entry
-                jsr init_stack                          ; initialize system stack pointer
-                lda #1
-                tsb _init_status                        ; tell Kernel to give BASIC a call at IRQ time
-                jsr ($8000)                             ; initialize graphics
-                jsr _phoenix                            ; call cartridges, check out expansion card
-                jsr autobootCSG                         ; attempt to boot program from disk
+                lda     #0                              ; init bank pointers   [900509]
+                sta     text_bank
+                sta     helper                          ; reset all LIST flags
+                lda     #1
+                sta     var_bank
+                lda     #2
+                sta     highlight_color                 ; set highlight color (2=red)
+                ldx     #<basic+3
+                stx     _restart_vector                 ; point system restart vector at warm start entry
+                jsr     init_stack                      ; initialize system stack pointer
+                lda     #1
+                tsb     _init_status                    ; tell Kernel to give BASIC a call at IRQ time
+                jsr     ($8000)                         ; initialize graphics
+                jsr     _phoenix                        ; call cartridges, check out expansion card
+                jsr     autobootCSG                     ; attempt to boot program from disk
 
 go_ready
                 cli                                     ; enable IRQ
-                +lbra ready
+                +lbra   ready
 
 
 init_storage
-                lda #76                                 ; 'jmp' opcode
-                sta jmper
-                sta usrpok
+                lda     #76                             ; 'jmp' opcode
+                sta     jmper
+                sta     usrpok
 
-                lda #<errguf                            ; init USR vector to 'undef'd function'  [910226] FAB
-                ldy #>errguf
-                sta usrpok+1
-                sty usrpok+2
+                lda     #<errguf                        ; init USR vector to 'undef'd function'  [910226] FAB
+                ldy     #>errguf
+                sta     usrpok+1
+                sty     usrpok+2
 
-                lda #<flpint                            ; ???? why keep
-                ldy #>flpint
-                sta adray1
-                sty adray1+1
+                lda     #<flpint                        ; ???? why keep
+                ldy     #>flpint
+                sta     adray1
+                sty     adray1+1
 
-                lda #<givayf                            ; ???? why keep
-                ldy #>givayf
-                sta adray2
-                sty adray2+1
+                lda     #<givayf                        ; ???? why keep
+                ldy     #>givayf
+                sta     adray2
+                sty     adray2+1
 
 ; Download CHRGET (and INDSUB code????) to RAM
 ;
@@ -135,25 +146,25 @@ init_storage
 ; dex
 ; bne 1$
 
-                ldx #0
-                stx zero                                ; zero constant
-                stx zero+1
-                stx zero+2
-                stx bits                                ; reset bit/byte shifter
-                stx channl                              ; default channels
-                stx runmod                              ; direct mode
-                stx lastpt+1
-                stx autinc                              ; turn off auto increment
-                stx autinc+1
-                stx rndx                                ; zero-ing MSB will guarantee a legal value
+                ldx     #0
+                stx     zero                            ; zero constant
+                stx     zero+1
+                stx     zero+2
+                stx     bits                            ; reset bit/byte shifter
+                stx     channl                          ; default channels
+                stx     runmod                          ; direct mode
+                stx     lastpt+1
+                stx     autinc                          ; turn off auto increment
+                stx     autinc+1
+                stx     rndx                            ; zero-ing MSB will guarantee a legal value
 ; stx dosfa  ;zero device number     [910429]
 
-                stx intval                              ; reset all BASIC IRQ stuff
-                stx int_trip_flag                       ; (BASIC IRQ enabled in init_voices)
-                stx int_trip_flag+1
-                stx int_trip_flag+2
-                stx lightpen_xpos
-                stx lightpen_ypos
+                stx     intval                          ; reset all BASIC IRQ stuff
+                stx     int_trip_flag                   ; (BASIC IRQ enabled in init_voices)
+                stx     int_trip_flag+1
+                stx     int_trip_flag+2
+                stx     lightpen_xpos
+                stx     lightpen_ypos
 
 ; stx mvdflg  ;flag '8k graphics screen not allocated'
 ; stx width  ;init to single-width lines
@@ -177,72 +188,72 @@ init_storage
 ; stx multicolor_2 ;init mc2 to red
 ; jsr set_packed_color ;set up packed fg/bg and fg/mc1 bytes
 
-                ldx _default_drive
-                stx dosfa                               ; init device number to system default   [910429]
+                ldx     _default_drive
+                stx     dosfa                           ; init device number to system default   [910429]
 
-                ldx #$80                                ; bank 0 with I/O????
-                stx current_bank                        ; set default bank for PEEK,POKE,BOOT,SYS,WAIT,BLOAD/SAVE
+                ldx     #$80                            ; bank 0 with I/O????
+                stx     current_bank                    ; set default bank for PEEK,POKE,BOOT,SYS,WAIT,BLOAD/SAVE
 
-                ldx #tempst
-                stx temppt                              ; init temp descriptor pointer
+                ldx     #tempst
+                stx     temppt                          ; init temp descriptor pointer
 
-                ldx #<baswrk                            ; set up bottom of bank 0 (text area)
-                ldy #>baswrk
-                stx txttab
-                sty txttab+1
+                ldx     #<baswrk                        ; set up bottom of bank 0 (text area)
+                ldy     #>baswrk
+                stx     txttab
+                sty     txttab+1
 
-                lda #<varbgn                            ; set up bottom of bank 1 (storage area)
-                ldy #>varbgn
-                sta vartab
-                sty vartab+1
+                lda     #<varbgn                        ; set up bottom of bank 1 (storage area)
+                ldy     #>varbgn
+                sta     vartab
+                sty     vartab+1
 
-                lda #<bank_0_top                        ; set up top of bank 0
-                ldy #>bank_0_top
-                sta max_mem_0
-                sty max_mem_0+1
+                lda     #<bank_0_top                    ; set up top of bank 0
+                ldy     #>bank_0_top
+                sta     max_mem_0
+                sty     max_mem_0+1
 
-                lda #<bank_1_top                        ; set up  top of bank 1
-                ldy #>bank_1_top
-                sta max_mem_1
-                sty max_mem_1+1
+                lda     #<bank_1_top                    ; set up  top of bank 1
+                ldy     #>bank_1_top
+                sta     max_mem_1
+                sty     max_mem_1+1
 
-                lda #0                                  ; init text input buffer  (these are for autoboot)
-                sta buf
+                lda     #0                              ; init text input buffer  (these are for autoboot)
+                sta     buf
                 dec
-                sta curlin+1                            ; init line pointer
-                ldx #<buf_txtptr                        ; init txtptr
-                ldy #>buf_txtptr
-                stx txtptr
-                sty txtptr+1
+                sta     curlin+1                        ; init line pointer
+                ldx     #<buf_txtptr                    ; init txtptr
+                ldy     #>buf_txtptr
+                stx     txtptr
+                sty     txtptr+1
 
 ; Set up sprite pointers
 
-                lda #sprite_base/64+7
-                ldy #7
-l1_1            bbr7 _mode,l1_2
-                sta sprite_ptrs_40,y                    ; 40 col screen
-                bra l1_3
-l1_2            sta sprite_ptrs_80,y                    ; 80 col screen
+                lda     #sprite_base/64+7
+                ldy     #7
+l1_1            bbr7    _mode,l1_2
+                sta     sprite_ptrs_40,y                ; 40 col screen
+                bra     l1_3
+l1_2            sta     sprite_ptrs_80,y                ; 80 col screen
 l1_3            dec
                 dey
-                bpl l1_1
+                bpl     l1_1
 
 ; Zero out sprite movement stuff and some VIC stuff too
 
-                lda #0
-                ldx #init_as_0
-l1_4            sta sprite_data,x
+                lda     #0
+                ldx     #init_as_0
+l1_4            sta     sprite_data,x
                 dex
-                bpl l1_4
+                bpl     l1_4
 
-                jsr init_sound_sprites                  ; init misc. interrupt & dma stuff
+                jsr     init_sound_sprites              ; init misc. interrupt & dma stuff
 
 ; lda #$d0  ;initialize pointers to character ROM
 ; sta upper_graphic
 ; lda #$d8
 ; sta upper_lower
 
-                +lbra init_text                         ; go to 'new'
+                +lbra   init_text                       ; go to 'new'
 
 
 init_sound_sprites                                        ; [910523]
@@ -315,34 +326,34 @@ init_sound_sprites                                        ; [910523]
 ; bpl 30$
 ; inc voice  ;set default voice (0)
 ;-----
-                jsr Sound_CLR_1                         ; [910724]
+                jsr     Sound_CLR_1                     ; [910724]
 
-                lda #%11100111                          ; [910626]
-                trb helper                              ; reset LIST/HELP/FIND flags
-                tsb highlight_save                      ; mark saved color as invalid
+                lda     #%11100111                      ; [910626]
+                trb     helper                          ; reset LIST/HELP/FIND flags
+                tsb     highlight_save                  ; mark saved color as invalid
 
-                lda #0                                  ; [910523] F018A
-                ldx #12+12-1                            ; init DMA lists
-l2_1            sta dma1_cmd,x
+                lda     #0                              ; [910523] F018A
+                ldx     #12+12-1                        ; init DMA lists
+l2_1            sta     dma1_cmd,x
                 dex
-                bpl l2_1
+                bpl     l2_1
 
 ; stop_sprites   ;Stop all moving sprites (a=0)   [910523]
-                ldy #7                                  ; for sprites 0...7
-l2_2            ldx sproff,y                            ; get table offset
-                sta sprite_data,x                       ; reset speed for this sprite
+                ldy     #7                              ; for sprites 0...7
+l2_2            ldx     sproff,y                        ; get table offset
+                sta     sprite_data,x                   ; reset speed for this sprite
                 dey
-                bpl l2_2                                ; loop until done
+                bpl     l2_2                            ; loop until done
 
-                sta vic+21                              ; Turn off all sprites    [910717]
+                sta     vic+21                          ; Turn off all sprites    [910717]
 
-                sta irq_wrap_flag                       ; enable BASIC IRQ handler
+                sta     irq_wrap_flag                   ; enable BASIC IRQ handler
 ; sta nmi_wrap_flag ;enable BASIC NMI handler   [910523]
                 rts                                     ; (removed)    [910826]
 
 
 signon_message
-l3_1            jsr _primm
+l3_1            jsr     _primm
                 !text 147,18,028,"                     ",146,169
                 !text 5,9,"       THE COMMODORE C65 DEVELOPMENT SYSTEM",cr
                 !text 18,150,"                  ",146,169,cr
@@ -358,11 +369,11 @@ l3_1            jsr _primm
 
 
 init_vectors
-                ldx #l4_3-l4_2-1
-l4_1            lda l4_2,x
-                sta vectors_begin,x
+                ldx     #l4_3-l4_2-1
+l4_1            lda     l4_2,x
+                sta     vectors_begin,x
                 dex
-                bpl l4_1
+                bpl     l4_1
 
                 rts
 
@@ -419,18 +430,25 @@ l4_3
 ; CHRGET/CHRGOT code.
 ;
 
-chrget          inw txtptr                              ; get next character from text
-chrgot          ldy #0                                  ; re-get current character from text
-                jsr indtxt                              ; lda (txtptr),y from RAM0
-qnum            cmp #' '
-                beq chrget                              ; skip spaces
-chrtst          cmp #':'                                ; [910513]
-                bcs l5_1                                ; eol
+chrget          inw     txtptr                          ; get next character from text
+chrgot          ldy     #0                              ; re-get current character from text
+                jsr     indtxt                          ; lda (txtptr),y from RAM0
+qnum            cmp     #' '
+                beq     chrget                          ; skip spaces
+chrtst          cmp     #':'                            ; [910513]
+                bcs     l5_1                            ; eol
                 sec
-                sbc #'0'                                ; alpha or numeric?
+                sbc     #'0'                            ; alpha or numeric?
                 sec
-                sbc #$d0
+                sbc     #$d0
 l5_1            rts
 
 
 ;.end
+
+; ********************************************************************************************
+;
+;	Date		Changes
+;	====		=======
+;
+; ********************************************************************************************

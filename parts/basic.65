@@ -54,7 +54,7 @@ rreg lda #0
 50$ rts 
  
 ;.end 
-;[[command.midstring]] 
+;[[command.let.midstring]] 
  .page 
  .subttl MID$ 
  

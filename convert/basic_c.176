@@ -1,18 +1,18 @@
-qint            lda facexp                              
-                beq clrfac                              ; if zero, got it
+qint            lda     facexp                          
+                beq     clrfac                          ; if zero, got it
                 sec                                     
-                sbc #$a0                                ; get number of places to shift
+                sbc     #$a0                            ; get number of places to shift
 
-                bbr7 facsgn,l176_1                      
+                bbr7    facsgn,l176_1                   
 
                 tax                                     
-                lda #$ff                                
-                sta bits                                ; put $ff in when shftr shifts bytes
-                jsr negfch                              ; truly negate quantity in FAC
+                lda     #$ff                            
+                sta     bits                            ; put $ff in when shftr shifts bytes
+                jsr     negfch                          ; truly negate quantity in FAC
                 txa                                     
 
-l176_1          ldx #fac                                
-                cmp #$f9                                
-                bpl qint1                               ; if number of places > 7 shift 1 place at a time
-                jsr shiftr                              ; start shifting bytes, then bits
-                sty bits                                ; zero bits since adder wants zero
+l176_1          ldx     #fac                            
+                cmp     #$f9                            
+                bpl     qint1                           ; if number of places > 7 shift 1 place at a time
+                jsr     shiftr                          ; start shifting bytes, then bits
+                sty     bits                            ; zero bits since adder wants zero

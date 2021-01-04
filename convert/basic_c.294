@@ -1,7 +1,7 @@
 sproff          !text 0,11,22,33,44,55,66,77            ; sprite offsets into speed table
 
 ;.end
-;[[command.sprcolor]]
+;[[command.graphics.sprcolor]]
 
 
 
@@ -14,18 +14,18 @@ sproff          !text 0,11,22,33,44,55,66,77            ; sprite offsets into sp
 ;**************************************************************
 
 sprcolor                                                
-                cmp #','                                ; is there a first arg?
-                beq l294_1                              ; nope, skip to second
+                cmp     #','                            ; is there a first arg?
+                beq     l294_1                          ; nope, skip to second
 
-                jsr getnyb                              ; get 1 byte arg in .X, range 0-15
+                jsr     getnyb                          ; get 1 byte arg in .X, range 0-15
 ; jsr put_io_in_map
-                stx vic+37                              
+                stx     vic+37                          
 
-l294_1          jsr optbyt                              ; get (optional) 1 byte arg in .X
-                bcc l294_2                              
-                jsr chknyb                              ; range 0-15
+l294_1          jsr     optbyt                          ; get (optional) 1 byte arg in .X
+                bcc     l294_2                          
+                jsr     chknyb                          ; range 0-15
 ; jsr put_io_in_map
-                stx vic+38                              
+                stx     vic+38                          
 
 l294_2          rts                                     
 

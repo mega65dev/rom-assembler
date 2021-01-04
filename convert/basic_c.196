@@ -1,41 +1,41 @@
 plsv                                                    
-                lda #0                                  ; set default filename (none)
-                jsr _setnam                             
-                ldx _default_drive                      ; set default device # (dosffn)
-                ldy #0                                  ; command 0
-                jsr _setlfs                             
-                lda text_bank                           ; all loads to   bank 0 ???? set default memory banks
-                ldx var_bank                            ; all names from bank 1 ????   [910620]
-                jsr _setbank                            
+                lda     #0                              ; set default filename (none)
+                jsr     _setnam                         
+                ldx     _default_drive                  ; set default device # (dosffn)
+                ldy     #0                              ; command 0
+                jsr     _setlfs                         
+                lda     text_bank                       ; all loads to   bank 0 ???? set default memory banks
+                ldx     var_bank                        ; all names from bank 1 ????   [910620]
+                jsr     _setbank                        
 
-                jsr paoc20                              ; by-pass junk
-                jsr paoc15                              ; get/set file name
-                jsr paoc20                              ; by-pass junk
-                jsr plsv7                               ; get ',fa'
-                ldy #0                                  ; command 0
-                stx andmsk                              
-                jsr _setlfs                             
-                jsr paoc20                              ; by-pass junk
-                jsr plsv7                               ; get ',sa'
+                jsr     paoc20                          ; by-pass junk
+                jsr     paoc15                          ; get/set file name
+                jsr     paoc20                          ; by-pass junk
+                jsr     plsv7                           ; get ',fa'
+                ldy     #0                              ; command 0
+                stx     andmsk                          
+                jsr     _setlfs                         
+                jsr     paoc20                          ; by-pass junk
+                jsr     plsv7                           ; get ',sa'
                 txa                                     ; new command
                 tay                                     
-                ldx andmsk                              ; device #
-                jsr _setlfs                             
-                bra dschk                               ; make dosfa current   [900801]
+                ldx     andmsk                          ; device #
+                jsr     _setlfs                         
+                bra     dschk                           ; make dosfa current   [900801]
 
 
 
 ; Look for comma followed by byte
 
-plsv7           jsr paoc30                              
-                +lbra getbyt                            
+plsv7           jsr     paoc30                          
+                +lbra   getbyt                          
 
 
 
 ; Skip return if next char is end
 
-paoc20          jsr chrgot                              
-                bne paocx                               
+paoc20          jsr     chrgot                          
+                bne     paocx                           
                 pla                                     
                 pla                                     
 paocx           rts                                     
@@ -44,42 +44,42 @@ paocx           rts
 
 ; Check for comma and good stuff
 
-paoc30          jsr chkcom                              ; check comma
+paoc30          jsr     chkcom                          ; check comma
 
-paoc32          jsr chrgot                              ; get current character
-                bne paocx                               ; is okay
-                +lbra snerr                             ; bad...end of line
+paoc32          jsr     chrgot                          ; get current character
+                bne     paocx                           ; is okay
+                +lbra   snerr                           ; bad...end of line
 
 
 ; Parse OPEN/CLOSE
 
-paoc            lda #sys_bank                           ; ????      [910620]
-                ldx var_bank                            ; 
-                jsr _setbank                            ; filename bank     (string bank)????
-                jsr _setnam                             ; default file name (null)
-                jsr paoc32                              ; must get something
-                jsr getbyt                              ; get la
-                stx andmsk                              
+paoc            lda     #sys_bank                       ; ????      [910620]
+                ldx     var_bank                        ; 
+                jsr     _setbank                        ; filename bank     (string bank)????
+                jsr     _setnam                         ; default file name (null)
+                jsr     paoc32                          ; must get something
+                jsr     getbyt                          ; get la
+                stx     andmsk                          
                 txa                                     
-                ldx _default_drive                      ; default device
-                ldy #0                                  ; default command
-                jsr _setlfs                             ; store it
-                jsr paoc20                              ; skip junk
-                jsr plsv7                               
-                stx eormsk                              
-                ldy #0                                  ; default sa (command)
-                lda andmsk                              ; get la
-                cpx #3                                  
-                bcc l196_1                              
+                ldx     _default_drive                  ; default device
+                ldy     #0                              ; default command
+                jsr     _setlfs                         ; store it
+                jsr     paoc20                          ; skip junk
+                jsr     plsv7                           
+                stx     eormsk                          
+                ldy     #0                              ; default sa (command)
+                lda     andmsk                          ; get la
+                cpx     #3                              
+                bcc     l196_1                          
                 dey                                     ; if sa not given and fa=serial bus, default to $ff
-l196_1          jsr _setlfs                             ; store them
-                jsr paoc20                              ; skip junk
-                jsr plsv7                               ; get sa
+l196_1          jsr     _setlfs                         ; store them
+                jsr     paoc20                          ; skip junk
+                jsr     plsv7                           ; get sa
                 txa                                     
                 tay                                     
-                ldx eormsk                              
-                lda andmsk                              
-                jsr _setlfs                             ; set up real everything
-                jsr paoc20                              
-                jsr paoc30                              
+                ldx     eormsk                          
+                lda     andmsk                          
+                jsr     _setlfs                         ; set up real everything
+                jsr     paoc20                          
+                jsr     paoc30                          
 

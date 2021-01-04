@@ -1,103 +1,103 @@
 edit_load                                               ; Called by DLOAD/DVERIFY when in EDIT mode
-                ldz #1                                  
-                jsr open_SEQ_file                       ; Open the file just like TYPE: filename [,U#] [,D#]
-                jsr Check_DS                            ; check current disk error message
-                ldy #0                                  
-                lda #dsdesc+1                           
-                jsr lda_far_ram1                        ; lda (dsdesc+1),y peek at first character
-                cmp #'2'                                
-                +lbcs l313_12                           ; exit if error
-                jsr Clear_DS                            ; else zap 'ok' message so user gets fresh one
-                ldx dosla                               
-                jsr _chkin                              ; get input channel
-                +lbcs l313_12                           ; error
+                ldz     #1                              
+                jsr     open_SEQ_file                   ; Open the file just like TYPE: filename [,U#] [,D#]
+                jsr     Check_DS                        ; check current disk error message
+                ldy     #0                              
+                lda     #dsdesc+1                       
+                jsr     lda_far_ram1                    ; lda (dsdesc+1),y peek at first character
+                cmp     #'2'                            
+                +lbcs   l313_12                         ; exit if error
+                jsr     Clear_DS                        ; else zap 'ok' message so user gets fresh one
+                ldx     dosla                           
+                jsr     _chkin                          ; get input channel
+                +lbcs   l313_12                         ; error
 
-                bbs0 verck,l313_1                       
-                jsr _primm                              
+                bbs0    verck,l313_1                    
+                jsr     _primm                          
                 !text cr,"LOADING",0                    
-                bra l313_2                              
-l313_1          jsr _primm                              
+                bra     l313_2                          
+l313_1          jsr     _primm                          
                 !text cr,"VERIFYING",0                  
 
-l313_2          lda #<1000                              ; default starting line #
-                ldx #>1000                              
-                sta linnum                              
-                stx linnum+1                            
+l313_2          lda     #<1000                          ; default starting line #
+                ldx     #>1000                          
+                sta     linnum                          
+                stx     linnum+1                        
 
-                lda txttab                              ; load address
-                ldx txttab+1                            
-                sta index                               
-                stx index+1                             
+                lda     txttab                          ; load address
+                ldx     txttab+1                        
+                sta     index                           
+                stx     index+1                         
 
-l313_3          ldy #0                                  ; Input one line of text
-                jsr _stop                               ; check stop key
-                beq l313_11                             ; exit if down
-                jsr _readst                             ; check channel status
-                bne l313_11                             ; exit if eof or error
+l313_3          ldy     #0                              ; Input one line of text
+                jsr     _stop                           ; check stop key
+                beq     l313_11                         ; exit if down
+                jsr     _readst                         ; check channel status
+                bne     l313_11                         ; exit if eof or error
 
-                bbr0 verck,l313_4                       
-                ldy #3                                  
-                bra l313_5                              ; skip ahead if verify op
+                bbr0    verck,l313_4                    
+                ldy     #3                              
+                bra     l313_5                          ; skip ahead if verify op
 
-l313_4          lda #1                                  ; install fake line links for this line
-                jsr sta_far_in1                         
+l313_4          lda     #1                              ; install fake line links for this line
+                jsr     sta_far_in1                     
                 iny                                     ; 1
-                jsr sta_far_in1                         
+                jsr     sta_far_in1                     
                 iny                                     ; 2
-                lda linnum                              ; install line number for this line
-                jsr sta_far_in1                         
+                lda     linnum                          ; install line number for this line
+                jsr     sta_far_in1                     
                 iny                                     ; 3
-                lda linnum+1                            
-                jsr sta_far_in1                         
+                lda     linnum+1                        
+                jsr     sta_far_in1                     
                 clc                                     
-                lda linnum                              ; generate next line number
-                adc #10                                 
-                sta linnum                              
-                bcc l313_5                              
-                inc linnum+1                            
+                lda     linnum                          ; generate next line number
+                adc     #10                             
+                sta     linnum                          
+                bcc     l313_5                          
+                inc     linnum+1                        
 
 
 l313_5          iny                                     ; bump buffer pointer
-                cpy #buflen                             ; check buffer (160 max. input buffer size to edit)
-                beq l313_8                              ; split long lines into two????
-                jsr _basin                              ; read file data
-                beq l313_8                              ; CR or null terminates line
-                cmp #cr                                 
-                beq l313_8                              
+                cpy     #buflen                         ; check buffer (160 max. input buffer size to edit)
+                beq     l313_8                          ; split long lines into two????
+                jsr     _basin                          ; read file data
+                beq     l313_8                          ; CR or null terminates line
+                cmp     #cr                             
+                beq     l313_8                          
 ; cmp #$20  ;adjust invisible characters less than space
 ; bcc l313_6   ; ????make them appear in reverse field, but note
 ; ora #$80  ; that these lines can't be edited without losing them.
 
-l313_6          bbr0 verck,l313_7                       
-                jsr indcmp_in1                          ; Compare to memory
-                beq l313_5                              ; ok
-                jsr list_exit                           
-                ldx #ervfy                              ; verify error
-                +lbra error                             
+l313_6          bbr0    verck,l313_7                    
+                jsr     indcmp_in1                      ; Compare to memory
+                beq     l313_5                          ; ok
+                jsr     list_exit                       
+                ldx     #ervfy                          ; verify error
+                +lbra   error                           
 
-l313_7          jsr sta_far_in1                         ; Load into memory
-                bra l313_5                              ; loop until eol or error (kernel returns CR in case of error)
+l313_7          jsr     sta_far_in1                     ; Load into memory
+                bra     l313_5                          ; loop until eol or error (kernel returns CR in case of error)
 
-l313_8          bbs0 verck,l313_9                       
-                lda #0                                  
-                jsr sta_far_in1                         ; terminate line with null (replaces CR)
+l313_8          bbs0    verck,l313_9                    
+                lda     #0                              
+                jsr     sta_far_in1                     ; terminate line with null (replaces CR)
 l313_9          iny                                     
                 tya                                     
                 clc                                     
-                adc index                               
-                sta index                               
-                bcc l313_10                             
-                inc index+1                             
-l313_10         lda index+1                             
-                cmp max_mem_0+1                         ; out of memory????
-                bcc l313_3                              ; no, continue until eof
-                bsr edit_load_done                      ; yes, patch things up best we can
-                jsr list_exit                           ; close disk
-                +lbra omerr                             ; report error & exit
+                adc     index                           
+                sta     index                           
+                bcc     l313_10                         
+                inc     index+1                         
+l313_10         lda     index+1                         
+                cmp     max_mem_0+1                     ; out of memory????
+                bcc     l313_3                          ; no, continue until eof
+                bsr     edit_load_done                  ; yes, patch things up best we can
+                jsr     list_exit                       ; close disk
+                +lbra   omerr                           ; report error & exit
 
-l313_11         bbs0 verck,l313_12                      
-                jsr edit_load_done                      ; EOF: terminate memory with a pair of nulls
-l313_12         +lbra list_exit                         ; release channel, close file, etc.
+l313_11         bbs0    verck,l313_12                   
+                jsr     edit_load_done                  ; EOF: terminate memory with a pair of nulls
+l313_12         +lbra   list_exit                       ; release channel, close file, etc.
 
 ; bbr0 verck,40$
 ; jsr verify_ok  ;if Verify, report 'ok'

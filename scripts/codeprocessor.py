@@ -149,6 +149,11 @@ class CodeProcessor(BaseProcessor):
 		#
 		if self.body == "lda #<beats_ntsc/4":
 			self.body = "lda #(<beats_ntsc)/4"
+		#
+		#		Tidy up
+		#
+		mn = self.body.split()[0]
+		self.body = (mn+"        ")[:8]+self.body[len(mn):].strip()
 	#			
 	#		Read ROM.
 	#		

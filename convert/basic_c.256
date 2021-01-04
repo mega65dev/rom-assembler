@@ -1,35 +1,35 @@
 music_irq                                               
-                ldx #0                                  
-l256_1          ldy voices+1,x                          
-                bmi l256_2                              ; skip if not active
+                ldx     #0                              
+l256_1          ldy     voices+1,x                      
+                bmi     l256_2                          ; skip if not active
 
-                lda voices,x                            
+                lda     voices,x                        
                 sec                                     
-                sbc tempo_rate                          ; decrement current value by current tempo
-                sta voices,x                            
-                bcs l256_2                              
+                sbc     tempo_rate                      ; decrement current value by current tempo
+                sta     voices,x                        
+                bcs     l256_2                          
                 tya                                     ; lda voices+1,x
-                sbc #0                                  
-                sta voices+1,x                          
-                bcs l256_2                              ; ok, no underflow
+                sbc     #0                              
+                sta     voices+1,x                      
+                bcs     l256_2                          ; ok, no underflow
 
                 txa                                     
                 lsr                                     ; get offset to waveform
                 tay                                     
-                lda waveform,y                          ; get waveform
-                and #$fe                                ; mask out gate bit
+                lda     waveform,y                      ; get waveform
+                and     #$fe                            ; mask out gate bit
                 pha                                     
-                lda SID_offset,y                        ; get offset to correct oscillator
+                lda     SID_offset,y                    ; get offset to correct oscillator
                 tay                                     
                 pla                                     
 ; jsr go_slow  ;      [910716] 4567R7A
-                sta sid1+4,y                            ; turn off sound
+                sta     sid1+4,y                        ; turn off sound
 ; jsr go_fast  ;      [910716] 4567R7A
 
 l256_2          inx                                     
                 inx                                     
-                cpx #6+6                                ; [910612]
-                bcc l256_1                              ; loop for 6 voices
+                cpx     #6+6                            ; [910612]
+                bcc     l256_1                          ; loop for 6 voices
 ;then continue with next IRQ task
 
 ; Test if SOUND command wants anything

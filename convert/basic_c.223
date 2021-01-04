@@ -1,18 +1,18 @@
-dverify         lda #1                                  ; flag 'verify'
+dverify         lda     #1                              ; flag 'verify'
                 !text $2c                               
 
 
 
 ; DLOAD dfn
 
-dload           lda #0                                  
-                sta verck                               ; set load flag (for verify check later)
+dload           lda     #0                              
+                sta     verck                           ; set load flag (for verify check later)
 
-                bbr4 runmod,l223_1                      ; PROGRAM or EDIT mode?    [910620]
-                +lbra edit_load                         ; edit
+                bbr4    runmod,l223_1                   ; PROGRAM or EDIT mode?    [910620]
+                +lbra   edit_load                       ; edit
 
-l223_1          lda #$e6                                ; set error flags
-                jsr dosprs                              ; parse the line
-                jsr chk2                                ; check required parameters
+l223_1          lda     #$e6                            ; set error flags
+                jsr     dosprs                          ; parse the line
+                jsr     chk2                            ; check required parameters
 
 

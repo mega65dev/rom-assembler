@@ -1,65 +1,65 @@
 AutoScrollprint                                         
-                ldy #2                                  ; get line number to print
-                jsr indlow                              
+                ldy     #2                              ; get line number to print
+                jsr     indlow                          
                 tax                                     
                 iny                                     
-                jsr indlow                              
-                jsr p1line                              ; print the number & the line
+                jsr     indlow                          
+                jsr     p1line                          ; print the number & the line
 ; bra AutoScrolldone ;Normal exit
 
 AutoScrolldone                                          
-                jsr _primm                              ; kill special Editor modes
+                jsr     _primm                          ; kill special Editor modes
                 !text esc,esc,0                         
-                ldx point                               ; restore cursor position
-                ldy point+1                             
+                ldx     point                           ; restore cursor position
+                ldy     point+1                         
                 clc                                     
-                jsr _plot                               
-                rmb1 helper                             ; remove LINGET flag
+                jsr     _plot                           
+                rmb1    helper                          ; remove LINGET flag
                 pla                                     ; restore character
                 clc                                     ; return to Editor, with flag we handled character
                 rts                                     
 
 AutoSearch                                              
-                ldy #0                                  ; search for any line number on screen in leftmost column
+                ldy     #0                              ; search for any line number on screen in leftmost column
                 clc                                     
-                jsr _plot                               ; move to beginning of next line
+                jsr     _plot                           ; move to beginning of next line
 ; bcs AutoScrollpop ;  exit if no more lines
-                bcs l265_4                              ; no more lines- fake one   [910716]
+                bcs     l265_4                          ; no more lines- fake one   [910716]
                 sec                                     
-                jsr _plot                               ; else check if wrapped line
-                bcs l265_1                              ; it's wrapped- move up one line
-                lda _pnt                                
-                adc _screen_left                        ; (.c=0)
-                sta txtptr                              ; copy screen address of logical line to txtptr
-                lda _pnt+1                              
-                adc #0                                  
-                sta txtptr+1                            
-                ldy #0                                  ; get first character on this line in window
-                lda (txtptr),y                          
+                jsr     _plot                           ; else check if wrapped line
+                bcs     l265_1                          ; it's wrapped- move up one line
+                lda     _pnt                            
+                adc     _screen_left                    ; (.c=0)
+                sta     txtptr                          ; copy screen address of logical line to txtptr
+                lda     _pnt+1                          
+                adc     #0                              
+                sta     txtptr+1                        
+                ldy     #0                              ; get first character on this line in window
+                lda     (txtptr),y                      
 ; jsr indtxt  ;    (I did not want to limit search to the first column,
-                cmp #'9'+1                              ; but it was way too slow searching the entire screen)
-                bcs l265_1                              ; it's not a number
-                cmp #'0'                                
-                bcs l265_3                              ; it's a digit 0-9, continue
+                cmp     #'9'+1                          ; but it was way too slow searching the entire screen)
+                bcs     l265_1                          ; it's not a number
+                cmp     #'0'                            
+                bcs     l265_3                          ; it's a digit 0-9, continue
 
-l265_1          bbs7 form,l265_2                        ; not on this line- move to next line
+l265_1          bbs7    form,l265_2                     ; not on this line- move to next line
                 dex                                     ; move up one line
                 !text $89                               
 l265_2          inx                                     ; move down one line
-                bra AutoSearch                          ; loop until we find a numeric digit or run out of lines
+                bra     AutoSearch                      ; loop until we find a numeric digit or run out of lines
 
 l265_3          clc                                     ; found a digit, get entire number into linnum & rts
-                +lbra linget                            
+                +lbra   linget                          
 
-l265_4          lda #$ff                                ; no line found, fake end of program   [910716]
-                sta linnum+1                            
+l265_4          lda     #$ff                            ; no line found, fake end of program   [910716]
+                sta     linnum+1                        
                 rts                                     
 
 
 
 
 ;.end
-;[[command.screen]]
+;[[command.graphics.screen]]
 
 
 

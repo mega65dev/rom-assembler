@@ -3,7 +3,7 @@ volrts
  
 ;.end 
  .page 
-;[[command.volume]] 
+;[[command.sound.volume]] 
  .subttl  VOLUME 
  
 ;*************************************************************** 
@@ -70,7 +70,7 @@ volume beq snerr  ;stereo parameters    [910612]
  rts 
  
 ;.end 
-;[[command.sound]] 
+;[[command.sound.sound]] 
  .page 
  .subttl  SOUND 
  

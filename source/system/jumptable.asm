@@ -1,3 +1,14 @@
+; ********************************************************************************************
+; ********************************************************************************************
+;
+;	Name :      jumptable.asm
+;	Purpose :   ..
+;	Created :   15th Nov 1991
+;	Updated :   4th Jan 2021
+;	Authors :   Fred Bowen
+;
+; ********************************************************************************************
+; ********************************************************************************************
 
 
 
@@ -6,85 +17,85 @@
 
 ; Format Conversions     [6]
 
-                +lbra ayint                             ; convert floating point to integer
-                +lbra givayf                            ; convert integer to floating point
-                +lbra fout                              ; convert floating point to PETSCII string
-                +lbra val_1                             ; convert PETSCII string to floating point
-                +lbra getadr                            ; convert floating point to an address
-                +lbra floatc                            ; convert address to floating point
+                +lbra   ayint                           ; convert floating point to integer
+                +lbra   givayf                          ; convert integer to floating point
+                +lbra   fout                            ; convert floating point to PETSCII string
+                +lbra   val_1                           ; convert PETSCII string to floating point
+                +lbra   getadr                          ; convert floating point to an address
+                +lbra   floatc                          ; convert address to floating point
 
 ; Math Functions     [24]
 
-                +lbra fsub                              ; MEM - FACC
-                +lbra fsubt                             ; ARG - FACC
-                +lbra fadd                              ; MEM + FACC
-                +lbra faddt_c65                         ; ARG - FACC      [910402]
-                +lbra fmult                             ; MEM * FACC
-                +lbra fmultt_c65                        ; ARG * FACC      [910402]
-                +lbra fdiv                              ; MEM / FACC
-                +lbra fdivt_c65                         ; ARG / FACC      [910402]
-                +lbra log                               ; compute natural log of FACC
-                +lbra int                               ; perform BASIC INT() on FACC
-                +lbra sqr                               ; compute square root of FACC
-                +lbra negop                             ; negate FACC
-                +lbra fpwr                              ; raise ARG to the MEM power
-                +lbra fpwrt                             ; raise ARG to the FACC power
-                +lbra exp                               ; compute EXP of FACC
-                +lbra cos                               ; compute COS of FACC
-                +lbra sin                               ; compute SIN of FACC
-                +lbra tan                               ; compute TAN of FACC
-                +lbra atn                               ; compute ATN of FACC
-                +lbra round                             ; round FACC
-                +lbra abs                               ; absolute value of FACC
-                +lbra sign                              ; test sign of FACC
-                +lbra fcomp                             ; compare FACC with MEM
-                +lbra rnd_0                             ; generate random floating point number
+                +lbra   fsub                            ; MEM - FACC
+                +lbra   fsubt                           ; ARG - FACC
+                +lbra   fadd                            ; MEM + FACC
+                +lbra   faddt_c65                       ; ARG - FACC      [910402]
+                +lbra   fmult                           ; MEM * FACC
+                +lbra   fmultt_c65                      ; ARG * FACC      [910402]
+                +lbra   fdiv                            ; MEM / FACC
+                +lbra   fdivt_c65                       ; ARG / FACC      [910402]
+                +lbra   log                             ; compute natural log of FACC
+                +lbra   int                             ; perform BASIC INT() on FACC
+                +lbra   sqr                             ; compute square root of FACC
+                +lbra   negop                           ; negate FACC
+                +lbra   fpwr                            ; raise ARG to the MEM power
+                +lbra   fpwrt                           ; raise ARG to the FACC power
+                +lbra   exp                             ; compute EXP of FACC
+                +lbra   cos                             ; compute COS of FACC
+                +lbra   sin                             ; compute SIN of FACC
+                +lbra   tan                             ; compute TAN of FACC
+                +lbra   atn                             ; compute ATN of FACC
+                +lbra   round                           ; round FACC
+                +lbra   abs                             ; absolute value of FACC
+                +lbra   sign                            ; test sign of FACC
+                +lbra   fcomp                           ; compare FACC with MEM
+                +lbra   rnd_0                           ; generate random floating point number
 
 ; Movement      [22]
 
-                +lbra conupk                            ; move RAM MEM to ARG
-                +lbra romupk                            ; move ROM MEM to ARG
-                +lbra movfrm                            ; move RAM MEM to FACC
-                +lbra movfm                             ; move ROM MEM to FACC
-                +lbra movmf                             ; move FACC to MEM
-                +lbra movfa                             ; move ARG to FACC
-                +lbra movaf                             ; move FACC to ARG
+                +lbra   conupk                          ; move RAM MEM to ARG
+                +lbra   romupk                          ; move ROM MEM to ARG
+                +lbra   movfrm                          ; move RAM MEM to FACC
+                +lbra   movfm                           ; move ROM MEM to FACC
+                +lbra   movmf                           ; move FACC to MEM
+                +lbra   movfa                           ; move ARG to FACC
+                +lbra   movaf                           ; move FACC to ARG
 
 ; bra optab ;????not executable
 ; bra drawln
 ; bra gplot
 ; bra cirsub
-                +lbra run
-                +lbra runc
-                +lbra clearc                            ; [910410]
-                +lbra new
-                +lbra link_program
-                +lbra crunch
-                +lbra FindLine
-                +lbra newstt
-                +lbra eval
-                +lbra frmevl
-                +lbra run_a_program
-                +lbra setexc
-                +lbra linget
-                +lbra garba2
-                +lbra execute_a_line
+                +lbra   run
+                +lbra   runc
+                +lbra   clearc                          ; [910410]
+                +lbra   new
+                +lbra   link_program
+                +lbra   crunch
+                +lbra   FindLine
+                +lbra   newstt
+                +lbra   eval
+                +lbra   frmevl
+                +lbra   run_a_program
+                +lbra   setexc
+                +lbra   linget
+                +lbra   garba2
+                +lbra   execute_a_line
 
 ; Temporaries for C65 development (???? used by graphics) [12]
 
-                +lbra chrget
-                +lbra chrgot
-                +lbra chkcom
-                +lbra frmnum
-                +lbra getadr
-                +lbra getnum
-                +lbra getbyt
-                +lbra plsv
+                +lbra   chrget
+                +lbra   chrgot
+                +lbra   chkcom
+                +lbra   frmnum
+                +lbra   getadr
+                +lbra   getnum
+                +lbra   getbyt
+                +lbra   plsv
 
-                +lbra lda_far_ram0                      ; lda (.x),y from BASIC text bank [910716]
-                +lbra lda_far_ram1                      ; lda (.x),y from BASIC variable bank [910716]
-                +lbra sta_far_ram0                      ; sta (.x),y to   BASIC text bank [910716]
-                +lbra sta_far_ram1                      ; sta (.x),y to   BASIC variable bank [910716]
+                +lbra   lda_far_ram0                    ; lda (.x),y from BASIC text bank [910716]
+                +lbra   lda_far_ram1                    ; lda (.x),y from BASIC variable bank [910716]
+                +lbra   sta_far_ram0                    ; sta (.x),y to   BASIC text bank [910716]
+                +lbra   sta_far_ram1                    ; sta (.x),y to   BASIC variable bank [910716]
 
 
 ; Graphic Kernel Call. (Temporary for C65 development ????)
@@ -97,21 +108,21 @@
 
 
 graphic
-                cmp #clr_token                          ; GRAPHIC CLR (graphic system initialize)
-                bne l317_1                              ; no
-                jsr chrget                              ; yes advance past token
-                jmp ($8000)                             ; go initialize graphic kernel
+                cmp     #clr_token                      ; GRAPHIC CLR (graphic system initialize)
+                bne     l317_1                          ; no
+                jsr     chrget                          ; yes advance past token
+                jmp     ($8000)                         ; go initialize graphic kernel
 
 l317_1
 ; tax
 ; bmi snerr  ;Syntax error if any other secondary token
 ;
 ;
-                jmp (graphic_vector)                    ; Else, call the Graphics Kernel's Parser...
+                jmp     (graphic_vector)                ; Else, call the Graphics Kernel's Parser...
 ;
 ;
 graphic_kernel                                          ; ...via indirect
-                jmp ($8002)
+                jmp     ($8002)
 
 
 ; C65 Graphic Kernel Jump Table      [910826]
@@ -150,3 +161,11 @@ graphic_kernel                                          ; ...via indirect
 
 
 
+
+
+; ********************************************************************************************
+;
+;	Date		Changes
+;	====		=======
+;
+; ********************************************************************************************

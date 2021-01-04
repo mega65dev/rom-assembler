@@ -1,56 +1,56 @@
 movspr_to_irq                                           ; [910809]
                 phy                                     ; sprite #
-                and #$3f                                ; speed factor
+                and     #$3f                            ; speed factor
                 taz                                     
                 tya                                     ; vic sprite index
                 asl                                     
                 tay                                     
 
 l254_1          sec                                     ; for i = 1 to abs(greatr)
-                lda sprite_data+1,x                     
-                sbc #1                                  
-                sta sprite_data+1,x                     
-                bcs l254_2                              
-                lda sprite_data+2,x                     
-                sbc #0                                  
-                sta sprite_data+2,x                     
-                bcs l254_2                              
-                lda #0                                  
-                sta sprite_data,x                       ; done!  sprite is at its destination
+                lda     sprite_data+1,x                 
+                sbc     #1                              
+                sta     sprite_data+1,x                 
+                bcs     l254_2                          
+                lda     sprite_data+2,x                 
+                sbc     #0                              
+                sta     sprite_data+2,x                 
+                bcs     l254_2                          
+                lda     #0                              
+                sta     sprite_data,x                   ; done!  sprite is at its destination
                 ply                                     ; remember sprite #
                 rts                                     
 
-l254_2          lda sprite_data+3,x                     ; ptr(lesser)
-                bit sprite_data+10,x                    
-                bmi l254_3                              ; if e > 0
-                bit sprite_data+3,x                     ; sgn(lesser) (b7=1=neg, b6=1=pos, else 0)
-                jsr drwinc                              ; pos(lesser) = pos(lesser) + sgn(lesser)
+l254_2          lda     sprite_data+3,x                 ; ptr(lesser)
+                bit     sprite_data+10,x                
+                bmi     l254_3                          ; if e > 0
+                bit     sprite_data+3,x                 ; sgn(lesser) (b7=1=neg, b6=1=pos, else 0)
+                jsr     drwinc                          ; pos(lesser) = pos(lesser) + sgn(lesser)
 
-                lda sprite_data+4,x                     ; ptr(greater)
+                lda     sprite_data+4,x                 ; ptr(greater)
 l254_3          lsr                                     ; which f?
-                bcs l254_4                              
-                lda sprite_data+9,x                     ; e = e + f1
-                adc sprite_data+5,x                     
-                sta sprite_data+9,x                     
-                lda sprite_data+10,x                    
-                adc sprite_data+6,x                     
-                sta sprite_data+10,x                    
-                bra l254_5                              
+                bcs     l254_4                          
+                lda     sprite_data+9,x                 ; e = e + f1
+                adc     sprite_data+5,x                 
+                sta     sprite_data+9,x                 
+                lda     sprite_data+10,x                
+                adc     sprite_data+6,x                 
+                sta     sprite_data+10,x                
+                bra     l254_5                          
 
 l254_4          clc                                     
-                lda sprite_data+9,x                     ; e = e + f2
-                adc sprite_data+7,x                     
-                sta sprite_data+9,x                     
-                lda sprite_data+10,x                    
-                adc sprite_data+8,x                     
-                sta sprite_data+10,x                    
+                lda     sprite_data+9,x                 ; e = e + f2
+                adc     sprite_data+7,x                 
+                sta     sprite_data+9,x                 
+                lda     sprite_data+10,x                
+                adc     sprite_data+8,x                 
+                sta     sprite_data+10,x                
 
-l254_5          lda sprite_data+4,x                     ; ptr(greater)
-                bit sprite_data+4,x                     ; sgn(greater) (b7=1=neg, b6=1=pos, else 0)
-                jsr drwinc                              ; pos(greater) = pos(greater) + sgn(greater)
+l254_5          lda     sprite_data+4,x                 ; ptr(greater)
+                bit     sprite_data+4,x                 ; sgn(greater) (b7=1=neg, b6=1=pos, else 0)
+                jsr     drwinc                          ; pos(greater) = pos(greater) + sgn(greater)
 
                 dez                                     ; count
-                bne l254_1                              
+                bne     l254_1                          
                 ply                                     ; remember sprite #
                 rts                                     ; done this frame
 

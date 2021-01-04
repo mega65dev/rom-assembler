@@ -1,58 +1,58 @@
 movspr_to                                               ; setup for moving sprite to a particular position
 ;we have already positioned the sprite onscreen
-                jsr chrgot                              ; reget terminating character
-                cmp #to_token                           
-                beq l290_1                              ; not our call
+                jsr     chrgot                          ; reget terminating character
+                cmp     #to_token                       
+                beq     l290_1                          ; not our call
                 cli                                     
                 rts                                     
 
-l290_1          smb7 op                                 ; it's for us- let everybody else know we're in charge
-                jsr chrget                              ; move to next non-space character
+l290_1          smb7    op                              ; it's for us- let everybody else know we're in charge
+                jsr     chrget                          ; move to next non-space character
                 clc                                     
-                jsr sprcor_1                            ; go get & evaluate destination coordinate
-                jsr movspr_1                            ; returns with sprite# in .x, VIC sprite index in .y,
+                jsr     sprcor_1                        ; go get & evaluate destination coordinate
+                jsr     movspr_1                        ; returns with sprite# in .x, VIC sprite index in .y,
 ;P1 in VIC sprite regs, and P2 in x,ydest
-                asl numcnt                              ; Y: handle specific coordinate types
-                bcc l290_3                              ; skip if absolute
+                asl     numcnt                          ; Y: handle specific coordinate types
+                bcc     l290_3                          ; skip if absolute
                 clc                                     
-                lda xdest+2                             ; get y-coordinate
-                bpl l290_2                              ; skip if normal coordinates
-                eor #$ff                                
+                lda     xdest+2                         ; get y-coordinate
+                bpl     l290_2                          ; skip if normal coordinates
+                eor     #$ff                            
                 sec                                     ; invert to subtract if angular
-l290_2          adc vic+1,y                             ; add to current sprite y-value ???vic_save
-                sta xdest+2                             ; save sprite destination y-position
+l290_2          adc     vic+1,y                         ; add to current sprite y-value ???vic_save
+                sta     xdest+2                         ; save sprite destination y-position
 
-l290_3          asl numcnt                              ; X: handle specific coordinate types
-                bpl l290_4                              ; skip if absolute
+l290_3          asl     numcnt                          ; X: handle specific coordinate types
+                bpl     l290_4                          ; skip if absolute
                 clc                                     
-                lda xdest                               ; get low byte of x-coordinate
-                adc vic,y                               ; add current sprite x-position  ???vic_save
-                sta xdest                               ; save sprite destination x-position
-                bcc l290_4                              
-                inc xdest+1                             
+                lda     xdest                           ; get low byte of x-coordinate
+                adc     vic,y                           ; add current sprite x-position  ???vic_save
+                sta     xdest                           ; save sprite destination x-position
+                bcc     l290_4                          
+                inc     xdest+1                         
 
 l290_4          phy                                     
-                jsr combyt                              ; get speed parameter
+                jsr     combyt                          ; get speed parameter
                 txa                                     
-                and #$3f                                ; limit range (0-63) ????
-                ora #$80                                
-                sta xcnt                                ; save in temp.
+                and     #$3f                            ; limit range (0-63) ????
+                ora     #$80                            
+                sta     xcnt                            ; save in temp.
                 ply                                     
 
-                lda vic,y                               ; copy current sprite pos'n to line vars
-                sta xpos                                ; in preparation for line calculations
-                lda vic+1,y                             
-                sta ypos                                
-                lda #0                                  
-                sta xpos+1                              
-                sta ypos+1                              
+                lda     vic,y                           ; copy current sprite pos'n to line vars
+                sta     xpos                            ; in preparation for line calculations
+                lda     vic+1,y                         
+                sta     ypos                            
+                lda     #0                              
+                sta     xpos+1                          
+                sta     ypos+1                          
                 tya                                     
                 lsr                                     
                 tay                                     
-                lda sbits,y                             
-                and vic+16                              
-                beq l290_5                              
-                inc xpos+1                              
+                lda     sbits,y                         
+                and     vic+16                          
+                beq     l290_5                          
+                inc     xpos+1                          
 l290_5                                                  
 
 ;******************************************************************

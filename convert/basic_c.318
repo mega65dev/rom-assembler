@@ -1,5 +1,5 @@
 graphic_kernel                                          ; ...via indirect
-                jmp ($8002)                             
+                jmp     ($8002)                         
 
 
 ; C65 Graphic Kernel Jump Table      [910826]

@@ -1,16 +1,16 @@
 wait_for_all_quiet                                        ; Wait for all voices on this SID to be quiet [910626]
-                ldy #3                                  
-                ldx voice                               
-                cpx #3                                  ; determine left/right SID
-                bcs l107_1                              
-                ldy #0                                  
-l107_1          ldz #3                                  ; for each of 3 voices
-l107_2          ldx times2,y                            
-l107_3          bit voices+1,x                          ; wait for voice to be inactive (IRQ)
-                bpl l107_3                              
+                ldy     #3                              
+                ldx     voice                           
+                cpx     #3                              ; determine left/right SID
+                bcs     l107_1                          
+                ldy     #0                              
+l107_1          ldz     #3                              ; for each of 3 voices
+l107_2          ldx     times2,y                        
+l107_3          bit     voices+1,x                      ; wait for voice to be inactive (IRQ)
+                bpl     l107_3                          
                 iny                                     ; next voice
                 dez                                     
-                bne l107_2                              ; until done 3 voices
+                bne     l107_2                          ; until done 3 voices
                 rts                                     
 
 

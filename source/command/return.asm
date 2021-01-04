@@ -1,3 +1,14 @@
+; ********************************************************************************************
+; ********************************************************************************************
+;
+;	Name :      return.asm
+;	Purpose :   ..
+;	Created :   15th Nov 1991
+;	Updated :   4th Jan 2021
+;	Authors :   Fred Bowen
+;
+; ********************************************************************************************
+; ********************************************************************************************
 
 
 
@@ -21,15 +32,15 @@ return
 
                 pla                                     ; mea culpa, mea culpa, mea culpa
                 pla
-                lda #gosub_token
-                jsr search                              ; look for GOSUB on runtime stack
-                beq ret010                              ; found
-                ldx #errrg                              ; else error
-                +lbra error
+                lda     #gosub_token
+                jsr     search                          ; look for GOSUB on runtime stack
+                beq     ret010                          ; found
+                ldx     #errrg                          ; else error
+                +lbra   error
 
-ret010          jsr movfnd                              ; (fndpnt) => (tos)
-                ldy #lengos
-                jsr rlsstk                              ; effectivly pop GOSUB off run-time stack
+ret010          jsr     movfnd                          ; (fndpnt) => (tos)
+                ldy     #lengos
+                jsr     rlsstk                          ; effectivly pop GOSUB off run-time stack
 ; dey
 ; lda (fndpnt),y
 ; sta txtptr+1
@@ -38,9 +49,16 @@ ret010          jsr movfnd                              ; (fndpnt) => (tos)
 ; sta txtptr
 ; dey
 ; lda (fndpnt),y
-                jsr retpat                              ; 01/18/84 patch: correct RETURN to GOSUB from direct mode
+                jsr     retpat                          ; 01/18/84 patch: correct RETURN to GOSUB from direct mode
 ; lda (fndpnt),y
 ; sta curlin ;jump to DATA to waste rest of stmt (in case of ON..GOSUB)
-                bra data
+                bra     data
 
 ;.end
+
+; ********************************************************************************************
+;
+;	Date		Changes
+;	====		=======
+;
+; ********************************************************************************************

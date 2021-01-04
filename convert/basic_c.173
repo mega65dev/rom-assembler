@@ -1,114 +1,114 @@
-mldvex          lda facsgn                              ; get sign
-                eor #$ff                                ; complement it
-                +lbmi overr                             
+mldvex          lda     facsgn                          ; get sign
+                eor     #$ff                            ; complement it
+                +lbmi   overr                           
 
 zeremv          pla                                     ; get addr off stack
                 pla                                     
-                +lbra zerofc                            ; underflow
+                +lbra   zerofc                          ; underflow
 
 
 ; Multiply FAC by 10
 
-mul10           jsr movaf                               ; copy FAC into ARG
+mul10           jsr     movaf                           ; copy FAC into ARG
                 tax                                     
-                beq mul10r                              ; if (FAC)=0, got answer
+                beq     mul10r                          ; if (FAC)=0, got answer
                 clc                                     
-                adc #2                                  ; augment exp by 2
-                +lbcs overr                             ; overflow
+                adc     #2                              ; augment exp by 2
+                +lbcs   overr                           ; overflow
 
-finml6          ldx #0                                  
-                stx arisgn                              ; signs are same
-                jsr faddc                               ; add together
-                inc facexp                              ; multiply by two
-                +lbeq overr                             ; overflow
+finml6          ldx     #0                              
+                stx     arisgn                          ; signs are same
+                jsr     faddc                           ; add together
+                inc     facexp                          ; multiply by two
+                +lbeq   overr                           ; overflow
 
 mul10r          rts                                     
 
 
-div10           jsr movaf                               ; move FAC to ARG
-                lda #<tenc                              
-                ldy #>tenc                              ; point to constant of 10.0
-                ldx #0                                  ; signs are both positive
+div10           jsr     movaf                           ; move FAC to ARG
+                lda     #<tenc                          
+                ldy     #>tenc                          ; point to constant of 10.0
+                ldx     #0                              ; signs are both positive
 
-fdivf           stx arisgn                              
-                jsr movfm                               ; put it into FAC
-                bra fdivt                               
+fdivf           stx     arisgn                          
+                jsr     movfm                           ; put it into FAC
+                bra     fdivt                           
 
 fdivt_c65                                               ; [910402]
-                lda argsgn                              
-                eor facsgn                              
-                sta arisgn                              ; resultant sign
-                ldx facexp                              ; set signs on thing to divide
-                bra fdivt                               ; go divide
+                lda     argsgn                          
+                eor     facsgn                          
+                sta     arisgn                          ; resultant sign
+                ldx     facexp                          ; set signs on thing to divide
+                bra     fdivt                           ; go divide
 
-fdiv            jsr conupk                              ; unpack constant
-fdivt           +lbeq doverr                            ; can't divide by zero
-                jsr round                               ; take FACOV into account in FAC
-                lda #0                                  ; negate facexp
+fdiv            jsr     conupk                          ; unpack constant
+fdivt           +lbeq   doverr                          ; can't divide by zero
+                jsr     round                           ; take FACOV into account in FAC
+                lda     #0                              ; negate facexp
                 sec                                     
-                sbc facexp                              
-                sta facexp                              
-                jsr muldiv                              ; fix up exponents
-                inc facexp                              ; scale it right
-                +lbeq overr                             ; overflow
-                ldx #$fc                                ; set up procedure
-                lda #1                                  
+                sbc     facexp                          
+                sta     facexp                          
+                jsr     muldiv                          ; fix up exponents
+                inc     facexp                          ; scale it right
+                +lbeq   overr                           ; overflow
+                ldx     #$fc                            ; set up procedure
+                lda     #1                              
 
 
 divide                                                  ; this is the best code in the whole pile
-                ldy argho                               ; see what relation holds
-                cpy facho                               
-                bne savquo                              ; (c)=0,1. n(c=0)=0.
-                ldy argmoh                              
-                cpy facmoh                              
-                bne savquo                              
-                ldy argmo                               
-                cpy facmo                               
-                bne savquo                              
-                ldy arglo                               
-                cpy faclo                               
+                ldy     argho                           ; see what relation holds
+                cpy     facho                           
+                bne     savquo                          ; (c)=0,1. n(c=0)=0.
+                ldy     argmoh                          
+                cpy     facmoh                          
+                bne     savquo                          
+                ldy     argmo                           
+                cpy     facmo                           
+                bne     savquo                          
+                ldy     arglo                           
+                cpy     faclo                           
 
 savquo          php                                     
                 rol                                     ; save result
-                bcc qshft                               ; if not done, continue
+                bcc     qshft                           ; if not done, continue
                 inx                                     
-                sta reslo,x                             
-                beq ld100                               
-                bpl divnrm                              ; note this req 1 no ram then access
-                lda #1                                  
+                sta     reslo,x                         
+                beq     ld100                           
+                bpl     divnrm                          ; note this req 1 no ram then access
+                lda     #1                              
 
 qshft           plp                                     ; return condition codes
-                bcs divsub                              ; FAC <= ARG
+                bcs     divsub                          ; FAC <= ARG
 
-shfarg          asl arglo                               ; shift ARG one place left
-                rol argmo                               
-                rol argmoh                              
-                rol argho                               
-                bcs savquo                              ; save a result of one for this position and divide
-                bmi divide                              ; if msb on, go decide whether to sub
-                bpl savquo                              
+shfarg          asl     arglo                           ; shift ARG one place left
+                rol     argmo                           
+                rol     argmoh                          
+                rol     argho                           
+                bcs     savquo                          ; save a result of one for this position and divide
+                bmi     divide                          ; if msb on, go decide whether to sub
+                bpl     savquo                          
 
 
 divsub          tay                                     ; notice c must be on here
-                lda arglo                               
-                sbc faclo                               
-                sta arglo                               
-                lda argmo                               
-                sbc facmo                               
-                sta argmo                               
-                lda argmoh                              
-                sbc facmoh                              
-                sta argmoh                              
-                lda argho                               
-                sbc facho                               
-                sta argho                               
+                lda     arglo                           
+                sbc     faclo                           
+                sta     arglo                           
+                lda     argmo                           
+                sbc     facmo                           
+                sta     argmo                           
+                lda     argmoh                          
+                sbc     facmoh                          
+                sta     argmoh                          
+                lda     argho                           
+                sbc     facho                           
+                sta     argho                           
                 tya                                     
-                bra shfarg                              
+                bra     shfarg                          
 
 
 
-ld100           lda #$40                                ; only want two more bits
-                bra qshft                               ; always branches
+ld100           lda     #$40                            ; only want two more bits
+                bra     qshft                           ; always branches
 
 
 
@@ -118,116 +118,116 @@ divnrm          asl                                     ; get last two bits into
                 asl                                     
                 asl                                     
                 asl                                     
-                sta facov                               
+                sta     facov                           
                 plp                                     
 
 
 
-movfr           lda resho                               ; move result to FAC
-                sta facho                               
-                lda resmoh                              
-                sta facmoh                              
-                lda resmo                               
-                sta facmo                               
-                lda reslo                               ; move lo and sign
-                sta faclo                               
-                +lbra normal                            ; all done
+movfr           lda     resho                           ; move result to FAC
+                sta     facho                           
+                lda     resmoh                          
+                sta     facmoh                          
+                lda     resmo                           
+                sta     facmo                           
+                lda     reslo                           ; move lo and sign
+                sta     faclo                           
+                +lbra   normal                          ; all done
 
 
 
-movfm           sta index1                              ; move memory into FAC from ROM (unpacked)
-                sty index1+1                            
-                ldy #4                                  
-                lda (index1),y                          
-                sta faclo                               
+movfm           sta     index1                          ; move memory into FAC from ROM (unpacked)
+                sty     index1+1                        
+                ldy     #4                              
+                lda     (index1),y                      
+                sta     faclo                           
                 dey                                     
-                lda (index1),y                          
-                sta facmo                               
+                lda     (index1),y                      
+                sta     facmo                           
                 dey                                     
-                lda (index1),y                          
-                sta facmoh                              
+                lda     (index1),y                      
+                sta     facmoh                          
                 dey                                     
-                lda (index1),y                          
-                sta facsgn                              
-                ora #$80                                
-                sta facho                               
+                lda     (index1),y                      
+                sta     facsgn                          
+                ora     #$80                            
+                sta     facho                           
                 dey                                     
-                lda (index1),y                          
-                sta facexp                              
-                sty facov                               
+                lda     (index1),y                      
+                sta     facexp                          
+                sty     facov                           
                 rts                                     
 
 
 ; Move number from FAC to memory
 
-mov2f           ldx #tempf2                             ; move from FAC to temp FAC2
+mov2f           ldx     #tempf2                         ; move from FAC to temp FAC2
                 !text $2c                               
 
-mov1f           ldx #tempf1                             ; move from FAC to temp FAC1
+mov1f           ldx     #tempf1                         ; move from FAC to temp FAC1
 
-                ldy #0                                  
-movmf           jsr round                               
-                stx index1                              
-                sty index1+1                            
-                ldy #4                                  
-                lda faclo                               
-                sta (index),y                           ; BasePage
+                ldy     #0                              
+movmf           jsr     round                           
+                stx     index1                          
+                sty     index1+1                        
+                ldy     #4                              
+                lda     faclo                           
+                sta     (index),y                       ; BasePage
                 dey                                     
-                lda facmo                               
-                sta (index),y                           ; BasePage
+                lda     facmo                           
+                sta     (index),y                       ; BasePage
                 dey                                     
-                lda facmoh                              
-                sta (index),y                           ; BasePage
+                lda     facmoh                          
+                sta     (index),y                       ; BasePage
                 dey                                     
-                lda facsgn                              ; include sign in ho
-                ora #$7f                                
-                and facho                               
-                sta (index),y                           ; BasePage
+                lda     facsgn                          ; include sign in ho
+                ora     #$7f                            
+                and     facho                           
+                sta     (index),y                       ; BasePage
                 dey                                     
-                lda facexp                              
-                sta (index),y                           ; BasePage
-                sty facov                               ; zero it since rounded
+                lda     facexp                          
+                sta     (index),y                       ; BasePage
+                sty     facov                           ; zero it since rounded
                 rts                                     ; (y)=0
 
 
 movmf_ram1                                              
-                jsr round                               
-                stx index1                              
-                sty index1+1                            
+                jsr     round                           
+                stx     index1                          
+                sty     index1+1                        
                 phx                                     
-                ldx #index                              
-                ldy #4                                  
-                lda faclo                               
-                jsr sta_far_ram1                        ; sta (index),y
+                ldx     #index                          
+                ldy     #4                              
+                lda     faclo                           
+                jsr     sta_far_ram1                    ; sta (index),y
                 dey                                     
-                lda facmo                               
-                jsr sta_far_ram1                        ; sta (index),y
+                lda     facmo                           
+                jsr     sta_far_ram1                    ; sta (index),y
                 dey                                     
-                lda facmoh                              
-                jsr sta_far_ram1                        ; sta (index),y
+                lda     facmoh                          
+                jsr     sta_far_ram1                    ; sta (index),y
                 dey                                     
-                lda facsgn                              ; include sign in ho
-                ora #$7f                                
-                and facho                               
-                jsr sta_far_ram1                        ; sta (index),y
+                lda     facsgn                          ; include sign in ho
+                ora     #$7f                            
+                and     facho                           
+                jsr     sta_far_ram1                    ; sta (index),y
                 dey                                     
-                lda facexp                              
-                jsr sta_far_ram1                        ; sta (index),y
-                sty facov                               ; zero it since rounded
+                lda     facexp                          
+                jsr     sta_far_ram1                    ; sta (index),y
+                sty     facov                           ; zero it since rounded
                 plx                                     
                 rts                                     ; (y)=0
 
 
-movfa           lda argsgn                              
+movfa           lda     argsgn                          
 
-movfa1          sta facsgn                              
+movfa1          sta     facsgn                          
 
-                ldx #5                                  
-l173_1          lda argexp-1,x                          
-                sta facexp-1,x                          
+                ldx     #5                              
+l173_1          lda     argexp-1,x                      
+                sta     facexp-1,x                      
                 dex                                     
-                bne l173_1                              
-                stx facov                               
+                bne     l173_1                          
+                stx     facov                           
                 rts                                     
 
 

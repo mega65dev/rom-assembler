@@ -1,7 +1,7 @@
 verify_cmd .byte 'U0>V' ;Verify on/off command 
  
 ;.end 
-;[[command.char]] 
+;[[command.graphics.char]] 
  .page 
  .subttl  CHAR 
  
@@ -75,7 +75,7 @@ C65__char
  
 40$ rts 
  
-;[[command.paint]] 
+;[[command.graphics.paint]] 
  .page 
  .subttl  PAINT 
  

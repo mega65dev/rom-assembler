@@ -1,14 +1,14 @@
-resswp          lda errtxt                              ; backup one so chrget will work
-                bne l94_1                               
-                dec errtxt+1                            
-l94_1           dec errtxt                              
+resswp          lda     errtxt                          ; backup one so chrget will work
+                bne     l94_1                           
+                dec     errtxt+1                        
+l94_1           dec     errtxt                          
 
-                ldx #1                                  
-l94_2           lda errlin,x                            ; restore line#
-                sta curlin,x                            
-                lda errtxt,x                            ; restore text pointer to statement
-                sta txtptr,x                            
+                ldx     #1                              
+l94_2           lda     errlin,x                        ; restore line#
+                sta     curlin,x                        
+                lda     errtxt,x                        ; restore text pointer to statement
+                sta     txtptr,x                        
                 dex                                     
-                bpl l94_2                               
+                bpl     l94_2                           
 
 

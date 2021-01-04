@@ -1,21 +1,21 @@
 lenchk          pla                                     ; [901115]
                 txa                                     ; Check filename length
-                beq err_mfn                             ; too small, missing filename  [901115]
+                beq     err_mfn                         ; too small, missing filename  [901115]
 ; cmp #17  ;  ???? (problem if name has ',P')
 ; bcs errlen ; too long
-                ldx index1                              
-                ldy index1+1                            ; ok- return pointer to filename
+                ldx     index1                          
+                ldy     index1+1                        ; ok- return pointer to filename
                 rts                                     
 
 
-err_mfn         ldx #err_missing_fname                  
+err_mfn         ldx     #err_missing_fname              
                 !text $2c                               
 
-err_ild         ldx #err_illegal_device                 
+err_ild         ldx     #err_illegal_device             
                 !text $2c                               
 
-errlen          ldx #errls                              ; string or filename too long
-                +lbra error                             
+errlen          ldx     #errls                          ; string or filename too long
+                +lbra   error                           
 
 
 
@@ -34,14 +34,14 @@ errlen          ldx #errls                              ; string or filename too
 
 ; Get next 2-byte expression.  Exit: .a,.y (high,low) value
 
-getoff          jsr chrget                              ; get nxt chr
-                +lbeq snerr                             ; if end of statement
-                +lbcc getwrd                            ; can be num. const, go evaluate it
-                jsr chkopn                              ; or a "("
-                jsr getwrd                              ; expr
-                jsr chkcls                              ; need closing ")"
-                ldy poker                               
-                lda poker+1                             
+getoff          jsr     chrget                          ; get nxt chr
+                +lbeq   snerr                           ; if end of statement
+                +lbcc   getwrd                          ; can be num. const, go evaluate it
+                jsr     chkopn                          ; or a "("
+                jsr     getwrd                          ; expr
+                jsr     chkcls                          ; need closing ")"
+                ldy     poker                           
+                lda     poker+1                         
                 rts                                     
 
 
@@ -51,8 +51,8 @@ getoff          jsr chrget                              ; get nxt chr
 ; Entry: .a contains parsts flag to check
 
 
-prmrpt          and parsts                              ; compare mask with status
-                +lbne snerr                             ; error if bit previously set
+prmrpt          and     parsts                          ; compare mask with status
+                +lbne   snerr                           ; error if bit previously set
                 rts                                     
 
 
@@ -62,8 +62,8 @@ prmrpt          and parsts                              ; compare mask with stat
 ; Entry: .a contains parstx flag to check
 
 
-prxrpt          and parstx                              ; and with parstx
-                +lbne snerr                             ; if bit previously set
+prxrpt          and     parstx                          ; and with parstx
+                +lbne   snerr                           ; if bit previously set
                 rts                                     
 
 ;.end
@@ -147,66 +147,66 @@ frec            = *-tabld-1                             ; Record
 ; Entry: .a = number of bytes in format
 ;  .y = pointer to TABLD entry
 
-sendp           sta xcnt                                ; save number of string bytes
+sendp           sta     xcnt                            ; save number of string bytes
                 phy                                     
-                jsr Clear_DS                            ; clear old status
+                jsr     Clear_DS                        ; clear old status
 
-                ldx #0                                  
+                ldx     #0                              
 sdp1            pla                                     
-                dec xcnt                                
-                bmi tranr                               
+                dec     xcnt                            
+                bmi     tranr                           
                 tay                                     
                 iny                                     ; move down table
                 phy                                     
-                lda tabld,y                             ; get next entry
-                bpl sdp5                                ; if not escape code
-                cmp #xsca                               ; if not secondary address
-                beq rsca                                
-                cmp #xid                                
-                beq rid                                 ; if disk id
-                cmp #xrcl                               
-                +lbeq rdcn                              ; if record number
-                cmp #xwrt                               
-                beq rwrt                                ; if W or L
-                cmp #xfat                               
-                beq rfat                                ; if "@" symbol request
-                cmp #xfn1                               
-                +lbeq rsfn                              ; if filename 1
-                cmp #xfn2                               
-                +lbeq rdfn                              ; if filename 2
-                cmp #xrec                               
-                bne sdp2                                ; if not record type
-                lda dosrcl                              ; get rec #
-                cmp #1                                  ; kludge to allow DOPEN#lf,"relfile",L  [911024]
-                bne sdp5                                ; (note RECORD byte 0 = byte 1 anyhow)
+                lda     tabld,y                         ; get next entry
+                bpl     sdp5                            ; if not escape code
+                cmp     #xsca                           ; if not secondary address
+                beq     rsca                            
+                cmp     #xid                            
+                beq     rid                             ; if disk id
+                cmp     #xrcl                           
+                +lbeq   rdcn                            ; if record number
+                cmp     #xwrt                           
+                beq     rwrt                            ; if W or L
+                cmp     #xfat                           
+                beq     rfat                            ; if "@" symbol request
+                cmp     #xfn1                           
+                +lbeq   rsfn                            ; if filename 1
+                cmp     #xfn2                           
+                +lbeq   rdfn                            ; if filename 2
+                cmp     #xrec                           
+                bne     sdp2                            ; if not record type
+                lda     dosrcl                          ; get rec #
+                cmp     #1                              ; kludge to allow DOPEN#lf,"relfile",L  [911024]
+                bne     sdp5                            ; (note RECORD byte 0 = byte 1 anyhow)
                 dec                                     
-                bra sdp5                                ; always branch
+                bra     sdp5                            ; always branch
 
-sdp2            cmp #xd1                                
-                bne sdp3                                ; if not drive 1
-                lda dosds1                              
-                bra sdp4                                ; always branch
+sdp2            cmp     #xd1                            
+                bne     sdp3                            ; if not drive 1
+                lda     dosds1                          
+                bra     sdp4                            ; always branch
 
-sdp3            cmp #xd2                                
-                bne sdp1                                ; if not drive 2, continue
-                lda dosds2                              
-sdp4            ora #'0'                                ; change # to PETSCII
+sdp3            cmp     #xd2                            
+                bne     sdp1                            ; if not drive 2, continue
+                lda     dosds2                          
+sdp4            ora     #'0'                            ; change # to PETSCII
 
-sdp5            sta dosstr,x                            ; else into buffer
+sdp5            sta     dosstr,x                        ; else into buffer
                 inx                                     
-                bra sdp1                                ; always
+                bra     sdp1                            ; always
 
 
 tranr           txa                                     ; length to a
                 pha                                     
-                ldx #<dosstr                            ; set filename
-                ldy #>dosstr                            
-                jsr _setnam                             
+                ldx     #<dosstr                        ; set filename
+                ldy     #>dosstr                        
+                jsr     _setnam                         
 
-                lda dosla                               ; set channel
-                ldx dosfa                               
-                ldy dossa                               
-                jsr _setlfs                             
+                lda     dosla                           ; set channel
+                ldx     dosfa                           
+                ldy     dossa                           
+                jsr     _setlfs                         
 
                 pla                                     
                 rts                                     
@@ -214,19 +214,19 @@ tranr           txa                                     ; length to a
 
 
 
-rsca            lda dossa_temp                          ; secondary address (record)
-                bra sdp5                                ; always
+rsca            lda     dossa_temp                      ; secondary address (record)
+                bra     sdp5                            ; always
 
 
-rfat            bbr7 parsts,l240_1                      ; if "@" not encountered
-                lda #'@'                                
-                bra sdp5                                ; always
+rfat            bbr7    parsts,l240_1                   ; if "@" not encountered
+                lda     #'@'                            
+                bra     sdp5                            ; always
 
-l240_1          lda dosflags                            
+l240_1          lda     dosflags                        
                 lsr                                     
-                bcc sdp1                                ; if "/" not encountered
-                lda #'/'                                
-                bra sdp5                                
+                bcc     sdp1                            ; if "/" not encountered
+                lda     #'/'                            
+                bra     sdp5                            
 
 
 ; ID subroutine

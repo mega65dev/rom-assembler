@@ -1,32 +1,32 @@
 find_loop_2                                             
-                jsr _stop                               ; check stop key
-                +lbeq find_break                        ; exit if down
+                jsr     _stop                           ; check stop key
+                +lbeq   find_break                      ; exit if down
 
-                ldx fndpnt                              ; duh, where are we?
+                ldx     fndpnt                          ; duh, where are we?
                 clc                                     
                 txa                                     ; program:
-                adc lowtr                               ; txtptr = line start + position in line
-                sta txtptr                              
-                lda #0                                  
-                adc lowtr+1                             
-                sta txtptr+1                            ; search string:
-                ldz #0                                  ; at the beginning
+                adc     lowtr                           ; txtptr = line start + position in line
+                sta     txtptr                          
+                lda     #0                              
+                adc     lowtr+1                         
+                sta     txtptr+1                        ; search string:
+                ldz     #0                              ; at the beginning
 
-l88_1           jsr chargt                              ; get next character from text
-                beq find_loop                           ; eol (no match this line)
+l88_1           jsr     chargt                          ; get next character from text
+                beq     find_loop                       ; eol (no match this line)
                 inx                                     ; bump pointer to next character
-                cmp (fstr1),z                           ; character match?  ind okay- buffer
-                bne l88_1                               ; no
-                stx fndpnt                              ; yes- save next position
+                cmp     (fstr1),z                       ; character match?  ind okay- buffer
+                bne     l88_1                           ; no
+                stx     fndpnt                          ; yes- save next position
 
 l88_2           inz                                     ; bump position in search string
-                cpz fstr1+2                             ; string match?
-                bcs print_line                          ; yes
-                jsr chargt                              
-                beq find_loop                           ; no- eol
-                cmp (fstr1),z                           ; ind okay- buffer
-                bne find_loop_2                         ; no- rewind to beginning of search string
-                beq l88_2                               ; maybe- still more chars to compare
+                cpz     fstr1+2                         ; string match?
+                bcs     print_line                      ; yes
+                jsr     chargt                          
+                beq     find_loop                       ; no- eol
+                cmp     (fstr1),z                       ; ind okay- buffer
+                bne     find_loop_2                     ; no- rewind to beginning of search string
+                beq     l88_2                           ; maybe- still more chars to compare
 
 
 ; Print the line of text at LOWTR, highlighting the section of code

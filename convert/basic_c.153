@@ -1,19 +1,19 @@
 rleft2          txa                                     
 rleft3          pha                                     ; save length
-                jsr strspa                              ; get space
-                lda dscpnt                              
-                ldy dscpnt+1                            
-                jsr fretmp                              
+                jsr     strspa                          ; get space
+                lda     dscpnt                          
+                ldy     dscpnt+1                        
+                jsr     fretmp                          
                 ply                                     
                 pla                                     
                 clc                                     
-                adc index                               ; compute where to copy
-                sta index                               
-                bcc l153_1                              
-                inc index+1                             
+                adc     index                           ; compute where to copy
+                sta     index                           
+                bcc     l153_1                          
+                inc     index+1                         
 l153_1          tya                                     
-                jsr movdo                               ; go move it
-                +lbra putnew                            
+                jsr     movdo                           ; go move it
+                +lbra   putnew                          
 
 
 

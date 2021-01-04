@@ -6,22 +6,22 @@ movspr_angle
                 tya                                     
                 ply                                     
 
-                jsr gtang1                              ; get angle values
+                jsr     gtang1                          ; get angle values
 ; ldx #xdest-vwork
 ; jsr scalxy  ;scale lengths
-                ldx #xdest-vwork                        
+                ldx     #xdest-vwork                    
                 clc                                     
 
-l288_1          jsr angmlt                              ; multiply lengths*angles for x and y
-                sta vwork,x                             
+l288_1          jsr     angmlt                          ; multiply lengths*angles for x and y
+                sta     vwork,x                         
                 tya                                     
-                sta vwork+1,x                           
+                sta     vwork+1,x                       
                 inx                                     
                 inx                                     
-                cpx #ydest-vwork                        
-                beq l288_1                              ; loop to do y-position
+                cpx     #ydest-vwork                    
+                beq     l288_1                          ; loop to do y-position
 
-                ror numcnt                              ; shift in carry to set msb
-                bra movspr_position                     ; go place sprite
+                ror     numcnt                          ; shift in carry to set msb
+                bra     movspr_position                 ; go place sprite
 
 

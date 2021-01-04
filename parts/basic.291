@@ -110,7 +110,7 @@ movspr_line
  cli 
  rts   ;done! 
  
-;[[command.sprcor]] 
+;[[command.graphics.sprcor]] 
  
  .page 
 ;  SPRCOR  -- Get sprite position coordinate 

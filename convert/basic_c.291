@@ -1,62 +1,62 @@
 movspr_line                                             
-                ldx #ypos-vwork                         
-                ldy #ydest-vwork                        
-l291_1          lda #0                                  
-                sta xsgn,x                              ; init direction pointers
-                sta xsgn+1,x                            
-                jsr abstwo                              ; get absolute value of coordinate differences
-                bpl l291_2                              ; and determine direction
-                dec xsgn,x                              ; negative direction
-                dec xsgn+1,x                            
-                bra l291_4                              
+                ldx     #ypos-vwork                     
+                ldy     #ydest-vwork                    
+l291_1          lda     #0                              
+                sta     xsgn,x                          ; init direction pointers
+                sta     xsgn+1,x                        
+                jsr     abstwo                          ; get absolute value of coordinate differences
+                bpl     l291_2                          ; and determine direction
+                dec     xsgn,x                          ; negative direction
+                dec     xsgn+1,x                        
+                bra     l291_4                          
 
-l291_2          cmp #0                                  
-                bne l291_3                              
-                cpy #0                                  
-                beq l291_4                              ; zero direction
-l291_3          inc xsgn,x                              ; positive direction
-l291_4          sta xabs,x                              
+l291_2          cmp     #0                              
+                bne     l291_3                          
+                cpy     #0                              
+                beq     l291_4                          ; zero direction
+l291_3          inc     xsgn,x                          ; positive direction
+l291_4          sta     xabs,x                          
                 asl                                     
-                sta fct,x                               ; fct(x,y) = 2*abs(x,y)
+                sta     fct,x                           ; fct(x,y) = 2*abs(x,y)
                 tya                                     
-                sta xabs+1,x                            
+                sta     xabs+1,x                        
                 rol                                     
-                sta fct+1,x                             
+                sta     fct+1,x                         
                 dex                                     
                 dex                                     
-                ldy #xdest-vwork                        ; loop to do in x-direction
-                cpx #xpos-vwork                         
-                beq l291_1                              
+                ldy     #xdest-vwork                    ; loop to do in x-direction
+                cpx     #xpos-vwork                     
+                beq     l291_1                          
 
-                ldx #yabs-savram                        ; determine max(xabs,yabs)
-                ldy #xabs-savram                        
-                jsr subtwo_savram                       
-                lda #0                                  
+                ldx     #yabs-savram                    ; determine max(xabs,yabs)
+                ldy     #xabs-savram                    
+                jsr     subtwo_savram                   
+                lda     #0                              
                 rol                                     
                 rol                                     ; a = c * 2
-                sta lesser                              ; index to smaller delta
-                eor #2                                  
-                sta greatr                              ; index to greater delta
+                sta     lesser                          ; index to smaller delta
+                eor     #2                              
+                sta     greatr                          ; index to greater delta
 
                 clc                                     
-                lda #fct-savram                         
-                adc lesser                              
+                lda     #fct-savram                     
+                adc     lesser                          
                 pha                                     
                 tay                                     
-                eor #2                                  
+                eor     #2                              
                 tax                                     
-                jsr subtwo_savram                       ; fct(greatr) = fct(lesser)-fct(greatr)
-                sta savram,x                            
-                sty savram+1,x                          
+                jsr     subtwo_savram                   ; fct(greatr) = fct(lesser)-fct(greatr)
+                sta     savram,x                        
+                sty     savram+1,x                      
 
                 ply                                     ; fct(lesser)
                 clc                                     
-                lda #xabs-savram                        
-                adc greatr                              
+                lda     #xabs-savram                    
+                adc     greatr                          
                 tax                                     
-                jsr subtwo_savram                       ; error = fct(lesser) - abs(greatr)
-                sta errval                              
-                sty errval+1                            
+                jsr     subtwo_savram                   ; error = fct(lesser) - abs(greatr)
+                sta     errval                          
+                sty     errval+1                        
 
 ; At this point, we've positioned the sprite at the start position, and have
 ; calculated everything we need to move it along a line towards the destination
@@ -72,45 +72,45 @@ l291_4          sta xabs,x
 ;   7,8 total-X  fct2
 ;   9,10 total-Y  error
 
-                ldy z_p_temp_1                          ; sprite #
-                ldx sproff,y                            ; sprite IRQ table offset
+                ldy     z_p_temp_1                      ; sprite #
+                ldx     sproff,y                        ; sprite IRQ table offset
 
-                lda xcnt                                ; set speed factor
-                sta sprite_data,x                       
-                ldy greatr                              
-                lda xabs,y                              ; set counter = max(xyabs)
-                sta sprite_data+1,x                     
-                lda xabs+1,y                            
-                sta sprite_data+2,x                     
-                lda xsgn,y                              ; set dir(max) and max
-                ora xsgn+1,y                            
-                and #3                                  
+                lda     xcnt                            ; set speed factor
+                sta     sprite_data,x                   
+                ldy     greatr                          
+                lda     xabs,y                          ; set counter = max(xyabs)
+                sta     sprite_data+1,x                 
+                lda     xabs+1,y                        
+                sta     sprite_data+2,x                 
+                lda     xsgn,y                          ; set dir(max) and max
+                ora     xsgn+1,y                        
+                and     #3                              
                 lsr                                     
                 ror                                     
-                ora greatr                              
+                ora     greatr                          
                 ror                                     
-                sta sprite_data+4,x                     
-                ldy lesser                              
-                lda xsgn,y                              ; set dir(min) and min
-                ora xsgn+1,y                            
-                and #3                                  
+                sta     sprite_data+4,x                 
+                ldy     lesser                          
+                lda     xsgn,y                          ; set dir(min) and min
+                ora     xsgn+1,y                        
+                and     #3                              
                 lsr                                     
                 ror                                     
-                ora lesser                              
+                ora     lesser                          
                 ror                                     
-                sta sprite_data+3,x                     
-                ldy #0                                  ; set f1, f2, and e
-l291_5          lda fct,y                               
-                sta sprite_data+5,x                     
+                sta     sprite_data+3,x                 
+                ldy     #0                              ; set f1, f2, and e
+l291_5          lda     fct,y                           
+                sta     sprite_data+5,x                 
                 inx                                     
                 iny                                     
-                cpy #6                                  
-                bcc l291_5                              
+                cpy     #6                              
+                bcc     l291_5                          
 
                 cli                                     
                 rts                                     ; done!
 
-;[[command.sprcor]]
+;[[command.graphics.sprcor]]
 
 
 ;  SPRCOR  -- Get sprite position coordinate

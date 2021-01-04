@@ -1,11 +1,11 @@
-finptr          lda lowtr                               
+finptr          lda     lowtr                           
                 clc                                     
-                adc #2                                  
-                ldy lowtr+1                             
-                bcc l125_1                              
+                adc     #2                              
+                ldy     lowtr+1                         
+                bcc     l125_1                          
                 iny                                     
-l125_1          sta varpnt                              
-                sty varpnt+1                            
+l125_1          sta     varpnt                          
+                sty     varpnt+1                        
                 rts                                     
 
 

@@ -1,51 +1,51 @@
-chkgrb          cpy fretop+1                            ; end of strings?
-                bcc l164_5                              
-                bne l164_1                              ; if not equal
-                cmp fretop                              
-                beq l164_5                              
-                bcc l164_5                              
+chkgrb          cpy     fretop+1                        ; end of strings?
+                bcc     l164_5                          
+                bne     l164_1                          ; if not equal
+                cmp     fretop                          
+                beq     l164_5                          
+                bcc     l164_5                          
 
-l164_1          bit highds                              ; check flag
-                bmi l164_2                              ; if empty string found
-                lda #2                                  ; skip pointers past
-                jsr movtop                              ; move top pointer
+l164_1          bit     highds                          ; check flag
+                bmi     l164_2                          ; if empty string found
+                lda     #2                              ; skip pointers past
+                jsr     movtop                          ; move top pointer
 
-l164_2          lda #2                                  ; skip pointers past
-                jsr movpnt                              ; move pointers
-                ldy #1                                  
-                jsr indgrb                              ; garbage?
-                cmp #$ff                                
-                beq l164_4                              ; yes
+l164_2          lda     #2                              ; skip pointers past
+                jsr     movpnt                          ; move pointers
+                ldy     #1                              
+                jsr     indgrb                          ; garbage?
+                cmp     #$ff                            
+                beq     l164_4                          ; yes
 
-l164_3          jsr indgrb                              ; to link bytes
-                sta index1,y                            
+l164_3          jsr     indgrb                          ; to link bytes
+                sta     index1,y                        
                 dey                                     
-                bpl l164_3                              ; if two bytes not moved
+                bpl     l164_3                          ; if two bytes not moved
 l164_4          rts                                     
 
 
-l164_5          ldx temppt                              ; ptr to temp. strings
+l164_5          ldx     temppt                          ; ptr to temp. strings
 
-l164_6          cpx #tempst                             ; any out there?
-                beq l164_7                              ; no
-                jsr slr1                                ; setup ptr (tempf2) to temp. string's bkptr.
-                beq l164_6                              ; (skip if null string!)
+l164_6          cpx     #tempst                         ; any out there?
+                beq     l164_7                          ; no
+                jsr     slr1                            ; setup ptr (tempf2) to temp. string's bkptr.
+                beq     l164_6                          ; (skip if null string!)
                 phx                                     
-                ldx #tempf2                             
-                ldy #0                                  ; .a = string length
-                jsr sta_far_ram1 ;sta (tempf2),y        ; remove backpointer built at garba2
+                ldx     #tempf2                         
+                ldy     #0                              ; .a = string length
+                jsr     sta_far_ram1 ;sta (tempf2),y    ; remove backpointer built at garba2
                 iny                                     
-                lda #$ff                                
-                jsr sta_far_ram1 ;sta (tempf2),y        ; and mark as garbage
+                lda     #$ff                            
+                jsr     sta_far_ram1 ;sta (tempf2),y    ; and mark as garbage
                 plx                                     
-                bra l164_6                              ; always
+                bra     l164_6                          ; always
 
 l164_7          pla                                     ; throw away return address
                 pla                                     
-                lda frespc                              ; fix fretop and frespc
-                ldy frespc+1                            
-                sta fretop                              
-                sty fretop+1                            
+                lda     frespc                          ; fix fretop and frespc
+                ldy     frespc+1                        
+                sta     fretop                          
+                sty     fretop+1                        
                 rts                                     
 
 

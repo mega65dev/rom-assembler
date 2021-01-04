@@ -3,70 +3,70 @@ testwd
                 !text restore_token,resume_token,trap_token,else_token
 
 renumber                                                
-                jsr errind                              ; allowed only in direct mode
+                jsr     errind                          ; allowed only in direct mode
 
 ; Set up default values for n1, n2, and n3
 
-                lda #0                                  ; line #10...
-                ldx #10                                 
-                stx renum_tmp_1                         ; default renum origin (n1)
-                sta renum_tmp_1+1                       
-                stx renum_tmp_2                         ; default increment (n2)
-                sta renum_tmp_2+1                       
-                sta hightr                              ; default start line # (n3)
-                sta hightr+1                            
+                lda     #0                              ; line #10...
+                ldx     #10                             
+                stx     renum_tmp_1                     ; default renum origin (n1)
+                sta     renum_tmp_1+1                   
+                stx     renum_tmp_2                     ; default increment (n2)
+                sta     renum_tmp_2+1                   
+                sta     hightr                          ; default start line # (n3)
+                sta     hightr+1                        
 
-                jsr chrgot                              ; any parameters?
-                beq ren_pass_1                          ; no...
+                jsr     chrgot                          ; any parameters?
+                beq     ren_pass_1                      ; no...
 
 
 ; Check for new starting line number (n1)
 
-                jsr linget                              ; check for a number
-                lda endchr                              ; was there one?
-                beq renum_10                            ; no...use default
-                lda linnum                              
-                ldx linnum+1                            
-                sta renum_tmp_1                         
-                stx renum_tmp_1+1                       
+                jsr     linget                          ; check for a number
+                lda     endchr                          ; was there one?
+                beq     renum_10                        ; no...use default
+                lda     linnum                          
+                ldx     linnum+1                        
+                sta     renum_tmp_1                     
+                stx     renum_tmp_1+1                   
 
 ; Check for new increment
 
 renum_10                                                
-                jsr optwrd                              ; an increment given?
-                bcc renum_30                            ; no...use default
+                jsr     optwrd                          ; an increment given?
+                bcc     renum_30                        ; no...use default
 
-                sty renum_tmp_2                         
-                sta renum_tmp_2+1                       
-                ora renum_tmp_2                         ; increment must be >0
-                +lbeq fcerr                             ; illegal quantity error
+                sty     renum_tmp_2                     
+                sta     renum_tmp_2+1                   
+                ora     renum_tmp_2                     ; increment must be >0
+                +lbeq   fcerr                           ; illegal quantity error
 
 ; Check for starting line number
 
 renum_30                                                
-                jsr optwrd                              ; starting line number given?
-                bcc ren_pass_1                          ; no...
+                jsr     optwrd                          ; starting line number given?
+                bcc     ren_pass_1                      ; no...
 
-                sty hightr                              
-                sty linnum                              
-                sta hightr+1                            
-                sta linnum+1                            
-                jsr FindLine                            ; test for illegal renumber range
-                lda lowtr                               ; (n1 must be >= n3)
-                ldx lowtr+1                             
-                sta highds                              ; pointer to first statement to renumber
-                stx highds+1                            
-                lda renum_tmp_1                         
-                ldx renum_tmp_1+1                       
-                sta linnum                              
-                stx linnum+1                            
-                jsr FindLine                            ; lowtr = ptr to 1st stmt to be overlapped
+                sty     hightr                          
+                sty     linnum                          
+                sta     hightr+1                        
+                sta     linnum+1                        
+                jsr     FindLine                        ; test for illegal renumber range
+                lda     lowtr                           ; (n1 must be >= n3)
+                ldx     lowtr+1                         
+                sta     highds                          ; pointer to first statement to renumber
+                stx     highds+1                        
+                lda     renum_tmp_1                     
+                ldx     renum_tmp_1+1                   
+                sta     linnum                          
+                stx     linnum+1                        
+                jsr     FindLine                        ; lowtr = ptr to 1st stmt to be overlapped
                 sec                                     
-                lda lowtr                               ; can't be smaller
-                sbc highds                              
-                lda lowtr+1                             
-                sbc highds+1                            
-                +lbcc fcerr                             ; bad...
+                lda     lowtr                           ; can't be smaller
+                sbc     highds                          
+                lda     lowtr+1                         
+                sbc     highds+1                        
+                +lbcc   fcerr                           ; bad...
 
 
 ;***********************************************************************
@@ -77,47 +77,47 @@ renum_30
 ; greater than 63999 (however, nothing is actually renumbered in this pass).
 
 ren_pass_1                                              
-                jsr tto                                 ; save txtptr for restoration when done
-                jsr n1_reset                            ; put n1 in FAC, reset txtptr
-                jsr chargt                              ; skip low link
+                jsr     tto                             ; save txtptr for restoration when done
+                jsr     n1_reset                        ; put n1 in FAC, reset txtptr
+                jsr     chargt                          ; skip low link
                 iny                                     ; (.y=1)
-                jsr indtxt                              ; skip high link
-                beq ren_pass_2                          ; end of program => begin pass 2 (assumes txttab > 0)
+                jsr     indtxt                          ; skip high link
+                beq     ren_pass_2                      ; end of program => begin pass 2 (assumes txttab > 0)
 
 r_pass1_10                                              
                 iny                                     ; (.y=2)
-                jsr indtxt                              ; line number low
+                jsr     indtxt                          ; line number low
                 sec                                     
-                sbc hightr                              ; in line range which is to be renumbered?
+                sbc     hightr                          ; in line range which is to be renumbered?
                 iny                                     ; (.y=3)
-                jsr indtxt                              ; line number high
-                sbc hightr+1                            
-                bcs r_pass1_20                          ; yes => fake renumbering
-                jsr set_next                            ; goto next line
-                bne r_pass1_10                          ; if z=0 then not end-of-text => keep going
-                beq ren_pass_2                          ; else end
+                jsr     indtxt                          ; line number high
+                sbc     hightr+1                        
+                bcs     r_pass1_20                      ; yes => fake renumbering
+                jsr     set_next                        ; goto next line
+                bne     r_pass1_10                      ; if z=0 then not end-of-text => keep going
+                beq     ren_pass_2                      ; else end
 
 r_pass1_20                                              
-                jsr set_next                            ; goto next line
-                beq ren_pass_2                          ; if z=1 then end-of-text => exit
-                jsr new_num                             ; create next line number
-                bcs r_pass1_30                          ; if c=1 then it wrapped => error
-                cmp #>63999                             ; can't have lines > 63999
-                bcc r_pass1_20                          ; if c=0 then ok
+                jsr     set_next                        ; goto next line
+                beq     ren_pass_2                      ; if z=1 then end-of-text => exit
+                jsr     new_num                         ; create next line number
+                bcs     r_pass1_30                      ; if c=1 then it wrapped => error
+                cmp     #>63999                         ; can't have lines > 63999
+                bcc     r_pass1_20                      ; if c=0 then ok
 
 r_pass1_30                                              ; renumbering will generate an illegal line #
-                ldx #err_too_large                      ; 'line number too large' error
-                +lbra error                             
+                ldx     #err_too_large                  ; 'line number too large' error
+                +lbra   error                           
 
 set_next                                                
-                ldy #0                                  ; set for next BASIC line
-                jsr indtxt                              ; low link
+                ldy     #0                              ; set for next BASIC line
+                jsr     indtxt                          ; low link
                 tax                                     
                 iny                                     ; (.y=1)
-                jsr indtxt                              ; high link
-                beq set_end                             ; if z=1 then end of program => exit
-                stx txtptr                              
-                sta txtptr+1                            
+                jsr     indtxt                          ; high link
+                beq     set_end                         ; if z=1 then end of program => exit
+                stx     txtptr                          
+                sta     txtptr+1                        
 set_end         rts                                     
 
 
@@ -129,17 +129,17 @@ set_end         rts
 ; checks for non-existant line number destinations.
 
 ren_pass_2                                              
-                bbr4 runmod,l74_1                       ; skip pass two and three if plain text (edit mode) [910620]
-                jsr n1_reset                            ; yes- just setup up starting line # and reset txtptr
-                bra ren_pass_4                          ; then renumber just the text's line numbers
+                bbr4    runmod,l74_1                    ; skip pass two and three if plain text (edit mode) [910620]
+                jsr     n1_reset                        ; yes- just setup up starting line # and reset txtptr
+                bra     ren_pass_4                      ; then renumber just the text's line numbers
 
-l74_1           lda #$01                                ; set flag for 'pass 2'
-                sta z_p_temp_1                          
-                lda text_top                            ; copy top-of-text pointer for later use
-                ldx text_top+1                          ; (we don't want to change original here)
-                sta fndpnt                              
-                stx fndpnt+1                            
-                jsr imbed_lines                         ; search for imbedded lines (but don't change)
+l74_1           lda     #$01                            ; set flag for 'pass 2'
+                sta     z_p_temp_1                      
+                lda     text_top                        ; copy top-of-text pointer for later use
+                ldx     text_top+1                      ; (we don't want to change original here)
+                sta     fndpnt                          
+                stx     fndpnt+1                        
+                jsr     imbed_lines                     ; search for imbedded lines (but don't change)
 
 
 

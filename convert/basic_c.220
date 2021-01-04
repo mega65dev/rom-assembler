@@ -1,12 +1,12 @@
-dopen           lda #$22                                ; set error flag
-                jsr dosprs                              ; parse the line
-                jsr chk6                                ; check required parameters
-                jsr find_sa                             ; find unused secondary address
-                ldy #fopn                               ; fcb format pointer
-                ldx #4                                  ; normal length
-                bbr6 parsts,open_it                     ; relative record? branch if not relative
-                ldx #8                                  ; random access length
-                bra open_it                             ; [910925]
+dopen           lda     #$22                            ; set error flag
+                jsr     dosprs                          ; parse the line
+                jsr     chk6                            ; check required parameters
+                jsr     find_sa                         ; find unused secondary address
+                ldy     #fopn                           ; fcb format pointer
+                ldx     #4                              ; normal length
+                bbr6    parsts,open_it                  ; relative record? branch if not relative
+                ldx     #8                              ; random access length
+                bra     open_it                         ; [910925]
 
 ;l220_1 jsr open_file  ;open it
 ; bra exit_disk_op ;report any DOS errors, & return to main [910404]
@@ -15,39 +15,39 @@ dopen           lda #$22                                ; set error flag
 
 ; APPEND
 
-append          lda #$e2                                ; set error flags
-                jsr dosprs                              ; parse the line
-                jsr chk6                                ; check required parameters
-                jsr find_sa                             ; find secondary address
-                ldy #fapn                               ; tabld index
-                ldx #5                                  ; length
+append          lda     #$e2                            ; set error flags
+                jsr     dosprs                          ; parse the line
+                jsr     chk6                            ; check required parameters
+                jsr     find_sa                         ; find secondary address
+                ldy     #fapn                           ; tabld index
+                ldx     #5                              ; length
 open_it                                                 
-                jsr open_file                           ; open it
-                +lbra exit_disk_op                      ; report any DOS errors, & return to main [910404]
+                jsr     open_file                       ; open it
+                +lbra   exit_disk_op                    ; report any DOS errors, & return to main [910404]
 
 
 
 open_file                                               ; dop2.
                 txa                                     ; set length into a
-                jsr sendp                               
-                jsr _clrch                              
-                ldx #sys_bank                           ; fname is in system space, bank0  [910620]
+                jsr     sendp                           
+                jsr     _clrch                          
+                ldx     #sys_bank                       ; fname is in system space, bank0  [910620]
                 txa                                     ; (load bank not req'd)????
-                jsr _setbank                            
-                jmp _open                               
+                jsr     _setbank                        
+                jmp     _open                           
 
 
 ; Find an available secondary address
 
 find_sa                                                 
-                ldy #$61                                ; 2-14 possible
+                ldy     #$61                            ; 2-14 possible
 
 l220_1          iny                                     
-                cpy #$6f                                
-                beq too_many_files                      ; if none available error
-                jsr _lkupsa                             ; kernel will lookup this sa in its tables
-                bcc l220_1                              ; if used keep looking
-                sty dossa                               ; save secondary address
+                cpy     #$6f                            
+                beq     too_many_files                  ; if none available error
+                jsr     _lkupsa                         ; kernel will lookup this sa in its tables
+                bcc     l220_1                          ; if used keep looking
+                sty     dossa                           ; save secondary address
                 rts                                     ; return .y = sa
 
 

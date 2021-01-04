@@ -1,24 +1,24 @@
 are_you_sure                                            
 
-                bbs7 runmod,response_fake               ; branch if not direct mode
+                bbs7    runmod,response_fake            ; branch if not direct mode
 
-                jsr _primm                              ; else prompt user for y/n answer
+                jsr     _primm                          ; else prompt user for y/n answer
                 !text "ARE YOU SURE? ", 0               
 
 
 response_get                                            
-                jsr _clrch                              ; clear channel for basin
-                jsr _basin                              ; next char
+                jsr     _clrch                          ; clear channel for basin
+                jsr     _basin                          ; next char
                 pha                                     ; save first char of reply
 
-l247_1          cmp #cr                                 ; eat chars until end of line
-                beq l247_2                              ; if cr received, exit
-                jsr _basin                              
-                bne l247_1                              ; continue to ignore
+l247_1          cmp     #cr                             ; eat chars until end of line
+                beq     l247_2                          ; if cr received, exit
+                jsr     _basin                          
+                bne     l247_1                          ; continue to ignore
 
-l247_2          jsr _bsout                              ; new line     [910212] FAB
+l247_2          jsr     _bsout                          ; new line     [910212] FAB
                 pla                                     
-                cmp #'Y'                                ; z set means ans=y.....
+                cmp     #'Y'                            ; z set means ans=y.....
                 rts                                     
 
 

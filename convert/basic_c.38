@@ -1,28 +1,28 @@
-p1l010          ldy lstpnt                              
-                and #$7f                                
+p1l010          ldy     lstpnt                          
+                and     #$7f                            
 
-p1l015          cmp #':'                                ; end-of-stmt?     [900516]
-                bne l38_1                               ; no
-                bbr7 helper,l38_1                       ; yes, but skip e-o-s check if not HELP...
-                bbs7 dores,l38_1                        ; or ':' is inside quotes
-                jsr highlight_done                      ; yes, restore normal text color
-                lda #':'                                
+p1l015          cmp     #':'                            ; end-of-stmt?     [900516]
+                bne     l38_1                           ; no
+                bbr7    helper,l38_1                    ; yes, but skip e-o-s check if not HELP...
+                bbs7    dores,l38_1                     ; or ':' is inside quotes
+                jsr     highlight_done                  ; yes, restore normal text color
+                lda     #':'                            
 
-l38_1           jsr outch                               ; outdo
-                cmp #'"'                                ; if quote character, toggle quote-switch
-                bne l38_2                               
-                lda dores                               
-                eor #$ff                                
-                sta dores                               
+l38_1           jsr     outch                           ; outdo
+                cmp     #'"'                            ; if quote character, toggle quote-switch
+                bne     l38_2                           
+                lda     dores                           
+                eor     #$ff                            
+                sta     dores                           
 
 l38_2           iny                                     ; point to next character (should never wrap)
-                bbs0 helper,l38_3                       ; branch if highlighting tokens
-                bbs5 helper,l38_3                       ; branch if called by FIND/CHANGE
-                bbr7 helper,l38_4                       ; branch if called by LIST or HELP satisfied
-l38_3           jsr helpsb                              
+                bbs0    helper,l38_3                    ; branch if highlighting tokens
+                bbs5    helper,l38_3                    ; branch if called by FIND/CHANGE
+                bbr7    helper,l38_4                    ; branch if called by LIST or HELP satisfied
+l38_3           jsr     helpsb                          
 
-l38_4           jsr indlow                              
-                +lbeq highlight_done                    ; finished when trailing null is found
-                jmp (iqplop)                            ; usually points to nqplop
+l38_4           jsr     indlow                          
+                +lbeq   highlight_done                  ; finished when trailing null is found
+                jmp     (iqplop)                        ; usually points to nqplop
 
 

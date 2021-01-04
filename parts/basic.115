@@ -151,7 +151,7 @@ sound cmp #clr_token  ;SOUND CLR: init sound/music environment [910717]
  rts 
  
 ;.end 
-;[[command.window]] 
+;[[command.text.window]] 
  .page 
  .subttl  WINDOW 
  

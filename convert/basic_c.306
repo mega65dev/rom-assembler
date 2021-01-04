@@ -1,24 +1,24 @@
 angmlt                                                  
-                ldy #sinval-vwork                       ; get offset to angle value
-                bcc l306_1                              ; get cosine/sine offset
-                ldy #cosval-vwork                       
+                ldy     #sinval-vwork                   ; get offset to angle value
+                bcc     l306_1                          ; get cosine/sine offset
+                ldy     #cosval-vwork                   
 
-l306_1          lda angsgn                              
-                adc #2                                  ; correct phase for cosine to look as sine
+l306_1          lda     angsgn                          
+                adc     #2                              ; correct phase for cosine to look as sine
                 lsr                                     
                 lsr                                     
                 php                                     ; save if carry - means negative angle value
-                jsr settwo                              ; get angle fraction in y/a
-                cpy #$ff                                ; test if value should be 1
-                bcc l306_2                              ; skip if not
+                jsr     settwo                          ; get angle fraction in y/a
+                cpy     #$ff                            ; test if value should be 1
+                bcc     l306_2                          ; skip if not
                 txa                                     
                 tay                                     ; get offset to integer
-                jsr settwo                              ; just get integer - multiplied by 1
-                bcs l306_3                              
+                jsr     settwo                          ; just get integer - multiplied by 1
+                bcs     l306_3                          
 
-l306_2          jsr twobyt                              ; multiply integer times angle value
+l306_2          jsr     twobyt                          ; multiply integer times angle value
 l306_3          plp                                     ; get sign of angle
-                bcc invert                              ; invert result if negative,do rts
+                bcc     invert                          ; invert result if negative,do rts
                 rts                                     
 
 

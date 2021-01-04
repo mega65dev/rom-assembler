@@ -1,49 +1,49 @@
-afrm            jsr indfrm                              
+afrm            jsr     indfrm                          
                 iny                                     
-                cmp #','                                ; comma?
-                bne punt                                ; no...
-                bit flag                                ; comma flag on?
-                bmi bout                                ; yes, do a fill char
+                cmp     #','                            ; comma?
+                bne     punt                            ; no...
+                bit     flag                            ; comma flag on?
+                bmi     bout                            ; yes, do a fill char
 ; sta sw_rom_ram0 ;????
-                lda pucoma                              
-                bra out                                 ; no,...output a comma char
+                lda     pucoma                          
+                bra     out                             ; no,...output a comma char
 
 
-bout            lda blfd                                
-                bra out                                 
+bout            lda     blfd                            
+                bra     out                             
 
 
-punt            cmp #'.'                                ; decimal point?
-                bne afplus                              
+punt            cmp     #'.'                            ; decimal point?
+                bne     afplus                          
 ; sta sw_rom_ram0 ;????
-                lda pudot                               ; yes...
-                bra out                                 
+                lda     pudot                           ; yes...
+                bra     out                             
 
 
-afplus          cmp #'+'                                ; plus?
-                beq ispl                                ; yes...
-                cmp #'-'                                ; minus?
-                beq ispl1                               ; yes...
-                cmp #'^'                                ; up arrow?
-                bne pndd                                ; no...
-                lda #'E'                                
-                jsr cdout                               
-                ldy uexp                                
-                jsr cmo                                 ; first dig of exp zero?
-                bne l209_1                              ; no...
+afplus          cmp     #'+'                            ; plus?
+                beq     ispl                            ; yes...
+                cmp     #'-'                            ; minus?
+                beq     ispl1                           ; yes...
+                cmp     #'^'                            ; up arrow?
+                bne     pndd                            ; no...
+                lda     #'E'                            
+                jsr     cdout                           
+                ldy     uexp                            
+                jsr     cmo                             ; first dig of exp zero?
+                bne     l209_1                          ; no...
                 iny                                     
-                jsr cmo                                 ; second digit?
-                beq l209_2                              ; yes
+                jsr     cmo                             ; second digit?
+                beq     l209_2                          ; yes
 
-l209_1          lda #'-'                                
-                bit usgn                                
-                bmi l209_3                              
+l209_1          lda     #'-'                            
+                bit     usgn                            
+                bmi     l209_3                          
 
-l209_2          lda #'+'                                
-l209_3          jsr cdout                               ; output sign exp
-                ldx uexp                                
-                lda fbuffr,x                            
-                jsr cdout                               ; output first dig exp
-                ldy endfd                               
-                bra telx                                
+l209_2          lda     #'+'                            
+l209_3          jsr     cdout                           ; output sign exp
+                ldx     uexp                            
+                lda     fbuffr,x                        
+                jsr     cdout                           ; output first dig exp
+                ldy     endfd                           
+                bra     telx                            
 

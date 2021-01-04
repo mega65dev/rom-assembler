@@ -1,70 +1,70 @@
 AutoScroll                                              
                 pha                                     ; save character for Editor
-                bbs7 runmod,AutoScrollno                ; branch if not direct mode
-                ldy channl                              ; is output redirected?
-                bne AutoScrollno                        ; yes- can't do scroll (need to read screen)
-                lda txttab                              
-                ldx txttab+1                            ; is there a program in memory to scroll?
-                sta txtptr                              
-                stx txtptr+1                            
+                bbs7    runmod,AutoScrollno             ; branch if not direct mode
+                ldy     channl                          ; is output redirected?
+                bne     AutoScrollno                    ; yes- can't do scroll (need to read screen)
+                lda     txttab                          
+                ldx     txttab+1                        ; is there a program in memory to scroll?
+                sta     txtptr                          
+                stx     txtptr+1                        
                 iny                                     ; (1)
-                jsr indtxt                              
-                bne AutoScrollyes                       ; yes- continue
-                bra AutoScrollno                        ; no-  exit
+                jsr     indtxt                          
+                bne     AutoScrollyes                   ; yes- continue
+                bra     AutoScrollno                    ; no-  exit
 
 AutoScrollpop                                           
                 pla                                     
                 pla                                     
 AutoScrollng                                            
-                ldx point                               ; restore cursor position
-                ldy point+1                             
+                ldx     point                           ; restore cursor position
+                ldy     point+1                         
                 clc                                     
-                jsr _plot                               
+                jsr     _plot                           
 AutoScrollno                                            
-                rmb1 helper                             ; remove LINGET flag
+                rmb1    helper                          ; remove LINGET flag
                 pla                                     ; restore character
                 sec                                     ; return to Editor with no action taken
                 rts                                     
 
 AutoScrollyes                                           
-                ror form                                ; save .c=direction (character already on stack)
+                ror     form                            ; save .c=direction (character already on stack)
                 sec                                     
-                jsr _plot                               ; get current cursor position & save it
-                stx point                               
-                sty point+1                             
-                smb1 helper                             ; set flag for LINGET not to go to error if it has problems
-                bbs7 form,AutoScrolldn                  ; branch according to direction of scroll...
+                jsr     _plot                           ; get current cursor position & save it
+                stx     point                           
+                sty     point+1                         
+                smb1    helper                          ; set flag for LINGET not to go to error if it has problems
+                bbs7    form,AutoScrolldn               ; branch according to direction of scroll...
 
 
 AutoScrollup                                            ; wanting to scroll up
                 sec                                     
-                lda _screen_bottom                      ; put cursor at bottom of screen
-                sbc _screen_top                         
-                sta form+1                              ; save where it is- we'll be printing line there
+                lda     _screen_bottom                  ; put cursor at bottom of screen
+                sbc     _screen_top                     
+                sta     form+1                          ; save where it is- we'll be printing line there
                 tax                                     
-                jsr AutoSearch                          ; search for a line number on screen, put it in linnum
-                jsr FindLine                            ; find the line in program
-                bcc l263_1   ;  line not found          ; we have a pointer to the next line
-                ldy #0                                  
-                jsr indlow                              ; find the next line, the one we want to print, via link bytes
+                jsr     AutoSearch                      ; search for a line number on screen, put it in linnum
+                jsr     FindLine                        ; find the line in program
+                bcc     l263_1   ;  line not found      ; we have a pointer to the next line
+                ldy     #0                              
+                jsr     indlow                          ; find the next line, the one we want to print, via link bytes
                 tax                                     
                 iny                                     
-                jsr indlow                              
-                stx lowtr                               ; advance pointer to it
-                sta lowtr+1                             
-l263_1          ldx form+1                              ; put cursor back at bottom of screen
-                ldy #0                                  
+                jsr     indlow                          
+                stx     lowtr                           ; advance pointer to it
+                sta     lowtr+1                         
+l263_1          ldx     form+1                          ; put cursor back at bottom of screen
+                ldy     #0                              
                 clc                                     
-                jsr _plot                               
-l263_2          jsr crdo                                ; get a blank line to print on- scroll screen up
-                ldy #1                                  
-                jsr indlow                              ; end of program marker?
-                bne AutoScrollprint                     ; no-  print this line & exit
-                lda txttab                              ; yes- loop to start of program,
-                ldx txttab+1                            
-                sta lowtr                               
-                stx lowtr+1                             
-                jsr crdo                                ; and add an extra newline
-                bra l263_2                              
+                jsr     _plot                           
+l263_2          jsr     crdo                            ; get a blank line to print on- scroll screen up
+                ldy     #1                              
+                jsr     indlow                          ; end of program marker?
+                bne     AutoScrollprint                 ; no-  print this line & exit
+                lda     txttab                          ; yes- loop to start of program,
+                ldx     txttab+1                        
+                sta     lowtr                           
+                stx     lowtr+1                         
+                jsr     crdo                            ; and add an extra newline
+                bra     l263_2                          
 
 

@@ -1,5 +1,5 @@
 decbad                                                  
-                +lbra fcerr                             ; illegal qty error
+                +lbra   fcerr                           ; illegal qty error
 
 ;.end
 
@@ -7,26 +7,26 @@ decbad
 
 
 
-peek            phw poker                               ; ..also happens to be LINNUM!   [910911]
-                jsr chknum                              
-                jsr getadr                              
-                ldy #0                                  ; index
-                bit current_bank                        
-                bmi l140_1                              ; NOMAP?
+peek            phw     poker                           ; ..also happens to be LINNUM!   [910911]
+                jsr     chknum                          
+                jsr     getadr                          
+                ldy     #0                              ; index
+                bit     current_bank                    
+                bmi     l140_1                          ; NOMAP?
 
                 phz                                     
-                ldz current_bank                        ; set up bank number for Kernel's fetch
-                ldx #poker                              ; ..and address
-                jsr _lda_far                            ; lda (poker),y
+                ldz     current_bank                    ; set up bank number for Kernel's fetch
+                ldx     #poker                          ; ..and address
+                jsr     _lda_far                        ; lda (poker),y
                 plz                                     
                 !text $2c                               
 
-l140_1          lda (poker),y                           
+l140_1          lda     (poker),y                       
                 tay                                     ; get byte into .y
                 pla                                     
-                sta poker+1                             ; restore linnum
+                sta     poker+1                         ; restore linnum
                 pla                                     
-                sta poker                               
-                +lbra sngflt                            ; float it
+                sta     poker                           
+                +lbra   sngflt                          ; float it
 
 

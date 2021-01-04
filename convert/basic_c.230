@@ -1,22 +1,22 @@
-dclear          jsr dospar                              ; parse the line
-                ldy #finit                              ; set code
-                lda #2                                  
-                jsr trans                               ; send command
-                jsr print_dos_error                     ; if any
-                +lbra dclall                            
+dclear          jsr     dospar                          ; parse the line
+                ldy     #finit                          ; set code
+                lda     #2                              
+                jsr     trans                           ; send command
+                jsr     print_dos_error                 ; if any
+                +lbra   dclall                          
 
 ;[[command.collect]]
 ; COLLECT v<drive#>
 
-collect         jsr dospar                              ; parse the line
-                jsr chk3                                ; check optional parameters
-                jsr _clall                              ; close all files
-                ldy #fcoll                              ; tabld offset
-                lda #1                                  ; length
-                bbr4 parsts,l230_1                      
+collect         jsr     dospar                          ; parse the line
+                jsr     chk3                            ; check optional parameters
+                jsr     _clall                          ; close all files
+                ldy     #fcoll                          ; tabld offset
+                lda     #1                              ; length
+                bbr4    parsts,l230_1                   
                 inc                                     ; include drive
-l230_1          jsr trans                               ; send command
-                +lbra print_dos_error                   ; if any
+l230_1          jsr     trans                           ; send command
+                +lbra   print_dos_error                 ; if any
 
 
 ;[[command.copy]]

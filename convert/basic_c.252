@@ -1,56 +1,56 @@
 collision_irq                                           
 ; sei
-                lda _vicIRQ                             ; check VIC IRQ flags
-                and #%00001110                          ; mask all but lp, s/s, and s/bgnd flags
-                beq l252_5                              ; exit if none set
-                trb _vicIRQ                             ; else reset flags we're going to handle
+                lda     _vicIRQ                         ; check VIC IRQ flags
+                and     #%00001110                      ; mask all but lp, s/s, and s/bgnd flags
+                beq     l252_5                          ; exit if none set
+                trb     _vicIRQ                         ; else reset flags we're going to handle
                 lsr                                     ; shift out raster interrupt bit (not used)
 
 ; Test for 3 types of collision interrupts : sprite/sprite, sprite/bgnd, & light pen
 
-                ldy #1                                  ; loop for sprite/bgnd and sprite/sprite collision check
+                ldy     #1                              ; loop for sprite/bgnd and sprite/sprite collision check
 l252_1          lsr                                     
-                bcc l252_4                              ; bit not set ==> not source of interrupt
+                bcc     l252_4                          ; bit not set ==> not source of interrupt
 
                 pha                                     
-                lda vic+30,y                            ; accumulate collision data (resets register)
-                ora collisions,y                        
-                sta collisions,y                        
+                lda     vic+30,y                        ; accumulate collision data (resets register)
+                ora     collisions,y                    
+                sta     collisions,y                    
 
-                lda intval                              ; allowable interrupts
-                cpy #0                                  ; examine selected bit
-                beq l252_2                              
+                lda     intval                          ; allowable interrupts
+                cpy     #0                              ; examine selected bit
+                beq     l252_2                          
                 lsr                                     
 l252_2          lsr                                     
-                bcc l252_3                              ; BASIC doesn't want this interrupt
-                lda #$ff                                
-                sta int_trip_flag,y                     ; turn on trip flag
+                bcc     l252_3                          ; BASIC doesn't want this interrupt
+                lda     #$ff                            
+                sta     int_trip_flag,y                 ; turn on trip flag
 
 l252_3          pla                                     
 
 l252_4          dey                                     
-                bpl l252_1                              
+                bpl     l252_1                          
 
 
 ; Check light pen latch
 
                 lsr                                     
-                bcc l252_5                              ; LightPen latch not valid
+                bcc     l252_5                          ; LightPen latch not valid
 
-                ldx vic+49                              ; 4567R7 bug- must read LP_latches in Slow mode????
-                lda #%01000000                          ; [910618]
-                trb vic+49                              
-                ldy vic+19                              ; save latched x position
-                sty lightpen_xpos                       
-                ldy vic+20                              ; save latched y position
-                sty lightpen_ypos                       
-                stx vic+49                              ; restore speed     [910618]
+                ldx     vic+49                          ; 4567R7 bug- must read LP_latches in Slow mode????
+                lda     #%01000000                      ; [910618]
+                trb     vic+49                          
+                ldy     vic+19                          ; save latched x position
+                sty     lightpen_xpos                   
+                ldy     vic+20                          ; save latched y position
+                sty     lightpen_ypos                   
+                stx     vic+49                          ; restore speed     [910618]
 
-                lda intval                              ; is BASIC interested in our little find?
-                and #4                                  
-                beq l252_5                              ; no, move on to next IRQ task
-                lda #$ff                                
-                sta int_trip_flag+2                     ; yes- let BASIC know we caught one
+                lda     intval                          ; is BASIC interested in our little find?
+                and     #4                              
+                beq     l252_5                          ; no, move on to next IRQ task
+                lda     #$ff                            
+                sta     int_trip_flag+2                 ; yes- let BASIC know we caught one
 
 l252_5                                                  
 

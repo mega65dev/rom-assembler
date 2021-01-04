@@ -1,9 +1,9 @@
 play_bad_value                                          
-                jsr clear_flag                          
-                +lbra fcerr                             ; illegal quantity
+                jsr     clear_flag                      
+                +lbra   fcerr                           ; illegal quantity
 
 play_dot                                                
-                sta dnote                               
+                sta     dnote                           
                 rts                                     
 
 
@@ -14,21 +14,21 @@ set_note_length
 ; ldy #>beats
 ; sty ntime+1
 
-                bit _pal_ntsc                           ; determine if PAL or NTSC system  [910724]
-                bmi l108_1                              ; ...branch if PAL
-                ldz #<beats_ntsc                        ; (whole note 4/4 time = 2 sec)
-                ldy #>beats_ntsc                        
-                bra l108_2                              
-l108_1          ldz #<beats_pal                         
-                ldy #>beats_pal                         
-l108_2          stz ntime                               
-                sty ntime+1                             
+                bit     _pal_ntsc                       ; determine if PAL or NTSC system  [910724]
+                bmi     l108_1                          ; ...branch if PAL
+                ldz     #<beats_ntsc                    ; (whole note 4/4 time = 2 sec)
+                ldy     #>beats_ntsc                    
+                bra     l108_2                          
+l108_1          ldz     #<beats_pal                     
+                ldy     #>beats_pal                     
+l108_2          stz     ntime                           
+                sty     ntime+1                         
 
 l108_3          dex                                     
-                bmi l108_4                              ; finished dividing, exit
-                lsr ntime+1                             
-                ror ntime                               
-                bra l108_3                              
+                bmi     l108_4                          ; finished dividing, exit
+                lsr     ntime+1                         
+                ror     ntime                           
+                bra     l108_3                          
 
 l108_4          rts                                     
 

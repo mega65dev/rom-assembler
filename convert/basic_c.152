@@ -1,46 +1,46 @@
-strd            jsr chknum                              ; arg has to be numeric
-                ldy #0                                  
-                jsr foutc                               ; do its output
+strd            jsr     chknum                          ; arg has to be numeric
+                ldy     #0                              
+                jsr     foutc                           ; do its output
                 pla                                     
                 pla                                     
 
-timstr          lda #<lofbuf                            
-                ldy #>lofbuf                            
-                +lbra strlit                            
+timstr          lda     #<lofbuf                        
+                ldy     #>lofbuf                        
+                +lbra   strlit                          
 
 
 ; CHR$() creates a string which contains as its only character the PETSCII
 ; equivalent of the integer argument (#) which must be < 256.
 
-chrd            jsr conint                              ; get integer in range
+chrd            jsr     conint                          ; get integer in range
                 phx                                     
-                lda #1                                  ; one-character string
-                jsr strspa                              ; get space for string
-                ldy #0                                  
+                lda     #1                              ; one-character string
+                jsr     strspa                          ; get space for string
+                ldy     #0                              
                 pla                                     
 ; phx   ;set up string bank
-                ldx #dsctmp+1                           
-                jsr sta_far_ram1                        ; sta (dsctmp+1),y
+                ldx     #dsctmp+1                       
+                jsr     sta_far_ram1                    ; sta (dsctmp+1),y
 ; plx
 
 chrd1           pla                                     ; get rid of "chknum" return address
                 pla                                     
-                +lbra putnew                            ; setup FAC to point to desc
+                +lbra   putnew                          ; setup FAC to point to desc
 
 
 ; The following is the LEFT$($,#) function.  It takes the leftmost # characters
 ; of the string.  If # > len of the string, it returns the whole string.
 
-leftd           jsr pream                               ; test parameters
+leftd           jsr     pream                           ; test parameters
                 pha                                     ; # arg
-                jsr inddpt                              ; string len
-                sta syntmp                              
+                jsr     inddpt                          ; string len
+                sta     syntmp                          
                 pla                                     
-                cmp syntmp                              
+                cmp     syntmp                          
                 tya                                     ; that's all there is to LEFT$
 
-rleft           bcc l152_1                              
-                jsr inddpt                              
+rleft           bcc     l152_1                          
+                jsr     inddpt                          
                 tax                                     ; put length into x
                 tya                                     ; zero (a), the offset
 l152_1          pha                                     ; save offset

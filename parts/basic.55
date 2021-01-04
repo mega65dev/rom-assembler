@@ -115,7 +115,7 @@ outqst lda #'?'
  
 ;.end 
  .page 
-;[[command.inputs]] 
+;[[command.text.input]] 
  .subttl INPUT  GET  READ  LINPUT 
  
 get jsr errdir  ;direct mode illegal 
