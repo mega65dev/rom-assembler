@@ -1,20 +1,20 @@
-lstest           cpx #number_fkeys                         ;; 466e 101
-                 bne lstky1                               ; ...loop until done all keys ;; 4670 101
-                 rts                                       ;; 4672 101
- ;; 4673 101
- ;; 4673 101
-list_special                                               ;; 4673 101
-                 plx                                      ; restore .x ;; 4673 101
-_local_1100_10   lda keydat-3,x                           ; display something like  ' "+CHR$( ' ;; 4674 101
-                 jsr _bsout                                ;; 4677 101
-                 dex                                       ;; 467a 101
-                 cpx #3                                    ;; 467b 101
-                 bcs _local_1100_10                        ;; 467d 101
-                 pla                                      ; restore character ;; 467f 101
-                 jsr prtdec                               ; display decimal value of chr in .a ;; 4680 101
-                 lda #')'                                 ; finish off with closing paren. ;; 4683 101
-                 jsr _bsout                                ;; 4685 101
-                 ldx #8                                   ; mark end of special ;; 4688 101
-                 bra lstnd                                ; ..always ;; 468a 101
- ;; 468c 101
- ;; 468c 101
+lstest           cpx #number_fkeys                         ;; @@466e 101
+                 bne lstky1                               ; ...loop until done all keys ;; @@4670 101
+                 rts                                       ;; @@4672 101
+ ;; @@4673 101
+ ;; @@4673 101
+list_special                                               ;; @@4673 101
+                 plx                                      ; restore .x ;; @@4673 101
+_local_1100_10   lda keydat-3,x                           ; display something like  ' "+CHR$( ' ;; @@4674 101
+                 jsr _bsout                                ;; @@4677 101
+                 dex                                       ;; @@467a 101
+                 cpx #3                                    ;; @@467b 101
+                 bcs _local_1100_10                        ;; @@467d 101
+                 pla                                      ; restore character ;; @@467f 101
+                 jsr prtdec                               ; display decimal value of chr in .a ;; @@4680 101
+                 lda #')'                                 ; finish off with closing paren. ;; @@4683 101
+                 jsr _bsout                                ;; @@4685 101
+                 ldx #8                                   ; mark end of special ;; @@4688 101
+                 bra lstnd                                ; ..always ;; @@468a 101
+ ;; @@468c 101
+ ;; @@468c 101

@@ -1,39 +1,39 @@
-drwinc           php                                       ;; 7a90 255
-                 and #1                                   ; adjust .y for x or y position ;; 7a91 255
-                 beq _local_1254_5                        ; 0=x ;; 7a93 255
-                 iny                                      ; 1=y ;; 7a95 255
-_local_1254_5    plp                                       ;; 7a96 255
-                 bmi _local_1254_10                       ; enter with b7=negative, b6=positive, else zero ;; 7a97 255
-                 bvc _local_1254_30                        ;; 7a99 255
- ;; 7a9b 255
-                 lda vic,y                                ; positive direction ;; 7a9b 255
-                 inc a                                     ;; 7a9e 255
-                 sta vic,y                                 ;; 7a9f 255
-                 bra _local_1254_20                        ;; 7aa2 255
- ;; 7aa4 255
-_local_1254_10   lda vic,y                                ; negative direction ;; 7aa4 255
-                 dec a                                     ;; 7aa7 255
-                 sta vic,y                                 ;; 7aa8 255
-                 cmp #$ff                                  ;; 7aab 255
- ;; 7aad 255
-_local_1254_20   bne _local_1254_30                       ; no wrap ;; 7aad 255
-                 tya                                       ;; 7aaf 255
-                 bit #1                                    ;; 7ab0 255
-                 bne _local_1254_30                       ; wrap in y okay ;; 7ab2 255
-                 lsr a                                     ;; 7ab4 255
-                 tay                                       ;; 7ab5 255
-                 lda sbits,y                              ; wrap in x- toggle msb ;; 7ab6 255
-                 eor vic+16                                ;; 7ab9 255
-                 sta vic+16                                ;; 7abc 255
-                 tya                                       ;; 7abf 255
-                 asl a                                     ;; 7ac0 255
-                 tay                                       ;; 7ac1 255
- ;; 7ac2 255
-_local_1254_30   tya                                      ; restore y to sprite offset ;; 7ac2 255
-                 and #$fe                                  ;; 7ac3 255
-                 tay                                       ;; 7ac5 255
-                 rts                                       ;; 7ac6 255
- ;; 7ac7 255
-; .page ;; 7ac7 255
-; Play music, if in progress ;; 7ac7 255
- ;; 7ac7 255
+drwinc           php                                       ;; @@7a90 255
+                 and #1                                   ; adjust .y for x or y position ;; @@7a91 255
+                 beq _local_1254_5                        ; 0=x ;; @@7a93 255
+                 iny                                      ; 1=y ;; @@7a95 255
+_local_1254_5    plp                                       ;; @@7a96 255
+                 bmi _local_1254_10                       ; enter with b7=negative, b6=positive, else zero ;; @@7a97 255
+                 bvc _local_1254_30                        ;; @@7a99 255
+ ;; @@7a9b 255
+                 lda vic,y                                ; positive direction ;; @@7a9b 255
+                 inc a                                     ;; @@7a9e 255
+                 sta vic,y                                 ;; @@7a9f 255
+                 bra _local_1254_20                        ;; @@7aa2 255
+ ;; @@7aa4 255
+_local_1254_10   lda vic,y                                ; negative direction ;; @@7aa4 255
+                 dec a                                     ;; @@7aa7 255
+                 sta vic,y                                 ;; @@7aa8 255
+                 cmp #$ff                                  ;; @@7aab 255
+ ;; @@7aad 255
+_local_1254_20   bne _local_1254_30                       ; no wrap ;; @@7aad 255
+                 tya                                       ;; @@7aaf 255
+                 bit #1                                    ;; @@7ab0 255
+                 bne _local_1254_30                       ; wrap in y okay ;; @@7ab2 255
+                 lsr a                                     ;; @@7ab4 255
+                 tay                                       ;; @@7ab5 255
+                 lda sbits,y                              ; wrap in x- toggle msb ;; @@7ab6 255
+                 eor vic+16                                ;; @@7ab9 255
+                 sta vic+16                                ;; @@7abc 255
+                 tya                                       ;; @@7abf 255
+                 asl a                                     ;; @@7ac0 255
+                 tay                                       ;; @@7ac1 255
+ ;; @@7ac2 255
+_local_1254_30   tya                                      ; restore y to sprite offset ;; @@7ac2 255
+                 and #$fe                                  ;; @@7ac3 255
+                 tay                                       ;; @@7ac5 255
+                 rts                                       ;; @@7ac6 255
+ ;; @@7ac7 255
+; .page ;; @@7ac7 255
+; Play music, if in progress ;; @@7ac7 255
+ ;; @@7ac7 255

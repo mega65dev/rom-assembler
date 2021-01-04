@@ -1,56 +1,56 @@
-cos              lda #<pi2                                ; pointer to pi/2 ;; 669e 186
-                 ldy #>pi2                                 ;; 66a0 186
-                 jsr romadd                               ; add it in.  fall into sine ;; 66a2 186
- ;; 66a5 186
- ;; 66a5 186
- ;; 66a5 186
-; Sine function ;; 66a5 186
-; ;; 66a5 186
-; Use identities to get FAC in quadrants I or IV.  The FAC is divided by 2*pi ;; 66a5 186
-; and the integer part is ignored because sin(x+2*pi)=sin(x).  Then the ;; 66a5 186
-; argument can be compared with pi/2 by comparing the result of the division ;; 66a5 186
-; with pi/2(2*pi)=1/4.  Identities are then used to get the result in quadrants ;; 66a5 186
-; I or IV.  An approximation polynomial is then used to compute sin(x). ;; 66a5 186
- ;; 66a5 186
- ;; 66a5 186
-sin              jsr movaf                                 ;; 66a5 186
-                 lda #<twopi                              ; get pointer to divisor ;; 66a8 186
-                 ldy #>twopi                               ;; 66aa 186
-                 ldx argsgn                               ; get sign of result ;; 66ac 186
-                 jsr fdivf                                 ;; 66ae 186
-                 jsr movaf                                ; get result into ARG ;; 66b1 186
-                 jsr int                                  ; integerize FAC ;; 66b4 186
-                 lda #0                                    ;; 66b7 186
-                 sta arisgn                               ; always have the same sign ;; 66b9 186
-                 jsr fsubt                                ; keep only the fractional part ;; 66bb 186
-                 lda #<fr4                                ; get pointer to 1/4 ;; 66be 186
-                 ldy #>fr4                                 ;; 66c0 186
-                 jsr romsub                                ;; 66c2 186
-                 lda facsgn                               ; save sign for later ;; 66c5 186
-                 pha                                       ;; 66c7 186
-                 bpl sin1                                 ; first quadrant ;; 66c8 186
-                 jsr faddh                                ; add 1/2 to FAC ;; 66ca 186
-                 lda facsgn                               ; sign is negative? ;; 66cd 186
-                 bmi sin2                                  ;; 66cf 186
-                 lda tansgn                               ; quads II and III come here ;; 66d1 186
-                 eor #$ff                                  ;; 66d3 186
-                 sta tansgn                                ;; 66d5 186
- ;; 66d7 186
-sin1             jsr negop                                ; if positive, negate it ;; 66d7 186
- ;; 66da 186
-sin2             lda #<fr4                                ; pointer to 1/4 ;; 66da 186
-                 ldy #>fr4                                 ;; 66dc 186
-                 jsr romadd                               ; add it in ;; 66de 186
-                 pla                                      ; get original quadrant ;; 66e1 186
-                 bpl _local_1185_10                        ;; 66e2 186
-                 jsr negop                                ; if negative, negate result ;; 66e4 186
- ;; 66e7 186
-_local_1185_10   lda #<sincon                              ;; 66e7 186
-                 ldy #>sincon                              ;; 66e9 186
-                 bra polyx                                ; do approximation polyomial ;; 66eb 186
- ;; 66ee 186
- ;; 66ee 186
- ;; 66ee 186
-; Tangent function ;; 66ee 186
- ;; 66ee 186
- ;; 66ee 186
+cos              lda #<pi2                                ; pointer to pi/2 ;; @@669e 186
+                 ldy #>pi2                                 ;; @@66a0 186
+                 jsr romadd                               ; add it in.  fall into sine ;; @@66a2 186
+ ;; @@66a5 186
+ ;; @@66a5 186
+ ;; @@66a5 186
+; Sine function ;; @@66a5 186
+; ;; @@66a5 186
+; Use identities to get FAC in quadrants I or IV.  The FAC is divided by 2*pi ;; @@66a5 186
+; and the integer part is ignored because sin(x+2*pi)=sin(x).  Then the ;; @@66a5 186
+; argument can be compared with pi/2 by comparing the result of the division ;; @@66a5 186
+; with pi/2(2*pi)=1/4.  Identities are then used to get the result in quadrants ;; @@66a5 186
+; I or IV.  An approximation polynomial is then used to compute sin(x). ;; @@66a5 186
+ ;; @@66a5 186
+ ;; @@66a5 186
+sin              jsr movaf                                 ;; @@66a5 186
+                 lda #<twopi                              ; get pointer to divisor ;; @@66a8 186
+                 ldy #>twopi                               ;; @@66aa 186
+                 ldx argsgn                               ; get sign of result ;; @@66ac 186
+                 jsr fdivf                                 ;; @@66ae 186
+                 jsr movaf                                ; get result into ARG ;; @@66b1 186
+                 jsr int                                  ; integerize FAC ;; @@66b4 186
+                 lda #0                                    ;; @@66b7 186
+                 sta arisgn                               ; always have the same sign ;; @@66b9 186
+                 jsr fsubt                                ; keep only the fractional part ;; @@66bb 186
+                 lda #<fr4                                ; get pointer to 1/4 ;; @@66be 186
+                 ldy #>fr4                                 ;; @@66c0 186
+                 jsr romsub                                ;; @@66c2 186
+                 lda facsgn                               ; save sign for later ;; @@66c5 186
+                 pha                                       ;; @@66c7 186
+                 bpl sin1                                 ; first quadrant ;; @@66c8 186
+                 jsr faddh                                ; add 1/2 to FAC ;; @@66ca 186
+                 lda facsgn                               ; sign is negative? ;; @@66cd 186
+                 bmi sin2                                  ;; @@66cf 186
+                 lda tansgn                               ; quads II and III come here ;; @@66d1 186
+                 eor #$ff                                  ;; @@66d3 186
+                 sta tansgn                                ;; @@66d5 186
+ ;; @@66d7 186
+sin1             jsr negop                                ; if positive, negate it ;; @@66d7 186
+ ;; @@66da 186
+sin2             lda #<fr4                                ; pointer to 1/4 ;; @@66da 186
+                 ldy #>fr4                                 ;; @@66dc 186
+                 jsr romadd                               ; add it in ;; @@66de 186
+                 pla                                      ; get original quadrant ;; @@66e1 186
+                 bpl _local_1185_10                        ;; @@66e2 186
+                 jsr negop                                ; if negative, negate result ;; @@66e4 186
+ ;; @@66e7 186
+_local_1185_10   lda #<sincon                              ;; @@66e7 186
+                 ldy #>sincon                              ;; @@66e9 186
+                 bra polyx                                ; do approximation polyomial ;; @@66eb 186
+ ;; @@66ee 186
+ ;; @@66ee 186
+ ;; @@66ee 186
+; Tangent function ;; @@66ee 186
+ ;; @@66ee 186
+ ;; @@66ee 186

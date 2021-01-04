@@ -277,13 +277,13 @@ stmdsp
  .word  puctrl-1 
  .word  graphic-1 
  
- .word  c65.paint-1 
- .word  c65.char-1 
- .word  c65.box-1 
- .word  c65.circle-1 
- .word  c65.paste-1 ;gshape 
- .word  c65.cut-1 ;sshape 
- .word  c65.line-1 ;draw 
+ .word  C65__paint-1 
+ .word  C65__char-1 
+ .word  C65__box-1 
+ .word  C65__circle-1 
+ .word  C65__paste-1 ;gshape 
+ .word  C65__cut-1 ;sshape 
+ .word  C65__line-1 ;draw 
  
  .word  bad_command-1 ;escape - SYSTEM - unimplemented command 
 ; .word  locate-1 
@@ -364,16 +364,16 @@ stmdsp
  .word  find-1  ;escape (C65: find BASIC text) 
  .word  change-1  ;escape (C65: change BASIC text) 
  
- .word  c65.set-1 ;escape (C65: multi-purpose command) 
+ .word  C65__set-1 ;escape (C65: multi-purpose command) 
  .word  screen-1  ;escape (C65: SCREEN) 
- .word  c65.polygon-1 ;escape (C65: POLYGON) 
- .word  c65.ellipse-1 ;escape (C65: ELLIPSE) 
- .word  c65.viewport-1 ;escape (C65: VIEWPORT) 
- .word  c65.copy-1 ;escape (C65: GCOPY) 
- .word  c65.setpen-1 ;escape (C65: PEN) 
- .word  c65.setpalette-1 ;escape (C65: PALETTE) 
- .word  c65.setdmode-1 ;escape (C65: DMODE) 
- .word  c65.setdpat-1 ;escape (C65: DPAT) 
+ .word  C65__polygon-1 ;escape (C65: POLYGON) 
+ .word  C65__ellipse-1 ;escape (C65: ELLIPSE) 
+ .word  C65__viewport-1 ;escape (C65: VIEWPORT) 
+ .word  C65__copy-1 ;escape (C65: GCOPY) 
+ .word  C65__setpen-1 ;escape (C65: PEN) 
+ .word  C65__setpalette-1 ;escape (C65: PALETTE) 
+ .word  C65__setdmode-1 ;escape (C65: DMODE) 
+ .word  C65__setdpat-1 ;escape (C65: DPAT) 
  .word  header-1  ;format alias for header command [911017] 
  .word  genlock-1 ;     [910108] 
  

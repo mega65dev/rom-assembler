@@ -1,31 +1,31 @@
-pointer          jsr chrget                               ; skip over escape token ;; 5774 147
-                 jsr chkopn                               ; test for open paren ;; 5777 147
-                 jsr isletc                               ; test if character follows parens ;; 577a 147
-                 bcc snerr                                ; ...syntax error if not. ;; 577d 147
-                 jsr ptrget                               ; look for this varname in table ;; 5780 147
- ;; 5783 147
-pointer_ret      =*-1                                      ;; 5783 147
-                 tax                                       ;; 5783 147
-                 phy                                       ;; 5784 147
-                 jsr chkcls                               ; look for closing paren ;; 5785 147
-                 txa                                       ;; 5788 147
-                 tay                                       ;; 5789 147
-                 pla                                       ;; 578a 147
-                 cmp #>zero                               ; is this a dummy pointer? ;; 578b 147
-                 bne _local_1146_10                        ;; 578d 147
-                 lda #0                                   ; if so, return 0 ;; 578f 147
-                 tay                                       ;; 5791 147
-_local_1146_10   bra nosflt                                ;; 5792 147
- ;; 5795 147
-;.end ;; 5795 147
-; .page ;; 5795 147
-; .subttl  XOR ;; 5795 147
- ;; 5795 147
-;************************************************************** ;; 5795 147
-;* ;; 5795 147
-;*   XOR - Exclusive-or two 16 bit arguments ;; 5795 147
-;* ;; 5795 147
-;* Syntax : XOR (arg1, arg2) ;; 5795 147
-;* ;; 5795 147
-;************************************************************** ;; 5795 147
- ;; 5795 147
+pointer          jsr chrget                               ; skip over escape token ;; @@5774 147
+                 jsr chkopn                               ; test for open paren ;; @@5777 147
+                 jsr isletc                               ; test if character follows parens ;; @@577a 147
+                 bcc snerr                                ; ...syntax error if not. ;; @@577d 147
+                 jsr ptrget                               ; look for this varname in table ;; @@5780 147
+ ;; @@5783 147
+pointer_ret      =*-1                                      ;; @@5783 147
+                 tax                                       ;; @@5783 147
+                 phy                                       ;; @@5784 147
+                 jsr chkcls                               ; look for closing paren ;; @@5785 147
+                 txa                                       ;; @@5788 147
+                 tay                                       ;; @@5789 147
+                 pla                                       ;; @@578a 147
+                 cmp #>zero                               ; is this a dummy pointer? ;; @@578b 147
+                 bne _local_1146_10                        ;; @@578d 147
+                 lda #0                                   ; if so, return 0 ;; @@578f 147
+                 tay                                       ;; @@5791 147
+_local_1146_10   bra nosflt                                ;; @@5792 147
+ ;; @@5795 147
+;.end ;; @@5795 147
+; .page ;; @@5795 147
+; .subttl  XOR ;; @@5795 147
+ ;; @@5795 147
+;************************************************************** ;; @@5795 147
+;* ;; @@5795 147
+;*   XOR - Exclusive-or two 16 bit arguments ;; @@5795 147
+;* ;; @@5795 147
+;* Syntax : XOR (arg1, arg2) ;; @@5795 147
+;* ;; @@5795 147
+;************************************************************** ;; @@5795 147
+ ;; @@5795 147

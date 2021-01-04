@@ -1,29 +1,29 @@
-Get_TI                                                     ;; 5442 134
-                 jsr ReadSystemClock                      ; glance at the clock, get time as h:m:s:t ;; 5442 134
-                 stz faclo                                ; init accumulator with tenths (0-9, so nothing to convert) ;; 5445 134
-                 ldz #0                                    ;; 5447 134
-                 stz facmo                                 ;; 5449 134
-                 stz facmoh                                ;; 544b 134
- ;; 544d 134
-                 ldx #3                                   ; convert time (BCD) to tenths of seconds (binary) since midnight ;; 544d 134
-_local_1133_10   jsr TimeMultiply                          ;; 544f 134
-                 clc                                       ;; 5452 134
-                 adc faclo                                 ;; 5453 134
-                 sta faclo                                 ;; 5455 134
-                 lda product+1                             ;; 5457 134
-                 adc facmo                                 ;; 5459 134
-                 sta facmo                                 ;; 545b 134
-                 lda product+2                             ;; 545d 134
-                 adc facmoh                                ;; 545f 134
-                 sta facmoh                               ; (can't overflow since 23:59:59:9 -> 863999 ($0D2EFF) ;; 5461 134
-                 dex                                       ;; 5463 134
-                 bne _local_1133_10                       ; next factor ;; 5464 134
- ;; 5466 134
-                 lda #0                                   ; float value in FAC ;; 5466 134
-                 sta facho                                ; zero msb, facov, facsgn ;; 5468 134
-                 ldx #160                                 ; set facov for time ;; 546a 134
-                 sec                                      ; normal fac ;; 546c 134
-                 bra floatb                               ; do it ;; 546d 134
- ;; 5470 134
- ;; 5470 134
- ;; 5470 134
+Get_TI                                                     ;; @@5442 134
+                 jsr ReadSystemClock                      ; glance at the clock, get time as h:m:s:t ;; @@5442 134
+                 stz faclo                                ; init accumulator with tenths (0-9, so nothing to convert) ;; @@5445 134
+                 ldz #0                                    ;; @@5447 134
+                 stz facmo                                 ;; @@5449 134
+                 stz facmoh                                ;; @@544b 134
+ ;; @@544d 134
+                 ldx #3                                   ; convert time (BCD) to tenths of seconds (binary) since midnight ;; @@544d 134
+_local_1133_10   jsr TimeMultiply                          ;; @@544f 134
+                 clc                                       ;; @@5452 134
+                 adc faclo                                 ;; @@5453 134
+                 sta faclo                                 ;; @@5455 134
+                 lda product+1                             ;; @@5457 134
+                 adc facmo                                 ;; @@5459 134
+                 sta facmo                                 ;; @@545b 134
+                 lda product+2                             ;; @@545d 134
+                 adc facmoh                                ;; @@545f 134
+                 sta facmoh                               ; (can't overflow since 23:59:59:9 -> 863999 ($0D2EFF) ;; @@5461 134
+                 dex                                       ;; @@5463 134
+                 bne _local_1133_10                       ; next factor ;; @@5464 134
+ ;; @@5466 134
+                 lda #0                                   ; float value in FAC ;; @@5466 134
+                 sta facho                                ; zero msb, facov, facsgn ;; @@5468 134
+                 ldx #160                                 ; set facov for time ;; @@546a 134
+                 sec                                      ; normal fac ;; @@546c 134
+                 bra floatb                               ; do it ;; @@546d 134
+ ;; @@5470 134
+ ;; @@5470 134
+ ;; @@5470 134

@@ -1,189 +1,189 @@
-nodel            jsr init_stack                           ; 'clearc' removed since text changes don't require trashing variables ;; 2fbe 26
-                 jsr link_program                         ; fix links ;; 2fc1 26
-                 jsr error_clear                          ; clear HELP/error flag, assuming he fixed whatever caused current error, if any ;; 2fc4 26
- ;; 2fc7 26
-                 ldy #0                                    ;; 2fc7 26
-                 lda (txtptr),y                           ; delete line? ("common") ;; 2fc9 26
-                 beq main                                 ; yes ;; 2fcb 26
- ;; 2fce 26
-_local_1025_5    clc                                      ; no...something to insert ;; 2fce 26
-                 ldy text_top+1                            ;; 2fcf 26
-                 lda text_top                              ;; 2fd1 26
-                 sty hightr+1                             ; top of block to move (old text_top) ;; 2fd3 26
-                 sta hightr                                ;; 2fd5 26
-                 adc count                                ; number of characters in line to be inserted ;; 2fd7 26
-                 bcc _local_1025_1                         ;; 2fd9 26
-                 iny                                       ;; 2fdb 26
-_local_1025_1    clc                                       ;; 2fdc 26
-                 adc #4                                   ; plus link and line # ;; 2fdd 26
-                 bcc _local_1025_2                        ; gives us destination of move (new text_top) ;; 2fdf 26
-                 iny                                       ;; 2fe1 26
- ;; 2fe2 26
-_local_1025_2    sta highds                               ; destination of top ;; 2fe2 26
-                 sty highds+1                              ;; 2fe4 26
-                 cpy max_mem_0+1                          ; make sure new top doesn't crash into top of available ram ;; 2fe6 26
-                 bcc _local_1025_4                        ; ok ;; 2fe9 26
-                 bne omerr                                ; out of memory, don't insert ;; 2feb 26
-                 cmp max_mem_0                             ;; 2fee 26
-                 bcs omerr                                ; out of memory, don't insert ;; 2ff1 26
- ;; 2ff4 26
-_local_1025_4    sta text_top                             ; set new top of text ;; 2ff4 26
-                 sty text_top+1                            ;; 2ff6 26
-                 sec                                      ; compute number of things to move up ;; 2ff8 26
-                 lda hightr                                ;; 2ff9 26
-                 sbc lowtr                                ; (old top) - (adr where new line goes) ;; 2ffb 26
-                 tay                                      ; lowtr was setup previously by FindLine call ;; 2ffd 26
-                 lda hightr+1                              ;; 2ffe 26
-                 sbc lowtr+1                               ;; 3000 26
-                 tax                                       ;; 3002 26
- ;; 3003 26
-; Using DMA device to copy data upwards... ;; 3003 26
-; ;; 3003 26
-; (hightr)   = source  (old top) ;; 3003 26
-; (highds)   = destination (new top) ;; 3003 26
-; .y, .x     = number of bytes to move ;; 3003 26
-; (lowtr)    = where to insert new line (starting with link bytes) ;; 3003 26
- ;; 3003 26
-                 dew hightr                               ; (text_top-1) points to actual last byte ;; 3003 26
-                 dew highds                                ;; 3005 26
- ;; 3007 26
-; lda dma_ctlr+3  ;dma controller version    [910520] F018A ;; 3007 26
-; and #1 ;; 3007 26
-; beq _local_1025_10   ; F018    removed [910808] F018B ;; 3007 26
-                 lda #%00110000                           ; F018A, B ;; 3007 26
-_local_1025_10   sta dma1_cmd                             ; command=copy, source=endpt   [910102] ;; 3009 26
-                 sty dma1_cnt_lo                          ; count ;; 300c 26
-                 stx dma1_cnt_hi                           ;; 300f 26
-                 tya                                       ;; 3012 26
-                 ora dma1_cnt_hi                           ;; 3013 26
-                 beq _local_1025_70                       ; special case= nothing to move???? should not happen ;; 3016 26
- ;; 3018 26
-                 lda hightr                                ;; 3018 26
-                 ldy hightr+1                              ;; 301a 26
-                 sta dma1_src_lo                          ; source ;; 301c 26
-                 sty dma1_src_hi                           ;; 301f 26
-                 lda highds                                ;; 3022 26
-                 ldy highds+1                              ;; 3024 26
-                 sta dma1_dest_lo                         ; destination ;; 3026 26
-                 sty dma1_dest_hi                          ;; 3029 26
-                 lda text_bank                            ; [910520] F018A ;; 302c 26
-; ldx dma1_cmd  ;version?    removed [910808] F018B ;; 302e 26
-; bne _local_1025_20   ; F018A ;; 302e 26
-; and #%00001111  ;      [910102] ;; 302e 26
-; ora #%01000000  ;(copy source=endpoint)    [910102] ;; 302e 26
-_local_1025_20   sta dma1_src_bank                        ; banks ;; 302e 26
-                 sta dma1_dest_bank                        ;; 3031 26
-                 lda #0                                    ;; 3034 26
-                 sta dma1_subcmd                          ; [910520] F018A ;; 3036 26
-                 sta dma_ctlr+2                           ; dma_list bank ;; 3039 26
-                 ldx #>dma1_cmd                           ; dma_list ;; 303c 26
-                 lda #<dma1_cmd                            ;; 303e 26
-                 stx dma_ctlr+1                           ; dma_list hi ;; 3040 26
-                 sta dma_ctlr                             ; dma_list lo & trigger ;; 3043 26
- ;; 3046 26
-; Make links non-null to fool 'chead' ;; 3046 26
- ;; 3046 26
-_local_1025_70   ldy #0                                    ;; 3046 26
-                 lda #1                                    ;; 3048 26
-                 ldx #lowtr                                ;; 304a 26
-                 jsr sta_far_ram0                         ; sta (lowtr),y  y=0 (bleed-thru) ;; 304c 26
-                 iny                                       ;; 304f 26
-                 jsr sta_far_ram0                         ; sta (lowtr),y  y=1 (bleed-thru) ;; 3050 26
- ;; 3053 26
-; Put line number in text ;; 3053 26
- ;; 3053 26
-                 iny                                       ;; 3053 26
-                 lda linnum                                ;; 3054 26
-                 jsr sta_far_ram0                         ; sta (lowtr),y  y=2 (bleed-thru) ;; 3056 26
-                 iny                                       ;; 3059 26
-                 lda linnum+1                              ;; 305a 26
-                 jsr sta_far_ram0                         ; sta (lowtr),y  y=3 (bleed-thru) ;; 305c 26
- ;; 305f 26
-; Advance 'lowtr' to start of line (past link bytes & line #) ;; 305f 26
- ;; 305f 26
-                 clc                                       ;; 305f 26
-                 lda lowtr                                 ;; 3060 26
-                 adc #4                                    ;; 3062 26
-                 sta lowtr                                 ;; 3064 26
-                 bcc _local_1025_80                        ;; 3066 26
-                 inc lowtr+1                               ;; 3068 26
- ;; 306a 26
- ;; 306a 26
-; Block move line to text ;; 306a 26
- ;; 306a 26
-_local_1025_80   ldy count                                ; use dma ???? [910925] ;; 306a 26
-                 dey                                       ;; 306c 26
- ;; 306d 26
-_local_1025_90   lda (txtptr),y                           ; (from common area) ;; 306d 26
-                 jsr sta_far_ram0                         ; sta (lowtr),y   (bleed-thru) ;; 306f 26
-                 dey                                       ;; 3072 26
-                 cpy #$ff                                  ;; 3073 26
-                 bne _local_1025_90                        ;; 3075 26
- ;; 3077 26
-; beq _local_1025_90   ;special case= nothing to move???? should not happen ;; 3077 26
-; lda #0   ; F018A, B ;; 3077 26
-; sta dma1_cmd  ;command=copy, source=start ;; 3077 26
-; sty dma1_cnt_lo  ;count ;; 3077 26
-; sta dma1_cnt_hi ;; 3077 26
-; ;; 3077 26
-; lda txtptr ;; 3077 26
-; ldy txtptr+1 ;; 3077 26
-; sta dma1_src_lo  ;source ;; 3077 26
-; sty dma1_src_hi ;; 3077 26
-; lda lowtr ;; 3077 26
-; ldy lowtr+1 ;; 3077 26
-; sta dma1_dest_lo ;destination ;; 3077 26
-; sty dma1_dest_hi ;; 3077 26
-; lda text_bank  ;banks ;; 3077 26
-; sta dma1_dest_bank ;; 3077 26
-; lda #sys_bank  ;???? ;; 3077 26
-; sta dma1_src_bank ;; 3077 26
-; sta dma1_subcmd  ;      [910520] F018A ;; 3077 26
-; sta dma_ctlr+2  ;dma_list bank ;; 3077 26
-; ldx #>dma1_cmd  ;dma_list ;; 3077 26
-; lda #<dma1_cmd ;; 3077 26
-; stx dma_ctlr+1  ;dma_list hi ;; 3077 26
-; sta dma_ctlr  ;dma_list lo & trigger ;; 3077 26
-;_local_1025_90 ;; 3077 26
-                 jsr link_program                          ;; 3077 26
-                 jsr reset_txtptr                         ; set up txtptr (was jsr runc) ;; 307a 26
- ;; 307d 26
-; Test if AUTO in effect ;; 307d 26
- ;; 307d 26
-                 lda autinc                               ; if in auto mode, increment val <> 0 ;; 307d 26
-                 ora autinc+1                              ;; 307f 26
-                 beq 1_local_1025_20                      ; not in ;; 3081 26
- ;; 3083 26
-                 lda linnum                               ; yes, construct new line number ;; 3083 26
-                 clc                                       ;; 3085 26
-                 adc autinc                                ;; 3086 26
-                 sta facho+1                               ;; 3088 26
-                 lda linnum+1                              ;; 308a 26
-                 adc autinc+1                              ;; 308c 26
-                 bcs 1_local_1025_20                      ; no auto if wrapped ;; 308e 26
-                 cmp #$fa                                 ; test if # >= 64000 ;; 3090 26
-                 bcs 1_local_1025_20                      ; no auto if so. ;; 3092 26
-                 sta facho                                 ;; 3094 26
-                 ldx #$90                                  ;; 3096 26
-                 sec                                       ;; 3098 26
-                 jsr floatc                               ; float it ;; 3099 26
-                 jsr fout                                 ; make it into a string ;; 309c 26
- ;; 309f 26
-                 sei                                      ; [910710] ;; 309f 26
-                 ldx #0                                   ; move string into kbd buffer ;; 30a0 26
-_local_1025_100  lda fbuffr+1,x                           ; copy number formed into buffer, ignoring leading space ;; 30a2 26
-                 beq _local_1025_110                      ; a null marks end ;; 30a5 26
-                 sta _keyd,x                               ;; 30a7 26
-                 inx                                       ;; 30aa 26
-                 bne _local_1025_100                      ; always ;; 30ab 26
- ;; 30ad 26
-_local_1025_110  lda #29                                  ; cursor right ;; 30ad 26
-                 sta _keyd,x                               ;; 30af 26
-                 inx                                       ;; 30b2 26
-                 stx _ndx                                  ;; 30b3 26
-                 cli                                      ; [910710] ;; 30b5 26
- ;; 30b6 26
-1_local_1025_20  bra main                                  ;; 30b6 26
- ;; 30b9 26
- ;; 30b9 26
-; .page ;; 30b9 26
+nodel            jsr init_stack                           ; 'clearc' removed since text changes don't require trashing variables ;; @@2fbe 26
+                 jsr link_program                         ; fix links ;; @@2fc1 26
+                 jsr error_clear                          ; clear HELP/error flag, assuming he fixed whatever caused current error, if any ;; @@2fc4 26
+ ;; @@2fc7 26
+                 ldy #0                                    ;; @@2fc7 26
+                 lda (txtptr),y                           ; delete line? ("common") ;; @@2fc9 26
+                 beq main                                 ; yes ;; @@2fcb 26
+ ;; @@2fce 26
+_local_1025_5    clc                                      ; no...something to insert ;; @@2fce 26
+                 ldy text_top+1                            ;; @@2fcf 26
+                 lda text_top                              ;; @@2fd1 26
+                 sty hightr+1                             ; top of block to move (old text_top) ;; @@2fd3 26
+                 sta hightr                                ;; @@2fd5 26
+                 adc count                                ; number of characters in line to be inserted ;; @@2fd7 26
+                 bcc _local_1025_1                         ;; @@2fd9 26
+                 iny                                       ;; @@2fdb 26
+_local_1025_1    clc                                       ;; @@2fdc 26
+                 adc #4                                   ; plus link and line # ;; @@2fdd 26
+                 bcc _local_1025_2                        ; gives us destination of move (new text_top) ;; @@2fdf 26
+                 iny                                       ;; @@2fe1 26
+ ;; @@2fe2 26
+_local_1025_2    sta highds                               ; destination of top ;; @@2fe2 26
+                 sty highds+1                              ;; @@2fe4 26
+                 cpy max_mem_0+1                          ; make sure new top doesn't crash into top of available ram ;; @@2fe6 26
+                 bcc _local_1025_4                        ; ok ;; @@2fe9 26
+                 bne omerr                                ; out of memory, don't insert ;; @@2feb 26
+                 cmp max_mem_0                             ;; @@2fee 26
+                 bcs omerr                                ; out of memory, don't insert ;; @@2ff1 26
+ ;; @@2ff4 26
+_local_1025_4    sta text_top                             ; set new top of text ;; @@2ff4 26
+                 sty text_top+1                            ;; @@2ff6 26
+                 sec                                      ; compute number of things to move up ;; @@2ff8 26
+                 lda hightr                                ;; @@2ff9 26
+                 sbc lowtr                                ; (old top) - (adr where new line goes) ;; @@2ffb 26
+                 tay                                      ; lowtr was setup previously by FindLine call ;; @@2ffd 26
+                 lda hightr+1                              ;; @@2ffe 26
+                 sbc lowtr+1                               ;; @@3000 26
+                 tax                                       ;; @@3002 26
+ ;; @@3003 26
+; Using DMA device to copy data upwards... ;; @@3003 26
+; ;; @@3003 26
+; (hightr)   = source  (old top) ;; @@3003 26
+; (highds)   = destination (new top) ;; @@3003 26
+; .y, .x     = number of bytes to move ;; @@3003 26
+; (lowtr)    = where to insert new line (starting with link bytes) ;; @@3003 26
+ ;; @@3003 26
+                 dew hightr                               ; (text_top-1) points to actual last byte ;; @@3003 26
+                 dew highds                                ;; @@3005 26
+ ;; @@3007 26
+; lda dma_ctlr+3  ;dma controller version    [910520] F018A ;; @@3007 26
+; and #1 ;; @@3007 26
+; beq _local_1025_10   ; F018    removed [910808] F018B ;; @@3007 26
+                 lda #%00110000                           ; F018A, B ;; @@3007 26
+_local_1025_10   sta dma1_cmd                             ; command=copy, source=endpt   [910102] ;; @@3009 26
+                 sty dma1_cnt_lo                          ; count ;; @@300c 26
+                 stx dma1_cnt_hi                           ;; @@300f 26
+                 tya                                       ;; @@3012 26
+                 ora dma1_cnt_hi                           ;; @@3013 26
+                 beq _local_1025_70                       ; special case= nothing to move???? should not happen ;; @@3016 26
+ ;; @@3018 26
+                 lda hightr                                ;; @@3018 26
+                 ldy hightr+1                              ;; @@301a 26
+                 sta dma1_src_lo                          ; source ;; @@301c 26
+                 sty dma1_src_hi                           ;; @@301f 26
+                 lda highds                                ;; @@3022 26
+                 ldy highds+1                              ;; @@3024 26
+                 sta dma1_dest_lo                         ; destination ;; @@3026 26
+                 sty dma1_dest_hi                          ;; @@3029 26
+                 lda text_bank                            ; [910520] F018A ;; @@302c 26
+; ldx dma1_cmd  ;version?    removed [910808] F018B ;; @@302e 26
+; bne _local_1025_20   ; F018A ;; @@302e 26
+; and #%00001111  ;      [910102] ;; @@302e 26
+; ora #%01000000  ;(copy source=endpoint)    [910102] ;; @@302e 26
+_local_1025_20   sta dma1_src_bank                        ; banks ;; @@302e 26
+                 sta dma1_dest_bank                        ;; @@3031 26
+                 lda #0                                    ;; @@3034 26
+                 sta dma1_subcmd                          ; [910520] F018A ;; @@3036 26
+                 sta dma_ctlr+2                           ; dma_list bank ;; @@3039 26
+                 ldx #>dma1_cmd                           ; dma_list ;; @@303c 26
+                 lda #<dma1_cmd                            ;; @@303e 26
+                 stx dma_ctlr+1                           ; dma_list hi ;; @@3040 26
+                 sta dma_ctlr                             ; dma_list lo & trigger ;; @@3043 26
+ ;; @@3046 26
+; Make links non-null to fool 'chead' ;; @@3046 26
+ ;; @@3046 26
+_local_1025_70   ldy #0                                    ;; @@3046 26
+                 lda #1                                    ;; @@3048 26
+                 ldx #lowtr                                ;; @@304a 26
+                 jsr sta_far_ram0                         ; sta (lowtr),y  y=0 (bleed-thru) ;; @@304c 26
+                 iny                                       ;; @@304f 26
+                 jsr sta_far_ram0                         ; sta (lowtr),y  y=1 (bleed-thru) ;; @@3050 26
+ ;; @@3053 26
+; Put line number in text ;; @@3053 26
+ ;; @@3053 26
+                 iny                                       ;; @@3053 26
+                 lda linnum                                ;; @@3054 26
+                 jsr sta_far_ram0                         ; sta (lowtr),y  y=2 (bleed-thru) ;; @@3056 26
+                 iny                                       ;; @@3059 26
+                 lda linnum+1                              ;; @@305a 26
+                 jsr sta_far_ram0                         ; sta (lowtr),y  y=3 (bleed-thru) ;; @@305c 26
+ ;; @@305f 26
+; Advance 'lowtr' to start of line (past link bytes & line #) ;; @@305f 26
+ ;; @@305f 26
+                 clc                                       ;; @@305f 26
+                 lda lowtr                                 ;; @@3060 26
+                 adc #4                                    ;; @@3062 26
+                 sta lowtr                                 ;; @@3064 26
+                 bcc _local_1025_80                        ;; @@3066 26
+                 inc lowtr+1                               ;; @@3068 26
+ ;; @@306a 26
+ ;; @@306a 26
+; Block move line to text ;; @@306a 26
+ ;; @@306a 26
+_local_1025_80   ldy count                                ; use dma ???? [910925] ;; @@306a 26
+                 dey                                       ;; @@306c 26
+ ;; @@306d 26
+_local_1025_90   lda (txtptr),y                           ; (from common area) ;; @@306d 26
+                 jsr sta_far_ram0                         ; sta (lowtr),y   (bleed-thru) ;; @@306f 26
+                 dey                                       ;; @@3072 26
+                 cpy #$ff                                  ;; @@3073 26
+                 bne _local_1025_90                        ;; @@3075 26
+ ;; @@3077 26
+; beq _local_1025_90   ;special case= nothing to move???? should not happen ;; @@3077 26
+; lda #0   ; F018A, B ;; @@3077 26
+; sta dma1_cmd  ;command=copy, source=start ;; @@3077 26
+; sty dma1_cnt_lo  ;count ;; @@3077 26
+; sta dma1_cnt_hi ;; @@3077 26
+; ;; @@3077 26
+; lda txtptr ;; @@3077 26
+; ldy txtptr+1 ;; @@3077 26
+; sta dma1_src_lo  ;source ;; @@3077 26
+; sty dma1_src_hi ;; @@3077 26
+; lda lowtr ;; @@3077 26
+; ldy lowtr+1 ;; @@3077 26
+; sta dma1_dest_lo ;destination ;; @@3077 26
+; sty dma1_dest_hi ;; @@3077 26
+; lda text_bank  ;banks ;; @@3077 26
+; sta dma1_dest_bank ;; @@3077 26
+; lda #sys_bank  ;???? ;; @@3077 26
+; sta dma1_src_bank ;; @@3077 26
+; sta dma1_subcmd  ;      [910520] F018A ;; @@3077 26
+; sta dma_ctlr+2  ;dma_list bank ;; @@3077 26
+; ldx #>dma1_cmd  ;dma_list ;; @@3077 26
+; lda #<dma1_cmd ;; @@3077 26
+; stx dma_ctlr+1  ;dma_list hi ;; @@3077 26
+; sta dma_ctlr  ;dma_list lo & trigger ;; @@3077 26
+;_local_1025_90 ;; @@3077 26
+                 jsr link_program                          ;; @@3077 26
+                 jsr reset_txtptr                         ; set up txtptr (was jsr runc) ;; @@307a 26
+ ;; @@307d 26
+; Test if AUTO in effect ;; @@307d 26
+ ;; @@307d 26
+                 lda autinc                               ; if in auto mode, increment val <> 0 ;; @@307d 26
+                 ora autinc+1                              ;; @@307f 26
+                 beq _local_1025_120                      ; not in ;; @@3081 26
+ ;; @@3083 26
+                 lda linnum                               ; yes, construct new line number ;; @@3083 26
+                 clc                                       ;; @@3085 26
+                 adc autinc                                ;; @@3086 26
+                 sta facho+1                               ;; @@3088 26
+                 lda linnum+1                              ;; @@308a 26
+                 adc autinc+1                              ;; @@308c 26
+                 bcs _local_1025_120                      ; no auto if wrapped ;; @@308e 26
+                 cmp #$fa                                 ; test if # >= 64000 ;; @@3090 26
+                 bcs _local_1025_120                      ; no auto if so. ;; @@3092 26
+                 sta facho                                 ;; @@3094 26
+                 ldx #$90                                  ;; @@3096 26
+                 sec                                       ;; @@3098 26
+                 jsr floatc                               ; float it ;; @@3099 26
+                 jsr fout                                 ; make it into a string ;; @@309c 26
+ ;; @@309f 26
+                 sei                                      ; [910710] ;; @@309f 26
+                 ldx #0                                   ; move string into kbd buffer ;; @@30a0 26
+_local_1025_100  lda fbuffr+1,x                           ; copy number formed into buffer, ignoring leading space ;; @@30a2 26
+                 beq _local_1025_110                      ; a null marks end ;; @@30a5 26
+                 sta _keyd,x                               ;; @@30a7 26
+                 inx                                       ;; @@30aa 26
+                 bne _local_1025_100                      ; always ;; @@30ab 26
+ ;; @@30ad 26
+_local_1025_110  lda #29                                  ; cursor right ;; @@30ad 26
+                 sta _keyd,x                               ;; @@30af 26
+                 inx                                       ;; @@30b2 26
+                 stx _ndx                                  ;; @@30b3 26
+                 cli                                      ; [910710] ;; @@30b5 26
+ ;; @@30b6 26
+_local_1025_120  bra main                                  ;; @@30b6 26
+ ;; @@30b9 26
+ ;; @@30b9 26
+; .page ;; @@30b9 26

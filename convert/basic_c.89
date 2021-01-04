@@ -1,121 +1,121 @@
-print_line                                                 ;; 4336 89
-                 jsr crdo                                 ; get a new display line ;; 4336 89
-                 lda fstr1+2                              ; length of string to highlight ;; 4339 89
-                 sta find_count                            ;; 433b 89
-                 ldy #2                                    ;; 433e 89
-                 jsr indlow                               ; get ms byte of line number ;; 4340 89
-                 tax                                       ;; 4343 89
-                 iny                                       ;; 4344 89
-                 jsr indlow                               ; get ls byte ;; 4345 89
-                 jsr p1line                               ; print #, space, and the line of code ;; 4348 89
-                 bbr7 op,find_loop_2                      ; Find op? branch if so and continue search ;; 434b 89
- ;; 434e 89
-; .page ;; 434e 89
-; Change operation ;; 434e 89
-; Query the user and replace string1 with string2 if he wants to. ;; 434e 89
-; Options are  'Y' (yes),  '*' (do all),  'CR' (quit),  anything else means no. ;; 434e 89
- ;; 434e 89
-change_line                                                ;; 434e 89
-                 bbs6 op,_local_1088_100                  ; branch if change-all mode set ;; 434e 89
-                 jsr _primm                               ; prompt & get response ;; 4351 89
-                 !byte cr," CHANGE? ",0                    ;; 4354 89
-                 jsr response_get                          ;; 435f 89
-                 cmp #'Y'                                  ;; 4362 89
-                 beq _local_1088_100                      ; yes, change it ;; 4364 89
-                 cmp #cr                                   ;; 4366 89
-                 beq find_exit                            ; cr only, abort entire operation ;; 4368 89
-                 cmp #'*'                                  ;; 436b 89
-                 bne find_loop_2                          ; *, change all.  else don't change ;; 436d 89
-                 smb6 op                                   ;; 436f 89
- ;; 4371 89
-; Replace string1 with string2.  Requires moving text up/down beginning at ;; 4371 89
-; LOWTR+FNDPNT+(LEN(string1)-LEN(string2)) through TEXT_TOP and copying ;; 4371 89
-; string1 into text beginning at LOWTR+FNDPNT for LEN(string2) characters. ;; 4371 89
- ;; 4371 89
-_local_1088_100  lda text_top                             ; setup upper address of text to move (index2) ;; 4371 89
-                 sta index2                                ;; 4373 89
-                 lda text_top+1                           ; TEXT_TOP ;; 4375 89
-                 sta index2+1                              ;; 4377 89
- ;; 4379 89
-                 clc                                      ; setup lower address of text to move (index1) ;; 4379 89
-                 lda fndpnt                                ;; 437a 89
-                 adc lowtr                                 ;; 437c 89
-                 sta index1                               ; LOWTR+FNDPNT ;; 437e 89
-                 lda #0                                    ;; 4380 89
-                 sta argmo                                ; count hi ;; 4382 89
-                 adc lowtr+1                               ;; 4384 89
-                 sta index1+1                              ;; 4386 89
- ;; 4388 89
-                 sec                                      ; calc number of chars to insert/delete ;; 4388 89
-                 lda fstr1+2                              ; LEN(string1)-LEN(string2) ;; 4389 89
-                 sbc fstr2+2                               ;; 438b 89
-                 beq _local_1088_20                       ; branch if string1 = string2 (no move) ;; 438d 89
-                 bpl _local_1088_10                       ; branch if string1 > string2 (delete) ;; 438f 89
-; else      string1 < string2 (insert) ;; 4391 89
- ;; 4391 89
-                 neg a                                    ; Move memory up to make room for larger string2 ;; 4391 89
-                 sta count                                 ;; 4392 89
-                 ldy #0                                   ; first check for line too long ;; 4394 89
-                 jsr indlow                                ;; 4396 89
-                 adc count                                 ;; 4399 89
-                 taz                                       ;; 439b 89
-                 iny                                       ;; 439c 89
-                 jsr indlow                               ; (link+#chr)-line_sa must be <256 ;; 439d 89
-                 adc #0                                    ;; 43a0 89
-                 tay                                       ;; 43a2 89
-                 sec                                       ;; 43a3 89
-                 tza                                       ;; 43a4 89
-                 sbc lowtr                                 ;; 43a5 89
-                 tya                                       ;; 43a7 89
-                 sbc lowtr+1                               ;; 43a8 89
-                 bne errlen                               ; error, line > 255 characters ;; 43aa 89
- ;; 43ad 89
-                 clc                                      ; now check for sufficient memory ;; 43ad 89
-                 ldy text_top+1                            ;; 43ae 89
-                 lda count                                 ;; 43b0 89
-                 adc text_top                              ;; 43b2 89
-                 bcc _local_1088_1                         ;; 43b4 89
-                 iny                                       ;; 43b6 89
-_local_1088_1    cpy max_mem_0+1                           ;; 43b7 89
-                 bcc _local_1088_2                        ; result is less than top-of-memory: ok ;; 43ba 89
-                 bne omerr                                ; msb >  top, overflow ;; 43bc 89
-                 cmp max_mem_0                            ; msb's the same, test lsb's ;; 43bf 89
-                 bcs omerr                                ; lsb >= top, overflow ;; 43c2 89
-_local_1088_2    sta text_top                              ;; 43c5 89
-                 sty text_top+1                           ; set new top of text pointer ;; 43c7 89
-                 jsr moveup                               ; make room ;; 43c9 89
-                 bra _local_1088_20                       ; go copy string2 into area ;; 43cc 89
- ;; 43ce 89
-_local_1088_10   sta count                                ; Move memory down for smaller string2 ;; 43ce 89
-                 ldy text_top+1                            ;; 43d0 89
-                 lda text_top                              ;; 43d2 89
-                 sec                                       ;; 43d4 89
-                 sbc count                                 ;; 43d5 89
-                 bcs _local_1088_11                        ;; 43d7 89
-                 dey                                       ;; 43d9 89
-_local_1088_11   sta text_top                              ;; 43da 89
-                 sty text_top+1                           ; set new top of text pointer ;; 43dc 89
-                 jsr movedown                             ; squish out excess space ;; 43de 89
- ;; 43e1 89
-_local_1088_20   lda fstr2+2                              ; Copy string2 into text ;; 43e1 89
-                 beq _local_1088_40                       ; branch if null, nothing to copy ;; 43e3 89
-                 sta find_count                           ; how many characters to copy ;; 43e5 89
-                 ldx #lowtr                                ;; 43e8 89
-                 ldy fndpnt                               ; index into text ;; 43ea 89
-                 ldz #0                                   ; index into string2 ;; 43ec 89
-_local_1088_30   lda (fstr2),z                            ; ind okay- buffer ;; 43ee 89
-                 jsr sta_far_ram0                         ; do the copy ;; 43f0 89
-                 iny                                       ;; 43f3 89
-                 inz                                       ;; 43f4 89
-                 dec find_count                            ;; 43f5 89
-                 bne _local_1088_30                        ;; 43f8 89
- ;; 43fa 89
-_local_1088_40   jsr link_program                         ; relink program ;; 43fa 89
-                 clc                                       ;; 43fd 89
-                 lda fndpnt                               ; place find position after new text ;; 43fe 89
-                 adc fstr2+2                               ;; 4400 89
-                 dec a                                     ;; 4402 89
-                 sta fndpnt                                ;; 4403 89
-                 bra find_loop_2                          ; and resume searching ;; 4405 89
- ;; 4408 89
-; .page ;; 4408 89
+print_line                                                 ;; @@4336 89
+                 jsr crdo                                 ; get a new display line ;; @@4336 89
+                 lda fstr1+2                              ; length of string to highlight ;; @@4339 89
+                 sta find_count                            ;; @@433b 89
+                 ldy #2                                    ;; @@433e 89
+                 jsr indlow                               ; get ms byte of line number ;; @@4340 89
+                 tax                                       ;; @@4343 89
+                 iny                                       ;; @@4344 89
+                 jsr indlow                               ; get ls byte ;; @@4345 89
+                 jsr p1line                               ; print #, space, and the line of code ;; @@4348 89
+                 bbr7 op,find_loop_2                      ; Find op? branch if so and continue search ;; @@434b 89
+ ;; @@434e 89
+; .page ;; @@434e 89
+; Change operation ;; @@434e 89
+; Query the user and replace string1 with string2 if he wants to. ;; @@434e 89
+; Options are  'Y' (yes),  '*' (do all),  'CR' (quit),  anything else means no. ;; @@434e 89
+ ;; @@434e 89
+change_line                                                ;; @@434e 89
+                 bbs6 op,_local_1088_100                  ; branch if change-all mode set ;; @@434e 89
+                 jsr _primm                               ; prompt & get response ;; @@4351 89
+                 !text cr," CHANGE? ",0                    ;; @@4354 89
+                 jsr response_get                          ;; @@435f 89
+                 cmp #'Y'                                  ;; @@4362 89
+                 beq _local_1088_100                      ; yes, change it ;; @@4364 89
+                 cmp #cr                                   ;; @@4366 89
+                 beq find_exit                            ; cr only, abort entire operation ;; @@4368 89
+                 cmp #'*'                                  ;; @@436b 89
+                 bne find_loop_2                          ; *, change all.  else don't change ;; @@436d 89
+                 smb6 op                                   ;; @@436f 89
+ ;; @@4371 89
+; Replace string1 with string2.  Requires moving text up/down beginning at ;; @@4371 89
+; LOWTR+FNDPNT+(LEN(string1)-LEN(string2)) through TEXT_TOP and copying ;; @@4371 89
+; string1 into text beginning at LOWTR+FNDPNT for LEN(string2) characters. ;; @@4371 89
+ ;; @@4371 89
+_local_1088_100  lda text_top                             ; setup upper address of text to move (index2) ;; @@4371 89
+                 sta index2                                ;; @@4373 89
+                 lda text_top+1                           ; TEXT_TOP ;; @@4375 89
+                 sta index2+1                              ;; @@4377 89
+ ;; @@4379 89
+                 clc                                      ; setup lower address of text to move (index1) ;; @@4379 89
+                 lda fndpnt                                ;; @@437a 89
+                 adc lowtr                                 ;; @@437c 89
+                 sta index1                               ; LOWTR+FNDPNT ;; @@437e 89
+                 lda #0                                    ;; @@4380 89
+                 sta argmo                                ; count hi ;; @@4382 89
+                 adc lowtr+1                               ;; @@4384 89
+                 sta index1+1                              ;; @@4386 89
+ ;; @@4388 89
+                 sec                                      ; calc number of chars to insert/delete ;; @@4388 89
+                 lda fstr1+2                              ; LEN(string1)-LEN(string2) ;; @@4389 89
+                 sbc fstr2+2                               ;; @@438b 89
+                 beq _local_1088_20                       ; branch if string1 = string2 (no move) ;; @@438d 89
+                 bpl _local_1088_10                       ; branch if string1 > string2 (delete) ;; @@438f 89
+; else      string1 < string2 (insert) ;; @@4391 89
+ ;; @@4391 89
+                 neg a                                    ; Move memory up to make room for larger string2 ;; @@4391 89
+                 sta count                                 ;; @@4392 89
+                 ldy #0                                   ; first check for line too long ;; @@4394 89
+                 jsr indlow                                ;; @@4396 89
+                 adc count                                 ;; @@4399 89
+                 taz                                       ;; @@439b 89
+                 iny                                       ;; @@439c 89
+                 jsr indlow                               ; (link+#chr)-line_sa must be <256 ;; @@439d 89
+                 adc #0                                    ;; @@43a0 89
+                 tay                                       ;; @@43a2 89
+                 sec                                       ;; @@43a3 89
+                 tza                                       ;; @@43a4 89
+                 sbc lowtr                                 ;; @@43a5 89
+                 tya                                       ;; @@43a7 89
+                 sbc lowtr+1                               ;; @@43a8 89
+                 bne errlen                               ; error, line > 255 characters ;; @@43aa 89
+ ;; @@43ad 89
+                 clc                                      ; now check for sufficient memory ;; @@43ad 89
+                 ldy text_top+1                            ;; @@43ae 89
+                 lda count                                 ;; @@43b0 89
+                 adc text_top                              ;; @@43b2 89
+                 bcc _local_1088_1                         ;; @@43b4 89
+                 iny                                       ;; @@43b6 89
+_local_1088_1    cpy max_mem_0+1                           ;; @@43b7 89
+                 bcc _local_1088_2                        ; result is less than top-of-memory: ok ;; @@43ba 89
+                 bne omerr                                ; msb >  top, overflow ;; @@43bc 89
+                 cmp max_mem_0                            ; msb's the same, test lsb's ;; @@43bf 89
+                 bcs omerr                                ; lsb >= top, overflow ;; @@43c2 89
+_local_1088_2    sta text_top                              ;; @@43c5 89
+                 sty text_top+1                           ; set new top of text pointer ;; @@43c7 89
+                 jsr moveup                               ; make room ;; @@43c9 89
+                 bra _local_1088_20                       ; go copy string2 into area ;; @@43cc 89
+ ;; @@43ce 89
+_local_1088_10   sta count                                ; Move memory down for smaller string2 ;; @@43ce 89
+                 ldy text_top+1                            ;; @@43d0 89
+                 lda text_top                              ;; @@43d2 89
+                 sec                                       ;; @@43d4 89
+                 sbc count                                 ;; @@43d5 89
+                 bcs _local_1088_11                        ;; @@43d7 89
+                 dey                                       ;; @@43d9 89
+_local_1088_11   sta text_top                              ;; @@43da 89
+                 sty text_top+1                           ; set new top of text pointer ;; @@43dc 89
+                 jsr movedown                             ; squish out excess space ;; @@43de 89
+ ;; @@43e1 89
+_local_1088_20   lda fstr2+2                              ; Copy string2 into text ;; @@43e1 89
+                 beq _local_1088_40                       ; branch if null, nothing to copy ;; @@43e3 89
+                 sta find_count                           ; how many characters to copy ;; @@43e5 89
+                 ldx #lowtr                                ;; @@43e8 89
+                 ldy fndpnt                               ; index into text ;; @@43ea 89
+                 ldz #0                                   ; index into string2 ;; @@43ec 89
+_local_1088_30   lda (fstr2),z                            ; ind okay- buffer ;; @@43ee 89
+                 jsr sta_far_ram0                         ; do the copy ;; @@43f0 89
+                 iny                                       ;; @@43f3 89
+                 inz                                       ;; @@43f4 89
+                 dec find_count                            ;; @@43f5 89
+                 bne _local_1088_30                        ;; @@43f8 89
+ ;; @@43fa 89
+_local_1088_40   jsr link_program                         ; relink program ;; @@43fa 89
+                 clc                                       ;; @@43fd 89
+                 lda fndpnt                               ; place find position after new text ;; @@43fe 89
+                 adc fstr2+2                               ;; @@4400 89
+                 dec a                                     ;; @@4402 89
+                 sta fndpnt                                ;; @@4403 89
+                 bra find_loop_2                          ; and resume searching ;; @@4405 89
+ ;; @@4408 89
+; .page ;; @@4408 89

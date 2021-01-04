@@ -1,31 +1,31 @@
-decbad                                                     ;; 55c4 140
-                 bra fcerr                                ; illegal qty error ;; 55c4 140
- ;; 55c7 140
-;.end ;; 55c7 140
-; .page ;; 55c7 140
-; .subttl  PEEK  POKE ;; 55c7 140
- ;; 55c7 140
- ;; 55c7 140
-peek             phw poker                                ; ..also happens to be LINNUM!   [910911] ;; 55c7 140
-                 jsr chknum                                ;; 55ca 140
-                 jsr getadr                                ;; 55cd 140
-                 ldy #0                                   ; index ;; 55d0 140
-                 bit current_bank                          ;; 55d2 140
-                 bmi _local_1139_10                       ; NOMAP? ;; 55d5 140
- ;; 55d7 140
-                 phz                                       ;; 55d7 140
-                 ldz current_bank                         ; set up bank number for Kernel's fetch ;; 55d8 140
-                 ldx #poker                               ; ..and address ;; 55db 140
-                 jsr _lda_far                             ; lda (poker),y ;; 55dd 140
-                 plz                                       ;; 55e0 140
-                 !byte $2c                                 ;; 55e1 140
- ;; 55e2 140
-_local_1139_10   lda (poker),y                             ;; 55e2 140
-                 tay                                      ; get byte into .y ;; 55e4 140
-                 pla                                       ;; 55e5 140
-                 sta poker+1                              ; restore linnum ;; 55e6 140
-                 pla                                       ;; 55e8 140
-                 sta poker                                 ;; 55e9 140
-                 bra sngflt                               ; float it ;; 55eb 140
- ;; 55ee 140
-; .page ;; 55ee 140
+decbad                                                     ;; @@55c4 140
+                 bra fcerr                                ; illegal qty error ;; @@55c4 140
+ ;; @@55c7 140
+;.end ;; @@55c7 140
+; .page ;; @@55c7 140
+; .subttl  PEEK  POKE ;; @@55c7 140
+ ;; @@55c7 140
+ ;; @@55c7 140
+peek             phw poker                                ; ..also happens to be LINNUM!   [910911] ;; @@55c7 140
+                 jsr chknum                                ;; @@55ca 140
+                 jsr getadr                                ;; @@55cd 140
+                 ldy #0                                   ; index ;; @@55d0 140
+                 bit current_bank                          ;; @@55d2 140
+                 bmi _local_1139_10                       ; NOMAP? ;; @@55d5 140
+ ;; @@55d7 140
+                 phz                                       ;; @@55d7 140
+                 ldz current_bank                         ; set up bank number for Kernel's fetch ;; @@55d8 140
+                 ldx #poker                               ; ..and address ;; @@55db 140
+                 jsr _lda_far                             ; lda (poker),y ;; @@55dd 140
+                 plz                                       ;; @@55e0 140
+                 !text $2c                                 ;; @@55e1 140
+ ;; @@55e2 140
+_local_1139_10   lda (poker),y                             ;; @@55e2 140
+                 tay                                      ; get byte into .y ;; @@55e4 140
+                 pla                                       ;; @@55e5 140
+                 sta poker+1                              ; restore linnum ;; @@55e6 140
+                 pla                                       ;; @@55e8 140
+                 sta poker                                 ;; @@55e9 140
+                 bra sngflt                               ; float it ;; @@55eb 140
+ ;; @@55ee 140
+; .page ;; @@55ee 140

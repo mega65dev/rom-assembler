@@ -1,57 +1,57 @@
-iline_10                                                   ;; 3f82 78
-                 lda txtptr                               ; save current txtptr ;; 3f82 78
-                 sta oldlin                                ;; 3f84 78
-                 lda txtptr+1                              ;; 3f87 78
-                 sta oldlin+1                              ;; 3f89 78
-                 jsr chrget                                ;; 3f8c 78
-                 bcs chk_quote                            ; not a #... ;; 3f8f 78
-                 jsr linget                               ; get line # from text ;; 3f91 78
-                 jsr form_line                            ; replace if this line # > n3 ;; 3f94 78
-                 lda oldlin                               ; restore old txtptr ;; 3f97 78
-                 sta txtptr                                ;; 3f9a 78
-                 lda oldlin+1                              ;; 3f9c 78
-                 sta txtptr+1                              ;; 3f9f 78
- ;; 3fa1 78
-                 jsr chrget                               ; skip over leading spaces ;; 3fa1 78
-                 dew txtptr                               ; then backup (txtptr) by 1 ;; 3fa4 78
-                 ldx #$ff                                  ;; 3fa6 78
-                 lda z_p_temp_1                           ; if this is pass2 then don't actually change ;; 3fa8 78
-                 beq p3code                               ; if z=1 then pass3 => ok to change ;; 3faa 78
-                 jsr p2code                               ; renumber 'pass two': trial run to see if enough room ;; 3fac 78
-                 jsr chrgot                               ; re-get last character from BASIC text & rts ;; 3faf 78
- ;; 3fb2 78
-iline_20                                                   ;; 3fb2 78
-                 cmp #','                                 ; comma from 'on'? ;; 3fb2 78
-                 beq iline_10                             ; it is... ;; 3fb4 78
-                 bra chk_quote                            ; no... ;; 3fb6 78
- ;; 3fb8 78
-; .page ;; 3fb8 78
-;*********** This part of imbed_lines executed in pass 2 only ********** ;; 3fb8 78
- ;; 3fb8 78
-p2code                                                    ; updates text_top without actually changing lines ;; 3fb8 78
-                 inx                                       ;; 3fb8 78
-                 lda fbuffr+1,x                           ; get character from number ;; 3fb9 78
-                 beq _local_1077_20                       ; end of number ;; 3fbc 78
-                 jsr chrget                               ; get digit from old number ;; 3fbe 78
-                 bcc p2code                               ; digit...move on ;; 3fc1 78
- ;; 3fc3 78
-_local_1077_10   inw fndpnt                                ;; 3fc3 78
-                 sec                                      ; have we run out of memory (theoretically)? ;; 3fc5 78
-                 lda fndpnt                               ; (compare with limit-of-memory pointer) ;; 3fc6 78
-                 sbc max_mem_0                             ;; 3fc8 78
-                 lda fndpnt+1                              ;; 3fcb 78
-                 sbc max_mem_0+1                           ;; 3fcd 78
-                 bcs omerr                                ; yes- out of memory error ;; 3fd0 78
-                 inx                                      ; no - next... ;; 3fd3 78
-                 lda fbuffr+1,x                            ;; 3fd4 78
-                 bne _local_1077_10                        ;; 3fd7 78
-_local_1077_15   rts                                      ; no more ;; 3fd9 78
- ;; 3fda 78
-_local_1077_20   jsr chrget                                ;; 3fda 78
-                 bcs _local_1077_15                       ; old stuff after # is other char ;; 3fdd 78
-                 dew fndpnt                               ; digit...move down ;; 3fdf 78
-                 bra _local_1077_20                       ; still digits... ;; 3fe1 78
- ;; 3fe3 78
-; .page ;; 3fe3 78
-;*********** This part of imbed_lines executed in pass 3 only ********** ;; 3fe3 78
- ;; 3fe3 78
+iline_10                                                   ;; @@3f82 78
+                 lda txtptr                               ; save current txtptr ;; @@3f82 78
+                 sta oldlin                                ;; @@3f84 78
+                 lda txtptr+1                              ;; @@3f87 78
+                 sta oldlin+1                              ;; @@3f89 78
+                 jsr chrget                                ;; @@3f8c 78
+                 bcs chk_quote                            ; not a #... ;; @@3f8f 78
+                 jsr linget                               ; get line # from text ;; @@3f91 78
+                 jsr form_line                            ; replace if this line # > n3 ;; @@3f94 78
+                 lda oldlin                               ; restore old txtptr ;; @@3f97 78
+                 sta txtptr                                ;; @@3f9a 78
+                 lda oldlin+1                              ;; @@3f9c 78
+                 sta txtptr+1                              ;; @@3f9f 78
+ ;; @@3fa1 78
+                 jsr chrget                               ; skip over leading spaces ;; @@3fa1 78
+                 dew txtptr                               ; then backup (txtptr) by 1 ;; @@3fa4 78
+                 ldx #$ff                                  ;; @@3fa6 78
+                 lda z_p_temp_1                           ; if this is pass2 then don't actually change ;; @@3fa8 78
+                 beq p3code                               ; if z=1 then pass3 => ok to change ;; @@3faa 78
+                 jsr p2code                               ; renumber 'pass two': trial run to see if enough room ;; @@3fac 78
+                 jsr chrgot                               ; re-get last character from BASIC text & rts ;; @@3faf 78
+ ;; @@3fb2 78
+iline_20                                                   ;; @@3fb2 78
+                 cmp #','                                 ; comma from 'on'? ;; @@3fb2 78
+                 beq iline_10                             ; it is... ;; @@3fb4 78
+                 bra chk_quote                            ; no... ;; @@3fb6 78
+ ;; @@3fb8 78
+; .page ;; @@3fb8 78
+;*********** This part of imbed_lines executed in pass 2 only ********** ;; @@3fb8 78
+ ;; @@3fb8 78
+p2code                                                    ; updates text_top without actually changing lines ;; @@3fb8 78
+                 inx                                       ;; @@3fb8 78
+                 lda fbuffr+1,x                           ; get character from number ;; @@3fb9 78
+                 beq _local_1077_20                       ; end of number ;; @@3fbc 78
+                 jsr chrget                               ; get digit from old number ;; @@3fbe 78
+                 bcc p2code                               ; digit...move on ;; @@3fc1 78
+ ;; @@3fc3 78
+_local_1077_10   inw fndpnt                                ;; @@3fc3 78
+                 sec                                      ; have we run out of memory (theoretically)? ;; @@3fc5 78
+                 lda fndpnt                               ; (compare with limit-of-memory pointer) ;; @@3fc6 78
+                 sbc max_mem_0                             ;; @@3fc8 78
+                 lda fndpnt+1                              ;; @@3fcb 78
+                 sbc max_mem_0+1                           ;; @@3fcd 78
+                 bcs omerr                                ; yes- out of memory error ;; @@3fd0 78
+                 inx                                      ; no - next... ;; @@3fd3 78
+                 lda fbuffr+1,x                            ;; @@3fd4 78
+                 bne _local_1077_10                        ;; @@3fd7 78
+_local_1077_15   rts                                      ; no more ;; @@3fd9 78
+ ;; @@3fda 78
+_local_1077_20   jsr chrget                                ;; @@3fda 78
+                 bcs _local_1077_15                       ; old stuff after # is other char ;; @@3fdd 78
+                 dew fndpnt                               ; digit...move down ;; @@3fdf 78
+                 bra _local_1077_20                       ; still digits... ;; @@3fe1 78
+ ;; @@3fe3 78
+; .page ;; @@3fe3 78
+;*********** This part of imbed_lines executed in pass 3 only ********** ;; @@3fe3 78
+ ;; @@3fe3 78

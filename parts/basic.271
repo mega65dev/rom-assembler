@@ -1,4 +1,4 @@
-c65.setpalette 
+C65__setpalette 
  cmp #restore_token ;restore palette? 
  bne 10$   ; no 
  jsr chrget  ; yes- advance past Restore token 

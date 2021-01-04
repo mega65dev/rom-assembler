@@ -54,7 +54,7 @@ ScreenClr
  jsr chrget  ;eat token & fall into SCNCLR 
  
 scnclr 
- bne c65.screenclear ;have a parameter, go clear graphic screen 
+ bne C65__screenclear ;have a parameter, go clear graphic screen 
  
  lda #$93 
  jmp _bsout  ;no parameter, clear text screen 
@@ -70,7 +70,7 @@ scnclr
 ;*           parm1 = color reg#  0-255 
 ;***************************************************************** 
  
-c65.screenclear 
+C65__screenclear 
  jsr getbyt  ;get color register # (range 0-255)????? 
     ;limit to range allowed by current screen def? 
  stx GKI__parm1 
@@ -90,7 +90,7 @@ c65.screenclear
 ScreenSet 
  jsr chrget  ;advance past token 
  
-c65.screen 
+C65__screen 
 ; beq snerr  ;missing args??      [911017] 
  ldx #255  ;       [911028] 
  cmp #',' 

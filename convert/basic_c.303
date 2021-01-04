@@ -1,33 +1,33 @@
-rsprite          jsr conint                               ; get first arg, sprite #, in .X ;; ba0f 303
-; dex  ;adjust [1..8] to [0..7]   [910220] ;; ba12 303
-                 cpx #8  ; (318018-03 mod                 ; fab) ;; ba12 303
-                 bcs _local_1302_1                        ; value error ;; ba14 303
-                 txa                                       ;; ba16 303
-                 pha                                      ; save sprite number ;; ba17 303
- ;; ba18 303
-; jsr chkcom ;check for proper delimiter ;; ba18 303
-; jsr getbyt ;do frmevl, get 1 byte arg (arg) in .X ;; ba18 303
-                 jsr combyt                               ; [910820] ;; ba18 303
-                 jsr chkcls                               ; look for closing paren ;; ba1b 303
-                 cpx #6                                    ;; ba1e 303
-_local_1302_1    bcs fcerr                                ; value error ;; ba20 303
- ;; ba23 303
-                 ply                                      ; sprite number ;; ba23 303
-; jsr put_io_in_map ;; ba24 303
-                 lda vic+39,y                             ; assume 'color' ;; ba24 303
-                 and #$0f                                 ; range 0-15 ;; ba27 303
-; inc a  ;adjust to 'keyboard' colors   [910724] ;; ba29 303
-                 cpx #1                                    ;; ba29 303
-                 beq _local_1302_10                       ; it was color. set up for float ;; ba2b 303
- ;; ba2d 303
-                 lda rspmod,x                             ; get index for this function ;; ba2d 303
-                 tax                                       ;; ba30 303
-                 lda sbits,y                              ; get mask for this sprite number ;; ba31 303
-                 and vic,x                                 ;; ba34 303
-                 beq _local_1302_10                        ;; ba37 303
-                 lda #1                                   ; return all non-zeros as '1' ;; ba39 303
- ;; ba3b 303
-_local_1302_10   tay                                       ;; ba3b 303
-                 bra sngflt                               ; go float 1 byte arg in .Y ;; ba3c 303
- ;; ba3f 303
- ;; ba3f 303
+rsprite          jsr conint                               ; get first arg, sprite #, in .X ;; @@ba0f 303
+; dex  ;adjust [1..8] to [0..7]   [910220] ;; @@ba12 303
+                 cpx #8  ; (318018-03 mod                 ; fab) ;; @@ba12 303
+                 bcs _local_1302_1                        ; value error ;; @@ba14 303
+                 txa                                       ;; @@ba16 303
+                 pha                                      ; save sprite number ;; @@ba17 303
+ ;; @@ba18 303
+; jsr chkcom ;check for proper delimiter ;; @@ba18 303
+; jsr getbyt ;do frmevl, get 1 byte arg (arg) in .X ;; @@ba18 303
+                 jsr combyt                               ; [910820] ;; @@ba18 303
+                 jsr chkcls                               ; look for closing paren ;; @@ba1b 303
+                 cpx #6                                    ;; @@ba1e 303
+_local_1302_1    bcs fcerr                                ; value error ;; @@ba20 303
+ ;; @@ba23 303
+                 ply                                      ; sprite number ;; @@ba23 303
+; jsr put_io_in_map ;; @@ba24 303
+                 lda vic+39,y                             ; assume 'color' ;; @@ba24 303
+                 and #$0f                                 ; range 0-15 ;; @@ba27 303
+; inc a  ;adjust to 'keyboard' colors   [910724] ;; @@ba29 303
+                 cpx #1                                    ;; @@ba29 303
+                 beq _local_1302_10                       ; it was color. set up for float ;; @@ba2b 303
+ ;; @@ba2d 303
+                 lda rspmod,x                             ; get index for this function ;; @@ba2d 303
+                 tax                                       ;; @@ba30 303
+                 lda sbits,y                              ; get mask for this sprite number ;; @@ba31 303
+                 and vic,x                                 ;; @@ba34 303
+                 beq _local_1302_10                        ;; @@ba37 303
+                 lda #1                                   ; return all non-zeros as '1' ;; @@ba39 303
+ ;; @@ba3b 303
+_local_1302_10   tay                                       ;; @@ba3b 303
+                 bra sngflt                               ; go float 1 byte arg in .Y ;; @@ba3c 303
+ ;; @@ba3f 303
+ ;; @@ba3f 303

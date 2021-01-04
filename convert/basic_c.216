@@ -1,89 +1,89 @@
-disk                                                       ;; 6f7a 216
-                 lda #$f6                                 ; parse:  command_string [,U#] ;; 6f7a 216
-                 jsr dosprs                                ;; 6f7c 216
-                 jsr chk1                                 ; check parameters ;; 6f7f 216
-                 lda #doslfn                              ; la (reserved la) ;; 6f82 216
-                 sta dosla                                 ;; 6f84 216
-                 lda #$6f                                  ;; 6f87 216
-                 sta dossa                                ; sa (command channel) ;; 6f89 216
-                 ldy #fdisk                                ;; 6f8c 216
-                 ldx #2                                   ; add "/" [911108] ;; 6f8e 216
-                 jsr open_file                            ; open command channel & send command string ;; 6f90 216
-                 php                                      ; save error status    [910404] ;; 6f93 216
-                 pha                                       ;; 6f94 216
-                 lda #doslfn                              ; close it ;; 6f95 216
-                 sec                                      ; not a real close ;; 6f97 216
-                 jsr _close                               ; close it ;; 6f98 216
-                 pla                                      ; [910404] ;; 6f9b 216
-                 plp                                       ;; 6f9c 216
-                 bra exit_disk_op                         ; common error check & exit path ???? ;; 6f9d 216
- ;; 6fa0 216
- ;; 6fa0 216
-;.end ;; 6fa0 216
-; .page ;; 6fa0 216
-; .subttl  DOS 1 ;; 6fa0 216
- ;; 6fa0 216
-; These routines take tokens and values after the following BASIC keywords: ;; 6fa0 216
-; ;; 6fa0 216
-;  DOPEN,   DCLOSE,  APPEND,  CONCAT, RECORD ;; 6fa0 216
-;  DLOAD,   DSAVE,   DVERIFY, BLOAD,  BSAVE ;; 6fa0 216
-;  FORMAT,  COLLECT, BACKUP,  COPY ;; 6fa0 216
-;  CATALOG, RENAME,  SCRATCH, DCLEAR ;; 6fa0 216
-; ;; 6fa0 216
-; It then parses the following line and finds syntax errors, checks for values ;; 6fa0 216
-; out of range, and sets variables in the zero-page to be passed to the disk ;; 6fa0 216
-; message generator. ;; 6fa0 216
- ;; 6fa0 216
- ;; 6fa0 216
-directory                                                 ; display disk directory (catalog) ;; 6fa0 216
-                 jsr chrgot                               ; get current chr ;; 6fa0 216
-                 cmp #esc_command_token                   ; eat dirECTORY kludge if it's there ;; 6fa3 216
-                 bne _local_1215_1                         ;; 6fa5 216
-                 jsr chrget                               ; (esc token + another) ;; 6fa7 216
-                 cmp #ectory_token                         ;; 6faa 216
-                 bne snerr                                 ;; 6fac 216
-                 jsr chrget                               ; yes- get next good char ;; 6faf 216
- ;; 6fb2 216
-_local_1215_1    jsr dospar                               ; parse the line ;; 6fb2 216
-                 lda parsts                               ; check options ;; 6fb5 216
-                 and #$e6                                  ;; 6fb7 216
-                 bne snerr                                 ;; 6fb9 216
- ;; 6fbc 216
-                 ldy #fdir                                ; table offset for directory ;; 6fbc 216
-                 bit dosflags                             ; want recoverable files? [901024] ;; 6fbe 216
-                 bvc _local_1215_2                        ; no ;; 6fc1 216
-                 ldy #fdirr                               ; yes ;; 6fc3 216
-_local_1215_2    ldx #1                                   ; just $ ;; 6fc5 216
-                 lda parsts                               ; check for default ;; 6fc7 216
-                 and #$11                                 ; no drive? ;; 6fc9 216
-                 beq _local_1215_20                        ;; 6fcb 216
-                 lsr a                                     ;; 6fcd 216
-                 bcc _local_1215_10                       ; just drive ;; 6fce 216
-                 inx                                      ; drive and filename ;; 6fd0 216
-                 inx                                       ;; 6fd1 216
-_local_1215_10   inx                                       ;; 6fd2 216
-_local_1215_20   txa                                      ; a now has length ;; 6fd3 216
-                 jsr sendp                                ; build ;; 6fd4 216
- ;; 6fd7 216
-                 ldx #sys_bank                            ; set banks????  fname in system space, bank0 [910620] ;; 6fd7 216
-                 txa                                      ; (load bank is don't care- we're not actually loading) ;; 6fd9 216
-                 jsr _setbank                              ;; 6fda 216
- ;; 6fdd 216
-                 ldy #$60                                 ; sa, load floppy ;; 6fdd 216
-                 ldx dosfa                                 ;; 6fdf 216
-                 lda #doslfn                              ; lfn ;; 6fe2 216
-                 jsr _setlfs                              ; set file parameters ;; 6fe4 216
-                 jsr _open                                ; open it... ;; 6fe7 216
-                 bcc _local_1215_30                       ; ...ok ;; 6fea 216
-                 pha                                       ;; 6fec 216
-                 jsr dcat11                               ; ...error, shut down and report ;; 6fed 216
-                 plx                                       ;; 6ff0 216
-                 sec                                       ;; 6ff1 216
-                 bra error                                 ;; 6ff2 216
- ;; 6ff5 216
-_local_1215_30   lda channl                               ; determine DIR vs LDIR ;; 6ff5 216
-                 bne ldir                                 ; if output channel not default (screen) ;; 6ff7 216
-; use LDIR ;; 6ff9 216
- ;; 6ff9 216
-; Get length in blocks ;; 6ff9 216
- ;; 6ff9 216
+disk                                                       ;; @@6f7a 216
+                 lda #$f6                                 ; parse:  command_string [,U#] ;; @@6f7a 216
+                 jsr dosprs                                ;; @@6f7c 216
+                 jsr chk1                                 ; check parameters ;; @@6f7f 216
+                 lda #doslfn                              ; la (reserved la) ;; @@6f82 216
+                 sta dosla                                 ;; @@6f84 216
+                 lda #$6f                                  ;; @@6f87 216
+                 sta dossa                                ; sa (command channel) ;; @@6f89 216
+                 ldy #fdisk                                ;; @@6f8c 216
+                 ldx #2                                   ; add "/" [911108] ;; @@6f8e 216
+                 jsr open_file                            ; open command channel & send command string ;; @@6f90 216
+                 php                                      ; save error status    [910404] ;; @@6f93 216
+                 pha                                       ;; @@6f94 216
+                 lda #doslfn                              ; close it ;; @@6f95 216
+                 sec                                      ; not a real close ;; @@6f97 216
+                 jsr _close                               ; close it ;; @@6f98 216
+                 pla                                      ; [910404] ;; @@6f9b 216
+                 plp                                       ;; @@6f9c 216
+                 bra exit_disk_op                         ; common error check & exit path ???? ;; @@6f9d 216
+ ;; @@6fa0 216
+ ;; @@6fa0 216
+;.end ;; @@6fa0 216
+; .page ;; @@6fa0 216
+; .subttl  DOS 1 ;; @@6fa0 216
+ ;; @@6fa0 216
+; These routines take tokens and values after the following BASIC keywords: ;; @@6fa0 216
+; ;; @@6fa0 216
+;  DOPEN,   DCLOSE,  APPEND,  CONCAT, RECORD ;; @@6fa0 216
+;  DLOAD,   DSAVE,   DVERIFY, BLOAD,  BSAVE ;; @@6fa0 216
+;  FORMAT,  COLLECT, BACKUP,  COPY ;; @@6fa0 216
+;  CATALOG, RENAME,  SCRATCH, DCLEAR ;; @@6fa0 216
+; ;; @@6fa0 216
+; It then parses the following line and finds syntax errors, checks for values ;; @@6fa0 216
+; out of range, and sets variables in the zero-page to be passed to the disk ;; @@6fa0 216
+; message generator. ;; @@6fa0 216
+ ;; @@6fa0 216
+ ;; @@6fa0 216
+directory                                                 ; display disk directory (catalog) ;; @@6fa0 216
+                 jsr chrgot                               ; get current chr ;; @@6fa0 216
+                 cmp #esc_command_token                   ; eat dirECTORY kludge if it's there ;; @@6fa3 216
+                 bne _local_1215_1                         ;; @@6fa5 216
+                 jsr chrget                               ; (esc token + another) ;; @@6fa7 216
+                 cmp #ectory_token                         ;; @@6faa 216
+                 bne snerr                                 ;; @@6fac 216
+                 jsr chrget                               ; yes- get next good char ;; @@6faf 216
+ ;; @@6fb2 216
+_local_1215_1    jsr dospar                               ; parse the line ;; @@6fb2 216
+                 lda parsts                               ; check options ;; @@6fb5 216
+                 and #$e6                                  ;; @@6fb7 216
+                 bne snerr                                 ;; @@6fb9 216
+ ;; @@6fbc 216
+                 ldy #fdir                                ; table offset for directory ;; @@6fbc 216
+                 bit dosflags                             ; want recoverable files? [901024] ;; @@6fbe 216
+                 bvc _local_1215_2                        ; no ;; @@6fc1 216
+                 ldy #fdirr                               ; yes ;; @@6fc3 216
+_local_1215_2    ldx #1                                   ; just $ ;; @@6fc5 216
+                 lda parsts                               ; check for default ;; @@6fc7 216
+                 and #$11                                 ; no drive? ;; @@6fc9 216
+                 beq _local_1215_20                        ;; @@6fcb 216
+                 lsr a                                     ;; @@6fcd 216
+                 bcc _local_1215_10                       ; just drive ;; @@6fce 216
+                 inx                                      ; drive and filename ;; @@6fd0 216
+                 inx                                       ;; @@6fd1 216
+_local_1215_10   inx                                       ;; @@6fd2 216
+_local_1215_20   txa                                      ; a now has length ;; @@6fd3 216
+                 jsr sendp                                ; build ;; @@6fd4 216
+ ;; @@6fd7 216
+                 ldx #sys_bank                            ; set banks????  fname in system space, bank0 [910620] ;; @@6fd7 216
+                 txa                                      ; (load bank is don't care- we're not actually loading) ;; @@6fd9 216
+                 jsr _setbank                              ;; @@6fda 216
+ ;; @@6fdd 216
+                 ldy #$60                                 ; sa, load floppy ;; @@6fdd 216
+                 ldx dosfa                                 ;; @@6fdf 216
+                 lda #doslfn                              ; lfn ;; @@6fe2 216
+                 jsr _setlfs                              ; set file parameters ;; @@6fe4 216
+                 jsr _open                                ; open it... ;; @@6fe7 216
+                 bcc _local_1215_30                       ; ...ok ;; @@6fea 216
+                 pha                                       ;; @@6fec 216
+                 jsr dcat11                               ; ...error, shut down and report ;; @@6fed 216
+                 plx                                       ;; @@6ff0 216
+                 sec                                       ;; @@6ff1 216
+                 bra error                                 ;; @@6ff2 216
+ ;; @@6ff5 216
+_local_1215_30   lda channl                               ; determine DIR vs LDIR ;; @@6ff5 216
+                 bne ldir                                 ; if output channel not default (screen) ;; @@6ff7 216
+; use LDIR ;; @@6ff9 216
+ ;; @@6ff9 216
+; Get length in blocks ;; @@6ff9 216
+ ;; @@6ff9 216

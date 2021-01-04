@@ -1,13 +1,13 @@
-un_quote                                                  ; txtptr points to a '"'. look for closing '"', or EOL ;; 3632 48
-                 ldy #0                                    ;; 3632 48
-_local_1047_10   inw txtptr                                ;; 3634 48
-                 jsr indtxt                                ;; 3636 48
-                 beq _local_1047_30                       ; EOL, get out here with .z set and a '00' in .a ;; 3639 48
-                 cmp #'"'                                  ;; 363b 48
-                 bne _local_1047_10                       ; keep looking until quote ;; 363d 48
-                 jmp chrget                               ; got closing quote, get byte after quote, set flags ;; 363f 48
- ;; 3642 48
-_local_1047_30   rts                                       ;; 3642 48
- ;; 3643 48
-; .page ;; 3643 48
- ;; 3643 48
+un_quote                                                  ; txtptr points to a '"'. look for closing '"', or EOL ;; @@3632 48
+                 ldy #0                                    ;; @@3632 48
+_local_1047_10   inw txtptr                                ;; @@3634 48
+                 jsr indtxt                                ;; @@3636 48
+                 beq _local_1047_30                       ; EOL, get out here with .z set and a '00' in .a ;; @@3639 48
+                 cmp #'"'                                  ;; @@363b 48
+                 bne _local_1047_10                       ; keep looking until quote ;; @@363d 48
+                 jmp chrget                               ; got closing quote, get byte after quote, set flags ;; @@363f 48
+ ;; @@3642 48
+_local_1047_30   rts                                       ;; @@3642 48
+ ;; @@3643 48
+; .page ;; @@3643 48
+ ;; @@3643 48

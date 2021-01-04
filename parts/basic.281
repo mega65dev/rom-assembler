@@ -1,4 +1,4 @@
-c65.Viewport 
+C65__Viewport 
  pha   ;save secondary command 
  jsr chrget  ;advance past it 
  jsr CheckGraphicMode ;make sure a screen is open 

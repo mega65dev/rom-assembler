@@ -1,71 +1,71 @@
-edit_load_done                                             ;; bdde 314
-                 lda #0                                   ; EOF: terminate memory with a pair of nulls ;; bdde 314
-                 tay                                       ;; bde0 314
-                 jsr sta_far_in1                           ;; bde1 314
-                 iny                                       ;; bde4 314
-                 jsr sta_far_in1                           ;; bde5 314
-                 inw index                                 ;; bde8 314
-                 inw index                                 ;; bdea 314
-                 ldx index                                ; set top ;; bdec 314
-                 ldy index+1                               ;; bdee 314
-                 stx text_top                              ;; bdf0 314
-                 sty text_top+1                            ;; bdf2 314
-                 bra link_program                         ; relink & RTS ;; bdf4 314
- ;; bdf7 314
-; .page ;; bdf7 314
-edit_save                                                  ;; bdf7 314
-                 lda #$e6                                 ; parse:  filename [,U#] [,D#] ;; bdf7 314
-                 jsr dosprs                               ; (like dopen:      0 0 0 *  * 0 0 1 ) ;; bdf9 314
-                 jsr chk1                                 ; check parameters ;; bdfc 314
-                 jsr find_la                              ; find an available LA ;; bdff 314
-                 jsr find_sa                              ; find an available SA ;; be02 314
-                 ldy #fsavseq                              ;; be05 314
-                 ldx #8                                    ;; be07 314
-                 jsr open_file                            ; open the file ;; be09 314
-                 bcs list_err                             ; exit if error ;; be0c 314
-                 ldx dosla                                 ;; be0f 314
-                 jsr _chkout                              ; get output channel ;; be12 314
-                 bcs _local_1313_30                       ; error ;; be15 314
- ;; be17 314
-                 lda txttab                               ; save address ;; be17 314
-                 ldx txttab+1                              ;; be19 314
-                 sta index                                 ;; be1b 314
-                 stx index+1                               ;; be1d 314
- ;; be1f 314
-_local_1313_10   jsr _stop                                ; check stop key ;; be1f 314
-                 beq _local_1313_30                       ; exit if down ;; be22 314
-                 jsr _readst                              ; check channel status ;; be24 314
-                 bne _local_1313_30                       ; exit if eof or error???? ;; be27 314
- ;; be29 314
-                 ldy #3                                   ; save a line, starting past links & line# ;; be29 314
-_local_1313_20   iny                                      ; bump buffer pointer ;; be2b 314
-; cpy #buflen  ;check buffer (160 max. input buffer size to edit) ;; be2c 314
-; beq ??$   ; split long lines into two???? ;; be2c 314
-                 jsr indin1                                ;; be2c 314
-                 tax                                      ; save character for eol check ;; be2f 314
-                 bne _local_1313_21                        ;; be30 314
-                 lda #cr                                  ; eol: substitute CR ???? allow some other terminator ;; be32 314
-_local_1313_21   jsr _bsout                               ; write file data ;; be34 314
-                 txa                                       ;; be37 314
-                 bne _local_1313_20                       ; loop until eol ;; be38 314
- ;; be3a 314
-                 iny                                      ; advance text index to start of next line ;; be3a 314
-                 tya                                       ;; be3b 314
-                 clc                                       ;; be3c 314
-                 adc index                                 ;; be3d 314
-                 sta index                                 ;; be3f 314
-                 bcc _local_1313_26                        ;; be41 314
-                 inc index+1                               ;; be43 314
- ;; be45 314
-_local_1313_26   ldy #0                                   ; check for EOF: a pair of null links ;; be45 314
-                 jsr indin1                                ;; be47 314
-                 bne _local_1313_10                        ;; be4a 314
-                 iny                                       ;; be4c 314
-                 jsr indin1                                ;; be4d 314
-                 bne _local_1313_10                       ; loop until end of text ;; be50 314
- ;; be52 314
-_local_1313_30   bra list_exit                            ; release channel, close file, exit ;; be52 314
- ;; be55 314
-;.end ;; be55 314
-; .page ;; be55 314
-; .subttl  ETC. ;; be55 314
+edit_load_done                                             ;; @@bdde 314
+                 lda #0                                   ; EOF: terminate memory with a pair of nulls ;; @@bdde 314
+                 tay                                       ;; @@bde0 314
+                 jsr sta_far_in1                           ;; @@bde1 314
+                 iny                                       ;; @@bde4 314
+                 jsr sta_far_in1                           ;; @@bde5 314
+                 inw index                                 ;; @@bde8 314
+                 inw index                                 ;; @@bdea 314
+                 ldx index                                ; set top ;; @@bdec 314
+                 ldy index+1                               ;; @@bdee 314
+                 stx text_top                              ;; @@bdf0 314
+                 sty text_top+1                            ;; @@bdf2 314
+                 bra link_program                         ; relink & RTS ;; @@bdf4 314
+ ;; @@bdf7 314
+; .page ;; @@bdf7 314
+edit_save                                                  ;; @@bdf7 314
+                 lda #$e6                                 ; parse:  filename [,U#] [,D#] ;; @@bdf7 314
+                 jsr dosprs                               ; (like dopen:      0 0 0 *  * 0 0 1 ) ;; @@bdf9 314
+                 jsr chk1                                 ; check parameters ;; @@bdfc 314
+                 jsr find_la                              ; find an available LA ;; @@bdff 314
+                 jsr find_sa                              ; find an available SA ;; @@be02 314
+                 ldy #fsavseq                              ;; @@be05 314
+                 ldx #8                                    ;; @@be07 314
+                 jsr open_file                            ; open the file ;; @@be09 314
+                 bcs list_err                             ; exit if error ;; @@be0c 314
+                 ldx dosla                                 ;; @@be0f 314
+                 jsr _chkout                              ; get output channel ;; @@be12 314
+                 bcs _local_1313_30                       ; error ;; @@be15 314
+ ;; @@be17 314
+                 lda txttab                               ; save address ;; @@be17 314
+                 ldx txttab+1                              ;; @@be19 314
+                 sta index                                 ;; @@be1b 314
+                 stx index+1                               ;; @@be1d 314
+ ;; @@be1f 314
+_local_1313_10   jsr _stop                                ; check stop key ;; @@be1f 314
+                 beq _local_1313_30                       ; exit if down ;; @@be22 314
+                 jsr _readst                              ; check channel status ;; @@be24 314
+                 bne _local_1313_30                       ; exit if eof or error???? ;; @@be27 314
+ ;; @@be29 314
+                 ldy #3                                   ; save a line, starting past links & line# ;; @@be29 314
+_local_1313_20   iny                                      ; bump buffer pointer ;; @@be2b 314
+; cpy #buflen  ;check buffer (160 max. input buffer size to edit) ;; @@be2c 314
+; beq ??$   ; split long lines into two???? ;; @@be2c 314
+                 jsr indin1                                ;; @@be2c 314
+                 tax                                      ; save character for eol check ;; @@be2f 314
+                 bne _local_1313_21                        ;; @@be30 314
+                 lda #cr                                  ; eol: substitute CR ???? allow some other terminator ;; @@be32 314
+_local_1313_21   jsr _bsout                               ; write file data ;; @@be34 314
+                 txa                                       ;; @@be37 314
+                 bne _local_1313_20                       ; loop until eol ;; @@be38 314
+ ;; @@be3a 314
+                 iny                                      ; advance text index to start of next line ;; @@be3a 314
+                 tya                                       ;; @@be3b 314
+                 clc                                       ;; @@be3c 314
+                 adc index                                 ;; @@be3d 314
+                 sta index                                 ;; @@be3f 314
+                 bcc _local_1313_26                        ;; @@be41 314
+                 inc index+1                               ;; @@be43 314
+ ;; @@be45 314
+_local_1313_26   ldy #0                                   ; check for EOF: a pair of null links ;; @@be45 314
+                 jsr indin1                                ;; @@be47 314
+                 bne _local_1313_10                        ;; @@be4a 314
+                 iny                                       ;; @@be4c 314
+                 jsr indin1                                ;; @@be4d 314
+                 bne _local_1313_10                       ; loop until end of text ;; @@be50 314
+ ;; @@be52 314
+_local_1313_30   bra list_exit                            ; release channel, close file, exit ;; @@be52 314
+ ;; @@be55 314
+;.end ;; @@be55 314
+; .page ;; @@be55 314
+; .subttl  ETC. ;; @@be55 314

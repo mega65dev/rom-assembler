@@ -1,18 +1,18 @@
-qint             lda facexp                                ;; 6330 176
-                 beq clrfac                               ; if zero, got it ;; 6332 176
-                 sec                                       ;; 6334 176
-                 sbc #$a0                                 ; get number of places to shift ;; 6335 176
- ;; 6337 176
-                 bbr7 facsgn,_local_1175_10                ;; 6337 176
- ;; 633a 176
-                 tax                                       ;; 633a 176
-                 lda #$ff                                  ;; 633b 176
-                 sta bits                                 ; put $ff in when shftr shifts bytes ;; 633d 176
-                 jsr negfch                               ; truly negate quantity in FAC ;; 6340 176
-                 txa                                       ;; 6343 176
- ;; 6344 176
-_local_1175_10   ldx #fac                                  ;; 6344 176
-                 cmp #$f9                                  ;; 6346 176
-                 bpl qint1                                ; if number of places > 7 shift 1 place at a time ;; 6348 176
-                 jsr shiftr                               ; start shifting bytes, then bits ;; 634a 176
-                 sty bits                                 ; zero bits since adder wants zero ;; 634d 176
+qint             lda facexp                                ;; @@6330 176
+                 beq clrfac                               ; if zero, got it ;; @@6332 176
+                 sec                                       ;; @@6334 176
+                 sbc #$a0                                 ; get number of places to shift ;; @@6335 176
+ ;; @@6337 176
+                 bbr7 facsgn,_local_1175_10                ;; @@6337 176
+ ;; @@633a 176
+                 tax                                       ;; @@633a 176
+                 lda #$ff                                  ;; @@633b 176
+                 sta bits                                 ; put $ff in when shftr shifts bytes ;; @@633d 176
+                 jsr negfch                               ; truly negate quantity in FAC ;; @@6340 176
+                 txa                                       ;; @@6343 176
+ ;; @@6344 176
+_local_1175_10   ldx #fac                                  ;; @@6344 176
+                 cmp #$f9                                  ;; @@6346 176
+                 bpl qint1                                ; if number of places > 7 shift 1 place at a time ;; @@6348 176
+                 jsr shiftr                               ; start shifting bytes, then bits ;; @@634a 176
+                 sty bits                                 ; zero bits since adder wants zero ;; @@634d 176

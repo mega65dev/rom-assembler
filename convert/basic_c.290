@@ -1,87 +1,87 @@
-movspr_to                                                 ; setup for moving sprite to a particular position ;; b695 290
-;we have already positioned the sprite onscreen ;; b695 290
-                 jsr chrgot                               ; reget terminating character ;; b695 290
-                 cmp #to_token                             ;; b698 290
-                 beq _local_1289_5                        ; not our call ;; b69a 290
-                 cli                                       ;; b69c 290
-                 rts                                       ;; b69d 290
- ;; b69e 290
-_local_1289_5    smb7 op                                  ; it's for us- let everybody else know we're in charge ;; b69e 290
-                 jsr chrget                               ; move to next non-space character ;; b6a0 290
-                 clc                                       ;; b6a3 290
-                 jsr sprcor_1                             ; go get & evaluate destination coordinate ;; b6a4 290
-                 jsr movspr_1                             ; returns with sprite# in .x, VIC sprite index in .y, ;; b6a7 290
-;P1 in VIC sprite regs, and P2 in x,ydest ;; b6aa 290
-                 asl numcnt                               ; Y: handle specific coordinate types ;; b6aa 290
-                 bcc _local_1289_20                       ; skip if absolute ;; b6ad 290
-                 clc                                       ;; b6af 290
-                 lda xdest+2                              ; get y-coordinate ;; b6b0 290
-                 bpl _local_1289_10                       ; skip if normal coordinates ;; b6b3 290
-                 eor #$ff                                  ;; b6b5 290
-                 sec                                      ; invert to subtract if angular ;; b6b7 290
-_local_1289_10   adc vic+1,y                              ; add to current sprite y-value ???vic_save ;; b6b8 290
-                 sta xdest+2                              ; save sprite destination y-position ;; b6bb 290
- ;; b6be 290
-_local_1289_20   asl numcnt                               ; X: handle specific coordinate types ;; b6be 290
-                 bpl _local_1289_30                       ; skip if absolute ;; b6c1 290
-                 clc                                       ;; b6c3 290
-                 lda xdest                                ; get low byte of x-coordinate ;; b6c4 290
-                 adc vic,y                                ; add current sprite x-position  ???vic_save ;; b6c7 290
-                 sta xdest                                ; save sprite destination x-position ;; b6ca 290
-                 bcc _local_1289_30                        ;; b6cd 290
-                 inc xdest+1                               ;; b6cf 290
- ;; b6d2 290
-_local_1289_30   phy                                       ;; b6d2 290
-                 jsr combyt                               ; get speed parameter ;; b6d3 290
-                 txa                                       ;; b6d6 290
-                 and #$3f                                 ; limit range (0-63) ???? ;; b6d7 290
-                 ora #$80                                  ;; b6d9 290
-                 sta xcnt                                 ; save in temp. ;; b6db 290
-                 ply                                       ;; b6de 290
- ;; b6df 290
-                 lda vic,y                                ; copy current sprite pos'n to line vars ;; b6df 290
-                 sta xpos                                 ; in preparation for line calculations ;; b6e2 290
-                 lda vic+1,y                               ;; b6e5 290
-                 sta ypos                                  ;; b6e8 290
-                 lda #0                                    ;; b6eb 290
-                 sta xpos+1                                ;; b6ed 290
-                 sta ypos+1                                ;; b6f0 290
-                 tya                                       ;; b6f3 290
-                 lsr a                                     ;; b6f4 290
-                 tay                                       ;; b6f5 290
-                 lda sbits,y                               ;; b6f6 290
-                 and vic+16                                ;; b6f9 290
-                 beq _local_1289_40                        ;; b6fc 290
-                 inc xpos+1                                ;; b6fe 290
-_local_1289_40                                             ;; b701 290
-; .page ;; b701 290
-;****************************************************************** ;; b701 290
-;  MOVSPR n, p1 TO p2 - move a sprite along line from p1 to p2 ;; b701 290
-; ;; b701 290
-; The following is performed now: ;; b701 290
-; ;; b701 290
-;           absx    = abs(destx-posx) : absy = abs(desty-posy) ;; b701 290
-;           sgnx    = sgn(destx-posx) : sgny = sgn(desty-posy) ;; b701 290
-;                     ( sgn=(1,0,-1) if (+,0,-) ) ;; b701 290
-;           greatr  = index to the greatr of absx,absy ;; b701 290
-;           lesser  = index to the smaller of absx,absy ;; b701 290
-; ;; b701 290
-;           fct1    = 2*min(absx,absy) ;; b701 290
-;           fct2    = fct1 - 2*max(absx,absy) ;; b701 290
-;           error   = fct1 - max(absx,absy) ;; b701 290
-; ;; b701 290
-; The following is performed during IRQ: ;; b701 290
-; ;; b701 290
-;           for i:= 1 to max(absx,absy) do begin ;; b701 290
-;                 movspr n, posx, posy ;; b701 290
-;                 if error > 0 then begin ;; b701 290
-;                      pos(lesser):= pos(lesser) + sgn(lesser) ;; b701 290
-;                      error:= error + fct2 ;; b701 290
-;                      end ;; b701 290
-;                      else error:= error + fct1 ;; b701 290
-;                 pos(greatr):= pos(greatr) + sgn(greatr) ;; b701 290
-;           end; ;; b701 290
-; ;; b701 290
-; (modification of C128 Bresenham DrawLn algorithm 910808 F.Bowen) ;; b701 290
-;****************************************************************** ;; b701 290
- ;; b701 290
+movspr_to                                                 ; setup for moving sprite to a particular position ;; @@b695 290
+;we have already positioned the sprite onscreen ;; @@b695 290
+                 jsr chrgot                               ; reget terminating character ;; @@b695 290
+                 cmp #to_token                             ;; @@b698 290
+                 beq _local_1289_5                        ; not our call ;; @@b69a 290
+                 cli                                       ;; @@b69c 290
+                 rts                                       ;; @@b69d 290
+ ;; @@b69e 290
+_local_1289_5    smb7 op                                  ; it's for us- let everybody else know we're in charge ;; @@b69e 290
+                 jsr chrget                               ; move to next non-space character ;; @@b6a0 290
+                 clc                                       ;; @@b6a3 290
+                 jsr sprcor_1                             ; go get & evaluate destination coordinate ;; @@b6a4 290
+                 jsr movspr_1                             ; returns with sprite# in .x, VIC sprite index in .y, ;; @@b6a7 290
+;P1 in VIC sprite regs, and P2 in x,ydest ;; @@b6aa 290
+                 asl numcnt                               ; Y: handle specific coordinate types ;; @@b6aa 290
+                 bcc _local_1289_20                       ; skip if absolute ;; @@b6ad 290
+                 clc                                       ;; @@b6af 290
+                 lda xdest+2                              ; get y-coordinate ;; @@b6b0 290
+                 bpl _local_1289_10                       ; skip if normal coordinates ;; @@b6b3 290
+                 eor #$ff                                  ;; @@b6b5 290
+                 sec                                      ; invert to subtract if angular ;; @@b6b7 290
+_local_1289_10   adc vic+1,y                              ; add to current sprite y-value ???vic_save ;; @@b6b8 290
+                 sta xdest+2                              ; save sprite destination y-position ;; @@b6bb 290
+ ;; @@b6be 290
+_local_1289_20   asl numcnt                               ; X: handle specific coordinate types ;; @@b6be 290
+                 bpl _local_1289_30                       ; skip if absolute ;; @@b6c1 290
+                 clc                                       ;; @@b6c3 290
+                 lda xdest                                ; get low byte of x-coordinate ;; @@b6c4 290
+                 adc vic,y                                ; add current sprite x-position  ???vic_save ;; @@b6c7 290
+                 sta xdest                                ; save sprite destination x-position ;; @@b6ca 290
+                 bcc _local_1289_30                        ;; @@b6cd 290
+                 inc xdest+1                               ;; @@b6cf 290
+ ;; @@b6d2 290
+_local_1289_30   phy                                       ;; @@b6d2 290
+                 jsr combyt                               ; get speed parameter ;; @@b6d3 290
+                 txa                                       ;; @@b6d6 290
+                 and #$3f                                 ; limit range (0-63) ???? ;; @@b6d7 290
+                 ora #$80                                  ;; @@b6d9 290
+                 sta xcnt                                 ; save in temp. ;; @@b6db 290
+                 ply                                       ;; @@b6de 290
+ ;; @@b6df 290
+                 lda vic,y                                ; copy current sprite pos'n to line vars ;; @@b6df 290
+                 sta xpos                                 ; in preparation for line calculations ;; @@b6e2 290
+                 lda vic+1,y                               ;; @@b6e5 290
+                 sta ypos                                  ;; @@b6e8 290
+                 lda #0                                    ;; @@b6eb 290
+                 sta xpos+1                                ;; @@b6ed 290
+                 sta ypos+1                                ;; @@b6f0 290
+                 tya                                       ;; @@b6f3 290
+                 lsr a                                     ;; @@b6f4 290
+                 tay                                       ;; @@b6f5 290
+                 lda sbits,y                               ;; @@b6f6 290
+                 and vic+16                                ;; @@b6f9 290
+                 beq _local_1289_40                        ;; @@b6fc 290
+                 inc xpos+1                                ;; @@b6fe 290
+_local_1289_40                                             ;; @@b701 290
+; .page ;; @@b701 290
+;****************************************************************** ;; @@b701 290
+;  MOVSPR n, p1 TO p2 - move a sprite along line from p1 to p2 ;; @@b701 290
+; ;; @@b701 290
+; The following is performed now: ;; @@b701 290
+; ;; @@b701 290
+;           absx    = abs(destx-posx) : absy = abs(desty-posy) ;; @@b701 290
+;           sgnx    = sgn(destx-posx) : sgny = sgn(desty-posy) ;; @@b701 290
+;                     ( sgn=(1,0,-1) if (+,0,-) ) ;; @@b701 290
+;           greatr  = index to the greatr of absx,absy ;; @@b701 290
+;           lesser  = index to the smaller of absx,absy ;; @@b701 290
+; ;; @@b701 290
+;           fct1    = 2*min(absx,absy) ;; @@b701 290
+;           fct2    = fct1 - 2*max(absx,absy) ;; @@b701 290
+;           error   = fct1 - max(absx,absy) ;; @@b701 290
+; ;; @@b701 290
+; The following is performed during IRQ: ;; @@b701 290
+; ;; @@b701 290
+;           for i:= 1 to max(absx,absy) do begin ;; @@b701 290
+;                 movspr n, posx, posy ;; @@b701 290
+;                 if error > 0 then begin ;; @@b701 290
+;                      pos(lesser):= pos(lesser) + sgn(lesser) ;; @@b701 290
+;                      error:= error + fct2 ;; @@b701 290
+;                      end ;; @@b701 290
+;                      else error:= error + fct1 ;; @@b701 290
+;                 pos(greatr):= pos(greatr) + sgn(greatr) ;; @@b701 290
+;           end; ;; @@b701 290
+; ;; @@b701 290
+; (modification of C128 Bresenham DrawLn algorithm 910808 F.Bowen) ;; @@b701 290
+;****************************************************************** ;; @@b701 290
+ ;; @@b701 290

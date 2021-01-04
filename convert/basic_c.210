@@ -1,43 +1,43 @@
-ispl1            lda sno                                  ; positive? ;; 6d37 210
-                 bmi bout                                 ; yes...out blank or * ;; 6d3a 210
-ispl             lda sno                                  ; output sgn ;; 6d3c 210
-                 bra out                                   ;; 6d3f 210
- ;; 6d41 210
- ;; 6d41 210
-zerot            lda z_p_temp_1                           ; # of zeros ;; 6d41 210
-                 bne zerot1                                ;; 6d43 210
-                 cpx enr                                  ; end of # reached? ;; 6d45 210
-                 beq zout                                 ; yes...output zero ;; 6d48 210
- ;; 6d4a 210
-telx             inx                                       ;; 6d4a 210
-                 lda fbuffr,x                             ; get digit ;; 6d4b 210
-                 !byte $2c                                ; skip ;; 6d4e 210
- ;; 6d4f 210
-zout             lda #'0'                                 ; output zero ;; 6d4f 210
- ;; 6d51 210
-outs             lsr flag                                 ; clear comma flag ;; 6d51 210
- ;; 6d54 210
-out              jsr cdout                                ; output character ;; 6d54 210
-                 beq rrts                                  ;; 6d57 210
-                 bra afrm                                 ; not ready... ;; 6d5a 210
- ;; 6d5c 210
- ;; 6d5c 210
-zerot1           dec z_p_temp_1                           ; count leading zeros ;; 6d5c 210
-                 lda dolr                                 ; $ flag set? ;; 6d5e 210
-                 bmi zout                                 ; no...output zero ;; 6d61 210
- ;; 6d63 210
-                 jsr indfrm                               ; take a peek at the next character in the format string ;; 6d63 210
-                 cmp #','                                 ; if it's a comma, we got problems ;; 6d66 210
-                 bne _local_1209_10                       ; ...branch if no comma & resume normal processing ;; 6d68 210
- ;; 6d6a 210
-                 lda blfd                                 ; here's the "$,999.99" bug fix: ;; 6d6a 210
-                 jsr cdout                                ; print a 'fill' character instead of the '$' ;; 6d6d 210
-                 iny                                      ; and increment format string pointer past comma ;; 6d70 210
- ;; 6d71 210
-_local_1209_10   sec                                      ; resume normal processing ;; 6d71 210
-                 ror dolr                                 ; clear the dollar flag & go on to print '$' ;; 6d72 210
-; sta sw_rom_ram0 ;???? ;; 6d75 210
-                 lda pumony                                ;; 6d75 210
-                 bra outs                                 ; output money symbol ;; 6d78 210
- ;; 6d7a 210
- ;; 6d7a 210
+ispl1            lda sno                                  ; positive? ;; @@6d37 210
+                 bmi bout                                 ; yes...out blank or * ;; @@6d3a 210
+ispl             lda sno                                  ; output sgn ;; @@6d3c 210
+                 bra out                                   ;; @@6d3f 210
+ ;; @@6d41 210
+ ;; @@6d41 210
+zerot            lda z_p_temp_1                           ; # of zeros ;; @@6d41 210
+                 bne zerot1                                ;; @@6d43 210
+                 cpx enr                                  ; end of # reached? ;; @@6d45 210
+                 beq zout                                 ; yes...output zero ;; @@6d48 210
+ ;; @@6d4a 210
+telx             inx                                       ;; @@6d4a 210
+                 lda fbuffr,x                             ; get digit ;; @@6d4b 210
+                 !text $2c                                ; skip ;; @@6d4e 210
+ ;; @@6d4f 210
+zout             lda #'0'                                 ; output zero ;; @@6d4f 210
+ ;; @@6d51 210
+outs             lsr flag                                 ; clear comma flag ;; @@6d51 210
+ ;; @@6d54 210
+out              jsr cdout                                ; output character ;; @@6d54 210
+                 beq rrts                                  ;; @@6d57 210
+                 bra afrm                                 ; not ready... ;; @@6d5a 210
+ ;; @@6d5c 210
+ ;; @@6d5c 210
+zerot1           dec z_p_temp_1                           ; count leading zeros ;; @@6d5c 210
+                 lda dolr                                 ; $ flag set? ;; @@6d5e 210
+                 bmi zout                                 ; no...output zero ;; @@6d61 210
+ ;; @@6d63 210
+                 jsr indfrm                               ; take a peek at the next character in the format string ;; @@6d63 210
+                 cmp #','                                 ; if it's a comma, we got problems ;; @@6d66 210
+                 bne _local_1209_10                       ; ...branch if no comma & resume normal processing ;; @@6d68 210
+ ;; @@6d6a 210
+                 lda blfd                                 ; here's the "$,999.99" bug fix: ;; @@6d6a 210
+                 jsr cdout                                ; print a 'fill' character instead of the '$' ;; @@6d6d 210
+                 iny                                      ; and increment format string pointer past comma ;; @@6d70 210
+ ;; @@6d71 210
+_local_1209_10   sec                                      ; resume normal processing ;; @@6d71 210
+                 ror dolr                                 ; clear the dollar flag & go on to print '$' ;; @@6d72 210
+; sta sw_rom_ram0 ;???? ;; @@6d75 210
+                 lda pumony                                ;; @@6d75 210
+                 bra outs                                 ; output money symbol ;; @@6d78 210
+ ;; @@6d7a 210
+ ;; @@6d7a 210

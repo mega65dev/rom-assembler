@@ -1,83 +1,83 @@
-val              jsr len1                                 ; get length ;; 5546 139
-                 beq zerofc                               ; return 0 if len=0 ;; 5549 139
- ;; 554c 139
-; Use text to fp number code by faking a new text poiner ;; 554c 139
- ;; 554c 139
-val_1            clc                                      ; ///jump table entry.  convert PETSCII to floating point ;; 554c 139
-                 adc index1                                ;; 554d 139
-                 sta strng2                               ; add length to index1 and put in strng2 ;; 554f 139
-                 lda index1+1                              ;; 5551 139
-                 adc #0                                    ;; 5553 139
-                 sta strng2+1                              ;; 5555 139
- ;; 5557 139
-                 ldy #0                                    ;; 5557 139
-                 lda #strng2                               ;; 5559 139
-                 jsr lda_far_ram1                         ; replace character after string with $00 (fake EOL) ;; 555b 139
-                 pha                                      ; save old character ;; 555e 139
-                 tya                                      ; (.A=0) ;; 555f 139
-                 ldx #strng2                               ;; 5560 139
-                 jsr sta_far_ram1 ;sta (strng2),y         ; ..and put in null ;; 5562 139
-                 jsr fin_chrget_2                         ; get character pointed to and set flags.(sorta like chrgot) ;; 5565 139
-                 ldx #1                                   ; flag 'bank 1' ;; 5568 139
-                 jsr fin                                  ; go do evaluation ;; 556a 139
-                 pla                                      ; get saved character ;; 556d 139
-                 phx                                       ;; 556e 139
-                 ldx #strng2                               ;; 556f 139
-                 ldy #0                                    ;; 5571 139
-                 jsr sta_far_ram1 ;sta (strng2),y         ; restore zeroed-out character ;; 5573 139
-                 plx                                       ;; 5576 139
-                 rts                                       ;; 5577 139
- ;; 5578 139
-;.end ;; 5578 139
-; .page ;; 5578 139
-; .subttl  DEC ;; 5578 139
- ;; 5578 139
-; DEC convert a hex string representing a 2-byte integer into decimal. ;; 5578 139
- ;; 5578 139
-dcml             jsr len1                                 ; find length of string ;; 5578 139
-                 sta index2                               ; len ret. in a ;; 557b 139
-                 ldy #0                                    ;; 557d 139
-                 sty index2+1                             ; zero char counter ;; 557f 139
-                 sty strng2+1                             ; zero out value ;; 5581 139
-                 sty strng2                                ;; 5583 139
- ;; 5585 139
-_local_1138_10   cpy index2                               ; evaluated all characters? ;; 5585 139
-                 beq _local_1138_50                       ; branch if so ;; 5587 139
-                 jsr indin1_ram1                          ; get next character from string ;; 5589 139
-                 iny                                       ;; 558c 139
-                 cmp #' '                                 ; ignore spaces ;; 558d 139
-                 beq _local_1138_10                        ;; 558f 139
-                 inc index2+1                              ;; 5591 139
-                 ldx index2+1                              ;; 5593 139
-                 cpx #5                                    ;; 5595 139
-                 bcs decbad                               ; can't have more than 4 characters ;; 5597 139
- ;; 5599 139
-                 cmp #'0'                                  ;; 5599 139
-                 bcc decbad                               ; bad if < 0 ;; 559b 139
-                 cmp #':'                                 ; '9'+1 ;; 559d 139
-                 bcc _local_1138_30                       ; ok if  = 0-9 ;; 559f 139
-                 cmp #'A'                                  ;; 55a1 139
-                 bcc decbad                               ; bad if > 9  and < A ;; 55a3 139
-                 cmp #'G'                                  ;; 55a5 139
-                 bcs decbad                               ; bad if > F ;; 55a7 139
- ;; 55a9 139
-                 sbc #7                                   ; adjust if A-F  (.c is clr) ;; 55a9 139
-_local_1138_30   sbc #$2f                                 ; adjust to $00..$0f (.c is set) ;; 55ab 139
-                 asl a                                    ; shift low nibble to high ;; 55ad 139
-                 asl a                                     ;; 55ae 139
-                 asl a                                     ;; 55af 139
-                 asl a                                     ;; 55b0 139
- ;; 55b1 139
-                 ldx #4                                   ; mult. old val. by 16, add new ;; 55b1 139
-_local_1138_40   asl a                                     ;; 55b3 139
-                 rol strng2                                ;; 55b4 139
-                 rol strng2+1                              ;; 55b6 139
-                 dex                                       ;; 55b8 139
-                 bne _local_1138_40                        ;; 55b9 139
-                 bra _local_1138_10                        ;; 55bb 139
- ;; 55bd 139
-_local_1138_50   ldy strng2                               ; get lsb of value, ;; 55bd 139
-                 lda strng2+1                             ; & msb, ;; 55bf 139
-                 bra nosflt                               ; go float 2 byte unsigned integer ;; 55c1 139
- ;; 55c4 139
- ;; 55c4 139
+val              jsr len1                                 ; get length ;; @@5546 139
+                 beq zerofc                               ; return 0 if len=0 ;; @@5549 139
+ ;; @@554c 139
+; Use text to fp number code by faking a new text poiner ;; @@554c 139
+ ;; @@554c 139
+val_1            clc                                      ; ///jump table entry.  convert PETSCII to floating point ;; @@554c 139
+                 adc index1                                ;; @@554d 139
+                 sta strng2                               ; add length to index1 and put in strng2 ;; @@554f 139
+                 lda index1+1                              ;; @@5551 139
+                 adc #0                                    ;; @@5553 139
+                 sta strng2+1                              ;; @@5555 139
+ ;; @@5557 139
+                 ldy #0                                    ;; @@5557 139
+                 lda #strng2                               ;; @@5559 139
+                 jsr lda_far_ram1                         ; replace character after string with $00 (fake EOL) ;; @@555b 139
+                 pha                                      ; save old character ;; @@555e 139
+                 tya                                      ; (.A=0) ;; @@555f 139
+                 ldx #strng2                               ;; @@5560 139
+                 jsr sta_far_ram1 ;sta (strng2),y         ; ..and put in null ;; @@5562 139
+                 jsr fin_chrget_2                         ; get character pointed to and set flags.(sorta like chrgot) ;; @@5565 139
+                 ldx #1                                   ; flag 'bank 1' ;; @@5568 139
+                 jsr fin                                  ; go do evaluation ;; @@556a 139
+                 pla                                      ; get saved character ;; @@556d 139
+                 phx                                       ;; @@556e 139
+                 ldx #strng2                               ;; @@556f 139
+                 ldy #0                                    ;; @@5571 139
+                 jsr sta_far_ram1 ;sta (strng2),y         ; restore zeroed-out character ;; @@5573 139
+                 plx                                       ;; @@5576 139
+                 rts                                       ;; @@5577 139
+ ;; @@5578 139
+;.end ;; @@5578 139
+; .page ;; @@5578 139
+; .subttl  DEC ;; @@5578 139
+ ;; @@5578 139
+; DEC convert a hex string representing a 2-byte integer into decimal. ;; @@5578 139
+ ;; @@5578 139
+dcml             jsr len1                                 ; find length of string ;; @@5578 139
+                 sta index2                               ; len ret. in a ;; @@557b 139
+                 ldy #0                                    ;; @@557d 139
+                 sty index2+1                             ; zero char counter ;; @@557f 139
+                 sty strng2+1                             ; zero out value ;; @@5581 139
+                 sty strng2                                ;; @@5583 139
+ ;; @@5585 139
+_local_1138_10   cpy index2                               ; evaluated all characters? ;; @@5585 139
+                 beq _local_1138_50                       ; branch if so ;; @@5587 139
+                 jsr indin1_ram1                          ; get next character from string ;; @@5589 139
+                 iny                                       ;; @@558c 139
+                 cmp #' '                                 ; ignore spaces ;; @@558d 139
+                 beq _local_1138_10                        ;; @@558f 139
+                 inc index2+1                              ;; @@5591 139
+                 ldx index2+1                              ;; @@5593 139
+                 cpx #5                                    ;; @@5595 139
+                 bcs decbad                               ; can't have more than 4 characters ;; @@5597 139
+ ;; @@5599 139
+                 cmp #'0'                                  ;; @@5599 139
+                 bcc decbad                               ; bad if < 0 ;; @@559b 139
+                 cmp #':'                                 ; '9'+1 ;; @@559d 139
+                 bcc _local_1138_30                       ; ok if  = 0-9 ;; @@559f 139
+                 cmp #'A'                                  ;; @@55a1 139
+                 bcc decbad                               ; bad if > 9  and < A ;; @@55a3 139
+                 cmp #'G'                                  ;; @@55a5 139
+                 bcs decbad                               ; bad if > F ;; @@55a7 139
+ ;; @@55a9 139
+                 sbc #7                                   ; adjust if A-F  (.c is clr) ;; @@55a9 139
+_local_1138_30   sbc #$2f                                 ; adjust to $00..$0f (.c is set) ;; @@55ab 139
+                 asl a                                    ; shift low nibble to high ;; @@55ad 139
+                 asl a                                     ;; @@55ae 139
+                 asl a                                     ;; @@55af 139
+                 asl a                                     ;; @@55b0 139
+ ;; @@55b1 139
+                 ldx #4                                   ; mult. old val. by 16, add new ;; @@55b1 139
+_local_1138_40   asl a                                     ;; @@55b3 139
+                 rol strng2                                ;; @@55b4 139
+                 rol strng2+1                              ;; @@55b6 139
+                 dex                                       ;; @@55b8 139
+                 bne _local_1138_40                        ;; @@55b9 139
+                 bra _local_1138_10                        ;; @@55bb 139
+ ;; @@55bd 139
+_local_1138_50   ldy strng2                               ; get lsb of value, ;; @@55bd 139
+                 lda strng2+1                             ; & msb, ;; @@55bf 139
+                 bra nosflt                               ; go float 2 byte unsigned integer ;; @@55c1 139
+ ;; @@55c4 139
+ ;; @@55c4 139

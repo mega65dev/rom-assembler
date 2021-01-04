@@ -1,138 +1,138 @@
-cont_rts                                                   ;; 3db3 73
-                 rts                                       ;; 3db3 73
- ;; 3db4 73
-;.end ;; 3db4 73
-; .page ;; 3db4 73
-; .subttl  RUN ;; 3db4 73
-;*********************************************************** ;; 3db4 73
-;* ;; 3db4 73
-;* RUN Command ;; 3db4 73
-;* ;; 3db4 73
-;* RUN [line_number] ;; 3db4 73
-;* RUN filename [[ON] Ddrive_number[,Uunit_number]] ;; 3db4 73
-;* ;; 3db4 73
-;* Entry:  RUN_A_PROGRAM sets up, links, and executes ;; 3db4 73
-;*  a program previously loaded into RAM. ;; 3db4 73
-;* ;; 3db4 73
-;*********************************************************** ;; 3db4 73
- ;; 3db4 73
-run              bbs4 runmod,edit_err                     ; [910620] ;; 3db4 73
-                 beq run__10                              ; branch if no arguments ;; 3db7 73
-                 bcc run__20                              ; branch if number (i.e., RUN line_number) ;; 3db9 73
- ;; 3dbb 73
- ;; 3dbb 73
-; Here if of the form "RUN file_name" ;; 3dbb 73
- ;; 3dbb 73
-                 smb6 runmod                              ; set flag for load not to go to ready ;; 3dbb 73
-                 jsr dload                                ; use DLOAD's parser, and load the program ;; 3dbd 73
-                 bcs erexit                               ; if problem loading   [900801] ;; 3dc0 73
- ;; 3dc3 73
-run_a_program                                              ;; 3dc3 73
-                 jsr crdo                                 ; [911010] ;; 3dc3 73
-                 jsr fix_links                            ; re-link the program ;; 3dc6 73
-                 jsr setexc                               ; set various run modes ;; 3dc9 73
-                 jsr runc                                  ;; 3dcc 73
-                 bra newstt                               ; start executing ;; 3dcf 73
- ;; 3dd2 73
- ;; 3dd2 73
-; Here if of the form "RUN" ;; 3dd2 73
- ;; 3dd2 73
-run__10          jsr setexc                               ; set various run codes ;; 3dd2 73
-                 bra runc                                 ; ..and start executing ;; 3dd5 73
- ;; 3dd8 73
- ;; 3dd8 73
-; Here if of the form "RUN line_number" ;; 3dd8 73
- ;; 3dd8 73
-run__20          jsr clearc                               ; first trash all variables ;; 3dd8 73
-                 jsr chrgot                                ;; 3ddb 73
-                 jsr goto                                 ; set up to execute from new line number ;; 3dde 73
-                 jsr setexc                               ; ..and do a little housekeeping, ;; 3de1 73
-                 bra newstt                               ; ..otherwise it's business as usual ;; 3de4 73
- ;; 3de7 73
-;.end ;; 3de7 73
-; .page ;; 3de7 73
-; .subttl  RESTORE ;; 3de7 73
-;********************************************************************* ;; 3de7 73
-;* ;; 3de7 73
-;* RESTORE Command ;; 3de7 73
-;* ;; 3de7 73
-;* Reset pointers to next DATA statement.  Allows optional argument ;; 3de7 73
-;* specifying a specific line number, otherwise the default is the ;; 3de7 73
-;* beginning of text area. ;; 3de7 73
-;* ;; 3de7 73
-;********************************************************************* ;; 3de7 73
- ;; 3de7 73
-restor                                                     ;; 3de7 73
-                 beq restore__1                           ; branch if no argument...use default ;; 3de7 73
-                 jsr getwrd                               ; get 2 byte argument (???? no check for real number means a var legal) ;; 3de9 73
-                 sty linnum                                ;; 3dec 73
-                 sta linnum+1                              ;; 3dee 73
-                 jsr FindLine                             ; get pointer to specified line ;; 3df0 73
-                 bcc userr                                ; error if not found ;; 3df3 73
- ;; 3df6 73
-                 lda lowtr                                ; decrement 2 byte pointer, and save it ;; 3df6 73
-                 ldy lowtr+1                               ;; 3df8 73
-                 bra restore__2                           ; always ;; 3dfa 73
- ;; 3dfc 73
- ;; 3dfc 73
-restore__1                                                ; entry from FLOAD ;; 3dfc 73
-                 sec                                       ;; 3dfc 73
-                 lda txttab                                ;; 3dfd 73
-                 ldy txttab+1                              ;; 3dff 73
- ;; 3e01 73
-restore__2                                                 ;; 3e01 73
-                 sbc #1                                    ;; 3e01 73
-                 bcs _local_1072_1                         ;; 3e03 73
-                 dey                                       ;; 3e05 73
-_local_1072_1    sta datptr                                ;; 3e06 73
-                 sty datptr+1                              ;; 3e08 73
-                 rts                                       ;; 3e0a 73
- ;; 3e0b 73
-;.end ;; 3e0b 73
-; .page ;; 3e0b 73
-; .subttl  RENUMBER ;; 3e0b 73
-;*********************************************************************** ;; 3e0b 73
-; ;; 3e0b 73
-; RENUMBER Command ;; 3e0b 73
-; ;; 3e0b 73
-; Syntax:  RENUMBER [n1 [,[n2] ,n3]] ;; 3e0b 73
-; ;; 3e0b 73
-;  n1 = new start line number, default 10 ;; 3e0b 73
-;  n2 = line increment, default 10 ;; 3e0b 73
-;  n3 = start line, default first ;; 3e0b 73
-; ;; 3e0b 73
-; - Syntax error may occur for missing commas or bad line numbers. ;; 3e0b 73
-; - Illegal quantity error for line increment of 0 or for bad range. ;; 3e0b 73
-; - Overflow error if increment wraps line number during renumber, ;; 3e0b 73
-;  line number too large error if renumbering would force line ;; 3e0b 73
-;  numbers greater than 63999. ;; 3e0b 73
-; - Out of memory error if the renumbered program would be too large. ;; 3e0b 73
-; - Unresolved reference error if an imbedded line number references ;; 3e0b 73
-;  a line which does not exist. ;; 3e0b 73
-; ;; 3e0b 73
-; Otherwise returns to "ready" mode upon completion. ;; 3e0b 73
-; ;; 3e0b 73
-;*********************************************************************** ;; 3e0b 73
- ;; 3e0b 73
- ;; 3e0b 73
-; Before any data is changed in any way, two preliminary passes are ;; 3e0b 73
-; made to insure no errors would occur during the actual renumbering ;; 3e0b 73
-; process (as detailed below). ;; 3e0b 73
-; ;; 3e0b 73
-; Pass 1 makes sure that the renumbered program would have no line ;; 3e0b 73
-; numbers greater than 63999 (nothing is actually renumbered; the ;; 3e0b 73
-; statement table is not modified). ;; 3e0b 73
-; ;; 3e0b 73
-; Pass 2 checks if the renumbered program would be too long and also ;; 3e0b 73
-; checks for non-existant line number destinations. ;; 3e0b 73
-; ;; 3e0b 73
-; Pass 3 examines the entire statement table first for imbedded line ;; 3e0b 73
-; numbers (branches) to fix. This is done by looking for keywords (GOTO, ;; 3e0b 73
-; GOSUB, THEN, RUN) which are usually followed by line numbers. The old ;; 3e0b 73
-; line number is mapped to a new value and the string representing the ;; 3e0b 73
-; new branch label replaces the original text. ;; 3e0b 73
-; ;; 3e0b 73
-; Pass 4 then replaces the statement number bytes by their final values. ;; 3e0b 73
-; and the table is relinked. ;; 3e0b 73
- ;; 3e0b 73
- ;; 3e0b 73
+cont_rts                                                   ;; @@3db3 73
+                 rts                                       ;; @@3db3 73
+ ;; @@3db4 73
+;.end ;; @@3db4 73
+; .page ;; @@3db4 73
+; .subttl  RUN ;; @@3db4 73
+;*********************************************************** ;; @@3db4 73
+;* ;; @@3db4 73
+;* RUN Command ;; @@3db4 73
+;* ;; @@3db4 73
+;* RUN [line_number] ;; @@3db4 73
+;* RUN filename [[ON] Ddrive_number[,Uunit_number]] ;; @@3db4 73
+;* ;; @@3db4 73
+;* Entry:  RUN_A_PROGRAM sets up, links, and executes ;; @@3db4 73
+;*  a program previously loaded into RAM. ;; @@3db4 73
+;* ;; @@3db4 73
+;*********************************************************** ;; @@3db4 73
+ ;; @@3db4 73
+run              bbs4 runmod,edit_err                     ; [910620] ;; @@3db4 73
+                 beq run__10                              ; branch if no arguments ;; @@3db7 73
+                 bcc run__20                              ; branch if number (i.e., RUN line_number) ;; @@3db9 73
+ ;; @@3dbb 73
+ ;; @@3dbb 73
+; Here if of the form "RUN file_name" ;; @@3dbb 73
+ ;; @@3dbb 73
+                 smb6 runmod                              ; set flag for load not to go to ready ;; @@3dbb 73
+                 jsr dload                                ; use DLOAD's parser, and load the program ;; @@3dbd 73
+                 bcs erexit                               ; if problem loading   [900801] ;; @@3dc0 73
+ ;; @@3dc3 73
+run_a_program                                              ;; @@3dc3 73
+                 jsr crdo                                 ; [911010] ;; @@3dc3 73
+                 jsr fix_links                            ; re-link the program ;; @@3dc6 73
+                 jsr setexc                               ; set various run modes ;; @@3dc9 73
+                 jsr runc                                  ;; @@3dcc 73
+                 bra newstt                               ; start executing ;; @@3dcf 73
+ ;; @@3dd2 73
+ ;; @@3dd2 73
+; Here if of the form "RUN" ;; @@3dd2 73
+ ;; @@3dd2 73
+run__10          jsr setexc                               ; set various run codes ;; @@3dd2 73
+                 bra runc                                 ; ..and start executing ;; @@3dd5 73
+ ;; @@3dd8 73
+ ;; @@3dd8 73
+; Here if of the form "RUN line_number" ;; @@3dd8 73
+ ;; @@3dd8 73
+run__20          jsr clearc                               ; first trash all variables ;; @@3dd8 73
+                 jsr chrgot                                ;; @@3ddb 73
+                 jsr goto                                 ; set up to execute from new line number ;; @@3dde 73
+                 jsr setexc                               ; ..and do a little housekeeping, ;; @@3de1 73
+                 bra newstt                               ; ..otherwise it's business as usual ;; @@3de4 73
+ ;; @@3de7 73
+;.end ;; @@3de7 73
+; .page ;; @@3de7 73
+; .subttl  RESTORE ;; @@3de7 73
+;********************************************************************* ;; @@3de7 73
+;* ;; @@3de7 73
+;* RESTORE Command ;; @@3de7 73
+;* ;; @@3de7 73
+;* Reset pointers to next DATA statement.  Allows optional argument ;; @@3de7 73
+;* specifying a specific line number, otherwise the default is the ;; @@3de7 73
+;* beginning of text area. ;; @@3de7 73
+;* ;; @@3de7 73
+;********************************************************************* ;; @@3de7 73
+ ;; @@3de7 73
+restor                                                     ;; @@3de7 73
+                 beq restore__1                           ; branch if no argument...use default ;; @@3de7 73
+                 jsr getwrd                               ; get 2 byte argument (???? no check for real number means a var legal) ;; @@3de9 73
+                 sty linnum                                ;; @@3dec 73
+                 sta linnum+1                              ;; @@3dee 73
+                 jsr FindLine                             ; get pointer to specified line ;; @@3df0 73
+                 bcc userr                                ; error if not found ;; @@3df3 73
+ ;; @@3df6 73
+                 lda lowtr                                ; decrement 2 byte pointer, and save it ;; @@3df6 73
+                 ldy lowtr+1                               ;; @@3df8 73
+                 bra restore__2                           ; always ;; @@3dfa 73
+ ;; @@3dfc 73
+ ;; @@3dfc 73
+restore__1                                                ; entry from FLOAD ;; @@3dfc 73
+                 sec                                       ;; @@3dfc 73
+                 lda txttab                                ;; @@3dfd 73
+                 ldy txttab+1                              ;; @@3dff 73
+ ;; @@3e01 73
+restore__2                                                 ;; @@3e01 73
+                 sbc #1                                    ;; @@3e01 73
+                 bcs _local_1072_1                         ;; @@3e03 73
+                 dey                                       ;; @@3e05 73
+_local_1072_1    sta datptr                                ;; @@3e06 73
+                 sty datptr+1                              ;; @@3e08 73
+                 rts                                       ;; @@3e0a 73
+ ;; @@3e0b 73
+;.end ;; @@3e0b 73
+; .page ;; @@3e0b 73
+; .subttl  RENUMBER ;; @@3e0b 73
+;*********************************************************************** ;; @@3e0b 73
+; ;; @@3e0b 73
+; RENUMBER Command ;; @@3e0b 73
+; ;; @@3e0b 73
+; Syntax:  RENUMBER [n1 [,[n2] ,n3]] ;; @@3e0b 73
+; ;; @@3e0b 73
+;  n1 = new start line number, default 10 ;; @@3e0b 73
+;  n2 = line increment, default 10 ;; @@3e0b 73
+;  n3 = start line, default first ;; @@3e0b 73
+; ;; @@3e0b 73
+; - Syntax error may occur for missing commas or bad line numbers. ;; @@3e0b 73
+; - Illegal quantity error for line increment of 0 or for bad range. ;; @@3e0b 73
+; - Overflow error if increment wraps line number during renumber, ;; @@3e0b 73
+;  line number too large error if renumbering would force line ;; @@3e0b 73
+;  numbers greater than 63999. ;; @@3e0b 73
+; - Out of memory error if the renumbered program would be too large. ;; @@3e0b 73
+; - Unresolved reference error if an imbedded line number references ;; @@3e0b 73
+;  a line which does not exist. ;; @@3e0b 73
+; ;; @@3e0b 73
+; Otherwise returns to "ready" mode upon completion. ;; @@3e0b 73
+; ;; @@3e0b 73
+;*********************************************************************** ;; @@3e0b 73
+ ;; @@3e0b 73
+ ;; @@3e0b 73
+; Before any data is changed in any way, two preliminary passes are ;; @@3e0b 73
+; made to insure no errors would occur during the actual renumbering ;; @@3e0b 73
+; process (as detailed below). ;; @@3e0b 73
+; ;; @@3e0b 73
+; Pass 1 makes sure that the renumbered program would have no line ;; @@3e0b 73
+; numbers greater than 63999 (nothing is actually renumbered; the ;; @@3e0b 73
+; statement table is not modified). ;; @@3e0b 73
+; ;; @@3e0b 73
+; Pass 2 checks if the renumbered program would be too long and also ;; @@3e0b 73
+; checks for non-existant line number destinations. ;; @@3e0b 73
+; ;; @@3e0b 73
+; Pass 3 examines the entire statement table first for imbedded line ;; @@3e0b 73
+; numbers (branches) to fix. This is done by looking for keywords (GOTO, ;; @@3e0b 73
+; GOSUB, THEN, RUN) which are usually followed by line numbers. The old ;; @@3e0b 73
+; line number is mapped to a new value and the string representing the ;; @@3e0b 73
+; new branch label replaces the original text. ;; @@3e0b 73
+; ;; @@3e0b 73
+; Pass 4 then replaces the statement number bytes by their final values. ;; @@3e0b 73
+; and the table is relinked. ;; @@3e0b 73
+ ;; @@3e0b 73
+ ;; @@3e0b 73

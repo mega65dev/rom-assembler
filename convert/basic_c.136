@@ -1,107 +1,107 @@
-TimeFactor                                                 ;; 54bb 136
-                 !word 10                                 ; tenths per second  (max    59*10 =    590 ($0024E) ;; 54bb 136
-                 !word 600                                ; per minute  (max   59*600 =  35400 ($08A48) ;; 54bd 136
-                 !word 36000                              ; per hour    (max 23*36000 = 828000 ($CA260) ;; 54bf 136
- ;; 54c1 136
-; .page ;; 54c1 136
-; .subttl  SLEEP ;; 54c1 136
- ;; 54c1 136
-;******************************************************************************* ;; 54c1 136
-;* ;; 54c1 136
-;* SLEEP Command - Postpone all activity for a specified number of seconds ;; 54c1 136
-;* ;; 54c1 136
-;* Syntax:  SLEEP n ;; 54c1 136
-;* ;; 54c1 136
-;* Where n is the number of seconds to remain inactive, ;; 54c1 136
-;* expressed as a positive value < 65536. ;; 54c1 136
-;* ;; 54c1 136
-;******************************************************************************* ;; 54c1 136
- ;; 54c1 136
-sleep            jsr getwrd                               ; get argument in (y,a) ;; 54c1 136
- ;; 54c4 136
-; Multiply # of seconds to sleep by 60.  This will be the number of 'jiffies' ;; 54c4 136
-; to hibernate.  Store this value in 3 consecutive locations the kernel will ;; 54c4 136
-; decrement as a 24-bit binary value, and wait for an underflow. ;; 54c4 136
-; ;; 54c4 136
-; ldx #0   ;THIS CODE REPLACED    [910730] ;; 54c4 136
-; php ;; 54c4 136
-; sei   ;silence, please! ;; 54c4 136
-; sty _sleep_counter ;; 54c4 136
-; sta _sleep_counter+1 ;; 54c4 136
-; stx _sleep_counter+2 ;sleep_counter = n ;; 54c4 136
-; ;; 54c4 136
-; jsr sleep_times_2 ;sleep_counter = 2n ;; 54c4 136
-; jsr add_xay_to_sleep ;sleep_counter = 3n ;; 54c4 136
-; jsr sleep_times_4 ;sleep_counter = 12n ;; 54c4 136
-; ;; 54c4 136
-; ldy _sleep_counter ;; 54c4 136
-; lda _sleep_counter+1 ;; 54c4 136
-; ldx _sleep_counter+2 ;(xay) = 12n ;; 54c4 136
-; ;; 54c4 136
-; jsr sleep_times_4 ;sleep_counter = 48n ;; 54c4 136
-; jsr add_xay_to_sleep ;sleep_counter = 60n !!!!! ;; 54c4 136
-; ;; 54c4 136
-; plp ;; 54c4 136
-; ;; 54c4 136
-;1$ jsr is_stop_key_down ;; 54c4 136
-; ldx _sleep_counter+2 ;; 54c4 136
-; inx   ;underflow? ;; 54c4 136
-; bne 1$   ;no, loop ;; 54c4 136
-; rts ;; 54c4 136
-; ;; 54c4 136
-; ;; 54c4 136
-;sleep_times_4 ;; 54c4 136
-; jsr sleep_times_2 ;; 54c4 136
-;sleep_times_2 ;; 54c4 136
-; asl _sleep_counter ;; 54c4 136
-; rol _sleep_counter+1 ;; 54c4 136
-; rol _sleep_counter+2 ;; 54c4 136
-; rts ;; 54c4 136
-; ;; 54c4 136
-;add_xay_to_sleep ;; 54c4 136
-; pha ;; 54c4 136
-; tya ;; 54c4 136
-; adc _sleep_counter ;; 54c4 136
-; sta _sleep_counter ;; 54c4 136
-; pla ;; 54c4 136
-; adc _sleep_counter+1 ;; 54c4 136
-; sta _sleep_counter+1 ;; 54c4 136
-; txa ;; 54c4 136
-; adc _sleep_counter+2 ;; 54c4 136
-; sta _sleep_counter+2 ;; 54c4 136
-; rts ;; 54c4 136
- ;; 54c4 136
-; .page ;; 54c4 136
-; SLEEP is now based upon the system hardware TOD clock (same one used by TI$).  This ;; 54c4 136
-; makes it accurate, something it was not when it was based upon the frame rate. ;; 54c4 136
- ;; 54c4 136
-                 sty time                                 ; Number of seconds to "sleep"   [910730] new ;; 54c4 136
-                 sta time+1                                ;; 54c6 136
- ;; 54c8 136
-_local_1135_10   jsr _ReadTime                            ; Get current time ;; 54c8 136
-                 stz time+2                               ; tenths ;; 54cb 136
-                 sta time+3                               ; seconds ;; 54cd 136
- ;; 54cf 136
-_local_1135_20   jsr is_stop_key_down                     ; Allow user to abort ;; 54cf 136
-                 jsr _ReadTime                            ; Wait for seconds to increment ;; 54d2 136
-                 cmp time+3                                ;; 54d5 136
-                 beq _local_1135_20                        ;; 54d7 136
-                 sta time+3                                ;; 54d9 136
- ;; 54db 136
-_local_1135_30   jsr _ReadTime                            ; Wait for tenths to increment ;; 54db 136
-                 cpz time+2                                ;; 54de 136
-                 bne _local_1135_30                        ;; 54e0 136
- ;; 54e2 136
-                 dew time                                 ; Decrement sleep period 1 second ;; 54e2 136
-                 bne _local_1135_20                       ; Loop until sleep period over ;; 54e4 136
- ;; 54e6 136
-                 rts                                       ;; 54e6 136
- ;; 54e7 136
-;.end ;; 54e7 136
-; .page ;; 54e7 136
-; .subttl  WAIT ;; 54e7 136
- ;; 54e7 136
-; WAIT<location>,<mask1>[,<mask2>] statement waits until the contents of ;; 54e7 136
-; <location> is nonzero when XORed with mask2 and then ANDed with mask1. ;; 54e7 136
-; If mask2 is not present, it is assumed to be zero. ;; 54e7 136
- ;; 54e7 136
+TimeFactor                                                 ;; @@54bb 136
+                 !word 10                                 ; tenths per second  (max    59*10 =    590 ($0024E) ;; @@54bb 136
+                 !word 600                                ; per minute  (max   59*600 =  35400 ($08A48) ;; @@54bd 136
+                 !word 36000                              ; per hour    (max 23*36000 = 828000 ($CA260) ;; @@54bf 136
+ ;; @@54c1 136
+; .page ;; @@54c1 136
+; .subttl  SLEEP ;; @@54c1 136
+ ;; @@54c1 136
+;******************************************************************************* ;; @@54c1 136
+;* ;; @@54c1 136
+;* SLEEP Command - Postpone all activity for a specified number of seconds ;; @@54c1 136
+;* ;; @@54c1 136
+;* Syntax:  SLEEP n ;; @@54c1 136
+;* ;; @@54c1 136
+;* Where n is the number of seconds to remain inactive, ;; @@54c1 136
+;* expressed as a positive value < 65536. ;; @@54c1 136
+;* ;; @@54c1 136
+;******************************************************************************* ;; @@54c1 136
+ ;; @@54c1 136
+sleep            jsr getwrd                               ; get argument in (y,a) ;; @@54c1 136
+ ;; @@54c4 136
+; Multiply # of seconds to sleep by 60.  This will be the number of 'jiffies' ;; @@54c4 136
+; to hibernate.  Store this value in 3 consecutive locations the kernel will ;; @@54c4 136
+; decrement as a 24-bit binary value, and wait for an underflow. ;; @@54c4 136
+; ;; @@54c4 136
+; ldx #0   ;THIS CODE REPLACED    [910730] ;; @@54c4 136
+; php ;; @@54c4 136
+; sei   ;silence, please! ;; @@54c4 136
+; sty _sleep_counter ;; @@54c4 136
+; sta _sleep_counter+1 ;; @@54c4 136
+; stx _sleep_counter+2 ;sleep_counter = n ;; @@54c4 136
+; ;; @@54c4 136
+; jsr sleep_times_2 ;sleep_counter = 2n ;; @@54c4 136
+; jsr add_xay_to_sleep ;sleep_counter = 3n ;; @@54c4 136
+; jsr sleep_times_4 ;sleep_counter = 12n ;; @@54c4 136
+; ;; @@54c4 136
+; ldy _sleep_counter ;; @@54c4 136
+; lda _sleep_counter+1 ;; @@54c4 136
+; ldx _sleep_counter+2 ;(xay) = 12n ;; @@54c4 136
+; ;; @@54c4 136
+; jsr sleep_times_4 ;sleep_counter = 48n ;; @@54c4 136
+; jsr add_xay_to_sleep ;sleep_counter = 60n !!!!! ;; @@54c4 136
+; ;; @@54c4 136
+; plp ;; @@54c4 136
+; ;; @@54c4 136
+;1$ jsr is_stop_key_down ;; @@54c4 136
+; ldx _sleep_counter+2 ;; @@54c4 136
+; inx   ;underflow? ;; @@54c4 136
+; bne 1$   ;no, loop ;; @@54c4 136
+; rts ;; @@54c4 136
+; ;; @@54c4 136
+; ;; @@54c4 136
+;sleep_times_4 ;; @@54c4 136
+; jsr sleep_times_2 ;; @@54c4 136
+;sleep_times_2 ;; @@54c4 136
+; asl _sleep_counter ;; @@54c4 136
+; rol _sleep_counter+1 ;; @@54c4 136
+; rol _sleep_counter+2 ;; @@54c4 136
+; rts ;; @@54c4 136
+; ;; @@54c4 136
+;add_xay_to_sleep ;; @@54c4 136
+; pha ;; @@54c4 136
+; tya ;; @@54c4 136
+; adc _sleep_counter ;; @@54c4 136
+; sta _sleep_counter ;; @@54c4 136
+; pla ;; @@54c4 136
+; adc _sleep_counter+1 ;; @@54c4 136
+; sta _sleep_counter+1 ;; @@54c4 136
+; txa ;; @@54c4 136
+; adc _sleep_counter+2 ;; @@54c4 136
+; sta _sleep_counter+2 ;; @@54c4 136
+; rts ;; @@54c4 136
+ ;; @@54c4 136
+; .page ;; @@54c4 136
+; SLEEP is now based upon the system hardware TOD clock (same one used by TI$).  This ;; @@54c4 136
+; makes it accurate, something it was not when it was based upon the frame rate. ;; @@54c4 136
+ ;; @@54c4 136
+                 sty time                                 ; Number of seconds to "sleep"   [910730] new ;; @@54c4 136
+                 sta time+1                                ;; @@54c6 136
+ ;; @@54c8 136
+_local_1135_10   jsr _ReadTime                            ; Get current time ;; @@54c8 136
+                 stz time+2                               ; tenths ;; @@54cb 136
+                 sta time+3                               ; seconds ;; @@54cd 136
+ ;; @@54cf 136
+_local_1135_20   jsr is_stop_key_down                     ; Allow user to abort ;; @@54cf 136
+                 jsr _ReadTime                            ; Wait for seconds to increment ;; @@54d2 136
+                 cmp time+3                                ;; @@54d5 136
+                 beq _local_1135_20                        ;; @@54d7 136
+                 sta time+3                                ;; @@54d9 136
+ ;; @@54db 136
+_local_1135_30   jsr _ReadTime                            ; Wait for tenths to increment ;; @@54db 136
+                 cpz time+2                                ;; @@54de 136
+                 bne _local_1135_30                        ;; @@54e0 136
+ ;; @@54e2 136
+                 dew time                                 ; Decrement sleep period 1 second ;; @@54e2 136
+                 bne _local_1135_20                       ; Loop until sleep period over ;; @@54e4 136
+ ;; @@54e6 136
+                 rts                                       ;; @@54e6 136
+ ;; @@54e7 136
+;.end ;; @@54e7 136
+; .page ;; @@54e7 136
+; .subttl  WAIT ;; @@54e7 136
+ ;; @@54e7 136
+; WAIT<location>,<mask1>[,<mask2>] statement waits until the contents of ;; @@54e7 136
+; <location> is nonzero when XORed with mask2 and then ANDed with mask1. ;; @@54e7 136
+; If mask2 is not present, it is assumed to be zero. ;; @@54e7 136
+ ;; @@54e7 136

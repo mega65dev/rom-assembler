@@ -1,18 +1,18 @@
-printn           jsr cmd                                  ; docmd ;; 37a8 54
-                 bra release_channels                     ; restore terminal ;; 37ab 54
- ;; 37ae 54
- ;; 37ae 54
-cmd              jsr getbyt                                ;; 37ae 54
-                 beq _local_1053_10                        ;; 37b1 54
-                 lda #','                                 ; comma? ;; 37b3 54
-                 jsr synchr                                ;; 37b5 54
- ;; 37b8 54
-_local_1053_10   php                                      ; save stat (beq=eof) ;; 37b8 54
-                 pha                                      ; save char ;; 37b9 54
-                 stx channl                               ; channel to output on ;; 37ba 54
-                 jsr coout                                 ;; 37bc 54
-                 pla                                      ; get char back ;; 37bf 54
-                 plp                                      ; get stat back ;; 37c0 54
-                 bra print                                 ;; 37c1 54
- ;; 37c3 54
- ;; 37c3 54
+printn           jsr cmd                                  ; docmd ;; @@37a8 54
+                 bra release_channels                     ; restore terminal ;; @@37ab 54
+ ;; @@37ae 54
+ ;; @@37ae 54
+cmd              jsr getbyt                                ;; @@37ae 54
+                 beq _local_1053_10                        ;; @@37b1 54
+                 lda #','                                 ; comma? ;; @@37b3 54
+                 jsr synchr                                ;; @@37b5 54
+ ;; @@37b8 54
+_local_1053_10   php                                      ; save stat (beq=eof) ;; @@37b8 54
+                 pha                                      ; save char ;; @@37b9 54
+                 stx channl                               ; channel to output on ;; @@37ba 54
+                 jsr coout                                 ;; @@37bc 54
+                 pla                                      ; get char back ;; @@37bf 54
+                 plp                                      ; get stat back ;; @@37c0 54
+                 bra print                                 ;; @@37c1 54
+ ;; @@37c3 54
+ ;; @@37c3 54

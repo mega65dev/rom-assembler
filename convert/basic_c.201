@@ -1,57 +1,57 @@
-reay             jsr chrgot                               ; get old character ;; 6a87 201
-                 cmp #','                                 ; comma? ;; 6a8a 201
-                 beq eex2                                 ; continue print use if yes ;; 6a8c 201
-                 sec                                       ;; 6a8e 201
-                 ror z_p_temp_1                           ; set flag for anaf ;; 6a8f 201
-                 jsr anaf                                 ; print rest of format ;; 6a91 201
-                 ply                                      ; restore descriptor ;; 6a94 201
-                 pla                                       ;; 6a95 201
-                 jsr fretmp                                ;; 6a96 201
-                 jsr chrgot                                ;; 6a99 201
-                 cmp #';'                                 ; semi-colon? ;; 6a9c 201
-                 bne crdo                                 ; end of print using ;; 6a9e 201
-                 jmp chrget                               ; branch if yes ;; 6aa1 201
- ;; 6aa4 201
-; .page ;; 6aa4 201
-;  FFORM - output a number to format ;; 6aa4 201
-; ;; 6aa4 201
-;  Number is in fbuffr,  format checked by anaf ;; 6aa4 201
- ;; 6aa4 201
-fform                                                      ;; 6aa4 201
-; sta sw_rom_ram0 ;???? ;; 6aa4 201
-                 lda pufill                                ;; 6aa4 201
-                 sta blfd                                 ; set working fill char ;; 6aa7 201
-                 lda #$ff                                  ;; 6aaa 201
-ana              sta sno                                  ; save blank or '-' in sno ;; 6aac 201
-                 bra insy                                  ;; 6aaf 201
- ;; 6ab1 201
- ;; 6ab1 201
-stp              stx point                                ; set point pointer ;; 6ab1 201
-insy             cpy hulp                                 ; end of no reached? ;; 6ab3 201
-                 beq eoa                                  ; branch if yes ;; 6ab5 201
-                 lda fbuffr,y                             ; get character of no ;; 6ab7 201
-                 iny                                       ;; 6aba 201
-                 cmp #' '                                 ; blank? ;; 6abb 201
-                 beq insy                                 ; yes...span ;; 6abd 201
-                 cmp #'-'                                 ; sign no negative ;; 6abf 201
-                 beq ana                                  ; yes... ;; 6ac1 201
-                 cmp #'.'                                 ; decimal point? ;; 6ac3 201
-                 beq stp                                  ; yes... ;; 6ac5 201
-                 cmp #'E'                                 ; is char 'e'? ;; 6ac7 201
-                 beq lsg                                  ; yes... ;; 6ac9 201
-                 sta fbuffr,x                             ; move number ;; 6acb 201
-                 stx enr                                  ; update end-no pointer ;; 6ace 201
-                 inx                                       ;; 6ad1 201
-                 bit point                                ; point pointer set? ;; 6ad2 201
-                 bpl insy                                 ; yes... ;; 6ad4 201
-                 inc vn                                   ; count digits before point ;; 6ad6 201
-                 bra insy                                  ;; 6ad9 201
- ;; 6adb 201
- ;; 6adb 201
-lsg              lda fbuffr,y                              ;; 6adb 201
-                 cmp #'-'                                 ; sign of exponent negative ;; 6ade 201
-                 bne _local_1200_10                       ; no... ;; 6ae0 201
-                 ror usgn                                 ; make sign negative ;; 6ae2 201
-_local_1200_10   iny                                       ;; 6ae5 201
-                 sty uexp                                 ; set exponent pointer ;; 6ae6 201
- ;; 6ae9 201
+reay             jsr chrgot                               ; get old character ;; @@6a87 201
+                 cmp #','                                 ; comma? ;; @@6a8a 201
+                 beq eex2                                 ; continue print use if yes ;; @@6a8c 201
+                 sec                                       ;; @@6a8e 201
+                 ror z_p_temp_1                           ; set flag for anaf ;; @@6a8f 201
+                 jsr anaf                                 ; print rest of format ;; @@6a91 201
+                 ply                                      ; restore descriptor ;; @@6a94 201
+                 pla                                       ;; @@6a95 201
+                 jsr fretmp                                ;; @@6a96 201
+                 jsr chrgot                                ;; @@6a99 201
+                 cmp #';'                                 ; semi-colon? ;; @@6a9c 201
+                 bne crdo                                 ; end of print using ;; @@6a9e 201
+                 jmp chrget                               ; branch if yes ;; @@6aa1 201
+ ;; @@6aa4 201
+; .page ;; @@6aa4 201
+;  FFORM - output a number to format ;; @@6aa4 201
+; ;; @@6aa4 201
+;  Number is in fbuffr,  format checked by anaf ;; @@6aa4 201
+ ;; @@6aa4 201
+fform                                                      ;; @@6aa4 201
+; sta sw_rom_ram0 ;???? ;; @@6aa4 201
+                 lda pufill                                ;; @@6aa4 201
+                 sta blfd                                 ; set working fill char ;; @@6aa7 201
+                 lda #$ff                                  ;; @@6aaa 201
+ana              sta sno                                  ; save blank or '-' in sno ;; @@6aac 201
+                 bra insy                                  ;; @@6aaf 201
+ ;; @@6ab1 201
+ ;; @@6ab1 201
+stp              stx point                                ; set point pointer ;; @@6ab1 201
+insy             cpy hulp                                 ; end of no reached? ;; @@6ab3 201
+                 beq eoa                                  ; branch if yes ;; @@6ab5 201
+                 lda fbuffr,y                             ; get character of no ;; @@6ab7 201
+                 iny                                       ;; @@6aba 201
+                 cmp #' '                                 ; blank? ;; @@6abb 201
+                 beq insy                                 ; yes...span ;; @@6abd 201
+                 cmp #'-'                                 ; sign no negative ;; @@6abf 201
+                 beq ana                                  ; yes... ;; @@6ac1 201
+                 cmp #'.'                                 ; decimal point? ;; @@6ac3 201
+                 beq stp                                  ; yes... ;; @@6ac5 201
+                 cmp #'E'                                 ; is char 'e'? ;; @@6ac7 201
+                 beq lsg                                  ; yes... ;; @@6ac9 201
+                 sta fbuffr,x                             ; move number ;; @@6acb 201
+                 stx enr                                  ; update end-no pointer ;; @@6ace 201
+                 inx                                       ;; @@6ad1 201
+                 bit point                                ; point pointer set? ;; @@6ad2 201
+                 bpl insy                                 ; yes... ;; @@6ad4 201
+                 inc vn                                   ; count digits before point ;; @@6ad6 201
+                 bra insy                                  ;; @@6ad9 201
+ ;; @@6adb 201
+ ;; @@6adb 201
+lsg              lda fbuffr,y                              ;; @@6adb 201
+                 cmp #'-'                                 ; sign of exponent negative ;; @@6ade 201
+                 bne _local_1200_10                       ; no... ;; @@6ae0 201
+                 ror usgn                                 ; make sign negative ;; @@6ae2 201
+_local_1200_10   iny                                       ;; @@6ae5 201
+                 sty uexp                                 ; set exponent pointer ;; @@6ae6 201
+ ;; @@6ae9 201

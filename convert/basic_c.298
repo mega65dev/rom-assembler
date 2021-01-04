@@ -1,97 +1,97 @@
-rcolor           jsr conint                               ; evaluate integer argument, put in .X ;; b8ff 298
-; jsr put_io_in_map ;; b902 298
- ;; b902 298
-                 cpx #4                                    ;; b902 298
-                 bcs fcerr                                ; illegal qty ;; b904 298
-                 txa                                       ;; b907 298
-                 asl a                                    ; make into word pointer ;; b908 298
-                 tax                                       ;; b909 298
-                 lda color_source,x                       ; get address of source ;; b90a 298
-                 sta grapnt                                ;; b90d 298
-                 lda color_source+1,x                      ;; b90f 298
-                 sta grapnt+1                              ;; b912 298
-                 ldy #0                                    ;; b914 298
-                 lda (grapnt),y                           ; read source (aways system space or I/O????) ;; b916 298
-                 and #$0f                                 ; mask unused bits ;; b918 298
-                 tay                                       ;; b91a 298
-; iny   ; make color match keytops ;; b91b 298
-                 bra sngflt                               ; float 1 byte in .Y ;; b91b 298
- ;; b91e 298
-color_source                                               ;; b91e 298
-                 !word  vic+33,_color,highlight_color,vic+32  ;; b91e 298
- ;; b926 298
-; .page ;; b926 298
-; .subttl Graphic Functions ;; b926 298
- ;; b926 298
-; Return graphic screen status & parameters      [910826] ;; b926 298
-; RGRAPHIC (screen, param) where param = 0 open (1), closed (0), or invalid (>1) ;; b926 298
-;            1 width  (0=320, 1=640, 2=1280) ;; b926 298
-;            2 height (0=200, 1=400) ;; b926 298
-;            3 depth (1-8 bitplanes) ;; b926 298
-;            4 bitplanes used  (bitmask) ;; b926 298
-;            5 bank A blocks used (bitmask) ;; b926 298
-;            6 bank B blocks used (bitmask) ;; b926 298
-;            7 drawscreen # (0-3) ;; b926 298
-;            8 viewscreen # (0-3) ;; b926 298
-;            9 drawmodes  (bitmask) ;; b926 298
-;           10 pattern type  (bitmask) ;; b926 298
-; ;; b926 298
-; Requires a kludge, because RGR used to be a normal 1-arg function in the C128 ;; b926 298
-; but now it takes two args. ;; b926 298
- ;; b926 298
-rgraphic                                                   ;; b926 298
-; jsr CheckGraphicMode ;verify screen open ;; b926 298
-                 pla                                      ; remove token from stack ;; b926 298
-                 jsr PushParms                            ; preserve Graphics parameters & LINNUM  [910820] ;; b927 298
- ;; b92a 298
-                 jsr chkopn                               ; check for open paren ;; b92a 298
-                 jsr getbyt                               ; get screen # in .X ;; b92d 298
-                 stx GKI__parm1                            ;; b930 298
-                 jsr combyt                               ; get param # in .X ;; b933 298
-                 cpx #10+1                                ; [911028] ;; b936 298
-                 bcs _local_1297_1                        ; illegal param # ;; b938 298
-                 phx                                       ;; b93a 298
-                 jsr chkcls                               ; check for closing parens ;; b93b 298
- ;; b93e 298
-                 jsr ($8038)                              ; read screen params ;; b93e 298
-_local_1297_1    bcs fcerr                                ; bad input???? ;; b941 298
- ;; b944 298
-                 lda GKI__parm2                            ;; b944 298
-                 plx                                      ; get back desired param # ;; b947 298
-                 dex                                       ;; b948 298
-                 bpl _local_1297_10                        ;; b949 298
-                 eor #$80                                 ; make 0=closed, 1=open, >1=invalid ;; b94b 298
-                 lsr a                                     ;; b94d 298
-                 lsr a                                     ;; b94e 298
-                 bra _local_1297_12                       ; return screen open status ;; b94f 298
- ;; b951 298
-_local_1297_10   dex                                       ;; b951 298
-                 bpl _local_1297_20                        ;; b952 298
-_local_1297_12   lsr a                                     ;; b954 298
-_local_1297_15   lsr a                                     ;; b955 298
-                 lsr a                                     ;; b956 298
-                 lsr a                                     ;; b957 298
-                 and #3                                    ;; b958 298
-                 bra _local_1297_40                       ; return width, height ;; b95a 298
- ;; b95c 298
-_local_1297_20   dex                                       ;; b95c 298
-                 bpl _local_1297_25                        ;; b95d 298
-                 and #8                                    ;; b95f 298
-                 bra _local_1297_15                        ;; b961 298
-_local_1297_25   dex                                       ;; b963 298
-                 bpl _local_1297_30                        ;; b964 298
-                 and #7                                   ; return depth ;; b966 298
-                 inc a                                    ; make depth 1-8 ;; b968 298
-                 bra _local_1297_40                        ;; b969 298
- ;; b96b 298
-_local_1297_30   lda GKI__parm3,x                         ; return bp bask, banks, etc. ;; b96b 298
-_local_1297_40   tay                                       ;; b96e 298
-                 jsr sngflt                               ; float 1 byte arg in .y ;; b96f 298
- ;; b972 298
-                 jsr PopParms                             ; restore Graphics parameters & LINNUM ;; b972 298
-                 rts                                       ;; b975 298
- ;; b976 298
-; .page ;; b976 298
-; Return the color of a given X,Y pixel location on the drawscreen  [910801] ;; b976 298
-;  PIXEL (x,y) ;; b976 298
- ;; b976 298
+rcolor           jsr conint                               ; evaluate integer argument, put in .X ;; @@b8ff 298
+; jsr put_io_in_map ;; @@b902 298
+ ;; @@b902 298
+                 cpx #4                                    ;; @@b902 298
+                 bcs fcerr                                ; illegal qty ;; @@b904 298
+                 txa                                       ;; @@b907 298
+                 asl a                                    ; make into word pointer ;; @@b908 298
+                 tax                                       ;; @@b909 298
+                 lda color_source,x                       ; get address of source ;; @@b90a 298
+                 sta grapnt                                ;; @@b90d 298
+                 lda color_source+1,x                      ;; @@b90f 298
+                 sta grapnt+1                              ;; @@b912 298
+                 ldy #0                                    ;; @@b914 298
+                 lda (grapnt),y                           ; read source (aways system space or I/O????) ;; @@b916 298
+                 and #$0f                                 ; mask unused bits ;; @@b918 298
+                 tay                                       ;; @@b91a 298
+; iny   ; make color match keytops ;; @@b91b 298
+                 bra sngflt                               ; float 1 byte in .Y ;; @@b91b 298
+ ;; @@b91e 298
+color_source                                               ;; @@b91e 298
+                 !word  vic+33,_color,highlight_color,vic+32  ;; @@b91e 298
+ ;; @@b926 298
+; .page ;; @@b926 298
+; .subttl Graphic Functions ;; @@b926 298
+ ;; @@b926 298
+; Return graphic screen status & parameters      [910826] ;; @@b926 298
+; RGRAPHIC (screen, param) where param = 0 open (1), closed (0), or invalid (>1) ;; @@b926 298
+;            1 width  (0=320, 1=640, 2=1280) ;; @@b926 298
+;            2 height (0=200, 1=400) ;; @@b926 298
+;            3 depth (1-8 bitplanes) ;; @@b926 298
+;            4 bitplanes used  (bitmask) ;; @@b926 298
+;            5 bank A blocks used (bitmask) ;; @@b926 298
+;            6 bank B blocks used (bitmask) ;; @@b926 298
+;            7 drawscreen # (0-3) ;; @@b926 298
+;            8 viewscreen # (0-3) ;; @@b926 298
+;            9 drawmodes  (bitmask) ;; @@b926 298
+;           10 pattern type  (bitmask) ;; @@b926 298
+; ;; @@b926 298
+; Requires a kludge, because RGR used to be a normal 1-arg function in the C128 ;; @@b926 298
+; but now it takes two args. ;; @@b926 298
+ ;; @@b926 298
+rgraphic                                                   ;; @@b926 298
+; jsr CheckGraphicMode ;verify screen open ;; @@b926 298
+                 pla                                      ; remove token from stack ;; @@b926 298
+                 jsr PushParms                            ; preserve Graphics parameters & LINNUM  [910820] ;; @@b927 298
+ ;; @@b92a 298
+                 jsr chkopn                               ; check for open paren ;; @@b92a 298
+                 jsr getbyt                               ; get screen # in .X ;; @@b92d 298
+                 stx GKI__parm1                            ;; @@b930 298
+                 jsr combyt                               ; get param # in .X ;; @@b933 298
+                 cpx #10+1                                ; [911028] ;; @@b936 298
+                 bcs _local_1297_1                        ; illegal param # ;; @@b938 298
+                 phx                                       ;; @@b93a 298
+                 jsr chkcls                               ; check for closing parens ;; @@b93b 298
+ ;; @@b93e 298
+                 jsr ($8038)                              ; read screen params ;; @@b93e 298
+_local_1297_1    bcs fcerr                                ; bad input???? ;; @@b941 298
+ ;; @@b944 298
+                 lda GKI__parm2                            ;; @@b944 298
+                 plx                                      ; get back desired param # ;; @@b947 298
+                 dex                                       ;; @@b948 298
+                 bpl _local_1297_10                        ;; @@b949 298
+                 eor #$80                                 ; make 0=closed, 1=open, >1=invalid ;; @@b94b 298
+                 lsr a                                     ;; @@b94d 298
+                 lsr a                                     ;; @@b94e 298
+                 bra _local_1297_12                       ; return screen open status ;; @@b94f 298
+ ;; @@b951 298
+_local_1297_10   dex                                       ;; @@b951 298
+                 bpl _local_1297_20                        ;; @@b952 298
+_local_1297_12   lsr a                                     ;; @@b954 298
+_local_1297_15   lsr a                                     ;; @@b955 298
+                 lsr a                                     ;; @@b956 298
+                 lsr a                                     ;; @@b957 298
+                 and #3                                    ;; @@b958 298
+                 bra _local_1297_40                       ; return width, height ;; @@b95a 298
+ ;; @@b95c 298
+_local_1297_20   dex                                       ;; @@b95c 298
+                 bpl _local_1297_25                        ;; @@b95d 298
+                 and #8                                    ;; @@b95f 298
+                 bra _local_1297_15                        ;; @@b961 298
+_local_1297_25   dex                                       ;; @@b963 298
+                 bpl _local_1297_30                        ;; @@b964 298
+                 and #7                                   ; return depth ;; @@b966 298
+                 inc a                                    ; make depth 1-8 ;; @@b968 298
+                 bra _local_1297_40                        ;; @@b969 298
+ ;; @@b96b 298
+_local_1297_30   lda GKI__parm3,x                         ; return bp bask, banks, etc. ;; @@b96b 298
+_local_1297_40   tay                                       ;; @@b96e 298
+                 jsr sngflt                               ; float 1 byte arg in .y ;; @@b96f 298
+ ;; @@b972 298
+                 jsr PopParms                             ; restore Graphics parameters & LINNUM ;; @@b972 298
+                 rts                                       ;; @@b975 298
+ ;; @@b976 298
+; .page ;; @@b976 298
+; Return the color of a given X,Y pixel location on the drawscreen  [910801] ;; @@b976 298
+;  PIXEL (x,y) ;; @@b976 298
+ ;; @@b976 298

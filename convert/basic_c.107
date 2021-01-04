@@ -1,16 +1,16 @@
-wait_for_all_quiet                                          ; Wait for all voices on this SID to be quiet [910626] ;; 4876 107
-                 ldy #3                                    ;; 4876 107
-                 ldx voice                                 ;; 4878 107
-                 cpx #3                                   ; determine left/right SID ;; 487b 107
-                 bcs _local_1106_10                        ;; 487d 107
-                 ldy #0                                    ;; 487f 107
-_local_1106_10   ldz #3                                   ; for each of 3 voices ;; 4881 107
-_local_1106_20   ldx times2,y                              ;; 4883 107
-_local_1106_30   bit voices+1,x                           ; wait for voice to be inactive (IRQ) ;; 4886 107
-                 bpl _local_1106_30                        ;; 4889 107
-                 iny                                      ; next voice ;; 488b 107
-                 dez                                       ;; 488c 107
-                 bne _local_1106_20                       ; until done 3 voices ;; 488d 107
-                 rts                                       ;; 488f 107
- ;; 4890 107
-; .page ;; 4890 107
+wait_for_all_quiet                                          ; Wait for all voices on this SID to be quiet [910626] ;; @@4876 107
+                 ldy #3                                    ;; @@4876 107
+                 ldx voice                                 ;; @@4878 107
+                 cpx #3                                   ; determine left/right SID ;; @@487b 107
+                 bcs _local_1106_10                        ;; @@487d 107
+                 ldy #0                                    ;; @@487f 107
+_local_1106_10   ldz #3                                   ; for each of 3 voices ;; @@4881 107
+_local_1106_20   ldx times2,y                              ;; @@4883 107
+_local_1106_30   bit voices+1,x                           ; wait for voice to be inactive (IRQ) ;; @@4886 107
+                 bpl _local_1106_30                        ;; @@4889 107
+                 iny                                      ; next voice ;; @@488b 107
+                 dez                                       ;; @@488c 107
+                 bne _local_1106_20                       ; until done 3 voices ;; @@488d 107
+                 rts                                       ;; @@488f 107
+ ;; @@4890 107
+; .page ;; @@4890 107

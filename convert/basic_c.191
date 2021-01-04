@@ -1,46 +1,46 @@
-autoboot                                                   ;; 67dc 191
-                 lda #0                                   ; Select internal drive ;; 67dc 191
-                 sta fdc                                   ;; 67de 191
-_local_1190_10   bit fdc+2                                ; busywait ;; 67e1 191
-                 bmi _local_1190_10                        ;; 67e4 191
-                 lda fdc+3                                ; See if a diskette is present ;; 67e6 191
-                 and #$08                                  ;; 67e9 191
-                 beq _local_1190_30                       ; exit with no action taken if not ;; 67eb 191
- ;; 67ed 191
-                 lda #$e6                                 ; set up parameters for DOS parser like BLOAD ;; 67ed 191
-                 ldx #$fc                                  ;; 67ef 191
-                 jsr dosprx                               ; let the parser init DOS stuff ;; 67f1 191
- ;; 67f4 191
-                 ldy #$ff                                  ;; 67f4 191
-_local_1190_20   iny                                      ; Copy filename from ROM into buffer ;; 67f6 191
-                 lda autoboot_filename,y                   ;; 67f7 191
-                 sta savram,y                              ;; 67fa 191
-                 bne _local_1190_20                       ; null terminated ;; 67fd 191
-                 sty dosf1l                               ; length not counting terminator ;; 67ff 191
- ;; 6802 191
-                 lda #%01000001                           ; set flag for load indicating autoboot ;; 6802 191
-                 sta runmod                               ; set flag for load not to go to ready ;; 6804 191
-                 jsr dload_boot                           ; skip parser & load it ;; 6806 191
- ;; 6809 191
-                 lda #0                                   ; clear autoboot flags ;; 6809 191
-                 sta runmod                                ;; 680b 191
-                 phx                                      ; save end address ;; 680d 191
-                 phy                                       ;; 680e 191
-                 jsr _readst                              ; get status report, but check it later ;; 680f 191
-                 pha                                       ;; 6812 191
-                 jsr Suck_DS                              ; clear any DOS errors (to kill error LED) ;; 6813 191
-                 pla                                      ; now check I/O status ;; 6816 191
-                 ply                                       ;; 6817 191
-                 plx                                       ;; 6818 191
-                 and #$bf                                 ; EOI is okay ;; 6819 191
-                 bne _local_1190_30                       ; outside problems ;; 681b 191
-                 bcs _local_1190_30                       ; inside problems ;; 681d 191
- ;; 681f 191
-                 stx text_top                             ; success- set end address & run it ;; 681f 191
-                 sty text_top+1                            ;; 6821 191
-                 cli                                       ;; 6823 191
-                 bra run_a_program                         ;; 6824 191
- ;; 6827 191
-_local_1190_30   rts                                      ; failure- go_ready ;; 6827 191
- ;; 6828 191
- ;; 6828 191
+autoboot                                                   ;; @@67dc 191
+                 lda #0                                   ; Select internal drive ;; @@67dc 191
+                 sta fdc                                   ;; @@67de 191
+_local_1190_10   bit fdc+2                                ; busywait ;; @@67e1 191
+                 bmi _local_1190_10                        ;; @@67e4 191
+                 lda fdc+3                                ; See if a diskette is present ;; @@67e6 191
+                 and #$08                                  ;; @@67e9 191
+                 beq _local_1190_30                       ; exit with no action taken if not ;; @@67eb 191
+ ;; @@67ed 191
+                 lda #$e6                                 ; set up parameters for DOS parser like BLOAD ;; @@67ed 191
+                 ldx #$fc                                  ;; @@67ef 191
+                 jsr dosprx                               ; let the parser init DOS stuff ;; @@67f1 191
+ ;; @@67f4 191
+                 ldy #$ff                                  ;; @@67f4 191
+_local_1190_20   iny                                      ; Copy filename from ROM into buffer ;; @@67f6 191
+                 lda autoboot_filename,y                   ;; @@67f7 191
+                 sta savram,y                              ;; @@67fa 191
+                 bne _local_1190_20                       ; null terminated ;; @@67fd 191
+                 sty dosf1l                               ; length not counting terminator ;; @@67ff 191
+ ;; @@6802 191
+                 lda #%01000001                           ; set flag for load indicating autoboot ;; @@6802 191
+                 sta runmod                               ; set flag for load not to go to ready ;; @@6804 191
+                 jsr dload_boot                           ; skip parser & load it ;; @@6806 191
+ ;; @@6809 191
+                 lda #0                                   ; clear autoboot flags ;; @@6809 191
+                 sta runmod                                ;; @@680b 191
+                 phx                                      ; save end address ;; @@680d 191
+                 phy                                       ;; @@680e 191
+                 jsr _readst                              ; get status report, but check it later ;; @@680f 191
+                 pha                                       ;; @@6812 191
+                 jsr Suck_DS                              ; clear any DOS errors (to kill error LED) ;; @@6813 191
+                 pla                                      ; now check I/O status ;; @@6816 191
+                 ply                                       ;; @@6817 191
+                 plx                                       ;; @@6818 191
+                 and #$bf                                 ; EOI is okay ;; @@6819 191
+                 bne _local_1190_30                       ; outside problems ;; @@681b 191
+                 bcs _local_1190_30                       ; inside problems ;; @@681d 191
+ ;; @@681f 191
+                 stx text_top                             ; success- set end address & run it ;; @@681f 191
+                 sty text_top+1                            ;; @@6821 191
+                 cli                                       ;; @@6823 191
+                 bra run_a_program                         ;; @@6824 191
+ ;; @@6827 191
+_local_1190_30   rts                                      ; failure- go_ready ;; @@6827 191
+ ;; @@6828 191
+ ;; @@6828 191

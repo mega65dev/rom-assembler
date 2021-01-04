@@ -1,6 +1,6 @@
-c65.copy 
-c65.cut 
-c65.paste 
+C65__copy 
+C65__cut 
+C65__paste 
  jmp bad_command 
  
  .page 

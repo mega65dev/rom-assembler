@@ -1,62 +1,62 @@
-errd             jsr sign                                 ; get sign ;; 5618 142
-                 bmi _local_1141_1                        ; (allow err$(er) when er=-1) ;; 561b 142
-                 jsr conint                               ; get integer arg in x ;; 561d 142
-                 dex                                       ;; 5620 142
-                 txa                                      ; error # (0 to max-1) ;; 5621 142
-                 cmp #last_error_message                  ; check range ;; 5622 142
-                 bcc _local_1141_2                        ; ok ;; 5624 142
-                 ldx #0                                   ; too high, return null ;; 5626 142
-                 !byte $2c                                 ;; 5628 142
- ;; 5629 142
-_local_1141_1    ldx #2                                   ; no error, return "ok"    [910911] ;; 5629 142
-                 lda #<ok_error_message                    ;; 562b 142
-                 ldy #>ok_error_message                    ;; 562d 142
-                 sta index2                                ;; 562f 142
-                 sty index2+1                              ;; 5631 142
-                 bra _local_1141_30                       ; pass it ;; 5633 142
- ;; 5635 142
-_local_1141_2    jsr erstup                               ; look up the error, set up a pointer to it ;; 5635 142
-                 ldy #$ff                                 ; determine how long it is ;; 5638 142
-                 ldx #0                                    ;; 563a 142
-_local_1141_10   inx                                      ; count printing characters ;; 563c 142
-_local_1141_20   iny                                       ;; 563d 142
-                 lda (index2),y                           ; (rom: ind.ok) ;; 563e 142
-                 bmi _local_1141_30                       ; msb set means last ;; 5640 142
-                 cmp #' '                                  ;; 5642 142
-                 bcc _local_1141_20                       ; don't count non-printers ;; 5644 142
-                 bra _local_1141_10                       ; count all others ;; 5646 142
- ;; 5648 142
-_local_1141_30   txa                                      ; message length ;; 5648 142
-                 jsr strspa                               ; get space ;; 5649 142
-                 tax                                       ;; 564c 142
-                 beq _local_1141_50                       ; null ;; 564d 142
- ;; 564f 142
-; sta sw_rom_ram1  ;set up string bank???? ;; 564f 142
-                 ldx #0                                    ;; 564f 142
-                 ldy #$ff                                  ;; 5651 142
-_local_1141_40   iny                                      ; copy message into memory ;; 5653 142
-                 lda (index2),y                           ; (rom: ind.ok) ;; 5654 142
-                 cmp #' '                                  ;; 5656 142
-                 bcc _local_1141_40                       ; skip non-printers ;; 5658 142
- ;; 565a 142
-                 pha                                       ;; 565a 142
-                 and #$7f                                  ;; 565b 142
-                 phy                                      ; swap x&y ;; 565d 142
-                 phx                                       ;; 565e 142
-                 ply                                       ;; 565f 142
-                 ldx #dsctmp+1                             ;; 5660 142
-                 jsr sta_far_ram1                         ; sta (dsctmp+1),y to RAM1 ;; 5662 142
-                 phy                                      ; swap x&y ;; 5665 142
-                 plx                                       ;; 5666 142
-                 ply                                       ;; 5667 142
-                 inx                                       ;; 5668 142
-                 pla                                      ; test if msb was set ;; 5669 142
-                 bpl _local_1141_40                        ;; 566a 142
- ;; 566c 142
-_local_1141_50   bra chrd1                                ; pla,pla,jmp putnew ;; 566c 142
- ;; 566f 142
- ;; 566f 142
-;.end ;; 566f 142
-; .page ;; 566f 142
-; .subttl  HEX$ ;; 566f 142
- ;; 566f 142
+errd             jsr sign                                 ; get sign ;; @@5618 142
+                 bmi _local_1141_1                        ; (allow err$(er) when er=-1) ;; @@561b 142
+                 jsr conint                               ; get integer arg in x ;; @@561d 142
+                 dex                                       ;; @@5620 142
+                 txa                                      ; error # (0 to max-1) ;; @@5621 142
+                 cmp #last_error_message                  ; check range ;; @@5622 142
+                 bcc _local_1141_2                        ; ok ;; @@5624 142
+                 ldx #0                                   ; too high, return null ;; @@5626 142
+                 !text $2c                                 ;; @@5628 142
+ ;; @@5629 142
+_local_1141_1    ldx #2                                   ; no error, return "ok"    [910911] ;; @@5629 142
+                 lda #<ok_error_message                    ;; @@562b 142
+                 ldy #>ok_error_message                    ;; @@562d 142
+                 sta index2                                ;; @@562f 142
+                 sty index2+1                              ;; @@5631 142
+                 bra _local_1141_30                       ; pass it ;; @@5633 142
+ ;; @@5635 142
+_local_1141_2    jsr erstup                               ; look up the error, set up a pointer to it ;; @@5635 142
+                 ldy #$ff                                 ; determine how long it is ;; @@5638 142
+                 ldx #0                                    ;; @@563a 142
+_local_1141_10   inx                                      ; count printing characters ;; @@563c 142
+_local_1141_20   iny                                       ;; @@563d 142
+                 lda (index2),y                           ; (rom: ind.ok) ;; @@563e 142
+                 bmi _local_1141_30                       ; msb set means last ;; @@5640 142
+                 cmp #' '                                  ;; @@5642 142
+                 bcc _local_1141_20                       ; don't count non-printers ;; @@5644 142
+                 bra _local_1141_10                       ; count all others ;; @@5646 142
+ ;; @@5648 142
+_local_1141_30   txa                                      ; message length ;; @@5648 142
+                 jsr strspa                               ; get space ;; @@5649 142
+                 tax                                       ;; @@564c 142
+                 beq _local_1141_50                       ; null ;; @@564d 142
+ ;; @@564f 142
+; sta sw_rom_ram1  ;set up string bank???? ;; @@564f 142
+                 ldx #0                                    ;; @@564f 142
+                 ldy #$ff                                  ;; @@5651 142
+_local_1141_40   iny                                      ; copy message into memory ;; @@5653 142
+                 lda (index2),y                           ; (rom: ind.ok) ;; @@5654 142
+                 cmp #' '                                  ;; @@5656 142
+                 bcc _local_1141_40                       ; skip non-printers ;; @@5658 142
+ ;; @@565a 142
+                 pha                                       ;; @@565a 142
+                 and #$7f                                  ;; @@565b 142
+                 phy                                      ; swap x&y ;; @@565d 142
+                 phx                                       ;; @@565e 142
+                 ply                                       ;; @@565f 142
+                 ldx #dsctmp+1                             ;; @@5660 142
+                 jsr sta_far_ram1                         ; sta (dsctmp+1),y to RAM1 ;; @@5662 142
+                 phy                                      ; swap x&y ;; @@5665 142
+                 plx                                       ;; @@5666 142
+                 ply                                       ;; @@5667 142
+                 inx                                       ;; @@5668 142
+                 pla                                      ; test if msb was set ;; @@5669 142
+                 bpl _local_1141_40                        ;; @@566a 142
+ ;; @@566c 142
+_local_1141_50   bra chrd1                                ; pla,pla,jmp putnew ;; @@566c 142
+ ;; @@566f 142
+ ;; @@566f 142
+;.end ;; @@566f 142
+; .page ;; @@566f 142
+; .subttl  HEX$ ;; @@566f 142
+ ;; @@566f 142

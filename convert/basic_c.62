@@ -1,102 +1,102 @@
-next             bne _local_1061_10                       ; hop if 'next' variable given ;; 3a75 62
-                 ldy #$ff                                 ; flag no specific 'for' variable ;; 3a77 62
-                 bra _local_1061_20                       ; always ;; 3a79 62
- ;; 3a7b 62
-_local_1061_5    ldy #lenfor                              ; done, clean up stack ;; 3a7b 62
-                 jsr rlsstk                               ; release (y) items from stack ;; 3a7d 62
-                 jsr chrgot                                ;; 3a80 62
-                 cmp #','                                 ; ie., NEXT j,k ;; 3a83 62
-                 bne 4_local_1061_5                        ;; 3a85 62
-                 jsr chrget                                ;; 3a87 62
- ;; 3a8a 62
-_local_1061_10   jsr ptrget                               ; get pointer to variable in (a,y) ;; 3a8a 62
-                 sta forpnt                                ;; 3a8d 62
- ;; 3a8f 62
-_local_1061_20   sty forpnt+1                              ;; 3a8f 62
-                 lda #for_token                            ;; 3a91 62
-                 jsr search                               ; look for FOR entry in run-time stack ;; 3a93 62
-                 beq _local_1061_30                       ; branch if found ;; 3a96 62
-                 ldx #errnf                               ; otherwise 'error, not found' ;; 3a98 62
-                 bra error                                 ;; 3a9a 62
- ;; 3a9d 62
- ;; 3a9d 62
-; Set up to move STEP value to FAC ;; 3a9d 62
- ;; 3a9d 62
-_local_1061_30   jsr movfnd                               ; (fndpnt) => (tos) ;; 3a9d 62
-                 lda fndpnt                                ;; 3aa0 62
-                 clc                                       ;; 3aa2 62
-                 adc #3                                   ; offset to step value ;; 3aa3 62
-                 ldy fndpnt+1                              ;; 3aa5 62
-                 bcc 3_local_1061_5                        ;; 3aa7 62
-                 iny                                       ;; 3aa9 62
- ;; 3aaa 62
-3_local_1061_5   jsr movfm                                ; actually "move from ROM", but sys stack is in "common" ;; 3aaa 62
-                 ldy #8                                   ; MOVFM doesn't move sign.  Get it ;; 3aad 62
-                 lda (fndpnt),y                            ;; 3aaf 62
-                 sta facsgn                                ;; 3ab1 62
- ;; 3ab3 62
-; Get pointer to FOR variable ;; 3ab3 62
- ;; 3ab3 62
-                 ldy #1                                    ;; 3ab3 62
-                 lda (fndpnt),y                           ; get lsb ;; 3ab5 62
-                 pha                                       ;; 3ab7 62
-                 tax                                       ;; 3ab8 62
-                 iny                                       ;; 3ab9 62
-                 lda (fndpnt),y                           ; get msb ;; 3aba 62
-                 pha                                       ;; 3abc 62
-                 tay                                      ; msb in y ;; 3abd 62
-                 txa                                      ; lsb in a ;; 3abe 62
-                 jsr fadd                                 ; add STEP value to FOR variable (fadd gets from bank 1) ;; 3abf 62
-                 ply                                      ; msb in y ;; 3ac2 62
-                 plx                                      ; lsb in x ;; 3ac3 62
-                 jsr movmf_ram1                           ; put result back into FOR variable in var bank ;; 3ac4 62
- ;; 3ac7 62
-; Make (a,y) point at TO value in stack ;; 3ac7 62
- ;; 3ac7 62
-                 lda fndpnt                                ;; 3ac7 62
-                 clc                                       ;; 3ac9 62
-                 adc #9                                    ;; 3aca 62
-                 ldy fndpnt+1                              ;; 3acc 62
-                 bcc _local_1061_40                        ;; 3ace 62
-                 iny                                       ;; 3ad0 62
- ;; 3ad1 62
-; Test if loop done ;; 3ad1 62
- ;; 3ad1 62
-_local_1061_40                                             ;; 3ad1 62
-; sta sw_rom_ram0 ;???? ;; 3ad1 62
-                 jsr fcomp                                ; compare FAC to value pointed to by (a,y) ;; 3ad1 62
-                 ldy #8                                    ;; 3ad4 62
-                 sec                                       ;; 3ad6 62
-                 sbc (fndpnt),y                           ; (common area????) ;; 3ad7 62
-                 beq _local_1061_5                        ; branch taken if done ;; 3ad9 62
- ;; 3adb 62
-                 ldy #17                                  ; not done, set pointers to re-execute loop ;; 3adb 62
-                 lda (fndpnt),y                           ; (common area????) ;; 3add 62
-                 sta txtptr                                ;; 3adf 62
-                 dey                                       ;; 3ae1 62
-                 lda (fndpnt),y                            ;; 3ae2 62
-                 sta txtptr+1                              ;; 3ae4 62
-                 dey                                       ;; 3ae6 62
-                 lda (fndpnt),y                            ;; 3ae7 62
-                 sta curlin+1                              ;; 3ae9 62
-                 dey                                       ;; 3aeb 62
-                 lda (fndpnt),y                            ;; 3aec 62
-                 sta curlin                                ;; 3aee 62
-4_local_1061_5   rts                                       ;; 3af0 62
- ;; 3af1 62
-;.end ;; 3af1 62
-; .page ;; 3af1 62
-; .subttl DIM ;; 3af1 62
- ;; 3af1 62
-; The DIMension code sets DIMFLG and then falls into the variable search ;; 3af1 62
-; routine, which looks at DIMFLG at 3 different points: ;; 3af1 62
-; ;; 3af1 62
-; 1) If an entry is found, DIMFLG being on indicates a ;; 3af1 62
-;    doubly-defined variable. ;; 3af1 62
-; 2) When a new entry is being built, DIMFLG being on indicates ;; 3af1 62
-;    the indices should be used for the size of each index. ;; 3af1 62
-;    Otherwise the default of ten is used. ;; 3af1 62
-; 3) When the build entry code finishes, indexing will be done ;; 3af1 62
-;    only if DIMFLG is off. ;; 3af1 62
- ;; 3af1 62
- ;; 3af1 62
+next             bne _local_1061_10                       ; hop if 'next' variable given ;; @@3a75 62
+                 ldy #$ff                                 ; flag no specific 'for' variable ;; @@3a77 62
+                 bra _local_1061_20                       ; always ;; @@3a79 62
+ ;; @@3a7b 62
+_local_1061_5    ldy #lenfor                              ; done, clean up stack ;; @@3a7b 62
+                 jsr rlsstk                               ; release (y) items from stack ;; @@3a7d 62
+                 jsr chrgot                                ;; @@3a80 62
+                 cmp #','                                 ; ie., NEXT j,k ;; @@3a83 62
+                 bne _local_1061_45                        ;; @@3a85 62
+                 jsr chrget                                ;; @@3a87 62
+ ;; @@3a8a 62
+_local_1061_10   jsr ptrget                               ; get pointer to variable in (a,y) ;; @@3a8a 62
+                 sta forpnt                                ;; @@3a8d 62
+ ;; @@3a8f 62
+_local_1061_20   sty forpnt+1                              ;; @@3a8f 62
+                 lda #for_token                            ;; @@3a91 62
+                 jsr search                               ; look for FOR entry in run-time stack ;; @@3a93 62
+                 beq _local_1061_30                       ; branch if found ;; @@3a96 62
+                 ldx #errnf                               ; otherwise 'error, not found' ;; @@3a98 62
+                 bra error                                 ;; @@3a9a 62
+ ;; @@3a9d 62
+ ;; @@3a9d 62
+; Set up to move STEP value to FAC ;; @@3a9d 62
+ ;; @@3a9d 62
+_local_1061_30   jsr movfnd                               ; (fndpnt) => (tos) ;; @@3a9d 62
+                 lda fndpnt                                ;; @@3aa0 62
+                 clc                                       ;; @@3aa2 62
+                 adc #3                                   ; offset to step value ;; @@3aa3 62
+                 ldy fndpnt+1                              ;; @@3aa5 62
+                 bcc _local_1061_35                        ;; @@3aa7 62
+                 iny                                       ;; @@3aa9 62
+ ;; @@3aaa 62
+_local_1061_35   jsr movfm                                ; actually "move from ROM", but sys stack is in "common" ;; @@3aaa 62
+                 ldy #8                                   ; MOVFM doesn't move sign.  Get it ;; @@3aad 62
+                 lda (fndpnt),y                            ;; @@3aaf 62
+                 sta facsgn                                ;; @@3ab1 62
+ ;; @@3ab3 62
+; Get pointer to FOR variable ;; @@3ab3 62
+ ;; @@3ab3 62
+                 ldy #1                                    ;; @@3ab3 62
+                 lda (fndpnt),y                           ; get lsb ;; @@3ab5 62
+                 pha                                       ;; @@3ab7 62
+                 tax                                       ;; @@3ab8 62
+                 iny                                       ;; @@3ab9 62
+                 lda (fndpnt),y                           ; get msb ;; @@3aba 62
+                 pha                                       ;; @@3abc 62
+                 tay                                      ; msb in y ;; @@3abd 62
+                 txa                                      ; lsb in a ;; @@3abe 62
+                 jsr fadd                                 ; add STEP value to FOR variable (fadd gets from bank 1) ;; @@3abf 62
+                 ply                                      ; msb in y ;; @@3ac2 62
+                 plx                                      ; lsb in x ;; @@3ac3 62
+                 jsr movmf_ram1                           ; put result back into FOR variable in var bank ;; @@3ac4 62
+ ;; @@3ac7 62
+; Make (a,y) point at TO value in stack ;; @@3ac7 62
+ ;; @@3ac7 62
+                 lda fndpnt                                ;; @@3ac7 62
+                 clc                                       ;; @@3ac9 62
+                 adc #9                                    ;; @@3aca 62
+                 ldy fndpnt+1                              ;; @@3acc 62
+                 bcc _local_1061_40                        ;; @@3ace 62
+                 iny                                       ;; @@3ad0 62
+ ;; @@3ad1 62
+; Test if loop done ;; @@3ad1 62
+ ;; @@3ad1 62
+_local_1061_40                                             ;; @@3ad1 62
+; sta sw_rom_ram0 ;???? ;; @@3ad1 62
+                 jsr fcomp                                ; compare FAC to value pointed to by (a,y) ;; @@3ad1 62
+                 ldy #8                                    ;; @@3ad4 62
+                 sec                                       ;; @@3ad6 62
+                 sbc (fndpnt),y                           ; (common area????) ;; @@3ad7 62
+                 beq _local_1061_5                        ; branch taken if done ;; @@3ad9 62
+ ;; @@3adb 62
+                 ldy #17                                  ; not done, set pointers to re-execute loop ;; @@3adb 62
+                 lda (fndpnt),y                           ; (common area????) ;; @@3add 62
+                 sta txtptr                                ;; @@3adf 62
+                 dey                                       ;; @@3ae1 62
+                 lda (fndpnt),y                            ;; @@3ae2 62
+                 sta txtptr+1                              ;; @@3ae4 62
+                 dey                                       ;; @@3ae6 62
+                 lda (fndpnt),y                            ;; @@3ae7 62
+                 sta curlin+1                              ;; @@3ae9 62
+                 dey                                       ;; @@3aeb 62
+                 lda (fndpnt),y                            ;; @@3aec 62
+                 sta curlin                                ;; @@3aee 62
+_local_1061_45   rts                                       ;; @@3af0 62
+ ;; @@3af1 62
+;.end ;; @@3af1 62
+; .page ;; @@3af1 62
+; .subttl DIM ;; @@3af1 62
+ ;; @@3af1 62
+; The DIMension code sets DIMFLG and then falls into the variable search ;; @@3af1 62
+; routine, which looks at DIMFLG at 3 different points: ;; @@3af1 62
+; ;; @@3af1 62
+; 1) If an entry is found, DIMFLG being on indicates a ;; @@3af1 62
+;    doubly-defined variable. ;; @@3af1 62
+; 2) When a new entry is being built, DIMFLG being on indicates ;; @@3af1 62
+;    the indices should be used for the size of each index. ;; @@3af1 62
+;    Otherwise the default of ten is used. ;; @@3af1 62
+; 3) When the build entry code finishes, indexing will be done ;; @@3af1 62
+;    only if DIMFLG is off. ;; @@3af1 62
+ ;; @@3af1 62
+ ;; @@3af1 62

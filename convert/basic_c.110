@@ -1,28 +1,28 @@
-play_command                                               ;; 48fe 110
-                 cmp #'M'                                 ; measure? ;; 48fe 110
-                 beq _local_1109_10                        ;; 4900 110
- ;; 4902 110
-                 lda rbits,x                              ; all others, set flag for next number ;; 4902 110
-                 sta flag                                  ;; 4905 110
-                 rts                                       ;; 4908 110
- ;; 4909 110
-; Wait for msb of all 3 voice counters to underflow ;; 4909 110
- ;; 4909 110
-;_local_1109_10 ldy #5 ;; 4909 110
-;_local_1109_20 lda voices,y ;; 4909 110
-; bpl _local_1109_20 ;; 4909 110
-; dey ;; 4909 110
-; dey ;; 4909 110
-; bpl _local_1109_20 ;; 4909 110
-; rts ;; 4909 110
- ;; 4909 110
-_local_1109_10   ldy #5                                   ; [910626] ;; 4909 110
-_local_1109_20   ldx times2,y                              ;; 490b 110
-_local_1109_30   bit voices+1,x                           ; wait for voice to be inactive (IRQ) ;; 490e 110
-                 bpl _local_1109_30                        ;; 4911 110
-                 dey                                      ; next voice ;; 4913 110
-                 bpl _local_1109_20                       ; until done 6 voices ;; 4914 110
-                 rts                                       ;; 4916 110
- ;; 4917 110
- ;; 4917 110
- ;; 4917 110
+play_command                                               ;; @@48fe 110
+                 cmp #'M'                                 ; measure? ;; @@48fe 110
+                 beq _local_1109_10                        ;; @@4900 110
+ ;; @@4902 110
+                 lda rbits,x                              ; all others, set flag for next number ;; @@4902 110
+                 sta flag                                  ;; @@4905 110
+                 rts                                       ;; @@4908 110
+ ;; @@4909 110
+; Wait for msb of all 3 voice counters to underflow ;; @@4909 110
+ ;; @@4909 110
+;_local_1109_10 ldy #5 ;; @@4909 110
+;_local_1109_20 lda voices,y ;; @@4909 110
+; bpl _local_1109_20 ;; @@4909 110
+; dey ;; @@4909 110
+; dey ;; @@4909 110
+; bpl _local_1109_20 ;; @@4909 110
+; rts ;; @@4909 110
+ ;; @@4909 110
+_local_1109_10   ldy #5                                   ; [910626] ;; @@4909 110
+_local_1109_20   ldx times2,y                              ;; @@490b 110
+_local_1109_30   bit voices+1,x                           ; wait for voice to be inactive (IRQ) ;; @@490e 110
+                 bpl _local_1109_30                        ;; @@4911 110
+                 dey                                      ; next voice ;; @@4913 110
+                 bpl _local_1109_20                       ; until done 6 voices ;; @@4914 110
+                 rts                                       ;; @@4916 110
+ ;; @@4917 110
+ ;; @@4917 110
+ ;; @@4917 110

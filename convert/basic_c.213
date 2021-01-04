@@ -1,56 +1,56 @@
-pchar            jsr outch ;outdo                         ; out character ;; 6dc0 213
-                 bra gfor                                  ;; 6dc3 213
- ;; 6dc5 213
- ;; 6dc5 213
-foun1            bcs sfur                                 ; no #...keep looking ;; 6dc5 213
-                 ldy begfd                                 ;; 6dc7 213
-ffoun            ldx z_p_temp_1                            ;; 6dca 213
-                 bne trts                                  ;; 6dcc 213
-                 stx cform                                 ;; 6dce 213
-                 dey                                       ;; 6dd1 213
- ;; 6dd2 213
-hyo2             dec cform                                ; correct counter ;; 6dd2 213
-hyo              jsr ansub                                ; get next format char ;; 6dd5 213
-                 bcs efo                                  ; end of format ;; 6dd8 213
-                 cmp #','                                 ; comma? ;; 6dda 213
-                 beq hyo                                  ; yes...ignore it ;; 6ddc 213
-                 jsr isp                                  ; + or - in format? ;; 6dde 213
-                 bcc hyo2                                 ; yes... ;; 6de1 213
-                 cmp #'.'                                 ; decimal point? ;; 6de3 213
-                 bne avf1                                 ; no... ;; 6de5 213
-                 inx                                       ;; 6de7 213
-                 cpx #2                                   ; more than 1 decimal? ;; 6de8 213
-                 bcc hyo                                  ; no... ;; 6dea 213
-ero              bra snerr                                ; yes...syntax error ;; 6dec 213
- ;; 6def 213
- ;; 6def 213
-avf1             jsr com2                                 ; =, >, or # in field ;; 6def 213
-                 bne llar                                 ; no... ;; 6df2 213
-                 bcc hyo1                                 ; was # ;; 6df4 213
-                 sta chsn                                 ; was > or = ;; 6df6 213
- ;; 6df9 213
-hyo1             inc vf,x                                  ;; 6df9 213
-                 bra hyo                                   ;; 6dfc 213
- ;; 6dfe 213
-llar             cmp #'$'                                 ; dollar? ;; 6dfe 213
-                 bne expo                                 ; no... ;; 6e00 213
-                 bit dolr                                 ; test flag ;; 6e02 213
-                 bpl hyo1                                 ; no... ;; 6e05 213
-                 clc                                       ;; 6e07 213
-                 ror dolr                                 ; set flag ;; 6e08 213
-                 dec vf                                    ;; 6e0b 213
-                 bra hyo1                                  ;; 6e0e 213
- ;; 6e10 213
-expo             cmp #'^'                                 ; up arrow? ;; 6e10 213
-                 bne isp                                  ; no... ;; 6e12 213
-                 ldx #$02                                  ;; 6e14 213
-_local_1212_10   jsr ansub                                ; must be 4 up arrows ;; 6e16 213
-                 bcs ero                                   ;; 6e19 213
-                 cmp #'^'                                 ; up arrow? ;; 6e1b 213
-                 bne ero                                   ;; 6e1d 213
-                 dex                                       ;; 6e1f 213
-                 bpl _local_1212_10                        ;; 6e20 213
-                 inc fesp                                 ; set exp flag ;; 6e22 213
-                 jsr ansub                                ; next format char ;; 6e25 213
-                 bcs efo                                  ; end of format ;; 6e28 213
- ;; 6e2a 213
+pchar            jsr outch ;outdo                         ; out character ;; @@6dc0 213
+                 bra gfor                                  ;; @@6dc3 213
+ ;; @@6dc5 213
+ ;; @@6dc5 213
+foun1            bcs sfur                                 ; no #...keep looking ;; @@6dc5 213
+                 ldy begfd                                 ;; @@6dc7 213
+ffoun            ldx z_p_temp_1                            ;; @@6dca 213
+                 bne trts                                  ;; @@6dcc 213
+                 stx cform                                 ;; @@6dce 213
+                 dey                                       ;; @@6dd1 213
+ ;; @@6dd2 213
+hyo2             dec cform                                ; correct counter ;; @@6dd2 213
+hyo              jsr ansub                                ; get next format char ;; @@6dd5 213
+                 bcs efo                                  ; end of format ;; @@6dd8 213
+                 cmp #','                                 ; comma? ;; @@6dda 213
+                 beq hyo                                  ; yes...ignore it ;; @@6ddc 213
+                 jsr isp                                  ; + or - in format? ;; @@6dde 213
+                 bcc hyo2                                 ; yes... ;; @@6de1 213
+                 cmp #'.'                                 ; decimal point? ;; @@6de3 213
+                 bne avf1                                 ; no... ;; @@6de5 213
+                 inx                                       ;; @@6de7 213
+                 cpx #2                                   ; more than 1 decimal? ;; @@6de8 213
+                 bcc hyo                                  ; no... ;; @@6dea 213
+ero              bra snerr                                ; yes...syntax error ;; @@6dec 213
+ ;; @@6def 213
+ ;; @@6def 213
+avf1             jsr com2                                 ; =, >, or # in field ;; @@6def 213
+                 bne llar                                 ; no... ;; @@6df2 213
+                 bcc hyo1                                 ; was # ;; @@6df4 213
+                 sta chsn                                 ; was > or = ;; @@6df6 213
+ ;; @@6df9 213
+hyo1             inc vf,x                                  ;; @@6df9 213
+                 bra hyo                                   ;; @@6dfc 213
+ ;; @@6dfe 213
+llar             cmp #'$'                                 ; dollar? ;; @@6dfe 213
+                 bne expo                                 ; no... ;; @@6e00 213
+                 bit dolr                                 ; test flag ;; @@6e02 213
+                 bpl hyo1                                 ; no... ;; @@6e05 213
+                 clc                                       ;; @@6e07 213
+                 ror dolr                                 ; set flag ;; @@6e08 213
+                 dec vf                                    ;; @@6e0b 213
+                 bra hyo1                                  ;; @@6e0e 213
+ ;; @@6e10 213
+expo             cmp #'^'                                 ; up arrow? ;; @@6e10 213
+                 bne isp                                  ; no... ;; @@6e12 213
+                 ldx #$02                                  ;; @@6e14 213
+_local_1212_10   jsr ansub                                ; must be 4 up arrows ;; @@6e16 213
+                 bcs ero                                   ;; @@6e19 213
+                 cmp #'^'                                 ; up arrow? ;; @@6e1b 213
+                 bne ero                                   ;; @@6e1d 213
+                 dex                                       ;; @@6e1f 213
+                 bpl _local_1212_10                        ;; @@6e20 213
+                 inc fesp                                 ; set exp flag ;; @@6e22 213
+                 jsr ansub                                ; next format char ;; @@6e25 213
+                 bcs efo                                  ; end of format ;; @@6e28 213
+ ;; @@6e2a 213

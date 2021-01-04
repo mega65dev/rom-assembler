@@ -1,43 +1,43 @@
-prcha            ldy #0                                    ;; 6a45 200
-chx              txa                                       ;; 6a47 200
-                 beq cpef                                 ; branch if no blanks ;; 6a48 200
-                 dex                                       ;; 6a4a 200
- ;; 6a4b 200
-oblk             lda #' '                                 ; output a blank ;; 6a4b 200
-                 bra outc                                 ; always ;; 6a4d 200
- ;; 6a4f 200
- ;; 6a4f 200
-cpef             cpy hulp                                 ; end of string reached? ;; 6a4f 200
-                 bcs oblk                                 ; output blank if yes ;; 6a51 200
-                 jsr indin1_ram1                          ; lda (index),y ;; 6a53 200
-                 iny                                       ;; 6a56 200
- ;; 6a57 200
-outc             jsr cdout                                ; output character ;; 6a57 200
-                 bne chx                                  ; branch if not ready ;; 6a5a 200
-                 bra reay                                  ;; 6a5c 200
- ;; 6a5e 200
- ;; 6a5e 200
- ;; 6a5e 200
-conv             jsr fout                                 ; convert mfp to decimal ;; 6a5e 200
- ;; 6a61 200
-                 ldy #$ff                                 ; build descriptor for fout string ;; 6a61 200
-_local_1199_10   iny                                      ; how big IS it? ;; 6a63 200
-                 lda fbuffr,y                              ;; 6a64 200
-                 bne _local_1199_10                        ;; 6a67 200
-                 tya                                       ;; 6a69 200
-                 jsr strspa                               ; jsr getspa,stx dsctmp+1,sty dsctmp+2,sta dsctmp,rts ;; 6a6a 200
- ;; 6a6d 200
-                 phx                                       ;; 6a6d 200
-                 ldy #0                                    ;; 6a6e 200
-                 ldx #dsctmp+1                             ;; 6a70 200
-_local_1199_20   lda fbuffr,y                              ;; 6a72 200
-                 beq _local_1199_30                        ;; 6a75 200
-                 jsr sta_far_ram1                         ; sta (dsctmp+1),y ;; 6a77 200
-                 iny                                       ;; 6a7a 200
-                 bne _local_1199_20                        ;; 6a7b 200
- ;; 6a7d 200
-_local_1199_30   plx                                       ;; 6a7d 200
-                 jsr putnew                                ;; 6a7e 200
-                 jsr ini                                  ; init counters and flags ;; 6a81 200
-                 jsr fform                                ; output one formatted number ;; 6a84 200
- ;; 6a87 200
+prcha            ldy #0                                    ;; @@6a45 200
+chx              txa                                       ;; @@6a47 200
+                 beq cpef                                 ; branch if no blanks ;; @@6a48 200
+                 dex                                       ;; @@6a4a 200
+ ;; @@6a4b 200
+oblk             lda #' '                                 ; output a blank ;; @@6a4b 200
+                 bra outc                                 ; always ;; @@6a4d 200
+ ;; @@6a4f 200
+ ;; @@6a4f 200
+cpef             cpy hulp                                 ; end of string reached? ;; @@6a4f 200
+                 bcs oblk                                 ; output blank if yes ;; @@6a51 200
+                 jsr indin1_ram1                          ; lda (index),y ;; @@6a53 200
+                 iny                                       ;; @@6a56 200
+ ;; @@6a57 200
+outc             jsr cdout                                ; output character ;; @@6a57 200
+                 bne chx                                  ; branch if not ready ;; @@6a5a 200
+                 bra reay                                  ;; @@6a5c 200
+ ;; @@6a5e 200
+ ;; @@6a5e 200
+ ;; @@6a5e 200
+conv             jsr fout                                 ; convert mfp to decimal ;; @@6a5e 200
+ ;; @@6a61 200
+                 ldy #$ff                                 ; build descriptor for fout string ;; @@6a61 200
+_local_1199_10   iny                                      ; how big IS it? ;; @@6a63 200
+                 lda fbuffr,y                              ;; @@6a64 200
+                 bne _local_1199_10                        ;; @@6a67 200
+                 tya                                       ;; @@6a69 200
+                 jsr strspa                               ; jsr getspa,stx dsctmp+1,sty dsctmp+2,sta dsctmp,rts ;; @@6a6a 200
+ ;; @@6a6d 200
+                 phx                                       ;; @@6a6d 200
+                 ldy #0                                    ;; @@6a6e 200
+                 ldx #dsctmp+1                             ;; @@6a70 200
+_local_1199_20   lda fbuffr,y                              ;; @@6a72 200
+                 beq _local_1199_30                        ;; @@6a75 200
+                 jsr sta_far_ram1                         ; sta (dsctmp+1),y ;; @@6a77 200
+                 iny                                       ;; @@6a7a 200
+                 bne _local_1199_20                        ;; @@6a7b 200
+ ;; @@6a7d 200
+_local_1199_30   plx                                       ;; @@6a7d 200
+                 jsr putnew                                ;; @@6a7e 200
+                 jsr ini                                  ; init counters and flags ;; @@6a81 200
+                 jsr fform                                ; output one formatted number ;; @@6a84 200
+ ;; @@6a87 200

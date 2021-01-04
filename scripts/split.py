@@ -30,9 +30,10 @@ src = open("original/b65.src","r").readlines()								# Read source in
 src = [x.rstrip().replace("\t"," ")+" " for x in src]						# bit of preprocessing, no blank lines.
 lineCount = len(src)														# number of lines.
 #
-#		Get rid of GKI.
+#		Get rid of GKI. and c65
 #
 src = [x.replace("GKI.","GKI__") for x in src]
+src = [x.replace("c65.","C65__") for x in src]
 #
 #		Find where the first bit is.
 #

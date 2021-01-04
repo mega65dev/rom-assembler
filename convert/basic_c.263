@@ -1,70 +1,70 @@
-AutoScroll                                                 ;; 7dc3 263
-                 pha                                      ; save character for Editor ;; 7dc3 263
-                 bbs7 runmod,AutoScrollno                 ; branch if not direct mode ;; 7dc4 263
-                 ldy channl                               ; is output redirected? ;; 7dc7 263
-                 bne AutoScrollno                         ; yes- can't do scroll (need to read screen) ;; 7dc9 263
-                 lda txttab                                ;; 7dcb 263
-                 ldx txttab+1                             ; is there a program in memory to scroll? ;; 7dcd 263
-                 sta txtptr                                ;; 7dcf 263
-                 stx txtptr+1                              ;; 7dd1 263
-                 iny                                      ; (1) ;; 7dd3 263
-                 jsr indtxt                                ;; 7dd4 263
-                 bne AutoScrollyes                        ; yes- continue ;; 7dd7 263
-                 bra AutoScrollno                         ; no-  exit ;; 7dd9 263
- ;; 7ddb 263
-AutoScrollpop                                              ;; 7ddb 263
-                 pla                                       ;; 7ddb 263
-                 pla                                       ;; 7ddc 263
-AutoScrollng                                               ;; 7ddd 263
-                 ldx point                                ; restore cursor position ;; 7ddd 263
-                 ldy point+1                               ;; 7ddf 263
-                 clc                                       ;; 7de1 263
-                 jsr _plot                                 ;; 7de2 263
-AutoScrollno                                               ;; 7de5 263
-                 rmb1 helper                              ; remove LINGET flag ;; 7de5 263
-                 pla                                      ; restore character ;; 7de7 263
-                 sec                                      ; return to Editor with no action taken ;; 7de8 263
-                 rts                                       ;; 7de9 263
- ;; 7dea 263
-AutoScrollyes                                              ;; 7dea 263
-                 ror form                                 ; save .c=direction (character already on stack) ;; 7dea 263
-                 sec                                       ;; 7dec 263
-                 jsr _plot                                ; get current cursor position & save it ;; 7ded 263
-                 stx point                                 ;; 7df0 263
-                 sty point+1                               ;; 7df2 263
-                 smb1 helper                              ; set flag for LINGET not to go to error if it has problems ;; 7df4 263
-                 bbs7 form,AutoScrolldn                   ; branch according to direction of scroll... ;; 7df6 263
- ;; 7df9 263
-; .page ;; 7df9 263
-AutoScrollup                                              ; wanting to scroll up ;; 7df9 263
-                 sec                                       ;; 7df9 263
-                 lda _screen_bottom                       ; put cursor at bottom of screen ;; 7dfa 263
-                 sbc _screen_top                           ;; 7dfc 263
-                 sta form+1                               ; save where it is- we'll be printing line there ;; 7dfe 263
-                 tax                                       ;; 7e00 263
-                 jsr AutoSearch                           ; search for a line number on screen, put it in linnum ;; 7e01 263
-                 jsr FindLine                             ; find the line in program ;; 7e04 263
-                 bcc _local_1262_10   ;  line not found   ; we have a pointer to the next line ;; 7e07 263
-                 ldy #0                                    ;; 7e09 263
-                 jsr indlow                               ; find the next line, the one we want to print, via link bytes ;; 7e0b 263
-                 tax                                       ;; 7e0e 263
-                 iny                                       ;; 7e0f 263
-                 jsr indlow                                ;; 7e10 263
-                 stx lowtr                                ; advance pointer to it ;; 7e13 263
-                 sta lowtr+1                               ;; 7e15 263
-_local_1262_10   ldx form+1                               ; put cursor back at bottom of screen ;; 7e17 263
-                 ldy #0                                    ;; 7e19 263
-                 clc                                       ;; 7e1b 263
-                 jsr _plot                                 ;; 7e1c 263
-_local_1262_20   jsr crdo                                 ; get a blank line to print on- scroll screen up ;; 7e1f 263
-                 ldy #1                                    ;; 7e22 263
-                 jsr indlow                               ; end of program marker? ;; 7e24 263
-                 bne AutoScrollprint                      ; no-  print this line & exit ;; 7e27 263
-                 lda txttab                               ; yes- loop to start of program, ;; 7e29 263
-                 ldx txttab+1                              ;; 7e2b 263
-                 sta lowtr                                 ;; 7e2d 263
-                 stx lowtr+1                               ;; 7e2f 263
-                 jsr crdo                                 ; and add an extra newline ;; 7e31 263
-                 bra _local_1262_20                        ;; 7e34 263
- ;; 7e36 263
-; .page ;; 7e36 263
+AutoScroll                                                 ;; @@7dc3 263
+                 pha                                      ; save character for Editor ;; @@7dc3 263
+                 bbs7 runmod,AutoScrollno                 ; branch if not direct mode ;; @@7dc4 263
+                 ldy channl                               ; is output redirected? ;; @@7dc7 263
+                 bne AutoScrollno                         ; yes- can't do scroll (need to read screen) ;; @@7dc9 263
+                 lda txttab                                ;; @@7dcb 263
+                 ldx txttab+1                             ; is there a program in memory to scroll? ;; @@7dcd 263
+                 sta txtptr                                ;; @@7dcf 263
+                 stx txtptr+1                              ;; @@7dd1 263
+                 iny                                      ; (1) ;; @@7dd3 263
+                 jsr indtxt                                ;; @@7dd4 263
+                 bne AutoScrollyes                        ; yes- continue ;; @@7dd7 263
+                 bra AutoScrollno                         ; no-  exit ;; @@7dd9 263
+ ;; @@7ddb 263
+AutoScrollpop                                              ;; @@7ddb 263
+                 pla                                       ;; @@7ddb 263
+                 pla                                       ;; @@7ddc 263
+AutoScrollng                                               ;; @@7ddd 263
+                 ldx point                                ; restore cursor position ;; @@7ddd 263
+                 ldy point+1                               ;; @@7ddf 263
+                 clc                                       ;; @@7de1 263
+                 jsr _plot                                 ;; @@7de2 263
+AutoScrollno                                               ;; @@7de5 263
+                 rmb1 helper                              ; remove LINGET flag ;; @@7de5 263
+                 pla                                      ; restore character ;; @@7de7 263
+                 sec                                      ; return to Editor with no action taken ;; @@7de8 263
+                 rts                                       ;; @@7de9 263
+ ;; @@7dea 263
+AutoScrollyes                                              ;; @@7dea 263
+                 ror form                                 ; save .c=direction (character already on stack) ;; @@7dea 263
+                 sec                                       ;; @@7dec 263
+                 jsr _plot                                ; get current cursor position & save it ;; @@7ded 263
+                 stx point                                 ;; @@7df0 263
+                 sty point+1                               ;; @@7df2 263
+                 smb1 helper                              ; set flag for LINGET not to go to error if it has problems ;; @@7df4 263
+                 bbs7 form,AutoScrolldn                   ; branch according to direction of scroll... ;; @@7df6 263
+ ;; @@7df9 263
+; .page ;; @@7df9 263
+AutoScrollup                                              ; wanting to scroll up ;; @@7df9 263
+                 sec                                       ;; @@7df9 263
+                 lda _screen_bottom                       ; put cursor at bottom of screen ;; @@7dfa 263
+                 sbc _screen_top                           ;; @@7dfc 263
+                 sta form+1                               ; save where it is- we'll be printing line there ;; @@7dfe 263
+                 tax                                       ;; @@7e00 263
+                 jsr AutoSearch                           ; search for a line number on screen, put it in linnum ;; @@7e01 263
+                 jsr FindLine                             ; find the line in program ;; @@7e04 263
+                 bcc _local_1262_10   ;  line not found   ; we have a pointer to the next line ;; @@7e07 263
+                 ldy #0                                    ;; @@7e09 263
+                 jsr indlow                               ; find the next line, the one we want to print, via link bytes ;; @@7e0b 263
+                 tax                                       ;; @@7e0e 263
+                 iny                                       ;; @@7e0f 263
+                 jsr indlow                                ;; @@7e10 263
+                 stx lowtr                                ; advance pointer to it ;; @@7e13 263
+                 sta lowtr+1                               ;; @@7e15 263
+_local_1262_10   ldx form+1                               ; put cursor back at bottom of screen ;; @@7e17 263
+                 ldy #0                                    ;; @@7e19 263
+                 clc                                       ;; @@7e1b 263
+                 jsr _plot                                 ;; @@7e1c 263
+_local_1262_20   jsr crdo                                 ; get a blank line to print on- scroll screen up ;; @@7e1f 263
+                 ldy #1                                    ;; @@7e22 263
+                 jsr indlow                               ; end of program marker? ;; @@7e24 263
+                 bne AutoScrollprint                      ; no-  print this line & exit ;; @@7e27 263
+                 lda txttab                               ; yes- loop to start of program, ;; @@7e29 263
+                 ldx txttab+1                              ;; @@7e2b 263
+                 sta lowtr                                 ;; @@7e2d 263
+                 stx lowtr+1                               ;; @@7e2f 263
+                 jsr crdo                                 ; and add an extra newline ;; @@7e31 263
+                 bra _local_1262_20                        ;; @@7e34 263
+ ;; @@7e36 263
+; .page ;; @@7e36 263

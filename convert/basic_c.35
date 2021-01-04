@@ -1,74 +1,74 @@
-list             rmb7 helper                              ; clear 'help' flag for p1line ;; 328a 35
- ;; 328c 35
-; Determine which form of LIST we have... ;; 328c 35
- ;; 328c 35
-                 beq list_memory                          ; branch if terminator (no parameter) ;; 328c 35
-                 bcc list_memory                          ; branch if a number (assume range parameter) ;; 328f 35
-                 cmp #minus_token                          ;; 3292 35
-                 beq list_memory                          ; branch if a dash (assume range parameter) ;; 3294 35
- ;; 3297 35
- ;; 3297 35
-; LIST command is of the form  LIST filename [,U#] [,D#] ;; 3297 35
- ;; 3297 35
-list_file                                                  ;; 3297 35
-                 lda #$e6                                 ; parse:  filename [,U#] [,D#] ;; 3297 35
-                 jsr dosprs                               ; (like dopen:  0 0 0 *  * 0 0 1 ) ;; 3299 35
-                 jsr chk1                                 ; check parameters ;; 329c 35
-                 lda #0                                    ;; 329f 35
-                 sta dossa                                ; setup as dload would (0 = load channel) ;; 32a1 35
-                 jsr find_la                              ; find an available la to use (cannot use reserved one) ;; 32a4 35
-                 ldy #fopn                                 ;; 32a7 35
-                 ldx #4                                    ;; 32a9 35
-                 jsr open_file                            ; open the file ;; 32ab 35
-                 bcs list_err                             ; exit if error ;; 32ae 35
- ;; 32b0 35
-                 ldx dosla                                 ;; 32b0 35
-                 jsr _chkin                               ; get input channel ;; 32b3 35
-                 bcs list_err                             ; exit if bad?? ;; 32b6 35
-                 jsr _basin                               ; waste 'load address' ;; 32b8 35
-                 jsr _basin                                ;; 32bb 35
- ;; 32be 35
-_local_1034_10   jsr _basin                               ; get link bytes ;; 32be 35
-                 sta dosstr                                ;; 32c1 35
-                 jsr _basin                                ;; 32c4 35
-                 sta dosstr+1                              ;; 32c7 35
-                 ora dosstr                                ;; 32ca 35
-                 beq list_exit                            ; done if null pointer ;; 32cd 35
-                 jsr _readst                               ;; 32cf 35
-                 bne list_exit                            ; done if eof or bad status ;; 32d2 35
-; ???? assumes serial bus ;; 32d4 35
-                 lda #>dosstr                             ; point p1line's pointer at our line buffer ;; 32d4 35
-                 ldx #<dosstr                              ;; 32d6 35
-                 sta lowtr+1                               ;; 32d8 35
-                 stx lowtr                                 ;; 32da 35
- ;; 32dc 35
-                 ldx #2                                    ;; 32dc 35
-                 jsr _basin                               ; read line into buffer ;; 32de 35
-                 sta dosstr,x                              ;; 32e1 35
-                 inx                                       ;; 32e4 35
-                 jsr _basin                               ; 2-byte line # ;; 32e5 35
-                 sta dosstr,x                              ;; 32e8 35
-                 inx                                       ;; 32eb 35
-_local_1034_20   cpx #255                                 ; check buffer (buflen????) ;; 32ec 35
-                 bcs errlen                               ; 'too long' error ;; 32ee 35
-                 jsr _basin                                ;; 32f1 35
-                 sta dosstr,x                              ;; 32f4 35
-                 inx                                       ;; 32f7 35
-                 tay                                      ; save char ;; 32f8 35
-                 jsr _readst                              ; check channel status (serial bus????) ;; 32f9 35
-                 bne list_exit                            ; exit if eof or error ;; 32fc 35
-                 jsr _stop                                 ;; 32fe 35
-                 beq list_exit                            ; exit if stop key down ;; 3301 35
-                 tya                                       ;; 3303 35
-                 bne _local_1034_20                       ; loop until eol ;; 3304 35
- ;; 3306 35
-                 jsr dcato                                ; get output channel ;; 3306 35
-                 jsr crdo                                 ; start new line ;; 3309 35
-                 ldx dosstr+2                             ; get line # ;; 330c 35
-                 lda dosstr+3                              ;; 330f 35
-                 jsr p1line                               ; print line #, space, and the line of code ;; 3312 35
-                 jsr _clrch                                ;; 3315 35
-                 ldx dosla                                 ;; 3318 35
-                 jsr _chkin                               ; get input channel ;; 331b 35
-                 bcc _local_1034_10                       ; [900730] ;; 331e 35
- ;; 3320 35
+list             rmb7 helper                              ; clear 'help' flag for p1line ;; @@328a 35
+ ;; @@328c 35
+; Determine which form of LIST we have... ;; @@328c 35
+ ;; @@328c 35
+                 beq list_memory                          ; branch if terminator (no parameter) ;; @@328c 35
+                 bcc list_memory                          ; branch if a number (assume range parameter) ;; @@328f 35
+                 cmp #minus_token                          ;; @@3292 35
+                 beq list_memory                          ; branch if a dash (assume range parameter) ;; @@3294 35
+ ;; @@3297 35
+ ;; @@3297 35
+; LIST command is of the form  LIST filename [,U#] [,D#] ;; @@3297 35
+ ;; @@3297 35
+list_file                                                  ;; @@3297 35
+                 lda #$e6                                 ; parse:  filename [,U#] [,D#] ;; @@3297 35
+                 jsr dosprs                               ; (like dopen:  0 0 0 *  * 0 0 1 ) ;; @@3299 35
+                 jsr chk1                                 ; check parameters ;; @@329c 35
+                 lda #0                                    ;; @@329f 35
+                 sta dossa                                ; setup as dload would (0 = load channel) ;; @@32a1 35
+                 jsr find_la                              ; find an available la to use (cannot use reserved one) ;; @@32a4 35
+                 ldy #fopn                                 ;; @@32a7 35
+                 ldx #4                                    ;; @@32a9 35
+                 jsr open_file                            ; open the file ;; @@32ab 35
+                 bcs list_err                             ; exit if error ;; @@32ae 35
+ ;; @@32b0 35
+                 ldx dosla                                 ;; @@32b0 35
+                 jsr _chkin                               ; get input channel ;; @@32b3 35
+                 bcs list_err                             ; exit if bad?? ;; @@32b6 35
+                 jsr _basin                               ; waste 'load address' ;; @@32b8 35
+                 jsr _basin                                ;; @@32bb 35
+ ;; @@32be 35
+_local_1034_10   jsr _basin                               ; get link bytes ;; @@32be 35
+                 sta dosstr                                ;; @@32c1 35
+                 jsr _basin                                ;; @@32c4 35
+                 sta dosstr+1                              ;; @@32c7 35
+                 ora dosstr                                ;; @@32ca 35
+                 beq list_exit                            ; done if null pointer ;; @@32cd 35
+                 jsr _readst                               ;; @@32cf 35
+                 bne list_exit                            ; done if eof or bad status ;; @@32d2 35
+; ???? assumes serial bus ;; @@32d4 35
+                 lda #>dosstr                             ; point p1line's pointer at our line buffer ;; @@32d4 35
+                 ldx #<dosstr                              ;; @@32d6 35
+                 sta lowtr+1                               ;; @@32d8 35
+                 stx lowtr                                 ;; @@32da 35
+ ;; @@32dc 35
+                 ldx #2                                    ;; @@32dc 35
+                 jsr _basin                               ; read line into buffer ;; @@32de 35
+                 sta dosstr,x                              ;; @@32e1 35
+                 inx                                       ;; @@32e4 35
+                 jsr _basin                               ; 2-byte line # ;; @@32e5 35
+                 sta dosstr,x                              ;; @@32e8 35
+                 inx                                       ;; @@32eb 35
+_local_1034_20   cpx #255                                 ; check buffer (buflen????) ;; @@32ec 35
+                 bcs errlen                               ; 'too long' error ;; @@32ee 35
+                 jsr _basin                                ;; @@32f1 35
+                 sta dosstr,x                              ;; @@32f4 35
+                 inx                                       ;; @@32f7 35
+                 tay                                      ; save char ;; @@32f8 35
+                 jsr _readst                              ; check channel status (serial bus????) ;; @@32f9 35
+                 bne list_exit                            ; exit if eof or error ;; @@32fc 35
+                 jsr _stop                                 ;; @@32fe 35
+                 beq list_exit                            ; exit if stop key down ;; @@3301 35
+                 tya                                       ;; @@3303 35
+                 bne _local_1034_20                       ; loop until eol ;; @@3304 35
+ ;; @@3306 35
+                 jsr dcato                                ; get output channel ;; @@3306 35
+                 jsr crdo                                 ; start new line ;; @@3309 35
+                 ldx dosstr+2                             ; get line # ;; @@330c 35
+                 lda dosstr+3                              ;; @@330f 35
+                 jsr p1line                               ; print line #, space, and the line of code ;; @@3312 35
+                 jsr _clrch                                ;; @@3315 35
+                 ldx dosla                                 ;; @@3318 35
+                 jsr _chkin                               ; get input channel ;; @@331b 35
+                 bcc _local_1034_10                       ; [900730] ;; @@331e 35
+ ;; @@3320 35

@@ -1,30 +1,30 @@
-ongoto                                                     ;; 3655 50
-                 jsr getbyt                               ; get & save GOTO/GOSUB ;; 3655 50
-                 pha                                       ;; 3658 50
-                 cmp #goto_token                          ; GOTO? ;; 3659 50
-                 beq _local_1049_1                        ; yes ;; 365b 50
-                 cmp #gosub_token                         ; GOSUB? ;; 365d 50
-                 bne snerr                                ; no, syntax error ;; 365f 50
- ;; 3662 50
-_local_1049_1    dec faclo                                 ;; 3662 50
-                 bne _local_1049_2                        ; skip another line number ;; 3664 50
-                 pla                                      ; get dispatch character ;; 3666 50
-                 bra xeqcm2                                ;; 3667 50
- ;; 366a 50
-_local_1049_2    jsr chrget                               ; advance and set codes ;; 366a 50
-                 jsr linget                               ; read next line ;; 366d 50
-                 cmp #','                                 ; is it a "comma"? ;; 3670 50
-                 beq _local_1049_1                         ;; 3672 50
-                 pla                                      ; remove stack entry (token) ;; 3674 50
-                 rts                                      ; either end of line or syntax error ;; 3675 50
- ;; 3676 50
-;.end ;; 3676 50
-; .page ;; 3676 50
-; .subttl LET ;; 3676 50
- ;; 3676 50
-;**************************************************************** ;; 3676 50
-;* ;; 3676 50
-;*  [LET] variable = expression ;; 3676 50
-;* ;; 3676 50
-;**************************************************************** ;; 3676 50
- ;; 3676 50
+ongoto                                                     ;; @@3655 50
+                 jsr getbyt                               ; get & save GOTO/GOSUB ;; @@3655 50
+                 pha                                       ;; @@3658 50
+                 cmp #goto_token                          ; GOTO? ;; @@3659 50
+                 beq _local_1049_1                        ; yes ;; @@365b 50
+                 cmp #gosub_token                         ; GOSUB? ;; @@365d 50
+                 bne snerr                                ; no, syntax error ;; @@365f 50
+ ;; @@3662 50
+_local_1049_1    dec faclo                                 ;; @@3662 50
+                 bne _local_1049_2                        ; skip another line number ;; @@3664 50
+                 pla                                      ; get dispatch character ;; @@3666 50
+                 bra xeqcm2                                ;; @@3667 50
+ ;; @@366a 50
+_local_1049_2    jsr chrget                               ; advance and set codes ;; @@366a 50
+                 jsr linget                               ; read next line ;; @@366d 50
+                 cmp #','                                 ; is it a "comma"? ;; @@3670 50
+                 beq _local_1049_1                         ;; @@3672 50
+                 pla                                      ; remove stack entry (token) ;; @@3674 50
+                 rts                                      ; either end of line or syntax error ;; @@3675 50
+ ;; @@3676 50
+;.end ;; @@3676 50
+; .page ;; @@3676 50
+; .subttl LET ;; @@3676 50
+ ;; @@3676 50
+;**************************************************************** ;; @@3676 50
+;* ;; @@3676 50
+;*  [LET] variable = expression ;; @@3676 50
+;* ;; @@3676 50
+;**************************************************************** ;; @@3676 50
+ ;; @@3676 50

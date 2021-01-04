@@ -1,37 +1,37 @@
-cld10                                                     ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< entry from dload ;; 6897 194
-; jsr put_io_in_map ;; 6897 194
-                 lda verck                                 ;; 6897 194
-                 ldx txttab                               ; .x and .y have alt... ;; 6899 194
-                 ldy txttab+1                             ; ...load address ;; 689b 194
- ;; 689d 194
-; Any changes to the following code must be duplicated at: ;; 689d 194
-;  bload ;; 689d 194
-;  save (exit_disk_op) ;; 689d 194
- ;; 689d 194
-load_file                                                  ;; 689d 194
-                 jsr _loadsp                              ; load it ;; 689d 194
-                 bbs0 runmod,cld20                        ; skip error checks if autoboot (rts) ;; 68a0 194
-                 phx                                      ; save end address ;; 68a3 194
-                 phy                                       ;; 68a4 194
-                 php                                      ; save kernel load status (.c) ;; 68a5 194
-                 pha                                      ; save kernel error # (.a) ;; 68a6 194
-                 jsr _readst                              ; save I/O status byte ;; 68a7 194
-                 sta parsts                                ;; 68aa 194
-                 jsr print_dos_error                      ; report error msg if any only in direct mode ;; 68ac 194
-                 pla                                      ; restore error stuff ;; 68af 194
-                 plp                                       ;; 68b0 194
-                 bcc _local_1193_30                       ; branch if no error (rts) ;; 68b1 194
-                 bbs7 runmod,_local_1193_20               ; branch if run mode (erexit) ;; 68b3 194
-                 cmp #errfnf                              ; is it 'file not found' catch-all? ;; 68b6 194
-                 bne _local_1193_10                       ; no  (erexit) ;; 68b8 194
-                 sta errnum                               ; yes- save error # for 'er' ;; 68ba 194
-                 ora #$80                                 ; but no errdis ;; 68bd 194
-_local_1193_10   sec                                       ;; 68bf 194
-_local_1193_20   bcs erexit                               ; exit if kernel problem ;; 68c0 194
-_local_1193_30   ply                                      ; restore end address ;; 68c3 194
-                 plx                                       ;; 68c4 194
-                 lda verck                                 ;; 68c5 194
-                 beq cld50                                ; was load ;; 68c7 194
- ;; 68c9 194
-; Finish verify ;; 68c9 194
- ;; 68c9 194
+cld10                                                     ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< entry from dload ;; @@6897 194
+; jsr put_io_in_map ;; @@6897 194
+                 lda verck                                 ;; @@6897 194
+                 ldx txttab                               ; .x and .y have alt... ;; @@6899 194
+                 ldy txttab+1                             ; ...load address ;; @@689b 194
+ ;; @@689d 194
+; Any changes to the following code must be duplicated at: ;; @@689d 194
+;  bload ;; @@689d 194
+;  save (exit_disk_op) ;; @@689d 194
+ ;; @@689d 194
+load_file                                                  ;; @@689d 194
+                 jsr _loadsp                              ; load it ;; @@689d 194
+                 bbs0 runmod,cld20                        ; skip error checks if autoboot (rts) ;; @@68a0 194
+                 phx                                      ; save end address ;; @@68a3 194
+                 phy                                       ;; @@68a4 194
+                 php                                      ; save kernel load status (.c) ;; @@68a5 194
+                 pha                                      ; save kernel error # (.a) ;; @@68a6 194
+                 jsr _readst                              ; save I/O status byte ;; @@68a7 194
+                 sta parsts                                ;; @@68aa 194
+                 jsr print_dos_error                      ; report error msg if any only in direct mode ;; @@68ac 194
+                 pla                                      ; restore error stuff ;; @@68af 194
+                 plp                                       ;; @@68b0 194
+                 bcc _local_1193_30                       ; branch if no error (rts) ;; @@68b1 194
+                 bbs7 runmod,_local_1193_20               ; branch if run mode (erexit) ;; @@68b3 194
+                 cmp #errfnf                              ; is it 'file not found' catch-all? ;; @@68b6 194
+                 bne _local_1193_10                       ; no  (erexit) ;; @@68b8 194
+                 sta errnum                               ; yes- save error # for 'er' ;; @@68ba 194
+                 ora #$80                                 ; but no errdis ;; @@68bd 194
+_local_1193_10   sec                                       ;; @@68bf 194
+_local_1193_20   bcs erexit                               ; exit if kernel problem ;; @@68c0 194
+_local_1193_30   ply                                      ; restore end address ;; @@68c3 194
+                 plx                                       ;; @@68c4 194
+                 lda verck                                 ;; @@68c5 194
+                 beq cld50                                ; was load ;; @@68c7 194
+ ;; @@68c9 194
+; Finish verify ;; @@68c9 194
+ ;; @@68c9 194

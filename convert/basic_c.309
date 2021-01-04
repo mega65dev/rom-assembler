@@ -1,47 +1,47 @@
-incord                                                     ;; bbf6 309
-                 stx vtemp4                               ; save offset to destination ;; bbf6 309
-                 jsr cordsb                               ; get 2-byte x-parameter ;; bbf9 309
-                 jsr chrgot                                ;; bbfc 309
-                 cmp #','                                  ;; bbff 309
-                 beq docord                               ; skip ahead if have comma ;; bc01 309
- ;; bc03 309
-                 cmp #';'                                 ; check for semi-colon ;; bc03 309
-                 bne snerr                                ; missing angle param- show syntax message ;; bc05 309
-                 jsr chrget       ;skip over '            ; ' ;; bc08 309
-                 jsr getwrd                               ; get 2-byte angle in a,y ;; bc0b 309
-                 sta z_p_temp_1                           ; swap a,y ;; bc0e 309
-                 tya                                       ;; bc10 309
-                 ldy z_p_temp_1                            ;; bc11 309
-                 jsr gtang1                               ; get sine & cosine values for the angle ;; bc13 309
-                 ldx vtemp4                                ;; bc16 309
-                 lda vwork,x                               ;; bc19 309
-                 sta vwork+2,x                            ; move length to y-parameter ;; bc1c 309
-                 lda vwork+1,x                             ;; bc1f 309
-                 sta vwork+3,x                             ;; bc22 309
-; jsr scalxy       ;scale the values ;; bc25 309
-                 lda #$0e                                  ;; bc25 309
-                 sta vtemp5                                ;; bc27 309
-                 clc                                       ;; bc2a 309
-                 ldx vtemp4                                ;; bc2b 309
- ;; bc2e 309
-_local_1308_10   jsr angmlt                               ; multiply length * angle ;; bc2e 309
-                 sta vwork,x                              ; save angle result ;; bc31 309
-                 tya                                       ;; bc34 309
-                 sta vwork+1,x                             ;; bc35 309
-                 ldy #xpos-vwork                           ;; bc38 309
-                 lsr vtemp5                                ;; bc3a 309
-                 bcc _local_1308_20                        ;; bc3d 309
-                 ldy #ypos-vwork                           ;; bc3f 309
- ;; bc41 309
-_local_1308_20   jsr dotwo                                ; add/subtract value to current position ;; bc41 309
-                 sta vwork,x                               ;; bc44 309
-                 tya                                      ; save result in destination ;; bc47 309
-                 sta vwork+1,x                             ;; bc48 309
-                 inx                                       ;; bc4b 309
-                 inx                                       ;; bc4c 309
-                 lsr vtemp5                                ;; bc4d 309
-                 bne _local_1308_10                       ; do y-coordinate ;; bc50 309
-                 clc                                       ;; bc52 309
-                 rts                                       ;; bc53 309
- ;; bc54 309
-; .page ;; bc54 309
+incord                                                     ;; @@bbf6 309
+                 stx vtemp4                               ; save offset to destination ;; @@bbf6 309
+                 jsr cordsb                               ; get 2-byte x-parameter ;; @@bbf9 309
+                 jsr chrgot                                ;; @@bbfc 309
+                 cmp #','                                  ;; @@bbff 309
+                 beq docord                               ; skip ahead if have comma ;; @@bc01 309
+ ;; @@bc03 309
+                 cmp #';'                                 ; check for semi-colon ;; @@bc03 309
+                 bne snerr                                ; missing angle param- show syntax message ;; @@bc05 309
+                 jsr chrget       ;skip over '            ; ' ;; @@bc08 309
+                 jsr getwrd                               ; get 2-byte angle in a,y ;; @@bc0b 309
+                 sta z_p_temp_1                           ; swap a,y ;; @@bc0e 309
+                 tya                                       ;; @@bc10 309
+                 ldy z_p_temp_1                            ;; @@bc11 309
+                 jsr gtang1                               ; get sine & cosine values for the angle ;; @@bc13 309
+                 ldx vtemp4                                ;; @@bc16 309
+                 lda vwork,x                               ;; @@bc19 309
+                 sta vwork+2,x                            ; move length to y-parameter ;; @@bc1c 309
+                 lda vwork+1,x                             ;; @@bc1f 309
+                 sta vwork+3,x                             ;; @@bc22 309
+; jsr scalxy       ;scale the values ;; @@bc25 309
+                 lda #$0e                                  ;; @@bc25 309
+                 sta vtemp5                                ;; @@bc27 309
+                 clc                                       ;; @@bc2a 309
+                 ldx vtemp4                                ;; @@bc2b 309
+ ;; @@bc2e 309
+_local_1308_10   jsr angmlt                               ; multiply length * angle ;; @@bc2e 309
+                 sta vwork,x                              ; save angle result ;; @@bc31 309
+                 tya                                       ;; @@bc34 309
+                 sta vwork+1,x                             ;; @@bc35 309
+                 ldy #xpos-vwork                           ;; @@bc38 309
+                 lsr vtemp5                                ;; @@bc3a 309
+                 bcc _local_1308_20                        ;; @@bc3d 309
+                 ldy #ypos-vwork                           ;; @@bc3f 309
+ ;; @@bc41 309
+_local_1308_20   jsr dotwo                                ; add/subtract value to current position ;; @@bc41 309
+                 sta vwork,x                               ;; @@bc44 309
+                 tya                                      ; save result in destination ;; @@bc47 309
+                 sta vwork+1,x                             ;; @@bc48 309
+                 inx                                       ;; @@bc4b 309
+                 inx                                       ;; @@bc4c 309
+                 lsr vtemp5                                ;; @@bc4d 309
+                 bne _local_1308_10                       ; do y-coordinate ;; @@bc50 309
+                 clc                                       ;; @@bc52 309
+                 rts                                       ;; @@bc53 309
+ ;; @@bc54 309
+; .page ;; @@bc54 309

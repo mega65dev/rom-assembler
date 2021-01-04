@@ -1,35 +1,35 @@
-drv1             lda #$10                                  ;; 74e0 235
-                 jsr prmrpt                               ; check for repeated parameter ;; 74e2 235
-                 jsr gtbytc                               ; getval ;; 74e5 235
-                 cpx #10                                   ;; 74e8 235
-                 bcs fcerr                                ; illegal drv# if >9 [allow 0: to 9: ?????] ;; 74ea 235
-                 stx dosds1                                ;; 74ed 235
-                 stx dosds2                                ;; 74f0 235
-                 lda #$10                                  ;; 74f3 235
-                 bra del1                                  ;; 74f5 235
- ;; 74f8 235
- ;; 74f8 235
-ident            lda #$80                                 ; set ID flag ;; 74f8 235
-                 tsb dosflags                              ;; 74fa 235
-                 bne snerr                                ; repeated parameter ;; 74fd 235
-                 jsr chrget                               ; get next character ;; 7500 235
-                 cmp #'('                                 ; c65: allow I(ID$) syntax  [900710] ;; 7503 235
-                 bne _local_1234_10                        ;; 7505 235
-                 jsr frmstr                               ; get ID from var ;; 7507 235
-                 cmp #2                                    ;; 750a 235
-                 bcc err_mfn                              ; if length < 2, error ;; 750c 235
-                 ldy #0                                    ;; 750f 235
-                 jsr indin1_ram1                          ; else grab first two characters ;; 7511 235
-                 sta dosdid                                ;; 7514 235
-                 iny                                       ;; 7517 235
-                 jsr indin1_ram1                           ;; 7518 235
-                 sta dosdid+1                              ;; 751b 235
-                 bra delim1                               ; continue ;; 751e 235
- ;; 7520 235
-_local_1234_10   sta dosdid                               ; m(txtptr => dosdid ;; 7520 235
-                 jsr chrget                                ;; 7523 235
-                 sta dosdid+1                              ;; 7526 235
-                 jsr chrget                               ; continue ;; 7529 235
-                 bra delim2                                ;; 752c 235
- ;; 752e 235
- ;; 752e 235
+drv1             lda #$10                                  ;; @@74e0 235
+                 jsr prmrpt                               ; check for repeated parameter ;; @@74e2 235
+                 jsr gtbytc                               ; getval ;; @@74e5 235
+                 cpx #10                                   ;; @@74e8 235
+                 bcs fcerr                                ; illegal drv# if >9 [allow 0: to 9: ?????] ;; @@74ea 235
+                 stx dosds1                                ;; @@74ed 235
+                 stx dosds2                                ;; @@74f0 235
+                 lda #$10                                  ;; @@74f3 235
+                 bra del1                                  ;; @@74f5 235
+ ;; @@74f8 235
+ ;; @@74f8 235
+ident            lda #$80                                 ; set ID flag ;; @@74f8 235
+                 tsb dosflags                              ;; @@74fa 235
+                 bne snerr                                ; repeated parameter ;; @@74fd 235
+                 jsr chrget                               ; get next character ;; @@7500 235
+                 cmp #'('                                 ; c65: allow I(ID$) syntax  [900710] ;; @@7503 235
+                 bne _local_1234_10                        ;; @@7505 235
+                 jsr frmstr                               ; get ID from var ;; @@7507 235
+                 cmp #2                                    ;; @@750a 235
+                 bcc err_mfn                              ; if length < 2, error ;; @@750c 235
+                 ldy #0                                    ;; @@750f 235
+                 jsr indin1_ram1                          ; else grab first two characters ;; @@7511 235
+                 sta dosdid                                ;; @@7514 235
+                 iny                                       ;; @@7517 235
+                 jsr indin1_ram1                           ;; @@7518 235
+                 sta dosdid+1                              ;; @@751b 235
+                 bra delim1                               ; continue ;; @@751e 235
+ ;; @@7520 235
+_local_1234_10   sta dosdid                               ; m(txtptr => dosdid ;; @@7520 235
+                 jsr chrget                                ;; @@7523 235
+                 sta dosdid+1                              ;; @@7526 235
+                 jsr chrget                               ; continue ;; @@7529 235
+                 bra delim2                                ;; @@752c 235
+ ;; @@752e 235
+ ;; @@752e 235

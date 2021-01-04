@@ -1,18 +1,18 @@
-pndd             lda swe                                  ; # of blanks ;; 6d7a 211
-                 beq zerot                                 ;; 6d7d 211
-                 dec swe                                  ; count ! ;; 6d7f 211
- ;; 6d82 211
-_local_1210_5    bne bout                                 ; out blank or * ;; 6d82 211
-                 lda posp                                 ; + or - in field? ;; 6d85 211
-                 bmi _local_1210_5                        ; yes...out blank or * ;; 6d88 211
- ;; 6d8a 211
-_local_1210_10   jsr indfrm                                ;; 6d8a 211
-                 cmp #','                                 ; comma? ;; 6d8d 211
-                 bne ispl1                                ; no...out sign ;; 6d8f 211
-                 lda blfd                                 ; yes... ;; 6d91 211
-                 jsr cdout                                ; out blank or * ;; 6d94 211
-                 iny                                       ;; 6d97 211
-                 bra _local_1210_10                        ;; 6d98 211
- ;; 6d9a 211
- ;; 6d9a 211
- ;; 6d9a 211
+pndd             lda swe                                  ; # of blanks ;; @@6d7a 211
+                 beq zerot                                 ;; @@6d7d 211
+                 dec swe                                  ; count ! ;; @@6d7f 211
+ ;; @@6d82 211
+_local_1210_5    bne bout                                 ; out blank or * ;; @@6d82 211
+                 lda posp                                 ; + or - in field? ;; @@6d85 211
+                 bmi _local_1210_5                        ; yes...out blank or * ;; @@6d88 211
+ ;; @@6d8a 211
+_local_1210_10   jsr indfrm                                ;; @@6d8a 211
+                 cmp #','                                 ; comma? ;; @@6d8d 211
+                 bne ispl1                                ; no...out sign ;; @@6d8f 211
+                 lda blfd                                 ; yes... ;; @@6d91 211
+                 jsr cdout                                ; out blank or * ;; @@6d94 211
+                 iny                                       ;; @@6d97 211
+                 bra _local_1210_10                        ;; @@6d98 211
+ ;; @@6d9a 211
+ ;; @@6d9a 211
+ ;; @@6d9a 211

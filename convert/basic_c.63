@@ -1,52 +1,52 @@
-dim3             jsr chkcom                               ; must be a comma ;; 3af1 63
- ;; 3af4 63
-dim              tax                                      ; make .x non-zero (.a must be non-zero to work correctly) ;; 3af4 63
-                 jsr ptrgt1                                ;; 3af5 63
-                 jsr chrgot                               ; get last character ;; 3af8 63
-                 bne dim3                                  ;; 3afb 63
-                 rts                                       ;; 3afd 63
- ;; 3afe 63
-;.end ;; 3afe 63
-; .page ;; 3afe 63
-; .subttl SYS ;; 3afe 63
- ;; 3afe 63
-sys              jsr getwrd                               ; convert arg to integer value ;; 3afe 63
-                 lda linnum                               ; set up arg's for call to 'long jsr' ;; 3b01 63
-                 sta _pclo                                 ;; 3b03 63
-                 lda linnum+1                              ;; 3b05 63
-                 sta _pchi                                 ;; 3b07 63
-                 lda current_bank                          ;; 3b09 63
-                 sta _bank                                 ;; 3b0c 63
- ;; 3b0e 63
-                 jsr optbyt                               ; (optional) .A reg arg ;; 3b0e 63
-                 bcc _local_1062_10                        ;; 3b11 63
-                 stx _a_reg                                ;; 3b13 63
- ;; 3b15 63
-_local_1062_10   jsr optbyt                               ; (optional) .X reg arg ;; 3b15 63
-                 bcc _local_1062_20                        ;; 3b18 63
-                 stx _x_reg                                ;; 3b1a 63
- ;; 3b1c 63
-_local_1062_20   jsr optbyt                               ; (optional) .Y reg arg ;; 3b1c 63
-                 bcc _local_1062_30                        ;; 3b1f 63
-                 stx _y_reg                                ;; 3b21 63
- ;; 3b23 63
-_local_1062_25   jsr optbyt                               ; (optional) .Z reg arg ;; 3b23 63
-                 bcc _local_1062_30                        ;; 3b26 63
-                 stx _z_reg                                ;; 3b28 63
- ;; 3b2a 63
-_local_1062_30   jsr optbyt                               ; (optional) .S reg arg ;; 3b2a 63
-                 bcc _local_1062_40                        ;; 3b2d 63
-                 stx _s_reg                                ;; 3b2f 63
- ;; 3b31 63
-_local_1062_40   jmp _jsr_far                             ; far, far away ;; 3b31 63
-;If returns, Kernel will update _reg's for us ;; 3b34 63
- ;; 3b34 63
-;.end ;; 3b34 63
-; .page ;; 3b34 63
-; .subttl DMA ;; 3b34 63
- ;; 3b34 63
-; DMA - Set up for DMA operation (FETCH/STASH/SWAP) ;; 3b34 63
-; ;; 3b34 63
-;  Syntax:  DMA  command,length,source(l/h/b),destination(l/h/b)[,subcmd,mod(l/h)] [,...] ;; 3b34 63
- ;; 3b34 63
- ;; 3b34 63
+dim3             jsr chkcom                               ; must be a comma ;; @@3af1 63
+ ;; @@3af4 63
+dim              tax                                      ; make .x non-zero (.a must be non-zero to work correctly) ;; @@3af4 63
+                 jsr ptrgt1                                ;; @@3af5 63
+                 jsr chrgot                               ; get last character ;; @@3af8 63
+                 bne dim3                                  ;; @@3afb 63
+                 rts                                       ;; @@3afd 63
+ ;; @@3afe 63
+;.end ;; @@3afe 63
+; .page ;; @@3afe 63
+; .subttl SYS ;; @@3afe 63
+ ;; @@3afe 63
+sys              jsr getwrd                               ; convert arg to integer value ;; @@3afe 63
+                 lda linnum                               ; set up arg's for call to 'long jsr' ;; @@3b01 63
+                 sta _pclo                                 ;; @@3b03 63
+                 lda linnum+1                              ;; @@3b05 63
+                 sta _pchi                                 ;; @@3b07 63
+                 lda current_bank                          ;; @@3b09 63
+                 sta _bank                                 ;; @@3b0c 63
+ ;; @@3b0e 63
+                 jsr optbyt                               ; (optional) .A reg arg ;; @@3b0e 63
+                 bcc _local_1062_10                        ;; @@3b11 63
+                 stx _a_reg                                ;; @@3b13 63
+ ;; @@3b15 63
+_local_1062_10   jsr optbyt                               ; (optional) .X reg arg ;; @@3b15 63
+                 bcc _local_1062_20                        ;; @@3b18 63
+                 stx _x_reg                                ;; @@3b1a 63
+ ;; @@3b1c 63
+_local_1062_20   jsr optbyt                               ; (optional) .Y reg arg ;; @@3b1c 63
+                 bcc _local_1062_30                        ;; @@3b1f 63
+                 stx _y_reg                                ;; @@3b21 63
+ ;; @@3b23 63
+_local_1062_25   jsr optbyt                               ; (optional) .Z reg arg ;; @@3b23 63
+                 bcc _local_1062_30                        ;; @@3b26 63
+                 stx _z_reg                                ;; @@3b28 63
+ ;; @@3b2a 63
+_local_1062_30   jsr optbyt                               ; (optional) .S reg arg ;; @@3b2a 63
+                 bcc _local_1062_40                        ;; @@3b2d 63
+                 stx _s_reg                                ;; @@3b2f 63
+ ;; @@3b31 63
+_local_1062_40   jmp _jsr_far                             ; far, far away ;; @@3b31 63
+;If returns, Kernel will update _reg's for us ;; @@3b34 63
+ ;; @@3b34 63
+;.end ;; @@3b34 63
+; .page ;; @@3b34 63
+; .subttl DMA ;; @@3b34 63
+ ;; @@3b34 63
+; DMA - Set up for DMA operation (FETCH/STASH/SWAP) ;; @@3b34 63
+; ;; @@3b34 63
+;  Syntax:  DMA  command,length,source(l/h/b),destination(l/h/b)[,subcmd,mod(l/h)] [,...] ;; @@3b34 63
+ ;; @@3b34 63
+ ;; @@3b34 63

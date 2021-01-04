@@ -1,66 +1,66 @@
-fout19           sta fbuffr-1,y                           ; store the character ;; 65af 183
-fout17           lda #0                                   ; store the terminator ;; 65b2 183
-                 sta fbuffr,y                              ;; 65b4 183
- ;; 65b7 183
-fout20           lda #<fbuffr                              ;; 65b7 183
-                 ldy #>fbuffr                              ;; 65b9 183
-                 rts                                      ; all done ;; 65bb 183
- ;; 65bc 183
-; .page ;; 65bc 183
-; Exponentiation and Square Root Functions. ;; 65bc 183
-; ;; 65bc 183
-; square root function - sqr(a) ;; 65bc 183
-; use sqr(x) = x^.5 ;; 65bc 183
- ;; 65bc 183
-sqr              jsr movaf                                ; move FAC into ARG ;; 65bc 183
-                 lda #<fhalf                               ;; 65bf 183
-                 ldy #>fhalf                               ;; 65c1 183
- ;; 65c3 183
-fpwr             jsr movfm                                ; put memory into FAC    ARG^MEM ;; 65c3 183
- ;; 65c6 183
- ;; 65c6 183
-; Last thing fetched is facexp into accx. ;; 65c6 183
-; ;; 65c6 183
-; Exponentiation --- x^y. ;; 65c6 183
-; n.b. 0^0=1 ;; 65c6 183
-; First check if y=0, and if so the result is one. ;; 65c6 183
-; Next  check if x=0, and if so the result is zero. ;; 65c6 183
-; Then  check if x>0: ;; 65c6 183
-; if not check that y is an integer. ;; 65c6 183
-; if so negate x, so that lg doesn't give fcerr. ;; 65c6 183
-; If x is negative and y is odd, negate the result returned by exp. ;; 65c6 183
-; To compute the result use x^y = EXP((y*LOG(x)) ;; 65c6 183
- ;; 65c6 183
- ;; 65c6 183
-fpwrt            beq exp                                  ; if FAC=0, just exponentiate that  ARG^FAC ;; 65c6 183
-                 lda argexp                               ; is x=0? ;; 65c8 183
-                 beq zerof1                               ; zero FAC ;; 65ca 183
- ;; 65cd 183
-                 ldx #<tempf3                             ; save it for later in a temp ;; 65cd 183
-                 ldy #>tempf3                              ;; 65cf 183
-                 jsr movmf                                ; FAC->MEM ;; 65d1 183
- ;; 65d4 183
-                 lda argsgn                               ; note y=0 already. that's good, in case no one calls int. ;; 65d4 183
-                 bpl _local_1182_10                       ; no problems if x>0 ;; 65d6 183
-                 jsr int                                  ; integerize the FAC ;; 65d8 183
-                 lda #<tempf3                             ; get addr of comperand ;; 65db 183
-                 ldy #>tempf3                              ;; 65dd 183
-                 jsr fcomp                                ; equal? ;; 65df 183
-                 bne _local_1182_10                       ; leave x neg. log will blow him out ;; 65e2 183
-;a=-1 and y is irrelavant ;; 65e4 183
-                 tya                                      ; negative x. make positive ;; 65e4 183
-                 ldy integr                               ; get evenness ;; 65e5 183
- ;; 65e7 183
-_local_1182_10   jsr movfa1                               ; alternate entry point.    ARG->FAC ;; 65e7 183
-                 phy                                      ; save evenness for later ;; 65ea 183
-                 jsr log                                  ; find log ;; 65eb 183
-                 lda #<tempf3                             ; multiply FAC times LOG(x) ;; 65ee 183
-                 ldy #>tempf3                              ;; 65f0 183
-                 jsr fmult                                 ;; 65f2 183
-                 jsr exp                                  ; exponentiate the FAC ;; 65f5 183
-                 pla                                       ;; 65f8 183
-                 lsr a                                    ; is it even? ;; 65f9 183
-                 bcc negrts                               ; yes. or x>0 ;; 65fa 183
-;negate the number in FAC ;; 65fc 183
- ;; 65fc 183
- ;; 65fc 183
+fout19           sta fbuffr-1,y                           ; store the character ;; @@65af 183
+fout17           lda #0                                   ; store the terminator ;; @@65b2 183
+                 sta fbuffr,y                              ;; @@65b4 183
+ ;; @@65b7 183
+fout20           lda #<fbuffr                              ;; @@65b7 183
+                 ldy #>fbuffr                              ;; @@65b9 183
+                 rts                                      ; all done ;; @@65bb 183
+ ;; @@65bc 183
+; .page ;; @@65bc 183
+; Exponentiation and Square Root Functions. ;; @@65bc 183
+; ;; @@65bc 183
+; square root function - sqr(a) ;; @@65bc 183
+; use sqr(x) = x^.5 ;; @@65bc 183
+ ;; @@65bc 183
+sqr              jsr movaf                                ; move FAC into ARG ;; @@65bc 183
+                 lda #<fhalf                               ;; @@65bf 183
+                 ldy #>fhalf                               ;; @@65c1 183
+ ;; @@65c3 183
+fpwr             jsr movfm                                ; put memory into FAC    ARG^MEM ;; @@65c3 183
+ ;; @@65c6 183
+ ;; @@65c6 183
+; Last thing fetched is facexp into accx. ;; @@65c6 183
+; ;; @@65c6 183
+; Exponentiation --- x^y. ;; @@65c6 183
+; n.b. 0^0=1 ;; @@65c6 183
+; First check if y=0, and if so the result is one. ;; @@65c6 183
+; Next  check if x=0, and if so the result is zero. ;; @@65c6 183
+; Then  check if x>0: ;; @@65c6 183
+; if not check that y is an integer. ;; @@65c6 183
+; if so negate x, so that lg doesn't give fcerr. ;; @@65c6 183
+; If x is negative and y is odd, negate the result returned by exp. ;; @@65c6 183
+; To compute the result use x^y = EXP((y*LOG(x)) ;; @@65c6 183
+ ;; @@65c6 183
+ ;; @@65c6 183
+fpwrt            beq exp                                  ; if FAC=0, just exponentiate that  ARG^FAC ;; @@65c6 183
+                 lda argexp                               ; is x=0? ;; @@65c8 183
+                 beq zerof1                               ; zero FAC ;; @@65ca 183
+ ;; @@65cd 183
+                 ldx #<tempf3                             ; save it for later in a temp ;; @@65cd 183
+                 ldy #>tempf3                              ;; @@65cf 183
+                 jsr movmf                                ; FAC->MEM ;; @@65d1 183
+ ;; @@65d4 183
+                 lda argsgn                               ; note y=0 already. that's good, in case no one calls int. ;; @@65d4 183
+                 bpl _local_1182_10                       ; no problems if x>0 ;; @@65d6 183
+                 jsr int                                  ; integerize the FAC ;; @@65d8 183
+                 lda #<tempf3                             ; get addr of comperand ;; @@65db 183
+                 ldy #>tempf3                              ;; @@65dd 183
+                 jsr fcomp                                ; equal? ;; @@65df 183
+                 bne _local_1182_10                       ; leave x neg. log will blow him out ;; @@65e2 183
+;a=-1 and y is irrelavant ;; @@65e4 183
+                 tya                                      ; negative x. make positive ;; @@65e4 183
+                 ldy integr                               ; get evenness ;; @@65e5 183
+ ;; @@65e7 183
+_local_1182_10   jsr movfa1                               ; alternate entry point.    ARG->FAC ;; @@65e7 183
+                 phy                                      ; save evenness for later ;; @@65ea 183
+                 jsr log                                  ; find log ;; @@65eb 183
+                 lda #<tempf3                             ; multiply FAC times LOG(x) ;; @@65ee 183
+                 ldy #>tempf3                              ;; @@65f0 183
+                 jsr fmult                                 ;; @@65f2 183
+                 jsr exp                                  ; exponentiate the FAC ;; @@65f5 183
+                 pla                                       ;; @@65f8 183
+                 lsr a                                    ; is it even? ;; @@65f9 183
+                 bcc negrts                               ; yes. or x>0 ;; @@65fa 183
+;negate the number in FAC ;; @@65fc 183
+ ;; @@65fc 183
+ ;; @@65fc 183

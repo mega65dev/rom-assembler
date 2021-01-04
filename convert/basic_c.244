@@ -1,116 +1,116 @@
-rdrt0            dex                                      ; case cdd=sd ;; 77d8 244
-rdrt1            bra sdp1                                 ; get next symbol ;; 77d9 244
- ;; 77dc 244
-; .page ;; 77dc 244
-; Syntax checker DOS write ;; 77dc 244
- ;; 77dc 244
-chk1             and #$e6                                 ; for HEADER, DLOAD, SCRATCH, TYPE, LIST ;; 77dc 244
-                 bne snerr                                 ;; 77de 244
- ;; 77e1 244
-chk2             lda parsts                               ; for DSAVE ;; 77e1 244
-                 and #1                                    ;; 77e3 244
-                 cmp #1                                   ; check required parameters ;; 77e5 244
-                 bne snerr                                ; error if 1 missing ;; 77e7 244
-                 lda parsts                               ; reload for return ;; 77ea 244
-                 rts                                       ;; 77ec 244
- ;; 77ed 244
- ;; 77ed 244
-chk3             and #$e7                                 ; for COLLECT ;; 77ed 244
-                 bne snerr                                ; check optional parameters ;; 77ef 244
-                 rts                                       ;; 77f2 244
- ;; 77f3 244
- ;; 77f3 244
-chk4             and #$c4                                 ; for COPY, CONCAT ;; 77f3 244
-                 bne snerr                                ; check optional parameters ;; 77f5 244
-                 lda parsts                                ;; 77f8 244
-chk5             and #3                                   ; for RENAME ;; 77fa 244
-                 cmp #3                                   ; check required parameters ;; 77fc 244
-                 bne snerr                                 ;; 77fe 244
-                 lda parsts                               ; reload for return ;; 7801 244
-                 rts                                       ;; 7803 244
- ;; 7804 244
- ;; 7804 244
-chk6             and #5                                   ; for APPEND, DOPEN ;; 7804 244
-                 cmp #5                                   ; check required parameters ;; 7806 244
-                 bne snerr                                 ;; 7808 244
-                 lda parsts                               ; reload for rts ;; 780b 244
-                 rts                                       ;; 780d 244
- ;; 780e 244
-;.end ;; 780e 244
-; .page ;; 780e 244
-; .subttl  DOS 4 ;; 780e 244
- ;; 780e 244
-; Allocate DS$ if nesessary, but use old DS$ string otherwise ;; 780e 244
-; Called by DS$ and DS ;; 780e 244
- ;; 780e 244
-Check_DS                                                  ; chkds. ;; 780e 244
-                 lda dsdesc                                ;; 780e 244
-                 beq Read_DS_1                            ; branch if DS$ is not in memory ;; 7810 244
-                 rts                                      ; else return & use old one ;; 7812 244
- ;; 7813 244
- ;; 7813 244
-; Allocate DS$ if necessary & Read DOS error channel ;; 7813 244
- ;; 7813 244
-Read_DS                                                   ; errchl. ;; 7813 244
-                 lda dsdesc                               ; has DS$ space been allocated? ;; 7813 244
-                 bne Read_DS_2                            ; yes ;; 7815 244
- ;; 7817 244
-Read_DS_1                                                  ;; 7817 244
-                 lda #40                                  ; no- get 40 char string ;; 7817 244
-                 sta dsdesc                                ;; 7819 244
-                 jsr getspa                               ; allocate space for DS$ ;; 781b 244
-                 stx dsdesc+1                             ; low address of string ;; 781e 244
-                 sty dsdesc+2                             ; high   "    "    " ;; 7820 244
-                 ldx #dsdesc+1                            ; set up string back pointer to dsdesc ;; 7822 244
-                 ldy #40                                   ;; 7824 244
-                 lda #<dsdesc                              ;; 7826 244
-                 jsr sta_far_ram1                         ; sta (dsdesc+1),y ;; 7828 244
-                 iny                                       ;; 782b 244
-                 lda #>dsdesc                              ;; 782c 244
-                 jsr sta_far_ram1                         ; sta (dsdesc+1),y ;; 782e 244
- ;; 7831 244
-Read_DS_2                                                  ;; 7831 244
-                 ldx dosfa                                ; fa ;; 7831 244
-                 cpx #2                                    ;; 7834 244
-                 bcs _local_1243_10                       ; if =0 or 1 use default  [910429] ;; 7836 244
-                 ldx _default_drive                       ; (was dosffn)   [900710] ;; 7838 244
-                 stx dosfa                                 ;; 783b 244
-_local_1243_10   lda #doslfn                              ; la (reserved la) ;; 783e 244
-                 ldy #$6f                                 ; sa (command channel) ;; 7840 244
-                 jsr _setlfs                               ;; 7842 244
-                 lda #0                                   ; no name (so no setbank) ;; 7845 244
-                 jsr _setnam                               ;; 7847 244
-                 jsr _open                                ; get command channel ;; 784a 244
-                 ldx #doslfn                               ;; 784d 244
-                 jsr _chkin                                ;; 784f 244
-                 bcs _local_1243_40                       ; a problem (file already open??) ;; 7852 244
- ;; 7854 244
-                 ldy #$ff                                  ;; 7854 244
-_local_1243_20   iny                                      ; read disk error message ;; 7856 244
-                 jsr _basin                                ;; 7857 244
-                 cmp #cr                                   ;; 785a 244
-                 beq _local_1243_30                       ; if eol ;; 785c 244
-                 ldx #dsdesc+1                             ;; 785e 244
-                 jsr sta_far_ram1                         ; sta (dsdesc+1),y copy to DS$ ;; 7860 244
-                 cpy #40                                   ;; 7863 244
-                 bcc _local_1243_20                       ; loop unless too long ;; 7865 244
- ;; 7867 244
-_local_1243_30   lda #0                                   ; errend. ;; 7867 244
-                 ldx #dsdesc+1                            ; terminate DS$ with a null ;; 7869 244
-                 jsr sta_far_ram1                         ; sta (dsdesc+1),y ;; 786b 244
- ;; 786e 244
-                 jsr _clrch                               ; shut down command channel ;; 786e 244
-                 lda #doslfn                               ;; 7871 244
-                 sec                                      ; not a real close ;; 7873 244
-                 jmp _close                               ; close it and rts ;; 7874 244
- ;; 7877 244
-_local_1243_40   pha                                      ; errbad. ;; 7877 244
-                 jsr _local_1243_30                        ;; 7878 244
-                 jsr Clear_DS                             ; flag 'no DS available' ;; 787b 244
-                 plx                                      ; get error ;; 787e 244
-                 bra error                                 ;; 787f 244
- ;; 7882 244
-; .page ;; 7882 244
-; Clear_DS subroutine - forget current DS$ message, if any ;; 7882 244
-; ;; 7882 244
- ;; 7882 244
+rdrt0            dex                                      ; case cdd=sd ;; @@77d8 244
+rdrt1            bra sdp1                                 ; get next symbol ;; @@77d9 244
+ ;; @@77dc 244
+; .page ;; @@77dc 244
+; Syntax checker DOS write ;; @@77dc 244
+ ;; @@77dc 244
+chk1             and #$e6                                 ; for HEADER, DLOAD, SCRATCH, TYPE, LIST ;; @@77dc 244
+                 bne snerr                                 ;; @@77de 244
+ ;; @@77e1 244
+chk2             lda parsts                               ; for DSAVE ;; @@77e1 244
+                 and #1                                    ;; @@77e3 244
+                 cmp #1                                   ; check required parameters ;; @@77e5 244
+                 bne snerr                                ; error if 1 missing ;; @@77e7 244
+                 lda parsts                               ; reload for return ;; @@77ea 244
+                 rts                                       ;; @@77ec 244
+ ;; @@77ed 244
+ ;; @@77ed 244
+chk3             and #$e7                                 ; for COLLECT ;; @@77ed 244
+                 bne snerr                                ; check optional parameters ;; @@77ef 244
+                 rts                                       ;; @@77f2 244
+ ;; @@77f3 244
+ ;; @@77f3 244
+chk4             and #$c4                                 ; for COPY, CONCAT ;; @@77f3 244
+                 bne snerr                                ; check optional parameters ;; @@77f5 244
+                 lda parsts                                ;; @@77f8 244
+chk5             and #3                                   ; for RENAME ;; @@77fa 244
+                 cmp #3                                   ; check required parameters ;; @@77fc 244
+                 bne snerr                                 ;; @@77fe 244
+                 lda parsts                               ; reload for return ;; @@7801 244
+                 rts                                       ;; @@7803 244
+ ;; @@7804 244
+ ;; @@7804 244
+chk6             and #5                                   ; for APPEND, DOPEN ;; @@7804 244
+                 cmp #5                                   ; check required parameters ;; @@7806 244
+                 bne snerr                                 ;; @@7808 244
+                 lda parsts                               ; reload for rts ;; @@780b 244
+                 rts                                       ;; @@780d 244
+ ;; @@780e 244
+;.end ;; @@780e 244
+; .page ;; @@780e 244
+; .subttl  DOS 4 ;; @@780e 244
+ ;; @@780e 244
+; Allocate DS$ if nesessary, but use old DS$ string otherwise ;; @@780e 244
+; Called by DS$ and DS ;; @@780e 244
+ ;; @@780e 244
+Check_DS                                                  ; chkds. ;; @@780e 244
+                 lda dsdesc                                ;; @@780e 244
+                 beq Read_DS_1                            ; branch if DS$ is not in memory ;; @@7810 244
+                 rts                                      ; else return & use old one ;; @@7812 244
+ ;; @@7813 244
+ ;; @@7813 244
+; Allocate DS$ if necessary & Read DOS error channel ;; @@7813 244
+ ;; @@7813 244
+Read_DS                                                   ; errchl. ;; @@7813 244
+                 lda dsdesc                               ; has DS$ space been allocated? ;; @@7813 244
+                 bne Read_DS_2                            ; yes ;; @@7815 244
+ ;; @@7817 244
+Read_DS_1                                                  ;; @@7817 244
+                 lda #40                                  ; no- get 40 char string ;; @@7817 244
+                 sta dsdesc                                ;; @@7819 244
+                 jsr getspa                               ; allocate space for DS$ ;; @@781b 244
+                 stx dsdesc+1                             ; low address of string ;; @@781e 244
+                 sty dsdesc+2                             ; high   "    "    " ;; @@7820 244
+                 ldx #dsdesc+1                            ; set up string back pointer to dsdesc ;; @@7822 244
+                 ldy #40                                   ;; @@7824 244
+                 lda #<dsdesc                              ;; @@7826 244
+                 jsr sta_far_ram1                         ; sta (dsdesc+1),y ;; @@7828 244
+                 iny                                       ;; @@782b 244
+                 lda #>dsdesc                              ;; @@782c 244
+                 jsr sta_far_ram1                         ; sta (dsdesc+1),y ;; @@782e 244
+ ;; @@7831 244
+Read_DS_2                                                  ;; @@7831 244
+                 ldx dosfa                                ; fa ;; @@7831 244
+                 cpx #2                                    ;; @@7834 244
+                 bcs _local_1243_10                       ; if =0 or 1 use default  [910429] ;; @@7836 244
+                 ldx _default_drive                       ; (was dosffn)   [900710] ;; @@7838 244
+                 stx dosfa                                 ;; @@783b 244
+_local_1243_10   lda #doslfn                              ; la (reserved la) ;; @@783e 244
+                 ldy #$6f                                 ; sa (command channel) ;; @@7840 244
+                 jsr _setlfs                               ;; @@7842 244
+                 lda #0                                   ; no name (so no setbank) ;; @@7845 244
+                 jsr _setnam                               ;; @@7847 244
+                 jsr _open                                ; get command channel ;; @@784a 244
+                 ldx #doslfn                               ;; @@784d 244
+                 jsr _chkin                                ;; @@784f 244
+                 bcs _local_1243_40                       ; a problem (file already open??) ;; @@7852 244
+ ;; @@7854 244
+                 ldy #$ff                                  ;; @@7854 244
+_local_1243_20   iny                                      ; read disk error message ;; @@7856 244
+                 jsr _basin                                ;; @@7857 244
+                 cmp #cr                                   ;; @@785a 244
+                 beq _local_1243_30                       ; if eol ;; @@785c 244
+                 ldx #dsdesc+1                             ;; @@785e 244
+                 jsr sta_far_ram1                         ; sta (dsdesc+1),y copy to DS$ ;; @@7860 244
+                 cpy #40                                   ;; @@7863 244
+                 bcc _local_1243_20                       ; loop unless too long ;; @@7865 244
+ ;; @@7867 244
+_local_1243_30   lda #0                                   ; errend. ;; @@7867 244
+                 ldx #dsdesc+1                            ; terminate DS$ with a null ;; @@7869 244
+                 jsr sta_far_ram1                         ; sta (dsdesc+1),y ;; @@786b 244
+ ;; @@786e 244
+                 jsr _clrch                               ; shut down command channel ;; @@786e 244
+                 lda #doslfn                               ;; @@7871 244
+                 sec                                      ; not a real close ;; @@7873 244
+                 jmp _close                               ; close it and rts ;; @@7874 244
+ ;; @@7877 244
+_local_1243_40   pha                                      ; errbad. ;; @@7877 244
+                 jsr _local_1243_30                        ;; @@7878 244
+                 jsr Clear_DS                             ; flag 'no DS available' ;; @@787b 244
+                 plx                                      ; get error ;; @@787e 244
+                 bra error                                 ;; @@787f 244
+ ;; @@7882 244
+; .page ;; @@7882 244
+; Clear_DS subroutine - forget current DS$ message, if any ;; @@7882 244
+; ;; @@7882 244
+ ;; @@7882 244

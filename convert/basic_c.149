@@ -1,37 +1,37 @@
-rwindow          jsr chkcls                                ;; 57fa 149
-                 jsr conint                                ;; 57fd 149
-                 cpx #2                                    ;; 5800 149
-                 beq _local_1148_50                       ; return current console ;; 5802 149
-                 bcs fcerr                                 ;; 5804 149
- ;; 5807 149
-                 cpx #0                                    ;; 5807 149
-                 bne _local_1148_10                        ;; 5809 149
- ;; 580b 149
-                 lda _screen_bottom                        ;; 580b 149
-                 sec                                       ;; 580d 149
-                 sbc _screen_top                           ;; 580e 149
-                 bra _local_1148_60                       ; always ;; 5810 149
- ;; 5812 149
-_local_1148_10   lda _screen_right                         ;; 5812 149
-                 sec                                       ;; 5814 149
-                 sbc _screen_left                          ;; 5815 149
-                 bra _local_1148_60                       ; always ;; 5817 149
- ;; 5819 149
- ;; 5819 149
-_local_1148_50   lda #80                                  ; assume 80 col ;; 5819 149
-                 bbr7 _mode,_local_1148_60                 ;; 581b 149
-                 lsr a                                     ;; 581e 149
-_local_1148_60   tay                                       ;; 581f 149
-                 bra sngflt                               ; float 1 byte arg in .Y ;; 5820 149
- ;; 5823 149
-;.end ;; 5823 149
-; .page ;; 5823 149
-; .subttl  RND ;; 5823 149
- ;; 5823 149
-;    Random Number Function  RND(x) ;; 5823 149
-; ;; 5823 149
-;  x=0 ==> generate a random number based on hardware clock & noisy POT lines ;; 5823 149
-;  x<0 ==> seed a reproducable, pseudo-random number generator ;; 5823 149
-;  x>0 ==> generate a reproducable pseudo-random # based upon seed value above ;; 5823 149
- ;; 5823 149
- ;; 5823 149
+rwindow          jsr chkcls                                ;; @@57fa 149
+                 jsr conint                                ;; @@57fd 149
+                 cpx #2                                    ;; @@5800 149
+                 beq _local_1148_50                       ; return current console ;; @@5802 149
+                 bcs fcerr                                 ;; @@5804 149
+ ;; @@5807 149
+                 cpx #0                                    ;; @@5807 149
+                 bne _local_1148_10                        ;; @@5809 149
+ ;; @@580b 149
+                 lda _screen_bottom                        ;; @@580b 149
+                 sec                                       ;; @@580d 149
+                 sbc _screen_top                           ;; @@580e 149
+                 bra _local_1148_60                       ; always ;; @@5810 149
+ ;; @@5812 149
+_local_1148_10   lda _screen_right                         ;; @@5812 149
+                 sec                                       ;; @@5814 149
+                 sbc _screen_left                          ;; @@5815 149
+                 bra _local_1148_60                       ; always ;; @@5817 149
+ ;; @@5819 149
+ ;; @@5819 149
+_local_1148_50   lda #80                                  ; assume 80 col ;; @@5819 149
+                 bbr7 _mode,_local_1148_60                 ;; @@581b 149
+                 lsr a                                     ;; @@581e 149
+_local_1148_60   tay                                       ;; @@581f 149
+                 bra sngflt                               ; float 1 byte arg in .Y ;; @@5820 149
+ ;; @@5823 149
+;.end ;; @@5823 149
+; .page ;; @@5823 149
+; .subttl  RND ;; @@5823 149
+ ;; @@5823 149
+;    Random Number Function  RND(x) ;; @@5823 149
+; ;; @@5823 149
+;  x=0 ==> generate a random number based on hardware clock & noisy POT lines ;; @@5823 149
+;  x<0 ==> seed a reproducable, pseudo-random number generator ;; @@5823 149
+;  x>0 ==> generate a reproducable pseudo-random # based upon seed value above ;; @@5823 149
+ ;; @@5823 149
+ ;; @@5823 149

@@ -1,205 +1,205 @@
-rmulc            !byte @230,@65,@104,@172,0                ;; 5890 151
-raddc            !byte @150,@50,@261,@106,0                ;; 5895 151
- ;; 589a 151
-;.end ;; 589a 151
-; .page ;; 589a 151
-; .subttl Math Package (CODE12) ;; 589a 151
- ;; 589a 151
-n32768           !byte $90,$80,0,0,0                       ;; 589a 151
- ;; 589f 151
- ;; 589f 151
-flpint           jsr ayint                                 ;; 589f 151
-                 lda facmo                                 ;; 58a2 151
-                 ldy  faclo                                ;; 58a4 151
-                 rts                                       ;; 58a6 151
- ;; 58a7 151
- ;; 58a7 151
-intidx           jsr chrget                                ;; 58a7 151
-                 jsr frmevl                               ; get a number ;; 58aa 151
- ;; 58ad 151
- ;; 58ad 151
-posint           jsr chknum                                ;; 58ad 151
-                 lda facsgn                                ;; 58b0 151
-                 bmi nonono                               ; if negative, blow him out ;; 58b2 151
- ;; 58b4 151
- ;; 58b4 151
-ayint            lda facexp                                ;; 58b4 151
-                 cmp #$90                                 ; FAC > 32767? ;; 58b6 151
-                 bcc qintgo                                ;; 58b8 151
-                 lda #<n32768                             ; get address of -32768 ;; 58ba 151
-                 ldy #>n32768                              ;; 58bc 151
-                 jsr fcomp                                ; see if FAC=((x)) ;; 58be 151
- ;; 58c1 151
-nonono           bne fcerr                                ; no, FAC is too big ;; 58c1 151
-qintgo           bra qint                                 ; go shove it ;; 58c4 151
-; .page ;; 58c7 151
- ;; 58c7 151
-; Float an unsigned double byte integer ;; 58c7 151
-; Entry:  MSB in (a), LSB in (y) ;; 58c7 151
- ;; 58c7 151
-nosflt           jsr stoint                                ;; 58c7 151
-                 sec                                      ; sign is positive ;; 58ca 151
-                 bra floatc                                ;; 58cb 151
- ;; 58ce 151
- ;; 58ce 151
- ;; 58ce 151
-pos              sec                                       ;; 58ce 151
-                 jsr _plot                                ; get tab pos in .y ;; 58cf 151
- ;; 58d2 151
-sngflt           lda #0                                    ;; 58d2 151
-                 bra givayf                               ; float it ;; 58d4 151
- ;; 58d7 151
- ;; 58d7 151
- ;; 58d7 151
-stoint           ldx #0                                   ; move int to fac & compute proper exponents ;; 58d7 151
-                 stx valtyp                                ;; 58d9 151
-                 sta facho                                 ;; 58db 151
-                 sty facho+1                               ;; 58dd 151
-                 ldx #$90                                  ;; 58df 151
-storts           rts                                       ;; 58e1 151
- ;; 58e2 151
- ;; 58e2 151
- ;; 58e2 151
-; See if we are in direct mode, and complain if so. ;; 58e2 151
- ;; 58e2 151
-errdir           bbs7 runmod,storts                       ; goto error if not in run mode ;; 58e2 151
- ;; 58e5 151
-                 ldx #errid                               ; input direct error code ;; 58e5 151
-                 !byte $2c                                 ;; 58e7 151
- ;; 58e8 151
-errguf           ldx #erruf                                ;; 58e8 151
-                 bra error                                 ;; 58ea 151
- ;; 58ed 151
- ;; 58ed 151
-errind           bbr7 runmod,storts                       ; goto error if not in direct mode ;; 58ed 151
-                 ldx #erroid                               ;; 58f0 151
-                 bra error                                 ;; 58f2 151
- ;; 58f5 151
-;.end ;; 58f5 151
-; .page ;; 58f5 151
-; .subttl User Defined Function ;; 58f5 151
- ;; 58f5 151
-; User Defined Function Code ;; 58f5 151
-; ;; 58f5 151
-; Note only single arguments are allowed to functions, and functions must ;; 58f5 151
-; be of the single line form: ;; 58f5 151
-; ;; 58f5 151
-;  DEF FNA(x)=x~2 + x-2 ;; 58f5 151
-; ;; 58f5 151
-; No strings may be involved with these functions. ;; 58f5 151
-; ;; 58f5 151
-; Idea: create a simple variable entry whose first character has the MSB set. ;; 58f5 151
-; The value will be: ;; 58f5 151
-; ;; 58f5 151
-;  A text pointer to the formula ;; 58f5 151
-;  A pointer to the argument variable ;; 58f5 151
- ;; 58f5 151
-def              jsr getfnm                               ; get a pointer to the function ;; 58f5 151
-                 jsr errdir                                ;; 58f8 151
-                 jsr chkopn                               ; must have a ( ;; 58fb 151
-                 lda #$80                                  ;; 58fe 151
-                 sta subflg                               ; prohibit subscripted & integer variables ;; 5900 151
-                 jsr ptrget                               ; get pointer to argument ;; 5902 151
-                 jsr chknum                               ; is it a number? ;; 5905 151
-                 jsr chkcls                               ; must have ) ;; 5908 151
-                 lda #equal_token                         ; followed by = ;; 590b 151
-                 jsr synchr                                ;; 590d 151
-                 pha                                       ;; 5910 151
-                 lda varpnt+1                              ;; 5911 151
-                 pha                                       ;; 5913 151
-                 lda varpnt                                ;; 5914 151
-                 pha                                       ;; 5916 151
-                 lda txtptr+1                              ;; 5917 151
-                 pha                                       ;; 5919 151
-                 lda txtptr                                ;; 591a 151
-                 pha                                       ;; 591c 151
-                 jsr data                                  ;; 591d 151
-                 bra deffin                                ;; 5920 151
- ;; 5922 151
-; .page ;; 5922 151
-; Subroutine to get a pointer to a function name ;; 5922 151
- ;; 5922 151
-getfnm           lda #fn_token                            ; must start with fn ;; 5922 151
-                 jsr synchr                                ;; 5924 151
-                 ora #$80                                 ; put function bit on ;; 5927 151
-                 sta subflg                               ; (disallows array & integer variables) ;; 5929 151
-                 jsr ptrgt2                               ; get pointer to function or create anew ;; 592b 151
-                 sta defpnt                                ;; 592e 151
-                 sty defpnt+1                              ;; 5930 151
-                 bra chknum                               ; make sure it's not a string, and return ;; 5932 151
- ;; 5935 151
- ;; 5935 151
-fndoer           jsr getfnm                               ; get the function's name ;; 5935 151
-                 lda defpnt+1                              ;; 5938 151
-                 pha                                       ;; 593a 151
-                 lda defpnt                                ;; 593b 151
-                 pha                                       ;; 593d 151
-                 jsr parchk                               ; evaluate parameter ;; 593e 151
-                 jsr chknum                                ;; 5941 151
-                 pla                                       ;; 5944 151
-                 sta defpnt                                ;; 5945 151
-                 pla                                       ;; 5947 151
-                 sta defpnt+1                              ;; 5948 151
-                 ldy #2                                    ;; 594a 151
-                 jsr inddef                               ; get pointer to the variable ;; 594c 151
-                 sta varpnt                               ; save variable pointer ;; 594f 151
-                 tax                                       ;; 5951 151
-                 iny                                       ;; 5952 151
-                 jsr inddef                                ;; 5953 151
-                 beq errguf                                ;; 5956 151
-                 sta varpnt+1                              ;; 5958 151
-                 iny                                      ; since def uses only 4 ;; 595a 151
- ;; 595b 151
-; .page ;; 595b 151
-defstf           lda #varpnt                               ;; 595b 151
-                 jsr lda_far_ram1                          ;; 595d 151
-                 pha                                      ; push it all on the stack, since we might be recursing ;; 5960 151
-                 dey                                       ;; 5961 151
-                 bpl defstf                                ;; 5962 151
-                 ldy varpnt+1                              ;; 5964 151
- ;; 5966 151
-                 jsr movmf_ram1                           ; put current FAC into our argument variable ;; 5966 151
-                 lda txtptr+1                             ; save variable pointer ;; 5969 151
-                 pha                                       ;; 596b 151
-                 lda txtptr                                ;; 596c 151
-                 pha                                       ;; 596e 151
-                 jsr inddef                               ; get pointer to function ;; 596f 151
-                 sta txtptr                                ;; 5972 151
-                 iny                                       ;; 5974 151
-                 jsr inddef                                ;; 5975 151
-                 sta txtptr+1                              ;; 5978 151
-                 lda varpnt+1                             ; save variable pointer ;; 597a 151
-                 pha                                       ;; 597c 151
-                 lda varpnt                                ;; 597d 151
-                 pha                                       ;; 597f 151
-                 jsr frmnum                               ; evaluate variable, and check numeric ;; 5980 151
-                 pla                                       ;; 5983 151
-                 sta defpnt                                ;; 5984 151
-                 pla                                       ;; 5986 151
-                 sta defpnt+1                              ;; 5987 151
-                 jsr chrgot                                ;; 5989 151
-                 bne snerr                                ; it didn't terminate, syntax error ;; 598c 151
- ;; 598f 151
-                 pla                                      ; restore text pointer ;; 598f 151
-                 sta txtptr                                ;; 5990 151
-                 pla                                       ;; 5992 151
-                 sta txtptr+1                              ;; 5993 151
- ;; 5995 151
-deffin           ldy #0                                    ;; 5995 151
-_local_1150_1    pla                                      ; get old arg value off stack, ;; 5997 151
-                 phx                                       ;; 5998 151
-                 ldx #defpnt                               ;; 5999 151
-                 jsr sta_far_ram1 ;sta (defpnt),y         ; and put it back in variable ;; 599b 151
-                 plx                                       ;; 599e 151
-                 iny                                       ;; 599f 151
-                 cpy #5                                    ;; 59a0 151
-                 bne _local_1150_1                         ;; 59a2 151
-                 rts                                       ;; 59a4 151
- ;; 59a5 151
-;.end ;; 59a5 151
-; .page ;; 59a5 151
-; .subttl MID$  LEFT$  RIGHT$  ASC  STR$  LEN ;; 59a5 151
- ;; 59a5 151
-; The STR$() function takes a number and gives a string with ;; 59a5 151
-; the characters the output of the number would have given. ;; 59a5 151
- ;; 59a5 151
+rmulc            !text @230,@65,@104,@172,0                ;; @@5890 151
+raddc            !text @150,@50,@261,@106,0                ;; @@5895 151
+ ;; @@589a 151
+;.end ;; @@589a 151
+; .page ;; @@589a 151
+; .subttl Math Package (CODE12) ;; @@589a 151
+ ;; @@589a 151
+n32768           !text $90,$80,0,0,0                       ;; @@589a 151
+ ;; @@589f 151
+ ;; @@589f 151
+flpint           jsr ayint                                 ;; @@589f 151
+                 lda facmo                                 ;; @@58a2 151
+                 ldy  faclo                                ;; @@58a4 151
+                 rts                                       ;; @@58a6 151
+ ;; @@58a7 151
+ ;; @@58a7 151
+intidx           jsr chrget                                ;; @@58a7 151
+                 jsr frmevl                               ; get a number ;; @@58aa 151
+ ;; @@58ad 151
+ ;; @@58ad 151
+posint           jsr chknum                                ;; @@58ad 151
+                 lda facsgn                                ;; @@58b0 151
+                 bmi nonono                               ; if negative, blow him out ;; @@58b2 151
+ ;; @@58b4 151
+ ;; @@58b4 151
+ayint            lda facexp                                ;; @@58b4 151
+                 cmp #$90                                 ; FAC > 32767? ;; @@58b6 151
+                 bcc qintgo                                ;; @@58b8 151
+                 lda #<n32768                             ; get address of -32768 ;; @@58ba 151
+                 ldy #>n32768                              ;; @@58bc 151
+                 jsr fcomp                                ; see if FAC=((x)) ;; @@58be 151
+ ;; @@58c1 151
+nonono           bne fcerr                                ; no, FAC is too big ;; @@58c1 151
+qintgo           bra qint                                 ; go shove it ;; @@58c4 151
+; .page ;; @@58c7 151
+ ;; @@58c7 151
+; Float an unsigned double byte integer ;; @@58c7 151
+; Entry:  MSB in (a), LSB in (y) ;; @@58c7 151
+ ;; @@58c7 151
+nosflt           jsr stoint                                ;; @@58c7 151
+                 sec                                      ; sign is positive ;; @@58ca 151
+                 bra floatc                                ;; @@58cb 151
+ ;; @@58ce 151
+ ;; @@58ce 151
+ ;; @@58ce 151
+pos              sec                                       ;; @@58ce 151
+                 jsr _plot                                ; get tab pos in .y ;; @@58cf 151
+ ;; @@58d2 151
+sngflt           lda #0                                    ;; @@58d2 151
+                 bra givayf                               ; float it ;; @@58d4 151
+ ;; @@58d7 151
+ ;; @@58d7 151
+ ;; @@58d7 151
+stoint           ldx #0                                   ; move int to fac & compute proper exponents ;; @@58d7 151
+                 stx valtyp                                ;; @@58d9 151
+                 sta facho                                 ;; @@58db 151
+                 sty facho+1                               ;; @@58dd 151
+                 ldx #$90                                  ;; @@58df 151
+storts           rts                                       ;; @@58e1 151
+ ;; @@58e2 151
+ ;; @@58e2 151
+ ;; @@58e2 151
+; See if we are in direct mode, and complain if so. ;; @@58e2 151
+ ;; @@58e2 151
+errdir           bbs7 runmod,storts                       ; goto error if not in run mode ;; @@58e2 151
+ ;; @@58e5 151
+                 ldx #errid                               ; input direct error code ;; @@58e5 151
+                 !text $2c                                 ;; @@58e7 151
+ ;; @@58e8 151
+errguf           ldx #erruf                                ;; @@58e8 151
+                 bra error                                 ;; @@58ea 151
+ ;; @@58ed 151
+ ;; @@58ed 151
+errind           bbr7 runmod,storts                       ; goto error if not in direct mode ;; @@58ed 151
+                 ldx #erroid                               ;; @@58f0 151
+                 bra error                                 ;; @@58f2 151
+ ;; @@58f5 151
+;.end ;; @@58f5 151
+; .page ;; @@58f5 151
+; .subttl User Defined Function ;; @@58f5 151
+ ;; @@58f5 151
+; User Defined Function Code ;; @@58f5 151
+; ;; @@58f5 151
+; Note only single arguments are allowed to functions, and functions must ;; @@58f5 151
+; be of the single line form: ;; @@58f5 151
+; ;; @@58f5 151
+;  DEF FNA(x)=x~2 + x-2 ;; @@58f5 151
+; ;; @@58f5 151
+; No strings may be involved with these functions. ;; @@58f5 151
+; ;; @@58f5 151
+; Idea: create a simple variable entry whose first character has the MSB set. ;; @@58f5 151
+; The value will be: ;; @@58f5 151
+; ;; @@58f5 151
+;  A text pointer to the formula ;; @@58f5 151
+;  A pointer to the argument variable ;; @@58f5 151
+ ;; @@58f5 151
+def              jsr getfnm                               ; get a pointer to the function ;; @@58f5 151
+                 jsr errdir                                ;; @@58f8 151
+                 jsr chkopn                               ; must have a ( ;; @@58fb 151
+                 lda #$80                                  ;; @@58fe 151
+                 sta subflg                               ; prohibit subscripted & integer variables ;; @@5900 151
+                 jsr ptrget                               ; get pointer to argument ;; @@5902 151
+                 jsr chknum                               ; is it a number? ;; @@5905 151
+                 jsr chkcls                               ; must have ) ;; @@5908 151
+                 lda #equal_token                         ; followed by = ;; @@590b 151
+                 jsr synchr                                ;; @@590d 151
+                 pha                                       ;; @@5910 151
+                 lda varpnt+1                              ;; @@5911 151
+                 pha                                       ;; @@5913 151
+                 lda varpnt                                ;; @@5914 151
+                 pha                                       ;; @@5916 151
+                 lda txtptr+1                              ;; @@5917 151
+                 pha                                       ;; @@5919 151
+                 lda txtptr                                ;; @@591a 151
+                 pha                                       ;; @@591c 151
+                 jsr data                                  ;; @@591d 151
+                 bra deffin                                ;; @@5920 151
+ ;; @@5922 151
+; .page ;; @@5922 151
+; Subroutine to get a pointer to a function name ;; @@5922 151
+ ;; @@5922 151
+getfnm           lda #fn_token                            ; must start with fn ;; @@5922 151
+                 jsr synchr                                ;; @@5924 151
+                 ora #$80                                 ; put function bit on ;; @@5927 151
+                 sta subflg                               ; (disallows array & integer variables) ;; @@5929 151
+                 jsr ptrgt2                               ; get pointer to function or create anew ;; @@592b 151
+                 sta defpnt                                ;; @@592e 151
+                 sty defpnt+1                              ;; @@5930 151
+                 bra chknum                               ; make sure it's not a string, and return ;; @@5932 151
+ ;; @@5935 151
+ ;; @@5935 151
+fndoer           jsr getfnm                               ; get the function's name ;; @@5935 151
+                 lda defpnt+1                              ;; @@5938 151
+                 pha                                       ;; @@593a 151
+                 lda defpnt                                ;; @@593b 151
+                 pha                                       ;; @@593d 151
+                 jsr parchk                               ; evaluate parameter ;; @@593e 151
+                 jsr chknum                                ;; @@5941 151
+                 pla                                       ;; @@5944 151
+                 sta defpnt                                ;; @@5945 151
+                 pla                                       ;; @@5947 151
+                 sta defpnt+1                              ;; @@5948 151
+                 ldy #2                                    ;; @@594a 151
+                 jsr inddef                               ; get pointer to the variable ;; @@594c 151
+                 sta varpnt                               ; save variable pointer ;; @@594f 151
+                 tax                                       ;; @@5951 151
+                 iny                                       ;; @@5952 151
+                 jsr inddef                                ;; @@5953 151
+                 beq errguf                                ;; @@5956 151
+                 sta varpnt+1                              ;; @@5958 151
+                 iny                                      ; since def uses only 4 ;; @@595a 151
+ ;; @@595b 151
+; .page ;; @@595b 151
+defstf           lda #varpnt                               ;; @@595b 151
+                 jsr lda_far_ram1                          ;; @@595d 151
+                 pha                                      ; push it all on the stack, since we might be recursing ;; @@5960 151
+                 dey                                       ;; @@5961 151
+                 bpl defstf                                ;; @@5962 151
+                 ldy varpnt+1                              ;; @@5964 151
+ ;; @@5966 151
+                 jsr movmf_ram1                           ; put current FAC into our argument variable ;; @@5966 151
+                 lda txtptr+1                             ; save variable pointer ;; @@5969 151
+                 pha                                       ;; @@596b 151
+                 lda txtptr                                ;; @@596c 151
+                 pha                                       ;; @@596e 151
+                 jsr inddef                               ; get pointer to function ;; @@596f 151
+                 sta txtptr                                ;; @@5972 151
+                 iny                                       ;; @@5974 151
+                 jsr inddef                                ;; @@5975 151
+                 sta txtptr+1                              ;; @@5978 151
+                 lda varpnt+1                             ; save variable pointer ;; @@597a 151
+                 pha                                       ;; @@597c 151
+                 lda varpnt                                ;; @@597d 151
+                 pha                                       ;; @@597f 151
+                 jsr frmnum                               ; evaluate variable, and check numeric ;; @@5980 151
+                 pla                                       ;; @@5983 151
+                 sta defpnt                                ;; @@5984 151
+                 pla                                       ;; @@5986 151
+                 sta defpnt+1                              ;; @@5987 151
+                 jsr chrgot                                ;; @@5989 151
+                 bne snerr                                ; it didn't terminate, syntax error ;; @@598c 151
+ ;; @@598f 151
+                 pla                                      ; restore text pointer ;; @@598f 151
+                 sta txtptr                                ;; @@5990 151
+                 pla                                       ;; @@5992 151
+                 sta txtptr+1                              ;; @@5993 151
+ ;; @@5995 151
+deffin           ldy #0                                    ;; @@5995 151
+_local_1150_1    pla                                      ; get old arg value off stack, ;; @@5997 151
+                 phx                                       ;; @@5998 151
+                 ldx #defpnt                               ;; @@5999 151
+                 jsr sta_far_ram1 ;sta (defpnt),y         ; and put it back in variable ;; @@599b 151
+                 plx                                       ;; @@599e 151
+                 iny                                       ;; @@599f 151
+                 cpy #5                                    ;; @@59a0 151
+                 bne _local_1150_1                         ;; @@59a2 151
+                 rts                                       ;; @@59a4 151
+ ;; @@59a5 151
+;.end ;; @@59a5 151
+; .page ;; @@59a5 151
+; .subttl MID$  LEFT$  RIGHT$  ASC  STR$  LEN ;; @@59a5 151
+ ;; @@59a5 151
+; The STR$() function takes a number and gives a string with ;; @@59a5 151
+; the characters the output of the number would have given. ;; @@59a5 151
+ ;; @@59a5 151

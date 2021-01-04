@@ -1,84 +1,84 @@
-done             pla                                      ; get aux error flag ;; 744e 234
-                 and parstx                               ; repeated or illegal params? ;; 744f 234
-                 bne snerr                                ; yes- report syntax error ;; 7451 234
-                 pla                                      ; get error flags ;; 7454 234
-                 jsr prmrpt                                ;; 7455 234
-                 lda parsts                                ;; 7458 234
-                 ldx parstx                                ;; 745a 234
-                 rts                                       ;; 745c 234
- ;; 745d 234
-; .page ;; 745d 234
-; Parse given parameters.  what it is  example ;; 745d 234
-;     -------------------- --------- ;; 745d 234
-parse1           cmp #'"'                                  ;; 745d 234
-                 beq name1                                ; explicit filename "file" ;; 745f 234
-                 cmp #'('                                  ;; 7462 234
-                 beq name1                                ; evaluate filename (f$) ;; 7464 234
-                 cmp #'#'                                  ;; 7467 234
-                 beq logadr                               ; logical file number #1 ;; 7469 234
-                 cmp #'U'                                  ;; 746b 234
-                 beq unit1                                ; unit number  U8 ;; 746d 234
-                 cmp #'D'                                  ;; 746f 234
-                 beq drv1                                 ; drive number  D0 ;; 7471 234
-                 cmp #'P'                                  ;; 7473 234
-                 beq doffl                                ; load/save address P1234 ;; 7475 234
-                 cmp #'B'                                  ;; 7478 234
-                 beq dbank1                               ; load/save bank   B0 ;; 747a 234
-                 cmp #'W'                                  ;; 747c 234
-                 beq reclen                               ; write mode  W ;; 747e 234
-                 cmp #'L'                                  ;; 7480 234
-                 beq reclen                               ; record length  L80 ;; 7482 234
-                 cmp #'R'                                  ;; 7484 234
-                 beq recover                              ; recover mode  R ;; 7486 234
-                 cmp #'I'                                  ;; 7489 234
-                 beq ident                                ; ID   Ixx ;; 748b 234
-                 cmp #on_token                             ;; 748d 234
-; beq on1   ; ON token  ON ;; 748f 234
- ;; 748f 234
-                 bne snerr                                ; none of these, syntax error ;; 748f 234
- ;; 7492 234
-; .page ;; 7492 234
-on1              jsr on                                    ;; 7492 234
-                 bra del1                                  ;; 7495 234
- ;; 7498 234
- ;; 7498 234
-unit1            jsr unit                                 ; do unit# parsing ;; 7498 234
-                 bra del1                                 ; always ;; 749b 234
- ;; 749e 234
- ;; 749e 234
-dbank1           jsr dbank                                 ;; 749e 234
-                 bra del1                                 ; always ;; 74a1 234
- ;; 74a4 234
- ;; 74a4 234
-logadr           lda #4                                    ;; 74a4 234
-                 jsr prmrpt                               ; check for repeated parameter ;; 74a6 234
-                 jsr gtbytc                               ; getval ;; 74a9 234
-                 txa                                      ; cpx #0 ;; 74ac 234
-                 beq fcerr                                ; if illegal value ;; 74ad 234
-                 stx dosla                                 ;; 74b0 234
-                 lda #4                                   ; set logical address flag ;; 74b3 234
-                 bra del1                                 ; get next parameter ;; 74b5 234
- ;; 74b8 234
- ;; 74b8 234
-reclen           tax                                      ; save char ;; 74b8 234
-                 lda #$40                                  ;; 74b9 234
-                 jsr prmrpt                               ; check for repeated parameter ;; 74bb 234
-                 cpx #'W'                                  ;; 74be 234
-                 bne _local_1233_10                        ;; 74c0 234
-                 jsr chrget                                ;; 74c2 234
-                 bra _local_1233_20                       ; set parsts ;; 74c5 234
- ;; 74c7 234
-_local_1233_10   ldx #1                                   ; a kludge to allow  DOPEN#lf,"relfile",L  [911024] ;; 74c7 234
-                 jsr chrget                                ;; 74c9 234
-                 beq _local_1233_12                       ; eol? open existing rel file ;; 74cc 234
-                 jsr getbyt                               ; get reclen (was getval) ;; 74ce 234
-_local_1233_12   stx dosrcl                               ; store parcel ;; 74d1 234
-                 txa                                      ; cpx #0 ;; 74d4 234
-                 beq _local_1233_15                       ; zero illegal dosrcl ;; 74d5 234
-                 inx                                      ; cpx #255 ;; 74d7 234
-_local_1233_15   beq fcerr                                ; illegal dosrcl ;; 74d8 234
- ;; 74db 234
-_local_1233_20   lda #$40                                 ; set dosrcl flag & ;; 74db 234
-                 bra del1                                  ;; 74dd 234
- ;; 74e0 234
- ;; 74e0 234
+done             pla                                      ; get aux error flag ;; @@744e 234
+                 and parstx                               ; repeated or illegal params? ;; @@744f 234
+                 bne snerr                                ; yes- report syntax error ;; @@7451 234
+                 pla                                      ; get error flags ;; @@7454 234
+                 jsr prmrpt                                ;; @@7455 234
+                 lda parsts                                ;; @@7458 234
+                 ldx parstx                                ;; @@745a 234
+                 rts                                       ;; @@745c 234
+ ;; @@745d 234
+; .page ;; @@745d 234
+; Parse given parameters.  what it is  example ;; @@745d 234
+;     -------------------- --------- ;; @@745d 234
+parse1           cmp #'"'                                  ;; @@745d 234
+                 beq name1                                ; explicit filename "file" ;; @@745f 234
+                 cmp #'('                                  ;; @@7462 234
+                 beq name1                                ; evaluate filename (f$) ;; @@7464 234
+                 cmp #'#'                                  ;; @@7467 234
+                 beq logadr                               ; logical file number #1 ;; @@7469 234
+                 cmp #'U'                                  ;; @@746b 234
+                 beq unit1                                ; unit number  U8 ;; @@746d 234
+                 cmp #'D'                                  ;; @@746f 234
+                 beq drv1                                 ; drive number  D0 ;; @@7471 234
+                 cmp #'P'                                  ;; @@7473 234
+                 beq doffl                                ; load/save address P1234 ;; @@7475 234
+                 cmp #'B'                                  ;; @@7478 234
+                 beq dbank1                               ; load/save bank   B0 ;; @@747a 234
+                 cmp #'W'                                  ;; @@747c 234
+                 beq reclen                               ; write mode  W ;; @@747e 234
+                 cmp #'L'                                  ;; @@7480 234
+                 beq reclen                               ; record length  L80 ;; @@7482 234
+                 cmp #'R'                                  ;; @@7484 234
+                 beq recover                              ; recover mode  R ;; @@7486 234
+                 cmp #'I'                                  ;; @@7489 234
+                 beq ident                                ; ID   Ixx ;; @@748b 234
+                 cmp #on_token                             ;; @@748d 234
+; beq on1   ; ON token  ON ;; @@748f 234
+ ;; @@748f 234
+                 bne snerr                                ; none of these, syntax error ;; @@748f 234
+ ;; @@7492 234
+; .page ;; @@7492 234
+on1              jsr on                                    ;; @@7492 234
+                 bra del1                                  ;; @@7495 234
+ ;; @@7498 234
+ ;; @@7498 234
+unit1            jsr unit                                 ; do unit# parsing ;; @@7498 234
+                 bra del1                                 ; always ;; @@749b 234
+ ;; @@749e 234
+ ;; @@749e 234
+dbank1           jsr dbank                                 ;; @@749e 234
+                 bra del1                                 ; always ;; @@74a1 234
+ ;; @@74a4 234
+ ;; @@74a4 234
+logadr           lda #4                                    ;; @@74a4 234
+                 jsr prmrpt                               ; check for repeated parameter ;; @@74a6 234
+                 jsr gtbytc                               ; getval ;; @@74a9 234
+                 txa                                      ; cpx #0 ;; @@74ac 234
+                 beq fcerr                                ; if illegal value ;; @@74ad 234
+                 stx dosla                                 ;; @@74b0 234
+                 lda #4                                   ; set logical address flag ;; @@74b3 234
+                 bra del1                                 ; get next parameter ;; @@74b5 234
+ ;; @@74b8 234
+ ;; @@74b8 234
+reclen           tax                                      ; save char ;; @@74b8 234
+                 lda #$40                                  ;; @@74b9 234
+                 jsr prmrpt                               ; check for repeated parameter ;; @@74bb 234
+                 cpx #'W'                                  ;; @@74be 234
+                 bne _local_1233_10                        ;; @@74c0 234
+                 jsr chrget                                ;; @@74c2 234
+                 bra _local_1233_20                       ; set parsts ;; @@74c5 234
+ ;; @@74c7 234
+_local_1233_10   ldx #1                                   ; a kludge to allow  DOPEN#lf,"relfile",L  [911024] ;; @@74c7 234
+                 jsr chrget                                ;; @@74c9 234
+                 beq _local_1233_12                       ; eol? open existing rel file ;; @@74cc 234
+                 jsr getbyt                               ; get reclen (was getval) ;; @@74ce 234
+_local_1233_12   stx dosrcl                               ; store parcel ;; @@74d1 234
+                 txa                                      ; cpx #0 ;; @@74d4 234
+                 beq _local_1233_15                       ; zero illegal dosrcl ;; @@74d5 234
+                 inx                                      ; cpx #255 ;; @@74d7 234
+_local_1233_15   beq fcerr                                ; illegal dosrcl ;; @@74d8 234
+ ;; @@74db 234
+_local_1233_20   lda #$40                                 ; set dosrcl flag & ;; @@74db 234
+                 bra del1                                  ;; @@74dd 234
+ ;; @@74e0 234
+ ;; @@74e0 234

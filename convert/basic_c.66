@@ -1,79 +1,79 @@
-midd2                                                      ;; 3be2 66
-midwrk           =midd2-1                                  ;; 3be2 66
- ;; 3be2 66
-                 jsr chkopn                               ; check for '(' ;; 3be2 66
-                 jsr ptrget                               ; get pointer to descriptor of string-var ;; 3be5 66
-                 sta forpnt                               ; store for later use ;; 3be8 66
-                 sty forpnt+1                              ;; 3bea 66
-                 jsr chkstr                               ; check if string ;; 3bec 66
- ;; 3bef 66
-                 jsr combyt                               ; look for comma, followed by 1 byte starting address ;; 3bef 66
-                 dex                                      ; adjust starting addr ;; 3bf2 66
-                 stx hulp                                 ; store    " " ;; 3bf3 66
- ;; 3bf5 66
-                 cmp #')'                                 ; finished? ;; 3bf5 66
-                 beq _local_1065_10                       ; branch if so (use default length) ;; 3bf7 66
-                 jsr combyt                               ; ..else get length ;; 3bf9 66
-                 !byte $2c                                 ;; 3bfc 66
- ;; 3bfd 66
-_local_1065_10   ldx #$ff                                 ; default length ;; 3bfd 66
-                 stx z_p_temp_1                            ;; 3bff 66
-                 jsr chkcls                               ; look for ')' ;; 3c01 66
-                 lda #equal_token                         ; look for '=' ;; 3c04 66
-                 jsr synchr                                ;; 3c06 66
-                 jsr frmevl                               ; bring on the source! ;; 3c09 66
-                 jsr chkstr                               ; nothing funny ;; 3c0c 66
- ;; 3c0f 66
-                 ldy #2                                   ; get string descriptors ;; 3c0f 66
-_local_1065_20   lda #forpnt                              ; target ;; 3c11 66
-                 jsr lda_far_ram1                         ; lda (forpnt),y ;; 3c13 66
-                 sta str1,y                                ;; 3c16 66
-                 jsr indfmo                               ; source ;; 3c19 66
-                 sta str2,y                                ;; 3c1c 66
-                 dey                                       ;; 3c1f 66
-                 bpl _local_1065_20                        ;; 3c20 66
- ;; 3c22 66
-; Test for target string in text was removed-  all strings are copied to ;; 3c22 66
-; string RAM when they are created. ;; 3c22 66
- ;; 3c22 66
-                 sec                                      ; adjust pointer to source string so that the same ;; 3c22 66
-                 lda str2+1                               ; ..index can load & save ;; 3c23 66
-                 sbc hulp                                  ;; 3c25 66
-                 sta str2+1                                ;; 3c27 66
-                 bcs _local_1065_30                        ;; 3c29 66
-                 dec str2+2                                ;; 3c2b 66
- ;; 3c2d 66
-_local_1065_30   lda z_p_temp_1                           ; get specified length (or default) ;; 3c2d 66
-                 cmp str2                                 ; compare with length of source ;; 3c2f 66
-                 bcc _local_1065_40                       ; ok if less, ;; 3c31 66
-                 lda str2                                 ; ..else use length of source ;; 3c33 66
-_local_1065_40   tax                                       ;; 3c35 66
-                 beq _local_1065_80                       ; done if length=0 ;; 3c36 66
-                 clc                                       ;; 3c38 66
-                 adc hulp                                 ; add length to starting posn. ;; 3c39 66
-                 bcs fcerr                                ; illegal quantity error if > 256 ;; 3c3b 66
-                 cmp str1                                  ;; 3c3e 66
-                 bcc _local_1065_60                        ;; 3c40 66
-                 bne fcerr                                ; ...or if > target length ;; 3c42 66
- ;; 3c45 66
-_local_1065_60   ldy hulp                                 ; get adjusted starting address ;; 3c45 66
-_local_1065_70   phx                                       ;; 3c47 66
-                 ldx #str1+1                               ;; 3c48 66
-                 lda #str2+1                               ;; 3c4a 66
-                 jsr lda_far_ram1                         ; fetch from string bank ;; 3c4c 66
-                 jsr sta_far_ram1                         ; this is what it's all about ;; 3c4f 66
-                 iny                                       ;; 3c52 66
-                 plx                                       ;; 3c53 66
-                 dex                                       ;; 3c54 66
-                 bne _local_1065_70                       ; keep going for specified length ;; 3c55 66
- ;; 3c57 66
-_local_1065_80   bra frefac                               ; free up temp. string, rts ;; 3c57 66
- ;; 3c5a 66
-;.end ;; 3c5a 66
- ;; 3c5a 66
-; .page ;; 3c5a 66
-; .subttl  AUTO ;; 3c5a 66
- ;; 3c5a 66
-; AUTO Increment ;; 3c5a 66
-;   Syntax :    auto {line-number} (line-number = 0 means turn off) ;; 3c5a 66
- ;; 3c5a 66
+midd2                                                      ;; @@3be2 66
+midwrk           =midd2-1                                  ;; @@3be2 66
+ ;; @@3be2 66
+                 jsr chkopn                               ; check for '(' ;; @@3be2 66
+                 jsr ptrget                               ; get pointer to descriptor of string-var ;; @@3be5 66
+                 sta forpnt                               ; store for later use ;; @@3be8 66
+                 sty forpnt+1                              ;; @@3bea 66
+                 jsr chkstr                               ; check if string ;; @@3bec 66
+ ;; @@3bef 66
+                 jsr combyt                               ; look for comma, followed by 1 byte starting address ;; @@3bef 66
+                 dex                                      ; adjust starting addr ;; @@3bf2 66
+                 stx hulp                                 ; store    " " ;; @@3bf3 66
+ ;; @@3bf5 66
+                 cmp #')'                                 ; finished? ;; @@3bf5 66
+                 beq _local_1065_10                       ; branch if so (use default length) ;; @@3bf7 66
+                 jsr combyt                               ; ..else get length ;; @@3bf9 66
+                 !text $2c                                 ;; @@3bfc 66
+ ;; @@3bfd 66
+_local_1065_10   ldx #$ff                                 ; default length ;; @@3bfd 66
+                 stx z_p_temp_1                            ;; @@3bff 66
+                 jsr chkcls                               ; look for ')' ;; @@3c01 66
+                 lda #equal_token                         ; look for '=' ;; @@3c04 66
+                 jsr synchr                                ;; @@3c06 66
+                 jsr frmevl                               ; bring on the source! ;; @@3c09 66
+                 jsr chkstr                               ; nothing funny ;; @@3c0c 66
+ ;; @@3c0f 66
+                 ldy #2                                   ; get string descriptors ;; @@3c0f 66
+_local_1065_20   lda #forpnt                              ; target ;; @@3c11 66
+                 jsr lda_far_ram1                         ; lda (forpnt),y ;; @@3c13 66
+                 sta str1,y                                ;; @@3c16 66
+                 jsr indfmo                               ; source ;; @@3c19 66
+                 sta str2,y                                ;; @@3c1c 66
+                 dey                                       ;; @@3c1f 66
+                 bpl _local_1065_20                        ;; @@3c20 66
+ ;; @@3c22 66
+; Test for target string in text was removed-  all strings are copied to ;; @@3c22 66
+; string RAM when they are created. ;; @@3c22 66
+ ;; @@3c22 66
+                 sec                                      ; adjust pointer to source string so that the same ;; @@3c22 66
+                 lda str2+1                               ; ..index can load & save ;; @@3c23 66
+                 sbc hulp                                  ;; @@3c25 66
+                 sta str2+1                                ;; @@3c27 66
+                 bcs _local_1065_30                        ;; @@3c29 66
+                 dec str2+2                                ;; @@3c2b 66
+ ;; @@3c2d 66
+_local_1065_30   lda z_p_temp_1                           ; get specified length (or default) ;; @@3c2d 66
+                 cmp str2                                 ; compare with length of source ;; @@3c2f 66
+                 bcc _local_1065_40                       ; ok if less, ;; @@3c31 66
+                 lda str2                                 ; ..else use length of source ;; @@3c33 66
+_local_1065_40   tax                                       ;; @@3c35 66
+                 beq _local_1065_80                       ; done if length=0 ;; @@3c36 66
+                 clc                                       ;; @@3c38 66
+                 adc hulp                                 ; add length to starting posn. ;; @@3c39 66
+                 bcs fcerr                                ; illegal quantity error if > 256 ;; @@3c3b 66
+                 cmp str1                                  ;; @@3c3e 66
+                 bcc _local_1065_60                        ;; @@3c40 66
+                 bne fcerr                                ; ...or if > target length ;; @@3c42 66
+ ;; @@3c45 66
+_local_1065_60   ldy hulp                                 ; get adjusted starting address ;; @@3c45 66
+_local_1065_70   phx                                       ;; @@3c47 66
+                 ldx #str1+1                               ;; @@3c48 66
+                 lda #str2+1                               ;; @@3c4a 66
+                 jsr lda_far_ram1                         ; fetch from string bank ;; @@3c4c 66
+                 jsr sta_far_ram1                         ; this is what it's all about ;; @@3c4f 66
+                 iny                                       ;; @@3c52 66
+                 plx                                       ;; @@3c53 66
+                 dex                                       ;; @@3c54 66
+                 bne _local_1065_70                       ; keep going for specified length ;; @@3c55 66
+ ;; @@3c57 66
+_local_1065_80   bra frefac                               ; free up temp. string, rts ;; @@3c57 66
+ ;; @@3c5a 66
+;.end ;; @@3c5a 66
+ ;; @@3c5a 66
+; .page ;; @@3c5a 66
+; .subttl  AUTO ;; @@3c5a 66
+ ;; @@3c5a 66
+; AUTO Increment ;; @@3c5a 66
+;   Syntax :    auto {line-number} (line-number = 0 means turn off) ;; @@3c5a 66
+ ;; @@3c5a 66

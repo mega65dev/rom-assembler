@@ -1,107 +1,107 @@
-LoadERR                                                    ;; 4714 103
-                 ldx #erload                              ; Load Error ;; 4714 103
-                 sec                                       ;; 4716 103
-                 !byte $89                                 ;; 4717 103
- ;; 4718 103
-LoadEOF                                                    ;; 4718 103
-                 clc                                       ;; 4718 103
-                 bra list_err                             ; release channel, close file, return to main ;; 4719 103
- ;; 471c 103
-; .page ;; 471c 103
-;************************************************************************ ;; 471c 103
-;   Key_Save  Save function key definitions (from disk)   [900725] ;; 471c 103
-;************************************************************************ ;; 471c 103
- ;; 471c 103
-Key_Save                                                   ;; 471c 103
-                 jsr GetSaveChannel                       ; [910930] ;; 471c 103
-                 lda #highds                              ; set starting & ending addresses ;; 471f 103
-                 ldy #>_pky_lengths                       ; start address & pointer to it ;; 4721 103
-                 ldx #<_pky_lengths                        ;; 4723 103
-                 sty highds+1                              ;; 4725 103
-                 stx highds                                ;; 4727 103
-                 iny                                      ; end address = start address + 256 + 1 ;; 4729 103
-                 inx                                       ;; 472a 103
-                 bra savenb                               ; [910925] ;; 472b 103
-; jsr _savesp  ;save it ;; 472e 103
-;; clc   ; return no error  ????why not  [910404] ;; 472e 103
-; bra exit_disk_op ; but if direct mode print DOS error  [910404] ;; 472e 103
- ;; 472e 103
- ;; 472e 103
- ;; 472e 103
-GetSaveChannel                                            ; Used by KeySave and SpriteSave    [910930] ;; 472e 103
-                 jsr chrget                               ; eat SAVE token ;; 472e 103
-                 lda #$66                                 ; parse:  filename [,U#] [,D#] ;; 4731 103
-                 jsr dosprs                               ; parse options ;; 4733 103
-                 jsr chk2                                 ; check required parameters ;; 4736 103
- ;; 4739 103
-                 ldy #fopn                                ; DOS table offset ;; 4739 103
-                 lda #4                                   ; length ;; 473b 103
-                 jsr sendp                                 ;; 473d 103
-                 lda #sys_bank                            ; set banks ???? buffer in system bank ???? ;; 4740 103
-                 ldx #sys_bank                             ;; 4742 103
-                 jmp _setbank                              ;; 4744 103
- ;; 4747 103
-;.end ;; 4747 103
-; .page ;; 4747 103
-; .subttl  BANK ;; 4747 103
- ;; 4747 103
-;************************************************************************ ;; 4747 103
-;*  Set Memory Bank for PEEK,POKE,WAIT,BLOAD,BSAVE and SYS,BOOT Commands ;; 4747 103
-;* ;; 4747 103
-;*  Syntax: BANK DATA  n  for PEEK,POKE,WAIT,BLOAD,BSAVE ;; 4747 103
-;*  BANK SYS  [a,x,y,z] for SYS,BOOT Commands ;; 4747 103
-;* ;; 4747 103
-;* where   n=  %11111111  to access I/O area (System MAP) ;; 4747 103
-;*      %0xxxxxxx to use physical bank n ;; 4747 103
-;* ;; 4747 103
-;* or      a,x,y,z  describe precise configuration for MAPper ;; 4747 103
-;*    if omitted, the System MAP is to be used. ;; 4747 103
-;* ;; 4747 103
-;* The DATA option is to access data,  i.e., LDA/STA_far ;; 4747 103
-;* The SYS  option is to execute code, i.e., JMP/JSR_far ;; 4747 103
-;* ;; 4747 103
-;*  Idea: BANK SCREEN n  when REC is finalized???? ;; 4747 103
-;************************************************************************ ;; 4747 103
- ;; 4747 103
-bank             jsr getbyt                               ; get bank number in .x ;; 4747 103
-                 stx current_bank                          ;; 474a 103
-                 rts                                       ;; 474d 103
- ;; 474e 103
- ;; 474e 103
-;.end ;; 474e 103
-; .page ;; 474e 103
-; .subttl  PLAY ;; 474e 103
- ;; 474e 103
-; C65 Music Interpreter ;; 474e 103
-; ;; 474e 103
-; Syntax : PLAY "music_string" ;; 474e 103
-; ;; 474e 103
-; Where : music_string is a string of characters composed of: ;; 474e 103
-; ;; 474e 103
-; A..G   : notes ;; 474e 103
-; W,H,Q,I,S : set note lengths to whole,half,quarter,eighth,sixteenth ;; 474e 103
-; U   : set volume level   (0-9) ;; 474e 103
-; O   : set octave    (0-6) ;; 474e 103
-; T   : set current envelope  (0-9) ;; 474e 103
-; V   : select voice to play  (1-6: 1-3 right, 4-6 left) ;; 474e 103
-; X   : filter    (0-1: 0=off, 1=on) ;; 474e 103
-; M   : measure ;; 474e 103
-; R   : rest ;; 474e 103
-; .   : dot ;; 474e 103
-; #   : sharp ;; 474e 103
-; $   : flat ;; 474e 103
- ;; 474e 103
- ;; 474e 103
-play             jsr frmstr                               ; frmevl,frestr,return w/ .A=len, (index)=>string ;; 474e 103
-; sta sw_rom_ram0  ;???? ;; 4751 103
-                 sta z_p_temp_1                           ; save number of characters ;; 4751 103
-                 jsr clear_play_flags                     ; set 'dot' and 'sharp' to 0. return with Acc=0 ;; 4753 103
-                 sta hulp                                 ; zero counter ;; 4756 103
- ;; 4758 103
-_local_1102_10   ldy hulp                                  ;; 4758 103
-                 cpy z_p_temp_1                            ;; 475a 103
-                 beq play_rts                             ; done! ;; 475c 103
-                 jsr indin1_ram1                           ;; 475e 103
-                 jsr play_one_character                    ;; 4761 103
-                 inc hulp                                  ;; 4764 103
-                 bne _local_1102_10                       ; always ;; 4766 103
+LoadERR                                                    ;; @@4714 103
+                 ldx #erload                              ; Load Error ;; @@4714 103
+                 sec                                       ;; @@4716 103
+                 !text $89                                 ;; @@4717 103
+ ;; @@4718 103
+LoadEOF                                                    ;; @@4718 103
+                 clc                                       ;; @@4718 103
+                 bra list_err                             ; release channel, close file, return to main ;; @@4719 103
+ ;; @@471c 103
+; .page ;; @@471c 103
+;************************************************************************ ;; @@471c 103
+;   Key_Save  Save function key definitions (from disk)   [900725] ;; @@471c 103
+;************************************************************************ ;; @@471c 103
+ ;; @@471c 103
+Key_Save                                                   ;; @@471c 103
+                 jsr GetSaveChannel                       ; [910930] ;; @@471c 103
+                 lda #highds                              ; set starting & ending addresses ;; @@471f 103
+                 ldy #>_pky_lengths                       ; start address & pointer to it ;; @@4721 103
+                 ldx #<_pky_lengths                        ;; @@4723 103
+                 sty highds+1                              ;; @@4725 103
+                 stx highds                                ;; @@4727 103
+                 iny                                      ; end address = start address + 256 + 1 ;; @@4729 103
+                 inx                                       ;; @@472a 103
+                 bra savenb                               ; [910925] ;; @@472b 103
+; jsr _savesp  ;save it ;; @@472e 103
+;; clc   ; return no error  ????why not  [910404] ;; @@472e 103
+; bra exit_disk_op ; but if direct mode print DOS error  [910404] ;; @@472e 103
+ ;; @@472e 103
+ ;; @@472e 103
+ ;; @@472e 103
+GetSaveChannel                                            ; Used by KeySave and SpriteSave    [910930] ;; @@472e 103
+                 jsr chrget                               ; eat SAVE token ;; @@472e 103
+                 lda #$66                                 ; parse:  filename [,U#] [,D#] ;; @@4731 103
+                 jsr dosprs                               ; parse options ;; @@4733 103
+                 jsr chk2                                 ; check required parameters ;; @@4736 103
+ ;; @@4739 103
+                 ldy #fopn                                ; DOS table offset ;; @@4739 103
+                 lda #4                                   ; length ;; @@473b 103
+                 jsr sendp                                 ;; @@473d 103
+                 lda #sys_bank                            ; set banks ???? buffer in system bank ???? ;; @@4740 103
+                 ldx #sys_bank                             ;; @@4742 103
+                 jmp _setbank                              ;; @@4744 103
+ ;; @@4747 103
+;.end ;; @@4747 103
+; .page ;; @@4747 103
+; .subttl  BANK ;; @@4747 103
+ ;; @@4747 103
+;************************************************************************ ;; @@4747 103
+;*  Set Memory Bank for PEEK,POKE,WAIT,BLOAD,BSAVE and SYS,BOOT Commands ;; @@4747 103
+;* ;; @@4747 103
+;*  Syntax: BANK DATA  n  for PEEK,POKE,WAIT,BLOAD,BSAVE ;; @@4747 103
+;*  BANK SYS  [a,x,y,z] for SYS,BOOT Commands ;; @@4747 103
+;* ;; @@4747 103
+;* where   n=  %11111111  to access I/O area (System MAP) ;; @@4747 103
+;*      %0xxxxxxx to use physical bank n ;; @@4747 103
+;* ;; @@4747 103
+;* or      a,x,y,z  describe precise configuration for MAPper ;; @@4747 103
+;*    if omitted, the System MAP is to be used. ;; @@4747 103
+;* ;; @@4747 103
+;* The DATA option is to access data,  i.e., LDA/STA_far ;; @@4747 103
+;* The SYS  option is to execute code, i.e., JMP/JSR_far ;; @@4747 103
+;* ;; @@4747 103
+;*  Idea: BANK SCREEN n  when REC is finalized???? ;; @@4747 103
+;************************************************************************ ;; @@4747 103
+ ;; @@4747 103
+bank             jsr getbyt                               ; get bank number in .x ;; @@4747 103
+                 stx current_bank                          ;; @@474a 103
+                 rts                                       ;; @@474d 103
+ ;; @@474e 103
+ ;; @@474e 103
+;.end ;; @@474e 103
+; .page ;; @@474e 103
+; .subttl  PLAY ;; @@474e 103
+ ;; @@474e 103
+; C65 Music Interpreter ;; @@474e 103
+; ;; @@474e 103
+; Syntax : PLAY "music_string" ;; @@474e 103
+; ;; @@474e 103
+; Where : music_string is a string of characters composed of: ;; @@474e 103
+; ;; @@474e 103
+; A..G   : notes ;; @@474e 103
+; W,H,Q,I,S : set note lengths to whole,half,quarter,eighth,sixteenth ;; @@474e 103
+; U   : set volume level   (0-9) ;; @@474e 103
+; O   : set octave    (0-6) ;; @@474e 103
+; T   : set current envelope  (0-9) ;; @@474e 103
+; V   : select voice to play  (1-6: 1-3 right, 4-6 left) ;; @@474e 103
+; X   : filter    (0-1: 0=off, 1=on) ;; @@474e 103
+; M   : measure ;; @@474e 103
+; R   : rest ;; @@474e 103
+; .   : dot ;; @@474e 103
+; #   : sharp ;; @@474e 103
+; $   : flat ;; @@474e 103
+ ;; @@474e 103
+ ;; @@474e 103
+play             jsr frmstr                               ; frmevl,frestr,return w/ .A=len, (index)=>string ;; @@474e 103
+; sta sw_rom_ram0  ;???? ;; @@4751 103
+                 sta z_p_temp_1                           ; save number of characters ;; @@4751 103
+                 jsr clear_play_flags                     ; set 'dot' and 'sharp' to 0. return with Acc=0 ;; @@4753 103
+                 sta hulp                                 ; zero counter ;; @@4756 103
+ ;; @@4758 103
+_local_1102_10   ldy hulp                                  ;; @@4758 103
+                 cpy z_p_temp_1                            ;; @@475a 103
+                 beq play_rts                             ; done! ;; @@475c 103
+                 jsr indin1_ram1                           ;; @@475e 103
+                 jsr play_one_character                    ;; @@4761 103
+                 inc hulp                                  ;; @@4764 103
+                 bne _local_1102_10                       ; always ;; @@4766 103

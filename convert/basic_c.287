@@ -1,79 +1,79 @@
-get_sprite_number                                           ;; b5b5 287
-                 jsr getbyt                                ;; b5b5 287
-; dex        [910221] ;; b5b8 287
-                 cpx #8                                    ;; b5b8 287
-                 bcs fcerr                                 ;; b5ba 287
-                 stx z_p_temp_1                            ;; b5bd 287
-                 rts                                       ;; b5bf 287
- ;; b5c0 287
-;.end ;; b5c0 287
-; .page ;; b5c0 287
-; .subttl MOVSPR Command ;; b5c0 287
- ;; b5c0 287
-;**************************************************************** ;; b5c0 287
-; Move Sprite.  Position sprite and optionally animate it. ;; b5c0 287
-; ;; b5c0 287
-;   MOVSPR n, [ p | x#y ]   or   MOVSPR n, p1 TO p2, speed ;; b5c0 287
-; ;; b5c0 287
-;  n = Sprite number (0-7) ;; b5c0 287
-; p = (x,y) coordinate. ;; b5c0 287
-;  Relative and angular distances  are relative to ;; b5c0 287
-;  current sprite position and scaled if scaling is on. ;; b5c0 287
-; x#y = Constant movement at an angle-x with speed-y. ;; b5c0 287
-;**************************************************************** ;; b5c0 287
- ;; b5c0 287
-movspr           lda #0                                   ; flag 'movspr' initial coord   [910808] ;; b5c0 287
-                 sta op                                   ; (0=movspr, $80=movspr_to, $7f=mouse) ;; b5c2 287
-                 jsr get_sprite_number                    ; get sprite # ;; b5c4 287
-                 jsr sprcor                               ; get first coordinate (y,a) ;; b5c7 287
-movspr_1                                                  ; entry to eval destination coordinate  [910808] ;; b5ca 287
-                 bit numcnt                               ; test coordinate type ;; b5ca 287
-                 bvs snerr                                ; syntax error ;; b5cd 287
-                 sty xdest                                ; save coordinate value ;; b5d0 287
-                 sty xdest+2                               ;; b5d3 287
-                 sta xdest+1                               ;; b5d6 287
-                 sta xdest+3                               ;; b5d9 287
- ;; b5dc 287
-                 jsr sprcor                               ; get second coordinate (y,a) ;; b5dc 287
-                 bit numcnt                               ; test coordinate type & dispatch accordingly ;; b5df 287
-                 bvc movspr_normal                        ; normal coordinates ;; b5e2 287
-                 bmi movspr_angle                         ; angular coordinates ;; b5e4 287
- ;; b5e6 287
-                 bit op                                   ; angle#speed, test if allowed ;; b5e6 287
-                 bmi snerr                                ; ng- movspr_to call ;; b5e8 287
-                 phy                                      ; ok- save speed value ;; b5eb 287
-                 ldy #xdest-vwork                          ;; b5ec 287
-                 jsr getang                               ; get angle of movement ;; b5ee 287
-                 ldx z_p_temp_1                           ; get sprite number ;; b5f1 287
-                 ldy sproff,x                             ; get offset to speed data ;; b5f3 287
-                 lda #0                                    ;; b5f6 287
-                 sta sprite_data,y                        ; turn off sprite speed ;; b5f8 287
-                 iny                                       ;; b5fb 287
- ;; b5fc 287
-                 ldx #3                                    ;; b5fc 287
-_local_1286_20   lsr sinval,x                              ;; b5fe 287
-                 dex                                       ;; b601 287
-                 ror sinval,x                              ;; b602 287
-                 dex                                       ;; b605 287
-                 bpl _local_1286_20                        ;; b606 287
- ;; b608 287
-_local_1286_30   sei                                       ;; b608 287
-                 inx                                      ; x=0 ;; b609 287
-                 lda angsgn,x                             ; move angle data to speed data ;; b60a 287
-                 iny                                       ;; b60d 287
-                 sta sprite_data,y                         ;; b60e 287
-                 cpx #4                                    ;; b611 287
-                 bne _local_1286_30                        ;; b613 287
- ;; b615 287
-                 lda #0                                   ; clear speed angle counts ;; b615 287
-_local_1286_40   iny                                       ;; b617 287
-                 sta sprite_data,y                         ;; b618 287
-                 dex                                       ;; b61b 287
-                 bne _local_1286_40                        ;; b61c 287
- ;; b61e 287
-                 pla                                      ; restore speed value ;; b61e 287
-                 and #$3f                                 ; limit range (0-63) ????  [910806] ;; b61f 287
-                 sta sprite_data-10,y                     ; start sprite movement ;; b621 287
-                 cli                                       ;; b624 287
-                 rts                                       ;; b625 287
- ;; b626 287
+get_sprite_number                                           ;; @@b5b5 287
+                 jsr getbyt                                ;; @@b5b5 287
+; dex        [910221] ;; @@b5b8 287
+                 cpx #8                                    ;; @@b5b8 287
+                 bcs fcerr                                 ;; @@b5ba 287
+                 stx z_p_temp_1                            ;; @@b5bd 287
+                 rts                                       ;; @@b5bf 287
+ ;; @@b5c0 287
+;.end ;; @@b5c0 287
+; .page ;; @@b5c0 287
+; .subttl MOVSPR Command ;; @@b5c0 287
+ ;; @@b5c0 287
+;**************************************************************** ;; @@b5c0 287
+; Move Sprite.  Position sprite and optionally animate it. ;; @@b5c0 287
+; ;; @@b5c0 287
+;   MOVSPR n, [ p | x#y ]   or   MOVSPR n, p1 TO p2, speed ;; @@b5c0 287
+; ;; @@b5c0 287
+;  n = Sprite number (0-7) ;; @@b5c0 287
+; p = (x,y) coordinate. ;; @@b5c0 287
+;  Relative and angular distances  are relative to ;; @@b5c0 287
+;  current sprite position and scaled if scaling is on. ;; @@b5c0 287
+; x#y = Constant movement at an angle-x with speed-y. ;; @@b5c0 287
+;**************************************************************** ;; @@b5c0 287
+ ;; @@b5c0 287
+movspr           lda #0                                   ; flag 'movspr' initial coord   [910808] ;; @@b5c0 287
+                 sta op                                   ; (0=movspr, $80=movspr_to, $7f=mouse) ;; @@b5c2 287
+                 jsr get_sprite_number                    ; get sprite # ;; @@b5c4 287
+                 jsr sprcor                               ; get first coordinate (y,a) ;; @@b5c7 287
+movspr_1                                                  ; entry to eval destination coordinate  [910808] ;; @@b5ca 287
+                 bit numcnt                               ; test coordinate type ;; @@b5ca 287
+                 bvs snerr                                ; syntax error ;; @@b5cd 287
+                 sty xdest                                ; save coordinate value ;; @@b5d0 287
+                 sty xdest+2                               ;; @@b5d3 287
+                 sta xdest+1                               ;; @@b5d6 287
+                 sta xdest+3                               ;; @@b5d9 287
+ ;; @@b5dc 287
+                 jsr sprcor                               ; get second coordinate (y,a) ;; @@b5dc 287
+                 bit numcnt                               ; test coordinate type & dispatch accordingly ;; @@b5df 287
+                 bvc movspr_normal                        ; normal coordinates ;; @@b5e2 287
+                 bmi movspr_angle                         ; angular coordinates ;; @@b5e4 287
+ ;; @@b5e6 287
+                 bit op                                   ; angle#speed, test if allowed ;; @@b5e6 287
+                 bmi snerr                                ; ng- movspr_to call ;; @@b5e8 287
+                 phy                                      ; ok- save speed value ;; @@b5eb 287
+                 ldy #xdest-vwork                          ;; @@b5ec 287
+                 jsr getang                               ; get angle of movement ;; @@b5ee 287
+                 ldx z_p_temp_1                           ; get sprite number ;; @@b5f1 287
+                 ldy sproff,x                             ; get offset to speed data ;; @@b5f3 287
+                 lda #0                                    ;; @@b5f6 287
+                 sta sprite_data,y                        ; turn off sprite speed ;; @@b5f8 287
+                 iny                                       ;; @@b5fb 287
+ ;; @@b5fc 287
+                 ldx #3                                    ;; @@b5fc 287
+_local_1286_20   lsr sinval,x                              ;; @@b5fe 287
+                 dex                                       ;; @@b601 287
+                 ror sinval,x                              ;; @@b602 287
+                 dex                                       ;; @@b605 287
+                 bpl _local_1286_20                        ;; @@b606 287
+ ;; @@b608 287
+_local_1286_30   sei                                       ;; @@b608 287
+                 inx                                      ; x=0 ;; @@b609 287
+                 lda angsgn,x                             ; move angle data to speed data ;; @@b60a 287
+                 iny                                       ;; @@b60d 287
+                 sta sprite_data,y                         ;; @@b60e 287
+                 cpx #4                                    ;; @@b611 287
+                 bne _local_1286_30                        ;; @@b613 287
+ ;; @@b615 287
+                 lda #0                                   ; clear speed angle counts ;; @@b615 287
+_local_1286_40   iny                                       ;; @@b617 287
+                 sta sprite_data,y                         ;; @@b618 287
+                 dex                                       ;; @@b61b 287
+                 bne _local_1286_40                        ;; @@b61c 287
+ ;; @@b61e 287
+                 pla                                      ; restore speed value ;; @@b61e 287
+                 and #$3f                                 ; limit range (0-63) ????  [910806] ;; @@b61f 287
+                 sta sprite_data-10,y                     ; start sprite movement ;; @@b621 287
+                 cli                                       ;; @@b624 287
+                 rts                                       ;; @@b625 287
+ ;; @@b626 287

@@ -1,87 +1,87 @@
-getspt           ldy #2                                   ; get pntr to descriptor ;; 36e2 52
-                 jsr indfmo                                ;; 36e4 52
-                 cmp dsdesc+2                             ; check for DS$ hi ;; 36e7 52
-                 bne dskx2                                ; nope ;; 36e9 52
-                 pha                                       ;; 36eb 52
-                 dey                                       ;; 36ec 52
-                 jsr indfmo                                ;; 36ed 52
-                 cmp dsdesc+1                             ; check for DS$ lo ;; 36f0 52
-                 bne dskx1                                ; nope ;; 36f2 52
-                 lda dsdesc                               ; check if len=0 ;; 36f4 52
-                 beq dskx1                                ; yup ;; 36f6 52
-                 pla                                      ; fall through to copy ;; 36f8 52
- ;; 36f9 52
- ;; 36f9 52
-copy             ldy #0                                    ;; 36f9 52
-                 jsr indfmo                                ;; 36fb 52
-                 jsr strini                               ; get room to copy string into ;; 36fe 52
-                 lda dscpnt                               ; get pointer to old descriptor, so ;; 3701 52
-                 ldy dscpnt+1                              ;; 3703 52
-                 sta strng1                               ; movins can find string ;; 3705 52
-                 sty strng1+1                              ;; 3707 52
-                 jsr movins                               ; copy it ;; 3709 52
- ;; 370c 52
-                 lda strng1                               ; fix to free get strings ;; 370c 52
-                 ldy strng1+1                              ;; 370e 52
-                 jsr fretms                               ; free the string, if it is a temp ;; 3710 52
- ;; 3713 52
-                 lda #<dsctmp                              ;; 3713 52
-                 ldy #>dsctmp                              ;; 3715 52
- ;; 3717 52
-copyc            sta dscpnt                                ;; 3717 52
-                 sty dscpnt+1                              ;; 3719 52
-                 sta index                                ; index points to new descriptor ;; 371b 52
-                 sty index+1                               ;; 371d 52
-                 jsr fretms                                ;; 371f 52
- ;; 3722 52
-; .page ;; 3722 52
-;   Fix the strings by flagging the old string as garbage and the new ;; 3722 52
-;   string by pointing it to its new descriptor. ;; 3722 52
- ;; 3722 52
-                 jsr stradj                               ; set up new string ;; 3722 52
-                 bcc _local_1051_10                       ; leave it alone ;; 3725 52
-                 ldy #0                                    ;; 3727 52
-                 lda forpnt                               ; put in backwards link ;; 3729 52
-                 phx                                       ;; 372b 52
-                 ldx #index                                ;; 372c 52
-                 jsr sta_far_ram1                          ;; 372e 52
-                 iny                                       ;; 3731 52
-                 lda forpnt+1                              ;; 3732 52
-                 jsr sta_far_ram1                          ;; 3734 52
-                 plx                                       ;; 3737 52
- ;; 3738 52
-_local_1051_10   lda forpnt                               ; fix old string ;; 3738 52
-                 sta index                                 ;; 373a 52
-                 lda forpnt+1                              ;; 373c 52
-                 sta index+1                               ;; 373e 52
-                 jsr stradj                               ; point to old string ;; 3740 52
-                 bcc _local_1051_20                       ; in text do not fix ;; 3743 52
-                 dey                                      ; restore y ;; 3745 52
-                 phx                                       ;; 3746 52
-                 ldx #index                                ;; 3747 52
-                 lda #$ff                                 ; garbage flag ;; 3749 52
-                 jsr sta_far_ram1                          ;; 374b 52
-                 dey                                       ;; 374e 52
-                 pla                                      ; (was txa) ;; 374f 52
-                 pha                                       ;; 3750 52
-                 jsr sta_far_ram1                         ; store length ;; 3751 52
-                 plx                                       ;; 3754 52
- ;; 3755 52
-_local_1051_20   ldy #2                                   ; set the descriptor ;; 3755 52
-                 phx                                       ;; 3757 52
-                 ldx #forpnt                               ;; 3758 52
-_local_1051_30   lda #dscpnt                               ;; 375a 52
-                 jsr lda_far_ram1                         ; lda (dscpnt),y from RAM1 ;; 375c 52
-                 jsr sta_far_ram1                         ; sta (forpnt),y to   RAM1 ;; 375f 52
-                 dey                                       ;; 3762 52
-                 bpl _local_1051_30                        ;; 3763 52
-                 plx                                       ;; 3765 52
-                 rts                                       ;; 3766 52
- ;; 3767 52
-; .page ;; 3767 52
-;   STRADJ takes the pointer index which points to a descriptor and ;; 3767 52
-;   indexes to the desciptor's string data.  If the string is not in ;; 3767 52
-;   string space (no action to take) we return with carry clear, else ;; 3767 52
-;   we return with the pointer set to the link bytes in the string, the ;; 3767 52
-;   length in .a and the carry set. ;; 3767 52
- ;; 3767 52
+getspt           ldy #2                                   ; get pntr to descriptor ;; @@36e2 52
+                 jsr indfmo                                ;; @@36e4 52
+                 cmp dsdesc+2                             ; check for DS$ hi ;; @@36e7 52
+                 bne dskx2                                ; nope ;; @@36e9 52
+                 pha                                       ;; @@36eb 52
+                 dey                                       ;; @@36ec 52
+                 jsr indfmo                                ;; @@36ed 52
+                 cmp dsdesc+1                             ; check for DS$ lo ;; @@36f0 52
+                 bne dskx1                                ; nope ;; @@36f2 52
+                 lda dsdesc                               ; check if len=0 ;; @@36f4 52
+                 beq dskx1                                ; yup ;; @@36f6 52
+                 pla                                      ; fall through to copy ;; @@36f8 52
+ ;; @@36f9 52
+ ;; @@36f9 52
+copy             ldy #0                                    ;; @@36f9 52
+                 jsr indfmo                                ;; @@36fb 52
+                 jsr strini                               ; get room to copy string into ;; @@36fe 52
+                 lda dscpnt                               ; get pointer to old descriptor, so ;; @@3701 52
+                 ldy dscpnt+1                              ;; @@3703 52
+                 sta strng1                               ; movins can find string ;; @@3705 52
+                 sty strng1+1                              ;; @@3707 52
+                 jsr movins                               ; copy it ;; @@3709 52
+ ;; @@370c 52
+                 lda strng1                               ; fix to free get strings ;; @@370c 52
+                 ldy strng1+1                              ;; @@370e 52
+                 jsr fretms                               ; free the string, if it is a temp ;; @@3710 52
+ ;; @@3713 52
+                 lda #<dsctmp                              ;; @@3713 52
+                 ldy #>dsctmp                              ;; @@3715 52
+ ;; @@3717 52
+copyc            sta dscpnt                                ;; @@3717 52
+                 sty dscpnt+1                              ;; @@3719 52
+                 sta index                                ; index points to new descriptor ;; @@371b 52
+                 sty index+1                               ;; @@371d 52
+                 jsr fretms                                ;; @@371f 52
+ ;; @@3722 52
+; .page ;; @@3722 52
+;   Fix the strings by flagging the old string as garbage and the new ;; @@3722 52
+;   string by pointing it to its new descriptor. ;; @@3722 52
+ ;; @@3722 52
+                 jsr stradj                               ; set up new string ;; @@3722 52
+                 bcc _local_1051_10                       ; leave it alone ;; @@3725 52
+                 ldy #0                                    ;; @@3727 52
+                 lda forpnt                               ; put in backwards link ;; @@3729 52
+                 phx                                       ;; @@372b 52
+                 ldx #index                                ;; @@372c 52
+                 jsr sta_far_ram1                          ;; @@372e 52
+                 iny                                       ;; @@3731 52
+                 lda forpnt+1                              ;; @@3732 52
+                 jsr sta_far_ram1                          ;; @@3734 52
+                 plx                                       ;; @@3737 52
+ ;; @@3738 52
+_local_1051_10   lda forpnt                               ; fix old string ;; @@3738 52
+                 sta index                                 ;; @@373a 52
+                 lda forpnt+1                              ;; @@373c 52
+                 sta index+1                               ;; @@373e 52
+                 jsr stradj                               ; point to old string ;; @@3740 52
+                 bcc _local_1051_20                       ; in text do not fix ;; @@3743 52
+                 dey                                      ; restore y ;; @@3745 52
+                 phx                                       ;; @@3746 52
+                 ldx #index                                ;; @@3747 52
+                 lda #$ff                                 ; garbage flag ;; @@3749 52
+                 jsr sta_far_ram1                          ;; @@374b 52
+                 dey                                       ;; @@374e 52
+                 pla                                      ; (was txa) ;; @@374f 52
+                 pha                                       ;; @@3750 52
+                 jsr sta_far_ram1                         ; store length ;; @@3751 52
+                 plx                                       ;; @@3754 52
+ ;; @@3755 52
+_local_1051_20   ldy #2                                   ; set the descriptor ;; @@3755 52
+                 phx                                       ;; @@3757 52
+                 ldx #forpnt                               ;; @@3758 52
+_local_1051_30   lda #dscpnt                               ;; @@375a 52
+                 jsr lda_far_ram1                         ; lda (dscpnt),y from RAM1 ;; @@375c 52
+                 jsr sta_far_ram1                         ; sta (forpnt),y to   RAM1 ;; @@375f 52
+                 dey                                       ;; @@3762 52
+                 bpl _local_1051_30                        ;; @@3763 52
+                 plx                                       ;; @@3765 52
+                 rts                                       ;; @@3766 52
+ ;; @@3767 52
+; .page ;; @@3767 52
+;   STRADJ takes the pointer index which points to a descriptor and ;; @@3767 52
+;   indexes to the desciptor's string data.  If the string is not in ;; @@3767 52
+;   string space (no action to take) we return with carry clear, else ;; @@3767 52
+;   we return with the pointer set to the link bytes in the string, the ;; @@3767 52
+;   length in .a and the carry set. ;; @@3767 52
+ ;; @@3767 52

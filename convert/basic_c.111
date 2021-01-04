@@ -1,58 +1,58 @@
-play_sharp                                                 ;; 4917 111
-                 lda #1                                    ;; 4917 111
-                 !byte $2c                                 ;; 4919 111
-play_flat                                                  ;; 491a 111
-                 lda #$ff                                  ;; 491a 111
-                 sta sharp                                 ;; 491c 111
-                 rts                                       ;; 491f 111
- ;; 4920 111
-; .page ;; 4920 111
-play_note_1                                               ; play a note ;; 4920 111
-                 sta pitch+1                               ;; 4920 111
-                 lda #0                                   ; flag 'not rest' ;; 4923 111
-                 !byte $2c                                ; hop ;; 4925 111
-play_rest                                                  ;; 4926 111
-                 lda #$ff                                 ; flag 'rest' ;; 4926 111
-                 pha                                      ; save flag ;; 4928 111
-                 ldx voice                                 ;; 4929 111
-                 ldy times2,x                             ; y=x*2 ;; 492c 111
-_local_1110_10   lda voices+1,y                           ; test if there is a note playing ;; 492f 111
-                 bpl _local_1110_10                       ; and loop if so ;; 4932 111
- ;; 4934 111
-                 sei                                       ;; 4934 111
-                 lda ntime                                ; load counter for current length ;; 4935 111
-                 sta voices,y                              ;; 4938 111
-                 lda ntime+1                               ;; 493b 111
-                 sta voices+1,y                            ;; 493e 111
-                 lda dnote                                ; test if this is a dotted note ;; 4941 111
-                 beq _local_1110_20                       ; no ;; 4944 111
-                 lda ntime+1                               ;; 4946 111
-                 lsr a                                    ; duration is 1.5 x current length ;; 4949 111
-                 pha                                       ;; 494a 111
-                 lda ntime                                 ;; 494b 111
-                 ror a                                     ;; 494e 111
-                 clc                                       ;; 494f 111
-                 adc voices,y                              ;; 4950 111
-                 sta voices,y                              ;; 4953 111
-                 pla                                       ;; 4956 111
-                 adc voices+1,y                            ;; 4957 111
-                 sta voices+1,y                            ;; 495a 111
- ;; 495d 111
-_local_1110_20   pla                                      ; test if this is a rest ;; 495d 111
-                 bmi _local_1110_30                       ; and branch if so- clear play flags and exit [910722] ;; 495e 111
- ;; 4960 111
-; jsr put_io_in_map ;; 4960 111
-; jsr go_slow  ;      [910716] 4567R7A ;; 4960 111
-                 ldy SID_offset,x                         ; get offset to voice hardware ;; 4960 111
-                 lda pitch                                 ;; 4963 111
-                 sta sid1,y                                ;; 4966 111
-                 lda pitch+1                               ;; 4969 111
-                 sta sid1+1,y                              ;; 496c 111
-                 lda #$08                                 ; reset this voice ;; 496f 111
-                 sta sid1+4,y                              ;; 4971 111
-                 lda waveform,x                           ; and finally, turn on gate ;; 4974 111
-                 sta sid1+4,y                              ;; 4977 111
-; jsr go_fast  ;      [910716] 4567R7A ;; 497a 111
-_local_1110_30   cli                                       ;; 497a 111
- ;; 497b 111
-; .page ;; 497b 111
+play_sharp                                                 ;; @@4917 111
+                 lda #1                                    ;; @@4917 111
+                 !text $2c                                 ;; @@4919 111
+play_flat                                                  ;; @@491a 111
+                 lda #$ff                                  ;; @@491a 111
+                 sta sharp                                 ;; @@491c 111
+                 rts                                       ;; @@491f 111
+ ;; @@4920 111
+; .page ;; @@4920 111
+play_note_1                                               ; play a note ;; @@4920 111
+                 sta pitch+1                               ;; @@4920 111
+                 lda #0                                   ; flag 'not rest' ;; @@4923 111
+                 !text $2c                                ; hop ;; @@4925 111
+play_rest                                                  ;; @@4926 111
+                 lda #$ff                                 ; flag 'rest' ;; @@4926 111
+                 pha                                      ; save flag ;; @@4928 111
+                 ldx voice                                 ;; @@4929 111
+                 ldy times2,x                             ; y=x*2 ;; @@492c 111
+_local_1110_10   lda voices+1,y                           ; test if there is a note playing ;; @@492f 111
+                 bpl _local_1110_10                       ; and loop if so ;; @@4932 111
+ ;; @@4934 111
+                 sei                                       ;; @@4934 111
+                 lda ntime                                ; load counter for current length ;; @@4935 111
+                 sta voices,y                              ;; @@4938 111
+                 lda ntime+1                               ;; @@493b 111
+                 sta voices+1,y                            ;; @@493e 111
+                 lda dnote                                ; test if this is a dotted note ;; @@4941 111
+                 beq _local_1110_20                       ; no ;; @@4944 111
+                 lda ntime+1                               ;; @@4946 111
+                 lsr a                                    ; duration is 1.5 x current length ;; @@4949 111
+                 pha                                       ;; @@494a 111
+                 lda ntime                                 ;; @@494b 111
+                 ror a                                     ;; @@494e 111
+                 clc                                       ;; @@494f 111
+                 adc voices,y                              ;; @@4950 111
+                 sta voices,y                              ;; @@4953 111
+                 pla                                       ;; @@4956 111
+                 adc voices+1,y                            ;; @@4957 111
+                 sta voices+1,y                            ;; @@495a 111
+ ;; @@495d 111
+_local_1110_20   pla                                      ; test if this is a rest ;; @@495d 111
+                 bmi _local_1110_30                       ; and branch if so- clear play flags and exit [910722] ;; @@495e 111
+ ;; @@4960 111
+; jsr put_io_in_map ;; @@4960 111
+; jsr go_slow  ;      [910716] 4567R7A ;; @@4960 111
+                 ldy SID_offset,x                         ; get offset to voice hardware ;; @@4960 111
+                 lda pitch                                 ;; @@4963 111
+                 sta sid1,y                                ;; @@4966 111
+                 lda pitch+1                               ;; @@4969 111
+                 sta sid1+1,y                              ;; @@496c 111
+                 lda #$08                                 ; reset this voice ;; @@496f 111
+                 sta sid1+4,y                              ;; @@4971 111
+                 lda waveform,x                           ; and finally, turn on gate ;; @@4974 111
+                 sta sid1+4,y                              ;; @@4977 111
+; jsr go_fast  ;      [910716] 4567R7A ;; @@497a 111
+_local_1110_30   cli                                       ;; @@497a 111
+ ;; @@497b 111
+; .page ;; @@497b 111

@@ -1,41 +1,41 @@
-record           lda #'#'                                  ;; 730b 229
-                 jsr synchr                               ; syntax error if not 'record#' ;; 730d 229
- ;; 7310 229
-                 jsr getbyt                               ; get lfn in x ;; 7310 229
-                 cpx #0                                    ;; 7313 229
-                 beq fcerr                                ; cannot be zero ;; 7315 229
-                 stx dosla                                ; save logical address ;; 7318 229
- ;; 731b 229
-                 jsr comwrd                               ; check for comma, get record number in 'poker' ;; 731b 229
- ;; 731e 229
-                 ldx #1                                   ; set up to get starting byte # - default is 1 ;; 731e 229
-                 jsr optbyt                                ;; 7320 229
-                 stx dosrcl                               ; save byte position (pos)    [911024] ;; 7323 229
-                 txa                                      ; cpx #0 ;; 7326 229
-                 beq fcerr                                ; if out of range ;; 7327 229
-                 inx                                      ; cpx #$ff ;; 732a 229
-                 beq fcerr                                ; if out of range ;; 732b 229
- ;; 732e 229
-                 lda dosla                                ; get logical address ;; 732e 229
-; jsr put_io_in_map ;; 7331 229
-                 jsr _lkupla                              ; logical to physical map ;; 7331 229
-                 bcs _local_1228_20                       ; if file not found (not open)    [910404] ;; 7334 229
-                 sty dossa_temp                           ; save secondary address ;; 7336 229
- ;; 7339 229
-                 stx dosfa                                ; set up device number for trans routine ;; 7339 229
-                 lda #0                                    ;; 733c 229
-                 sta dosla                                ; set up logical address for trans routine ;; 733e 229
-                 lda #$6f                                  ;; 7341 229
-                 sta dossa                                ; and secondary address, too! ;; 7343 229
- ;; 7346 229
-                 ldy #frec                                ; set pointer ;; 7346 229
-                 lda #4                                   ; process five bytes ;; 7348 229
-                 jsr trans                                ; send command ;; 734a 229
-                 bra print_dos_error                      ; if any ;; 734d 229
- ;; 7350 229
-_local_1228_20   ldx #errfno                              ; file not found err (file not open)   [910404] ;; 7350 229
-                 bra error                                 ;; 7352 229
- ;; 7355 229
-; .page ;; 7355 229
-; DCLEAR - reinitilaize the drive ;; 7355 229
- ;; 7355 229
+record           lda #'#'                                  ;; @@730b 229
+                 jsr synchr                               ; syntax error if not 'record#' ;; @@730d 229
+ ;; @@7310 229
+                 jsr getbyt                               ; get lfn in x ;; @@7310 229
+                 cpx #0                                    ;; @@7313 229
+                 beq fcerr                                ; cannot be zero ;; @@7315 229
+                 stx dosla                                ; save logical address ;; @@7318 229
+ ;; @@731b 229
+                 jsr comwrd                               ; check for comma, get record number in 'poker' ;; @@731b 229
+ ;; @@731e 229
+                 ldx #1                                   ; set up to get starting byte # - default is 1 ;; @@731e 229
+                 jsr optbyt                                ;; @@7320 229
+                 stx dosrcl                               ; save byte position (pos)    [911024] ;; @@7323 229
+                 txa                                      ; cpx #0 ;; @@7326 229
+                 beq fcerr                                ; if out of range ;; @@7327 229
+                 inx                                      ; cpx #$ff ;; @@732a 229
+                 beq fcerr                                ; if out of range ;; @@732b 229
+ ;; @@732e 229
+                 lda dosla                                ; get logical address ;; @@732e 229
+; jsr put_io_in_map ;; @@7331 229
+                 jsr _lkupla                              ; logical to physical map ;; @@7331 229
+                 bcs _local_1228_20                       ; if file not found (not open)    [910404] ;; @@7334 229
+                 sty dossa_temp                           ; save secondary address ;; @@7336 229
+ ;; @@7339 229
+                 stx dosfa                                ; set up device number for trans routine ;; @@7339 229
+                 lda #0                                    ;; @@733c 229
+                 sta dosla                                ; set up logical address for trans routine ;; @@733e 229
+                 lda #$6f                                  ;; @@7341 229
+                 sta dossa                                ; and secondary address, too! ;; @@7343 229
+ ;; @@7346 229
+                 ldy #frec                                ; set pointer ;; @@7346 229
+                 lda #4                                   ; process five bytes ;; @@7348 229
+                 jsr trans                                ; send command ;; @@734a 229
+                 bra print_dos_error                      ; if any ;; @@734d 229
+ ;; @@7350 229
+_local_1228_20   ldx #errfno                              ; file not found err (file not open)   [910404] ;; @@7350 229
+                 bra error                                 ;; @@7352 229
+ ;; @@7355 229
+; .page ;; @@7355 229
+; DCLEAR - reinitilaize the drive ;; @@7355 229
+ ;; @@7355 229

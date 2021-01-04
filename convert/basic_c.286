@@ -1,42 +1,42 @@
-Sprite_Save                                               ; Just like Key_Save     [911001] ;; b57a 286
-                 jsr GetSaveChannel                        ;; b57a 286
-                 lda #highds                              ; set starting & ending addresses ;; b57d 286
-                 ldy #>sprite_base                        ; start address & pointer to it ;; b57f 286
-                 ldx #<sprite_base                         ;; b581 286
-                 sty highds+1                              ;; b583 286
-                 stx highds                                ;; b585 286
-                 iny                                      ; end address = start address + 512 + 1 ;; b587 286
-                 iny                                       ;; b588 286
-                 inx                                       ;; b589 286
-                 bra savenb                               ; [910925] ;; b58a 286
- ;; b58d 286
- ;; b58d 286
- ;; b58d 286
-Sprite_Load                                                ;; b58d 286
-                 jsr GetLoadChannel                       ; get a channel      [911001] ;; b58d 286
-                 ldy #>sprite_base                         ;; b590 286
-                 lda #<sprite_base                         ;; b592 286
-                 jsr LoadBlock                            ; load first block ;; b594 286
-                 inc highds+1                              ;; b597 286
-                 jsr LoadBlockNext                        ; load second block ;; b599 286
-                 bra list_err                             ; release channel, close file, return to main ;; b59c 286
- ;; b59f 286
-; .page ;; b59f 286
-;  Set or clear a bit in a VIC register ;; b59f 286
-; ;; b59f 286
-; .X = 1 to set, 0 to clear ;; b59f 286
-; .Y = register in VIC to operate opon ;; b59f 286
- ;; b59f 286
-sprbit           txa                                       ;; b59f 286
-                 lsr a                                    ; put lsb in .C (0 clear, 1 set sprite bit) ;; b5a0 286
-                 bne fcerr                                ; only 0 or 1, please. ;; b5a1 286
-; jsr put_io_in_map ;; b5a4 286
-                 ldx z_p_temp_1                           ; get sprite number ;; b5a4 286
-                 lda sbits,x                               ;; b5a6 286
-                 ora vic,y                                 ;; b5a9 286
-                 bcs _local_1285_10                        ;; b5ac 286
-                 eor sbits,x                               ;; b5ae 286
-_local_1285_10   sta vic,y                                 ;; b5b1 286
-                 rts                                       ;; b5b4 286
- ;; b5b5 286
- ;; b5b5 286
+Sprite_Save                                               ; Just like Key_Save     [911001] ;; @@b57a 286
+                 jsr GetSaveChannel                        ;; @@b57a 286
+                 lda #highds                              ; set starting & ending addresses ;; @@b57d 286
+                 ldy #>sprite_base                        ; start address & pointer to it ;; @@b57f 286
+                 ldx #<sprite_base                         ;; @@b581 286
+                 sty highds+1                              ;; @@b583 286
+                 stx highds                                ;; @@b585 286
+                 iny                                      ; end address = start address + 512 + 1 ;; @@b587 286
+                 iny                                       ;; @@b588 286
+                 inx                                       ;; @@b589 286
+                 bra savenb                               ; [910925] ;; @@b58a 286
+ ;; @@b58d 286
+ ;; @@b58d 286
+ ;; @@b58d 286
+Sprite_Load                                                ;; @@b58d 286
+                 jsr GetLoadChannel                       ; get a channel      [911001] ;; @@b58d 286
+                 ldy #>sprite_base                         ;; @@b590 286
+                 lda #<sprite_base                         ;; @@b592 286
+                 jsr LoadBlock                            ; load first block ;; @@b594 286
+                 inc highds+1                              ;; @@b597 286
+                 jsr LoadBlockNext                        ; load second block ;; @@b599 286
+                 bra list_err                             ; release channel, close file, return to main ;; @@b59c 286
+ ;; @@b59f 286
+; .page ;; @@b59f 286
+;  Set or clear a bit in a VIC register ;; @@b59f 286
+; ;; @@b59f 286
+; .X = 1 to set, 0 to clear ;; @@b59f 286
+; .Y = register in VIC to operate opon ;; @@b59f 286
+ ;; @@b59f 286
+sprbit           txa                                       ;; @@b59f 286
+                 lsr a                                    ; put lsb in .C (0 clear, 1 set sprite bit) ;; @@b5a0 286
+                 bne fcerr                                ; only 0 or 1, please. ;; @@b5a1 286
+; jsr put_io_in_map ;; @@b5a4 286
+                 ldx z_p_temp_1                           ; get sprite number ;; @@b5a4 286
+                 lda sbits,x                               ;; @@b5a6 286
+                 ora vic,y                                 ;; @@b5a9 286
+                 bcs _local_1285_10                        ;; @@b5ac 286
+                 eor sbits,x                               ;; @@b5ae 286
+_local_1285_10   sta vic,y                                 ;; @@b5b1 286
+                 rts                                       ;; @@b5b4 286
+ ;; @@b5b5 286
+ ;; @@b5b5 286

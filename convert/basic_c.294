@@ -1,42 +1,42 @@
-sproff           !byte 0,11,22,33,44,55,66,77             ; sprite offsets into speed table ;; b7fe 294
- ;; b806 294
-;.end ;; b806 294
-; .page ;; b806 294
-; .subttl SPRCOLOR Command ;; b806 294
- ;; b806 294
-;************************************************************** ;; b806 294
-;* ;; b806 294
-;*   SPRCOLOR - Set sprite multicolor registers ;; b806 294
-;* ;; b806 294
-;* syntax : SPRCOLOR [multicolor_1] [,multicolor_2] ;; b806 294
-;* ;; b806 294
-;************************************************************** ;; b806 294
- ;; b806 294
-sprcolor                                                   ;; b806 294
-                 cmp #','                                 ; is there a first arg? ;; b806 294
-                 beq _local_1293_10                       ; nope, skip to second ;; b808 294
- ;; b80a 294
-                 jsr getnyb                               ; get 1 byte arg in .X, range 0-15 ;; b80a 294
-; jsr put_io_in_map ;; b80d 294
-                 stx vic+37                                ;; b80d 294
- ;; b810 294
-_local_1293_10   jsr optbyt                               ; get (optional) 1 byte arg in .X ;; b810 294
-                 bcc _local_1293_20                        ;; b813 294
-                 jsr chknyb                               ; range 0-15 ;; b815 294
-; jsr put_io_in_map ;; b818 294
-                 stx vic+38                                ;; b818 294
- ;; b81b 294
-_local_1293_20   rts                                       ;; b81b 294
- ;; b81c 294
-;.end ;; b81c 294
-; .page ;; b81c 294
-; .subttl SPRSAV Command ;; b81c 294
- ;; b81c 294
-;*************************************************************** ;; b81c 294
-;  SPRSAV ( n1 / s1$ ) , ( n2 / s2$ ) ;; b81c 294
-;   - move string(s1) or sprite(n1) to string(s2) or sprite(n2) ;; b81c 294
-;               n1 & n2 = a sprite number (1-8) ;; b81c 294
-;                   s1$ = a string variable or expression ;; b81c 294
-;                   s2$ = a string variable ;; b81c 294
-;*************************************************************** ;; b81c 294
- ;; b81c 294
+sproff           !text 0,11,22,33,44,55,66,77             ; sprite offsets into speed table ;; @@b7fe 294
+ ;; @@b806 294
+;.end ;; @@b806 294
+; .page ;; @@b806 294
+; .subttl SPRCOLOR Command ;; @@b806 294
+ ;; @@b806 294
+;************************************************************** ;; @@b806 294
+;* ;; @@b806 294
+;*   SPRCOLOR - Set sprite multicolor registers ;; @@b806 294
+;* ;; @@b806 294
+;* syntax : SPRCOLOR [multicolor_1] [,multicolor_2] ;; @@b806 294
+;* ;; @@b806 294
+;************************************************************** ;; @@b806 294
+ ;; @@b806 294
+sprcolor                                                   ;; @@b806 294
+                 cmp #','                                 ; is there a first arg? ;; @@b806 294
+                 beq _local_1293_10                       ; nope, skip to second ;; @@b808 294
+ ;; @@b80a 294
+                 jsr getnyb                               ; get 1 byte arg in .X, range 0-15 ;; @@b80a 294
+; jsr put_io_in_map ;; @@b80d 294
+                 stx vic+37                                ;; @@b80d 294
+ ;; @@b810 294
+_local_1293_10   jsr optbyt                               ; get (optional) 1 byte arg in .X ;; @@b810 294
+                 bcc _local_1293_20                        ;; @@b813 294
+                 jsr chknyb                               ; range 0-15 ;; @@b815 294
+; jsr put_io_in_map ;; @@b818 294
+                 stx vic+38                                ;; @@b818 294
+ ;; @@b81b 294
+_local_1293_20   rts                                       ;; @@b81b 294
+ ;; @@b81c 294
+;.end ;; @@b81c 294
+; .page ;; @@b81c 294
+; .subttl SPRSAV Command ;; @@b81c 294
+ ;; @@b81c 294
+;*************************************************************** ;; @@b81c 294
+;  SPRSAV ( n1 / s1$ ) , ( n2 / s2$ ) ;; @@b81c 294
+;   - move string(s1) or sprite(n1) to string(s2) or sprite(n2) ;; @@b81c 294
+;               n1 & n2 = a sprite number (1-8) ;; @@b81c 294
+;                   s1$ = a string variable or expression ;; @@b81c 294
+;                   s2$ = a string variable ;; @@b81c 294
+;*************************************************************** ;; @@b81c 294
+ ;; @@b81c 294

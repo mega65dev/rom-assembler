@@ -1,43 +1,43 @@
-AutoScrolldn                                              ; wanting to scroll down ;; 7e36 264
-                 ldx #0                                   ; put cursor at top of screen ;; 7e36 264
-                 jsr AutoSearch                           ; search for a line number on screen, put it in linnum ;; 7e38 264
-                 ldx #0                                   ; get a blank line to print on ;; 7e3b 264
-                 ldy #0                                   ; put cursor at top of screen ;; 7e3d 264
-                 clc                                       ;; 7e3f 264
-                 jsr _plot                                 ;; 7e40 264
-_local_1263_10   jsr _primm                               ; and scroll screen (kill any pending Editor modes, too) ;; 7e43 264
-                 !byte esc,esc,esc,"W",0                   ;; 7e46 264
-                 jsr FindLine                             ; find the line in program whose number we found on screen ;; 7e4b 264
-                 lda lowtr                                ; (does not matter if it or next higher line is found) ;; 7e4e 264
-                 cmp txttab                                ;; 7e50 264
-                 bne _local_1263_20                        ;; 7e52 264
-                 lda lowtr+1                               ;; 7e54 264
-                 cmp txttab+1                              ;; 7e56 264
-                 bne _local_1263_20                        ;; 7e58 264
-                 lda #$ff                                 ; special case- it's the very first line, want to wrap to last line ;; 7e5a 264
-                 sta linnum+1                             ; fake pointer to the last line, ;; 7e5c 264
-                 jsr _primm                               ; scroll screen to insert extra space, ;; 7e5e 264
-                 !byte esc,"W",0                           ;; 7e61 264
-                 bra _local_1263_10                       ; and go around again ;; 7e64 264
- ;; 7e66 264
-_local_1263_20   lda txttab                               ; start at beginning of program (txttab) and find the line which points at (lowtr) ;; 7e66 264
-                 ldx txttab+1                              ;; 7e68 264
-_local_1263_30   sta index                                ; pointer to link bytes ;; 7e6a 264
-                 stx index+1                               ;; 7e6c 264
-                 ldy #1                                    ;; 7e6e 264
-                 jsr indin1                               ; get link bytes ;; 7e70 264
-                 tax                                       ;; 7e73 264
-                 dey                                       ;; 7e74 264
-                 jsr indin1                                ;; 7e75 264
-                 cpx lowtr+1                              ; do link bytes point at target line? ;; 7e78 264
-                 bne _local_1263_30                        ;; 7e7a 264
-                 cmp lowtr                                 ;; 7e7c 264
-                 bne _local_1263_30                       ; no- use these link bytes to find next line ;; 7e7e 264
- ;; 7e80 264
-                 lda index                                ; yes- copy pointer ;; 7e80 264
-                 ldx index+1                               ;; 7e82 264
-                 sta lowtr                                 ;; 7e84 264
-                 stx lowtr+1                               ;; 7e86 264
-; bra AutoScrollprint ; print the line & exit ;; 7e88 264
- ;; 7e88 264
-; .page ;; 7e88 264
+AutoScrolldn                                              ; wanting to scroll down ;; @@7e36 264
+                 ldx #0                                   ; put cursor at top of screen ;; @@7e36 264
+                 jsr AutoSearch                           ; search for a line number on screen, put it in linnum ;; @@7e38 264
+                 ldx #0                                   ; get a blank line to print on ;; @@7e3b 264
+                 ldy #0                                   ; put cursor at top of screen ;; @@7e3d 264
+                 clc                                       ;; @@7e3f 264
+                 jsr _plot                                 ;; @@7e40 264
+_local_1263_10   jsr _primm                               ; and scroll screen (kill any pending Editor modes, too) ;; @@7e43 264
+                 !text esc,esc,esc,"W",0                   ;; @@7e46 264
+                 jsr FindLine                             ; find the line in program whose number we found on screen ;; @@7e4b 264
+                 lda lowtr                                ; (does not matter if it or next higher line is found) ;; @@7e4e 264
+                 cmp txttab                                ;; @@7e50 264
+                 bne _local_1263_20                        ;; @@7e52 264
+                 lda lowtr+1                               ;; @@7e54 264
+                 cmp txttab+1                              ;; @@7e56 264
+                 bne _local_1263_20                        ;; @@7e58 264
+                 lda #$ff                                 ; special case- it's the very first line, want to wrap to last line ;; @@7e5a 264
+                 sta linnum+1                             ; fake pointer to the last line, ;; @@7e5c 264
+                 jsr _primm                               ; scroll screen to insert extra space, ;; @@7e5e 264
+                 !text esc,"W",0                           ;; @@7e61 264
+                 bra _local_1263_10                       ; and go around again ;; @@7e64 264
+ ;; @@7e66 264
+_local_1263_20   lda txttab                               ; start at beginning of program (txttab) and find the line which points at (lowtr) ;; @@7e66 264
+                 ldx txttab+1                              ;; @@7e68 264
+_local_1263_30   sta index                                ; pointer to link bytes ;; @@7e6a 264
+                 stx index+1                               ;; @@7e6c 264
+                 ldy #1                                    ;; @@7e6e 264
+                 jsr indin1                               ; get link bytes ;; @@7e70 264
+                 tax                                       ;; @@7e73 264
+                 dey                                       ;; @@7e74 264
+                 jsr indin1                                ;; @@7e75 264
+                 cpx lowtr+1                              ; do link bytes point at target line? ;; @@7e78 264
+                 bne _local_1263_30                        ;; @@7e7a 264
+                 cmp lowtr                                 ;; @@7e7c 264
+                 bne _local_1263_30                       ; no- use these link bytes to find next line ;; @@7e7e 264
+ ;; @@7e80 264
+                 lda index                                ; yes- copy pointer ;; @@7e80 264
+                 ldx index+1                               ;; @@7e82 264
+                 sta lowtr                                 ;; @@7e84 264
+                 stx lowtr+1                               ;; @@7e86 264
+; bra AutoScrollprint ; print the line & exit ;; @@7e88 264
+ ;; @@7e88 264
+; .page ;; @@7e88 264

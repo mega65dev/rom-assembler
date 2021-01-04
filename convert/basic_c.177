@@ -1,67 +1,67 @@
-qintrt           rts                                       ;; 6350 177
- ;; 6351 177
- ;; 6351 177
-qint1            tay                                      ; put count in counter ;; 6351 177
-                 lda facsgn                                ;; 6352 177
-                 and #$80                                 ; get sign bit ;; 6354 177
-                 lsr facho                                ; save first shifted byte ;; 6356 177
-                 ora facho                                 ;; 6358 177
-                 sta facho                                 ;; 635a 177
-                 jsr rolshf                               ; shift the rest ;; 635c 177
-                 sty bits                                 ; zero (bits) ;; 635f 177
-                 rts                                       ;; 6362 177
- ;; 6363 177
- ;; 6363 177
-; .page ;; 6363 177
-; Greatest Integer Function ;; 6363 177
- ;; 6363 177
-int              lda facexp                                ;; 6363 177
-                 cmp #$a0                                  ;; 6365 177
-                 bcs intrts                               ; forget it ;; 6367 177
-                 jsr round                                ; round FAC per FACOV (fixes the  INT(.9+.1) -> 0  Microsoft bug.  FAB) ;; 6369 177
-                 jsr qint                                 ; INT(FAC) ;; 636c 177
-                 sty facov                                ; clr overflow byte ;; 636f 177
-                 lda facsgn                                ;; 6371 177
-                 sty facsgn                               ; make FAC look positive ;; 6373 177
-                 eor #$80                                 ; get complement of sign in carry ;; 6375 177
-                 rol a                                     ;; 6377 177
-                 lda #$a0                                 ; @230+8 ;; 6378 177
-                 sta facexp                                ;; 637a 177
-                 lda faclo                                 ;; 637c 177
-                 sta integr                                ;; 637e 177
-                 bra fadflt                                ;; 6380 177
- ;; 6383 177
- ;; 6383 177
-clrfac           sta facho                                ; make it really zero ;; 6383 177
-                 sta facmoh                                ;; 6385 177
-                 sta facmo                                 ;; 6387 177
-                 sta faclo                                 ;; 6389 177
-                 tay                                       ;; 638b 177
-intrts           rts                                       ;; 638c 177
- ;; 638d 177
-; .page ;; 638d 177
-; Floating Point Input Routine. ;; 638d 177
-; ;; 638d 177
-; Number input is left in FAC.  At entry (TXTPTR) points to the first character ;; 638d 177
-; in a text buffer.  The first character is also in (a).  FIN packs the digits ;; 638d 177
-; into the FAC as an integer and keeps track of where the decimal point is. ;; 638d 177
-; (DPTFLG) tells whether a dp has been seen.  (DECCNT) is the number of digits ;; 638d 177
-; after the dp.  At the end (DECCNT) and the exponent are used to determine how ;; 638d 177
-; many times to multiply or divide by ten to get the correct number. ;; 638d 177
- ;; 638d 177
- ;; 638d 177
-fin              stx fin_bank                             ; save bank number where string is stored ;; 638d 177
- ;; 6390 177
-                 ldy #0                                   ; zero facsgn, sgnflg ;; 6390 177
-                 ldx #$0a                                 ; zero exp and ho (and moh) ;; 6392 177
-_local_1176_10   sty deccnt,x                             ; zero mo and lo ;; 6394 177
-                 dex                                      ; zero tenexp and expsgn ;; 6396 177
-                 bpl _local_1176_10                       ; zero deccnt, dptflg ;; 6397 177
- ;; 6399 177
-                 bcc findgq                               ; flags still set from chrget ;; 6399 177
-                 cmp #'-'                                 ; a negative sign? ;; 639b 177
-                 bne qplus                                ; no, try plus sign ;; 639d 177
-                 stx sgnflg                               ; it's negative. (x=@377) ;; 639f 177
-                 bra finc                                 ; always branches ;; 63a1 177
- ;; 63a3 177
-; .page ;; 63a3 177
+qintrt           rts                                       ;; @@6350 177
+ ;; @@6351 177
+ ;; @@6351 177
+qint1            tay                                      ; put count in counter ;; @@6351 177
+                 lda facsgn                                ;; @@6352 177
+                 and #$80                                 ; get sign bit ;; @@6354 177
+                 lsr facho                                ; save first shifted byte ;; @@6356 177
+                 ora facho                                 ;; @@6358 177
+                 sta facho                                 ;; @@635a 177
+                 jsr rolshf                               ; shift the rest ;; @@635c 177
+                 sty bits                                 ; zero (bits) ;; @@635f 177
+                 rts                                       ;; @@6362 177
+ ;; @@6363 177
+ ;; @@6363 177
+; .page ;; @@6363 177
+; Greatest Integer Function ;; @@6363 177
+ ;; @@6363 177
+int              lda facexp                                ;; @@6363 177
+                 cmp #$a0                                  ;; @@6365 177
+                 bcs intrts                               ; forget it ;; @@6367 177
+                 jsr round                                ; round FAC per FACOV (fixes the  INT(.9+.1) -> 0  Microsoft bug.  FAB) ;; @@6369 177
+                 jsr qint                                 ; INT(FAC) ;; @@636c 177
+                 sty facov                                ; clr overflow byte ;; @@636f 177
+                 lda facsgn                                ;; @@6371 177
+                 sty facsgn                               ; make FAC look positive ;; @@6373 177
+                 eor #$80                                 ; get complement of sign in carry ;; @@6375 177
+                 rol a                                     ;; @@6377 177
+                 lda #$a0                                 ; @230+8 ;; @@6378 177
+                 sta facexp                                ;; @@637a 177
+                 lda faclo                                 ;; @@637c 177
+                 sta integr                                ;; @@637e 177
+                 bra fadflt                                ;; @@6380 177
+ ;; @@6383 177
+ ;; @@6383 177
+clrfac           sta facho                                ; make it really zero ;; @@6383 177
+                 sta facmoh                                ;; @@6385 177
+                 sta facmo                                 ;; @@6387 177
+                 sta faclo                                 ;; @@6389 177
+                 tay                                       ;; @@638b 177
+intrts           rts                                       ;; @@638c 177
+ ;; @@638d 177
+; .page ;; @@638d 177
+; Floating Point Input Routine. ;; @@638d 177
+; ;; @@638d 177
+; Number input is left in FAC.  At entry (TXTPTR) points to the first character ;; @@638d 177
+; in a text buffer.  The first character is also in (a).  FIN packs the digits ;; @@638d 177
+; into the FAC as an integer and keeps track of where the decimal point is. ;; @@638d 177
+; (DPTFLG) tells whether a dp has been seen.  (DECCNT) is the number of digits ;; @@638d 177
+; after the dp.  At the end (DECCNT) and the exponent are used to determine how ;; @@638d 177
+; many times to multiply or divide by ten to get the correct number. ;; @@638d 177
+ ;; @@638d 177
+ ;; @@638d 177
+fin              stx fin_bank                             ; save bank number where string is stored ;; @@638d 177
+ ;; @@6390 177
+                 ldy #0                                   ; zero facsgn, sgnflg ;; @@6390 177
+                 ldx #$0a                                 ; zero exp and ho (and moh) ;; @@6392 177
+_local_1176_10   sty deccnt,x                             ; zero mo and lo ;; @@6394 177
+                 dex                                      ; zero tenexp and expsgn ;; @@6396 177
+                 bpl _local_1176_10                       ; zero deccnt, dptflg ;; @@6397 177
+ ;; @@6399 177
+                 bcc findgq                               ; flags still set from chrget ;; @@6399 177
+                 cmp #'-'                                 ; a negative sign? ;; @@639b 177
+                 bne qplus                                ; no, try plus sign ;; @@639d 177
+                 stx sgnflg                               ; it's negative. (x=@377) ;; @@639f 177
+                 bra finc                                 ; always branches ;; @@63a1 177
+ ;; @@63a3 177
+; .page ;; @@63a3 177

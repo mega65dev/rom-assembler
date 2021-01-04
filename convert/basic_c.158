@@ -1,88 +1,88 @@
-putnew           ldx temppt                               ; pointer to first free temp ;; 5ad0 158
-                 cpx #tempst+strsiz+strsiz+strsiz          ;; 5ad2 158
-                 beq sterr                                ; string temporary error ;; 5ad4 158
- ;; 5ad7 158
-                 lda dsctmp                               ; length ;; 5ad7 158
-                 sta 0,x                                   ;; 5ad9 158
-                 lda dsctmp+1                             ; pointer to string lo ;; 5adb 158
-                 sta 1,x                                   ;; 5add 158
-                 lda dsctmp+2                             ; hi ;; 5adf 158
-                 sta 2,x                                   ;; 5ae1 158
- ;; 5ae3 158
-                 ldy #0                                   ; pointer to temp. descriptor ;; 5ae3 158
-                 stx facmo                                ; lo ;; 5ae5 158
-                 sty facmo+1                              ; hi ;; 5ae7 158
-                 sty facov                                 ;; 5ae9 158
-                 dey                                      ; ($ff) ;; 5aeb 158
-                 sty valtyp                               ; type is string ;; 5aec 158
-                 stx lastpt                               ; set pointer to last-used temp ;; 5aee 158
- ;; 5af0 158
-                 inx                                       ;; 5af0 158
-                 inx                                       ;; 5af1 158
-                 inx                                      ; point further ;; 5af2 158
-                 stx temppt                               ; save pointer to next temp, if any ;; 5af3 158
-                 rts                                      ; all done ;; 5af5 158
- ;; 5af6 158
-; .page ;; 5af6 158
-; The following routine concatenates two strings.  At this point, the FAC ;; 5af6 158
-; contains the first one and (txtptr) points to the + sign. ;; 5af6 158
- ;; 5af6 158
-cat              lda faclo                                ; push high order onto stack ;; 5af6 158
-                 pha                                       ;; 5af8 158
-                 lda facmo                                ; and the low ;; 5af9 158
-                 pha                                       ;; 5afb 158
-                 jsr eval                                 ; can come back here since operator is known ;; 5afc 158
-                 jsr chkstr                               ; must be string ;; 5aff 158
-                 pla                                       ;; 5b02 158
-                 sta strng1                               ; get high order of old descriptor ;; 5b03 158
-                 pla                                       ;; 5b05 158
-                 sta strng1+1                              ;; 5b06 158
-                 ldy #0                                    ;; 5b08 158
-                 jsr indst1_ram1                          ; get length of old string ;; 5b0a 158
-                 sta syntmp                                ;; 5b0d 158
-                 jsr indfmo                                ;; 5b0f 158
-                 clc                                       ;; 5b12 158
-                 adc syntmp                                ;; 5b13 158
-                 bcs errlen                               ; result >255, error "long string" ;; 5b15 158
- ;; 5b18 158
-                 jsr strini                               ; sizeok.  initialize string ;; 5b18 158
-                 jsr movins                               ; move it ;; 5b1b 158
-                 lda dscpnt                               ; get pointer to second ;; 5b1e 158
-                 ldy dscpnt+1                              ;; 5b20 158
-                 jsr fretmp                               ; free it ;; 5b22 158
-                 jsr movdo                                ; move second string ;; 5b25 158
-                 lda strng1                                ;; 5b28 158
-                 ldy strng1+1                              ;; 5b2a 158
-                 jsr fretmp                                ;; 5b2c 158
-                 jsr putnew                                ;; 5b2f 158
-                 bra tstop                                ; "cat" reenters frmevl from tstop ;; 5b32 158
- ;; 5b35 158
-; .page ;; 5b35 158
-movins           ldy #0                                   ; get address of string ;; 5b35 158
-                 jsr indst1_ram1                           ;; 5b37 158
-                 pha                                       ;; 5b3a 158
-                 iny                                       ;; 5b3b 158
-                 jsr indst1_ram1                           ;; 5b3c 158
-                 tax                                       ;; 5b3f 158
-                 iny                                       ;; 5b40 158
-                 jsr indst1_ram1                           ;; 5b41 158
-                 tay                                       ;; 5b44 158
-                 pla                                       ;; 5b45 158
- ;; 5b46 158
-movstr           stx index                                ; adr in (x,y), len in a ;; 5b46 158
-                 sty index+1                               ;; 5b48 158
- ;; 5b4a 158
-movdo            tay                                       ;; 5b4a 158
-                 beq mvdone                                ;; 5b4b 158
- ;; 5b4d 158
-                 pha                                       ;; 5b4d 158
-                 phx                                       ;; 5b4e 158
-                 ldx #frespc                               ;; 5b4f 158
-_local_1157_10   dey                                       ;; 5b51 158
-                 jsr indin1_ram1                           ;; 5b52 158
-                 jsr sta_far_ram1                         ; sta (frespc),y ;; 5b55 158
-                 tya                                       ;; 5b58 158
-                 bne _local_1157_10                        ;; 5b59 158
-                 plx                                       ;; 5b5b 158
-                 pla                                       ;; 5b5c 158
- ;; 5b5d 158
+putnew           ldx temppt                               ; pointer to first free temp ;; @@5ad0 158
+                 cpx #tempst+strsiz+strsiz+strsiz          ;; @@5ad2 158
+                 beq sterr                                ; string temporary error ;; @@5ad4 158
+ ;; @@5ad7 158
+                 lda dsctmp                               ; length ;; @@5ad7 158
+                 sta 0,x                                   ;; @@5ad9 158
+                 lda dsctmp+1                             ; pointer to string lo ;; @@5adb 158
+                 sta 1,x                                   ;; @@5add 158
+                 lda dsctmp+2                             ; hi ;; @@5adf 158
+                 sta 2,x                                   ;; @@5ae1 158
+ ;; @@5ae3 158
+                 ldy #0                                   ; pointer to temp. descriptor ;; @@5ae3 158
+                 stx facmo                                ; lo ;; @@5ae5 158
+                 sty facmo+1                              ; hi ;; @@5ae7 158
+                 sty facov                                 ;; @@5ae9 158
+                 dey                                      ; ($ff) ;; @@5aeb 158
+                 sty valtyp                               ; type is string ;; @@5aec 158
+                 stx lastpt                               ; set pointer to last-used temp ;; @@5aee 158
+ ;; @@5af0 158
+                 inx                                       ;; @@5af0 158
+                 inx                                       ;; @@5af1 158
+                 inx                                      ; point further ;; @@5af2 158
+                 stx temppt                               ; save pointer to next temp, if any ;; @@5af3 158
+                 rts                                      ; all done ;; @@5af5 158
+ ;; @@5af6 158
+; .page ;; @@5af6 158
+; The following routine concatenates two strings.  At this point, the FAC ;; @@5af6 158
+; contains the first one and (txtptr) points to the + sign. ;; @@5af6 158
+ ;; @@5af6 158
+cat              lda faclo                                ; push high order onto stack ;; @@5af6 158
+                 pha                                       ;; @@5af8 158
+                 lda facmo                                ; and the low ;; @@5af9 158
+                 pha                                       ;; @@5afb 158
+                 jsr eval                                 ; can come back here since operator is known ;; @@5afc 158
+                 jsr chkstr                               ; must be string ;; @@5aff 158
+                 pla                                       ;; @@5b02 158
+                 sta strng1                               ; get high order of old descriptor ;; @@5b03 158
+                 pla                                       ;; @@5b05 158
+                 sta strng1+1                              ;; @@5b06 158
+                 ldy #0                                    ;; @@5b08 158
+                 jsr indst1_ram1                          ; get length of old string ;; @@5b0a 158
+                 sta syntmp                                ;; @@5b0d 158
+                 jsr indfmo                                ;; @@5b0f 158
+                 clc                                       ;; @@5b12 158
+                 adc syntmp                                ;; @@5b13 158
+                 bcs errlen                               ; result >255, error "long string" ;; @@5b15 158
+ ;; @@5b18 158
+                 jsr strini                               ; sizeok.  initialize string ;; @@5b18 158
+                 jsr movins                               ; move it ;; @@5b1b 158
+                 lda dscpnt                               ; get pointer to second ;; @@5b1e 158
+                 ldy dscpnt+1                              ;; @@5b20 158
+                 jsr fretmp                               ; free it ;; @@5b22 158
+                 jsr movdo                                ; move second string ;; @@5b25 158
+                 lda strng1                                ;; @@5b28 158
+                 ldy strng1+1                              ;; @@5b2a 158
+                 jsr fretmp                                ;; @@5b2c 158
+                 jsr putnew                                ;; @@5b2f 158
+                 bra tstop                                ; "cat" reenters frmevl from tstop ;; @@5b32 158
+ ;; @@5b35 158
+; .page ;; @@5b35 158
+movins           ldy #0                                   ; get address of string ;; @@5b35 158
+                 jsr indst1_ram1                           ;; @@5b37 158
+                 pha                                       ;; @@5b3a 158
+                 iny                                       ;; @@5b3b 158
+                 jsr indst1_ram1                           ;; @@5b3c 158
+                 tax                                       ;; @@5b3f 158
+                 iny                                       ;; @@5b40 158
+                 jsr indst1_ram1                           ;; @@5b41 158
+                 tay                                       ;; @@5b44 158
+                 pla                                       ;; @@5b45 158
+ ;; @@5b46 158
+movstr           stx index                                ; adr in (x,y), len in a ;; @@5b46 158
+                 sty index+1                               ;; @@5b48 158
+ ;; @@5b4a 158
+movdo            tay                                       ;; @@5b4a 158
+                 beq mvdone                                ;; @@5b4b 158
+ ;; @@5b4d 158
+                 pha                                       ;; @@5b4d 158
+                 phx                                       ;; @@5b4e 158
+                 ldx #frespc                               ;; @@5b4f 158
+_local_1157_10   dey                                       ;; @@5b51 158
+                 jsr indin1_ram1                           ;; @@5b52 158
+                 jsr sta_far_ram1                         ; sta (frespc),y ;; @@5b55 158
+                 tya                                       ;; @@5b58 158
+                 bne _local_1157_10                        ;; @@5b59 158
+                 plx                                       ;; @@5b5b 158
+                 pla                                       ;; @@5b5c 158
+ ;; @@5b5d 158

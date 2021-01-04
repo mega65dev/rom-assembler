@@ -1,4 +1,4 @@
-c65.line 
+C65__line 
  cmp #input_token ;special check for 'line input#'  [910103] 
  beq linputn  ; yes 
  cmp #input_token+1 ;special check for 'line input' 

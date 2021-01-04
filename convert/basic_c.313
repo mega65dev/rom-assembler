@@ -1,106 +1,106 @@
-edit_load                                                 ; Called by DLOAD/DVERIFY when in EDIT mode ;; bd0d 313
-                 ldz #1                                    ;; bd0d 313
-                 jsr open_SEQ_file                        ; Open the file just like TYPE: filename [,U#] [,D#] ;; bd0f 313
-                 jsr Check_DS                             ; check current disk error message ;; bd12 313
-                 ldy #0                                    ;; bd15 313
-                 lda #dsdesc+1                             ;; bd17 313
-                 jsr lda_far_ram1                         ; lda (dsdesc+1),y peek at first character ;; bd19 313
-                 cmp #'2'                                  ;; bd1c 313
-                 bcs _local_1312_30                       ; exit if error ;; bd1e 313
-                 jsr Clear_DS                             ; else zap 'ok' message so user gets fresh one ;; bd21 313
-                 ldx dosla                                 ;; bd24 313
-                 jsr _chkin                               ; get input channel ;; bd27 313
-                 bcs _local_1312_30                       ; error ;; bd2a 313
- ;; bd2d 313
-                 bbs0 verck,_local_1312_1                  ;; bd2d 313
-                 jsr _primm                                ;; bd30 313
-                 !byte cr,"LOADING",0                      ;; bd33 313
-                 bra _local_1312_2                         ;; bd3c 313
-_local_1312_1    jsr _primm                                ;; bd3e 313
-                 !byte cr,"VERIFYING",0                    ;; bd41 313
- ;; bd4c 313
-_local_1312_2    lda #<1000                               ; default starting line # ;; bd4c 313
-                 ldx #>1000                                ;; bd4e 313
-                 sta linnum                                ;; bd50 313
-                 stx linnum+1                              ;; bd52 313
- ;; bd54 313
-                 lda txttab                               ; load address ;; bd54 313
-                 ldx txttab+1                              ;; bd56 313
-                 sta index                                 ;; bd58 313
-                 stx index+1                               ;; bd5a 313
- ;; bd5c 313
-_local_1312_10   ldy #0                                   ; Input one line of text ;; bd5c 313
-                 jsr _stop                                ; check stop key ;; bd5e 313
-                 beq _local_1312_28                       ; exit if down ;; bd61 313
-                 jsr _readst                              ; check channel status ;; bd63 313
-                 bne _local_1312_28                       ; exit if eof or error ;; bd66 313
- ;; bd68 313
-                 bbr0 verck,_local_1312_15                 ;; bd68 313
-                 ldy #3                                    ;; bd6b 313
-                 bra _local_1312_20                       ; skip ahead if verify op ;; bd6d 313
- ;; bd6f 313
-_local_1312_15   lda #1                                   ; install fake line links for this line ;; bd6f 313
-                 jsr sta_far_in1                           ;; bd71 313
-                 iny                                      ; 1 ;; bd74 313
-                 jsr sta_far_in1                           ;; bd75 313
-                 iny                                      ; 2 ;; bd78 313
-                 lda linnum                               ; install line number for this line ;; bd79 313
-                 jsr sta_far_in1                           ;; bd7b 313
-                 iny                                      ; 3 ;; bd7e 313
-                 lda linnum+1                              ;; bd7f 313
-                 jsr sta_far_in1                           ;; bd81 313
-                 clc                                       ;; bd84 313
-                 lda linnum                               ; generate next line number ;; bd85 313
-                 adc #10                                   ;; bd87 313
-                 sta linnum                                ;; bd89 313
-                 bcc _local_1312_20                        ;; bd8b 313
-                 inc linnum+1                              ;; bd8d 313
- ;; bd8f 313
-; .page ;; bd8f 313
-_local_1312_20   iny                                      ; bump buffer pointer ;; bd8f 313
-                 cpy #buflen                              ; check buffer (160 max. input buffer size to edit) ;; bd90 313
-                 beq _local_1312_25                       ; split long lines into two???? ;; bd92 313
-                 jsr _basin                               ; read file data ;; bd94 313
-                 beq _local_1312_25                       ; CR or null terminates line ;; bd97 313
-                 cmp #cr                                   ;; bd99 313
-                 beq _local_1312_25                        ;; bd9b 313
-; cmp #$20  ;adjust invisible characters less than space ;; bd9d 313
-; bcc _local_1312_21   ; ????make them appear in reverse field, but note ;; bd9d 313
-; ora #$80  ; that these lines can't be edited without losing them. ;; bd9d 313
- ;; bd9d 313
-_local_1312_21   bbr0 verck,_local_1312_22                 ;; bd9d 313
-                 jsr indcmp_in1                           ; Compare to memory ;; bda0 313
-                 beq _local_1312_20                       ; ok ;; bda3 313
-                 jsr list_exit                             ;; bda5 313
-                 ldx #ervfy                               ; verify error ;; bda8 313
-                 bra error                                 ;; bdaa 313
- ;; bdad 313
-_local_1312_22   jsr sta_far_in1                          ; Load into memory ;; bdad 313
-                 bra _local_1312_20                       ; loop until eol or error (kernel returns CR in case of error) ;; bdb0 313
- ;; bdb2 313
-_local_1312_25   bbs0 verck,_local_1312_26                 ;; bdb2 313
-                 lda #0                                    ;; bdb5 313
-                 jsr sta_far_in1                          ; terminate line with null (replaces CR) ;; bdb7 313
-_local_1312_26   iny                                       ;; bdba 313
-                 tya                                       ;; bdbb 313
-                 clc                                       ;; bdbc 313
-                 adc index                                 ;; bdbd 313
-                 sta index                                 ;; bdbf 313
-                 bcc _local_1312_27                        ;; bdc1 313
-                 inc index+1                               ;; bdc3 313
-_local_1312_27   lda index+1                               ;; bdc5 313
-                 cmp max_mem_0+1                          ; out of memory???? ;; bdc7 313
-                 bcc _local_1312_10                       ; no, continue until eof ;; bdca 313
-                 bsr edit_load_done                       ; yes, patch things up best we can ;; bdcc 313
-                 jsr list_exit                            ; close disk ;; bdcf 313
-                 bra omerr                                ; report error & exit ;; bdd2 313
- ;; bdd5 313
-_local_1312_28   bbs0 verck,_local_1312_30                 ;; bdd5 313
-                 jsr edit_load_done                       ; EOF: terminate memory with a pair of nulls ;; bdd8 313
-_local_1312_30   bra list_exit                            ; release channel, close file, etc. ;; bddb 313
- ;; bdde 313
-; bbr0 verck,40$ ;; bdde 313
-; jsr verify_ok  ;if Verify, report 'ok' ;; bdde 313
-;40$ lda #0   ;exit directly to main???? ;; bdde 313
-; bra end ;; bdde 313
-; .page ;; bdde 313
+edit_load                                                 ; Called by DLOAD/DVERIFY when in EDIT mode ;; @@bd0d 313
+                 ldz #1                                    ;; @@bd0d 313
+                 jsr open_SEQ_file                        ; Open the file just like TYPE: filename [,U#] [,D#] ;; @@bd0f 313
+                 jsr Check_DS                             ; check current disk error message ;; @@bd12 313
+                 ldy #0                                    ;; @@bd15 313
+                 lda #dsdesc+1                             ;; @@bd17 313
+                 jsr lda_far_ram1                         ; lda (dsdesc+1),y peek at first character ;; @@bd19 313
+                 cmp #'2'                                  ;; @@bd1c 313
+                 bcs _local_1312_30                       ; exit if error ;; @@bd1e 313
+                 jsr Clear_DS                             ; else zap 'ok' message so user gets fresh one ;; @@bd21 313
+                 ldx dosla                                 ;; @@bd24 313
+                 jsr _chkin                               ; get input channel ;; @@bd27 313
+                 bcs _local_1312_30                       ; error ;; @@bd2a 313
+ ;; @@bd2d 313
+                 bbs0 verck,_local_1312_1                  ;; @@bd2d 313
+                 jsr _primm                                ;; @@bd30 313
+                 !text cr,"LOADING",0                      ;; @@bd33 313
+                 bra _local_1312_2                         ;; @@bd3c 313
+_local_1312_1    jsr _primm                                ;; @@bd3e 313
+                 !text cr,"VERIFYING",0                    ;; @@bd41 313
+ ;; @@bd4c 313
+_local_1312_2    lda #<1000                               ; default starting line # ;; @@bd4c 313
+                 ldx #>1000                                ;; @@bd4e 313
+                 sta linnum                                ;; @@bd50 313
+                 stx linnum+1                              ;; @@bd52 313
+ ;; @@bd54 313
+                 lda txttab                               ; load address ;; @@bd54 313
+                 ldx txttab+1                              ;; @@bd56 313
+                 sta index                                 ;; @@bd58 313
+                 stx index+1                               ;; @@bd5a 313
+ ;; @@bd5c 313
+_local_1312_10   ldy #0                                   ; Input one line of text ;; @@bd5c 313
+                 jsr _stop                                ; check stop key ;; @@bd5e 313
+                 beq _local_1312_28                       ; exit if down ;; @@bd61 313
+                 jsr _readst                              ; check channel status ;; @@bd63 313
+                 bne _local_1312_28                       ; exit if eof or error ;; @@bd66 313
+ ;; @@bd68 313
+                 bbr0 verck,_local_1312_15                 ;; @@bd68 313
+                 ldy #3                                    ;; @@bd6b 313
+                 bra _local_1312_20                       ; skip ahead if verify op ;; @@bd6d 313
+ ;; @@bd6f 313
+_local_1312_15   lda #1                                   ; install fake line links for this line ;; @@bd6f 313
+                 jsr sta_far_in1                           ;; @@bd71 313
+                 iny                                      ; 1 ;; @@bd74 313
+                 jsr sta_far_in1                           ;; @@bd75 313
+                 iny                                      ; 2 ;; @@bd78 313
+                 lda linnum                               ; install line number for this line ;; @@bd79 313
+                 jsr sta_far_in1                           ;; @@bd7b 313
+                 iny                                      ; 3 ;; @@bd7e 313
+                 lda linnum+1                              ;; @@bd7f 313
+                 jsr sta_far_in1                           ;; @@bd81 313
+                 clc                                       ;; @@bd84 313
+                 lda linnum                               ; generate next line number ;; @@bd85 313
+                 adc #10                                   ;; @@bd87 313
+                 sta linnum                                ;; @@bd89 313
+                 bcc _local_1312_20                        ;; @@bd8b 313
+                 inc linnum+1                              ;; @@bd8d 313
+ ;; @@bd8f 313
+; .page ;; @@bd8f 313
+_local_1312_20   iny                                      ; bump buffer pointer ;; @@bd8f 313
+                 cpy #buflen                              ; check buffer (160 max. input buffer size to edit) ;; @@bd90 313
+                 beq _local_1312_25                       ; split long lines into two???? ;; @@bd92 313
+                 jsr _basin                               ; read file data ;; @@bd94 313
+                 beq _local_1312_25                       ; CR or null terminates line ;; @@bd97 313
+                 cmp #cr                                   ;; @@bd99 313
+                 beq _local_1312_25                        ;; @@bd9b 313
+; cmp #$20  ;adjust invisible characters less than space ;; @@bd9d 313
+; bcc _local_1312_21   ; ????make them appear in reverse field, but note ;; @@bd9d 313
+; ora #$80  ; that these lines can't be edited without losing them. ;; @@bd9d 313
+ ;; @@bd9d 313
+_local_1312_21   bbr0 verck,_local_1312_22                 ;; @@bd9d 313
+                 jsr indcmp_in1                           ; Compare to memory ;; @@bda0 313
+                 beq _local_1312_20                       ; ok ;; @@bda3 313
+                 jsr list_exit                             ;; @@bda5 313
+                 ldx #ervfy                               ; verify error ;; @@bda8 313
+                 bra error                                 ;; @@bdaa 313
+ ;; @@bdad 313
+_local_1312_22   jsr sta_far_in1                          ; Load into memory ;; @@bdad 313
+                 bra _local_1312_20                       ; loop until eol or error (kernel returns CR in case of error) ;; @@bdb0 313
+ ;; @@bdb2 313
+_local_1312_25   bbs0 verck,_local_1312_26                 ;; @@bdb2 313
+                 lda #0                                    ;; @@bdb5 313
+                 jsr sta_far_in1                          ; terminate line with null (replaces CR) ;; @@bdb7 313
+_local_1312_26   iny                                       ;; @@bdba 313
+                 tya                                       ;; @@bdbb 313
+                 clc                                       ;; @@bdbc 313
+                 adc index                                 ;; @@bdbd 313
+                 sta index                                 ;; @@bdbf 313
+                 bcc _local_1312_27                        ;; @@bdc1 313
+                 inc index+1                               ;; @@bdc3 313
+_local_1312_27   lda index+1                               ;; @@bdc5 313
+                 cmp max_mem_0+1                          ; out of memory???? ;; @@bdc7 313
+                 bcc _local_1312_10                       ; no, continue until eof ;; @@bdca 313
+                 bsr edit_load_done                       ; yes, patch things up best we can ;; @@bdcc 313
+                 jsr list_exit                            ; close disk ;; @@bdcf 313
+                 bra omerr                                ; report error & exit ;; @@bdd2 313
+ ;; @@bdd5 313
+_local_1312_28   bbs0 verck,_local_1312_30                 ;; @@bdd5 313
+                 jsr edit_load_done                       ; EOF: terminate memory with a pair of nulls ;; @@bdd8 313
+_local_1312_30   bra list_exit                            ; release channel, close file, etc. ;; @@bddb 313
+ ;; @@bdde 313
+; bbr0 verck,40$ ;; @@bdde 313
+; jsr verify_ok  ;if Verify, report 'ok' ;; @@bdde 313
+;40$ lda #0   ;exit directly to main???? ;; @@bdde 313
+; bra end ;; @@bdde 313
+; .page ;; @@bdde 313

@@ -1,39 +1,39 @@
-header_rts                                                 ;; 72d2 228
-                 clc                                       ;; 72d2 228
-                 rts                                       ;; 72d3 228
- ;; 72d4 228
-; .page ;; 72d4 228
-; SCRATCH sdfn  aliases: DELETE, ERASE ;; 72d4 228
- ;; 72d4 228
-scratch          jsr dospar                               ; parse the line ;; 72d4 228
-                 jsr chk1                                  ;; 72d7 228
-                 jsr are_you_sure                         ; confirm if in direct mode ;; 72da 228
-                 bne _local_1227_30                       ; branch if 'no' response given ;; 72dd 228
- ;; 72df 228
-                 ldy #fscr                                ; offset ;; 72df 228
-                 lda #4                                   ; length ;; 72e1 228
-                 bit dosflags                             ; scratch or recover? ;; 72e3 228
-                 bvc _local_1227_1                        ; scratch ;; 72e6 228
-                 ldy #frscr                               ; recover ;; 72e8 228
-                 lda #6                                    ;; 72ea 228
-_local_1227_1    jsr trans                                ; transmit scratch command ;; 72ec 228
-                 jsr Read_DS                              ; read error channel & update DS$ ;; 72ef 228
- ;; 72f2 228
-                 bbs7 runmod,_local_1227_30               ; branch if not direct mode ;; 72f2 228
-                 jsr crdo                                 ; output cr ;; 72f5 228
- ;; 72f8 228
-                 ldy #0                                   ; display 'files scratched' DOS message ;; 72f8 228
-_local_1227_10   lda #dsdesc+1                             ;; 72fa 228
-                 jsr lda_far_ram1                         ; lda (dsdesc+1),y ;; 72fc 228
-                 beq _local_1227_20                       ; if end of error message ;; 72ff 228
-                 jsr outch                                ; print it ;; 7301 228
-                 iny                                       ;; 7304 228
-                 bpl _local_1227_10                       ; always (bpl=failsafe) ;; 7305 228
- ;; 7307 228
-_local_1227_20   jsr crdo                                 ; done ;; 7307 228
- ;; 730a 228
-_local_1227_30   rts                                       ;; 730a 228
- ;; 730b 228
-; .page ;; 730b 228
-; RECORD- relative record access ;; 730b 228
- ;; 730b 228
+header_rts                                                 ;; @@72d2 228
+                 clc                                       ;; @@72d2 228
+                 rts                                       ;; @@72d3 228
+ ;; @@72d4 228
+; .page ;; @@72d4 228
+; SCRATCH sdfn  aliases: DELETE, ERASE ;; @@72d4 228
+ ;; @@72d4 228
+scratch          jsr dospar                               ; parse the line ;; @@72d4 228
+                 jsr chk1                                  ;; @@72d7 228
+                 jsr are_you_sure                         ; confirm if in direct mode ;; @@72da 228
+                 bne _local_1227_30                       ; branch if 'no' response given ;; @@72dd 228
+ ;; @@72df 228
+                 ldy #fscr                                ; offset ;; @@72df 228
+                 lda #4                                   ; length ;; @@72e1 228
+                 bit dosflags                             ; scratch or recover? ;; @@72e3 228
+                 bvc _local_1227_1                        ; scratch ;; @@72e6 228
+                 ldy #frscr                               ; recover ;; @@72e8 228
+                 lda #6                                    ;; @@72ea 228
+_local_1227_1    jsr trans                                ; transmit scratch command ;; @@72ec 228
+                 jsr Read_DS                              ; read error channel & update DS$ ;; @@72ef 228
+ ;; @@72f2 228
+                 bbs7 runmod,_local_1227_30               ; branch if not direct mode ;; @@72f2 228
+                 jsr crdo                                 ; output cr ;; @@72f5 228
+ ;; @@72f8 228
+                 ldy #0                                   ; display 'files scratched' DOS message ;; @@72f8 228
+_local_1227_10   lda #dsdesc+1                             ;; @@72fa 228
+                 jsr lda_far_ram1                         ; lda (dsdesc+1),y ;; @@72fc 228
+                 beq _local_1227_20                       ; if end of error message ;; @@72ff 228
+                 jsr outch                                ; print it ;; @@7301 228
+                 iny                                       ;; @@7304 228
+                 bpl _local_1227_10                       ; always (bpl=failsafe) ;; @@7305 228
+ ;; @@7307 228
+_local_1227_20   jsr crdo                                 ; done ;; @@7307 228
+ ;; @@730a 228
+_local_1227_30   rts                                       ;; @@730a 228
+ ;; @@730b 228
+; .page ;; @@730b 228
+; RECORD- relative record access ;; @@730b 228
+ ;; @@730b 228

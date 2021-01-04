@@ -1,27 +1,27 @@
-sadwrd           jsr frmnum                               ; get number     label [910307] ;; b7e5 293
-                 bra getsad                               ; get signed 2 byte coordinate,do rts ;; b7e8 293
- ;; b7eb 293
-; .page ;; b7eb 293
-;************************************************************* ;; b7eb 293
-; CHKCOM_1  --  Check for a comma ;; b7eb 293
-; ;; b7eb 293
-;  carry set & eq = end of string ;; b7eb 293
-;  carry set & neq = not a comma ;; b7eb 293
-;  carry clear = a comma ;; b7eb 293
-;************************************************************* ;; b7eb 293
- ;; b7eb 293
-chkcom_1                                                   ;; b7eb 293
-                 jsr chrgot                               ; get character in input stream ;; b7eb 293
-                 beq _local_1292_20                       ; skip if end of string ;; b7ee 293
-                 cmp #','                                 ; check if a comma ;; b7f0 293
-                 clc                                       ;; b7f2 293
-                 beq _local_1292_10                       ; skip if yes ;; b7f3 293
-                 sec                                      ; set carry if not ;; b7f5 293
-_local_1292_10   php                                       ;; b7f6 293
-                 pha                                       ;; b7f7 293
-                 jsr chrget                               ; move to next non-space character ;; b7f8 293
-                 pla                                       ;; b7fb 293
-                 plp                                       ;; b7fc 293
-_local_1292_20   rts                                       ;; b7fd 293
- ;; b7fe 293
- ;; b7fe 293
+sadwrd           jsr frmnum                               ; get number     label [910307] ;; @@b7e5 293
+                 bra getsad                               ; get signed 2 byte coordinate,do rts ;; @@b7e8 293
+ ;; @@b7eb 293
+; .page ;; @@b7eb 293
+;************************************************************* ;; @@b7eb 293
+; CHKCOM_1  --  Check for a comma ;; @@b7eb 293
+; ;; @@b7eb 293
+;  carry set & eq = end of string ;; @@b7eb 293
+;  carry set & neq = not a comma ;; @@b7eb 293
+;  carry clear = a comma ;; @@b7eb 293
+;************************************************************* ;; @@b7eb 293
+ ;; @@b7eb 293
+chkcom_1                                                   ;; @@b7eb 293
+                 jsr chrgot                               ; get character in input stream ;; @@b7eb 293
+                 beq _local_1292_20                       ; skip if end of string ;; @@b7ee 293
+                 cmp #','                                 ; check if a comma ;; @@b7f0 293
+                 clc                                       ;; @@b7f2 293
+                 beq _local_1292_10                       ; skip if yes ;; @@b7f3 293
+                 sec                                      ; set carry if not ;; @@b7f5 293
+_local_1292_10   php                                       ;; @@b7f6 293
+                 pha                                       ;; @@b7f7 293
+                 jsr chrget                               ; move to next non-space character ;; @@b7f8 293
+                 pla                                       ;; @@b7fb 293
+                 plp                                       ;; @@b7fc 293
+_local_1292_20   rts                                       ;; @@b7fd 293
+ ;; @@b7fe 293
+ ;; @@b7fe 293

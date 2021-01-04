@@ -1,127 +1,127 @@
-basic_nmi                                                 ; removed [910826] ;; bf06 317
-; lda nmi_wrap_flag ;filter out wrapped NMI calls   [910523] audio ;; bf06 317
-; beq 1$   ; it's ok ;; bf06 317
-; rts   ; exit- we're already handling one interrupt ;; bf06 317
-; ;; bf06 317
-;1$ inc nmi_wrap_flag ;shut the door to NMI ;; bf06 317
-; ;; bf06 317
-;basic_nmi_end ;; bf06 317
-; dec nmi_wrap_flag ;open the door to NMI ;; bf06 317
-                 rts                                       ;; bf06 317
- ;; bf07 317
-; .ifgt *-$c000 ;; bf07 317
-; .messg ***ROM OVERFLOW: $C000 ;; bf07 317
-; .endif ;; bf07 317
-;.end ;; bf07 317
-; .page ;; bf07 317
-; .subttl C65 BASIC Jump Table ;; bf07 317
- ;; bf07 317
-                 * = $7f00                                 ;; bf07 317
- ;; 7f00 317
- ;; 7f00 317
-; Format Conversions     [6] ;; 7f00 317
- ;; 7f00 317
-                 bra ayint                                ; convert floating point to integer ;; 7f00 317
-                 bra givayf                               ; convert integer to floating point ;; 7f03 317
-                 bra fout                                 ; convert floating point to PETSCII string ;; 7f06 317
-                 bra val_1                                ; convert PETSCII string to floating point ;; 7f09 317
-                 bra getadr                               ; convert floating point to an address ;; 7f0c 317
-                 bra floatc                               ; convert address to floating point ;; 7f0f 317
- ;; 7f12 317
-; Math Functions     [24] ;; 7f12 317
- ;; 7f12 317
-                 bra fsub                                 ; MEM - FACC ;; 7f12 317
-                 bra fsubt                                ; ARG - FACC ;; 7f15 317
-                 bra fadd                                 ; MEM + FACC ;; 7f18 317
-                 bra faddt_c65                            ; ARG - FACC      [910402] ;; 7f1b 317
-                 bra fmult                                ; MEM * FACC ;; 7f1e 317
-                 bra fmultt_c65                           ; ARG * FACC      [910402] ;; 7f21 317
-                 bra fdiv                                 ; MEM / FACC ;; 7f24 317
-                 bra fdivt_c65                            ; ARG / FACC      [910402] ;; 7f27 317
-                 bra log                                  ; compute natural log of FACC ;; 7f2a 317
-                 bra int                                  ; perform BASIC INT() on FACC ;; 7f2d 317
-                 bra sqr                                  ; compute square root of FACC ;; 7f30 317
-                 bra negop                                ; negate FACC ;; 7f33 317
-                 bra fpwr                                 ; raise ARG to the MEM power ;; 7f36 317
-                 bra fpwrt                                ; raise ARG to the FACC power ;; 7f39 317
-                 bra exp                                  ; compute EXP of FACC ;; 7f3c 317
-                 bra cos                                  ; compute COS of FACC ;; 7f3f 317
-                 bra sin                                  ; compute SIN of FACC ;; 7f42 317
-                 bra tan                                  ; compute TAN of FACC ;; 7f45 317
-                 bra atn                                  ; compute ATN of FACC ;; 7f48 317
-                 bra round                                ; round FACC ;; 7f4b 317
-                 bra abs                                  ; absolute value of FACC ;; 7f4e 317
-                 bra sign                                 ; test sign of FACC ;; 7f51 317
-                 bra fcomp                                ; compare FACC with MEM ;; 7f54 317
-                 bra rnd_0                                ; generate random floating point number ;; 7f57 317
- ;; 7f5a 317
-; Movement      [22] ;; 7f5a 317
- ;; 7f5a 317
-                 bra conupk                               ; move RAM MEM to ARG ;; 7f5a 317
-                 bra romupk                               ; move ROM MEM to ARG ;; 7f5d 317
-                 bra movfrm                               ; move RAM MEM to FACC ;; 7f60 317
-                 bra movfm                                ; move ROM MEM to FACC ;; 7f63 317
-                 bra movmf                                ; move FACC to MEM ;; 7f66 317
-                 bra movfa                                ; move ARG to FACC ;; 7f69 317
-                 bra movaf                                ; move FACC to ARG ;; 7f6c 317
- ;; 7f6f 317
-; bra optab ;????not executable ;; 7f6f 317
-; bra drawln ;; 7f6f 317
-; bra gplot ;; 7f6f 317
-; bra cirsub ;; 7f6f 317
-                 bra run                                   ;; 7f6f 317
-                 bra runc                                  ;; 7f72 317
-                 bra clearc                               ; [910410] ;; 7f75 317
-                 bra new                                   ;; 7f78 317
-                 bra link_program                          ;; 7f7b 317
-                 bra crunch                                ;; 7f7e 317
-                 bra FindLine                              ;; 7f81 317
-                 bra newstt                                ;; 7f84 317
-                 bra eval                                  ;; 7f87 317
-                 bra frmevl                                ;; 7f8a 317
-                 bra run_a_program                         ;; 7f8d 317
-                 bra setexc                                ;; 7f90 317
-                 bra linget                                ;; 7f93 317
-                 bra garba2                                ;; 7f96 317
-                 bra execute_a_line                        ;; 7f99 317
- ;; 7f9c 317
-; Temporaries for C65 development (???? used by graphics) [12] ;; 7f9c 317
- ;; 7f9c 317
-                 bra chrget                                ;; 7f9c 317
-                 bra chrgot                                ;; 7f9f 317
-                 bra chkcom                                ;; 7fa2 317
-                 bra frmnum                                ;; 7fa5 317
-                 bra getadr                                ;; 7fa8 317
-                 bra getnum                                ;; 7fab 317
-                 bra getbyt                                ;; 7fae 317
-                 bra plsv                                  ;; 7fb1 317
- ;; 7fb4 317
-                 bra lda_far_ram0                         ; lda (.x),y from BASIC text bank [910716] ;; 7fb4 317
-                 bra lda_far_ram1                         ; lda (.x),y from BASIC variable bank [910716] ;; 7fb7 317
-                 bra sta_far_ram0                         ; sta (.x),y to   BASIC text bank [910716] ;; 7fba 317
-                 bra sta_far_ram1                         ; sta (.x),y to   BASIC variable bank [910716] ;; 7fbd 317
- ;; 7fc0 317
-; .page ;; 7fc0 317
-; Graphic Kernel Call. (Temporary for C65 development ????) ;; 7fc0 317
-; ;; 7fc0 317
-;  syntax:  GRAPHIC command# [,args] ;; 7fc0 317
-; ;; 7fc0 317
-; Basically this is a modified C64-type SYS command, minus the address. ;; 7fc0 317
-; In the final C65 system, this will represent the ML interface, not the ;; 7fc0 317
-; BASIC 10.0 interface which is implemented here in the development system. ;; 7fc0 317
- ;; 7fc0 317
- ;; 7fc0 317
-graphic                                                    ;; 7fc0 317
-                 cmp #clr_token                           ; GRAPHIC CLR (graphic system initialize) ;; 7fc0 317
-                 bne _local_1316_10                       ; no ;; 7fc2 317
-                 jsr chrget                               ; yes advance past token ;; 7fc4 317
-                 jmp ($8000)                              ; go initialize graphic kernel ;; 7fc7 317
- ;; 7fca 317
-_local_1316_10                                             ;; 7fca 317
-; tax ;; 7fca 317
-; bmi snerr  ;Syntax error if any other secondary token ;; 7fca 317
-; ;; 7fca 317
-; ;; 7fca 317
-                 jmp (graphic_vector)                     ; Else, call the Graphics Kernel's Parser... ;; 7fca 317
-; ;; 7fcd 317
-; ;; 7fcd 317
+basic_nmi                                                 ; removed [910826] ;; @@bf06 317
+; lda nmi_wrap_flag ;filter out wrapped NMI calls   [910523] audio ;; @@bf06 317
+; beq 1$   ; it's ok ;; @@bf06 317
+; rts   ; exit- we're already handling one interrupt ;; @@bf06 317
+; ;; @@bf06 317
+;1$ inc nmi_wrap_flag ;shut the door to NMI ;; @@bf06 317
+; ;; @@bf06 317
+;basic_nmi_end ;; @@bf06 317
+; dec nmi_wrap_flag ;open the door to NMI ;; @@bf06 317
+                 rts                                       ;; @@bf06 317
+ ;; @@bf07 317
+; .ifgt *-$c000 ;; @@bf07 317
+; .messg ***ROM OVERFLOW: $C000 ;; @@bf07 317
+; .endif ;; @@bf07 317
+;.end ;; @@bf07 317
+; .page ;; @@bf07 317
+; .subttl C65 BASIC Jump Table ;; @@bf07 317
+ ;; @@bf07 317
+                 * = $7f00                                 ;; @@bf07 317
+ ;; @@7f00 317
+ ;; @@7f00 317
+; Format Conversions     [6] ;; @@7f00 317
+ ;; @@7f00 317
+                 bra ayint                                ; convert floating point to integer ;; @@7f00 317
+                 bra givayf                               ; convert integer to floating point ;; @@7f03 317
+                 bra fout                                 ; convert floating point to PETSCII string ;; @@7f06 317
+                 bra val_1                                ; convert PETSCII string to floating point ;; @@7f09 317
+                 bra getadr                               ; convert floating point to an address ;; @@7f0c 317
+                 bra floatc                               ; convert address to floating point ;; @@7f0f 317
+ ;; @@7f12 317
+; Math Functions     [24] ;; @@7f12 317
+ ;; @@7f12 317
+                 bra fsub                                 ; MEM - FACC ;; @@7f12 317
+                 bra fsubt                                ; ARG - FACC ;; @@7f15 317
+                 bra fadd                                 ; MEM + FACC ;; @@7f18 317
+                 bra faddt_c65                            ; ARG - FACC      [910402] ;; @@7f1b 317
+                 bra fmult                                ; MEM * FACC ;; @@7f1e 317
+                 bra fmultt_c65                           ; ARG * FACC      [910402] ;; @@7f21 317
+                 bra fdiv                                 ; MEM / FACC ;; @@7f24 317
+                 bra fdivt_c65                            ; ARG / FACC      [910402] ;; @@7f27 317
+                 bra log                                  ; compute natural log of FACC ;; @@7f2a 317
+                 bra int                                  ; perform BASIC INT() on FACC ;; @@7f2d 317
+                 bra sqr                                  ; compute square root of FACC ;; @@7f30 317
+                 bra negop                                ; negate FACC ;; @@7f33 317
+                 bra fpwr                                 ; raise ARG to the MEM power ;; @@7f36 317
+                 bra fpwrt                                ; raise ARG to the FACC power ;; @@7f39 317
+                 bra exp                                  ; compute EXP of FACC ;; @@7f3c 317
+                 bra cos                                  ; compute COS of FACC ;; @@7f3f 317
+                 bra sin                                  ; compute SIN of FACC ;; @@7f42 317
+                 bra tan                                  ; compute TAN of FACC ;; @@7f45 317
+                 bra atn                                  ; compute ATN of FACC ;; @@7f48 317
+                 bra round                                ; round FACC ;; @@7f4b 317
+                 bra abs                                  ; absolute value of FACC ;; @@7f4e 317
+                 bra sign                                 ; test sign of FACC ;; @@7f51 317
+                 bra fcomp                                ; compare FACC with MEM ;; @@7f54 317
+                 bra rnd_0                                ; generate random floating point number ;; @@7f57 317
+ ;; @@7f5a 317
+; Movement      [22] ;; @@7f5a 317
+ ;; @@7f5a 317
+                 bra conupk                               ; move RAM MEM to ARG ;; @@7f5a 317
+                 bra romupk                               ; move ROM MEM to ARG ;; @@7f5d 317
+                 bra movfrm                               ; move RAM MEM to FACC ;; @@7f60 317
+                 bra movfm                                ; move ROM MEM to FACC ;; @@7f63 317
+                 bra movmf                                ; move FACC to MEM ;; @@7f66 317
+                 bra movfa                                ; move ARG to FACC ;; @@7f69 317
+                 bra movaf                                ; move FACC to ARG ;; @@7f6c 317
+ ;; @@7f6f 317
+; bra optab ;????not executable ;; @@7f6f 317
+; bra drawln ;; @@7f6f 317
+; bra gplot ;; @@7f6f 317
+; bra cirsub ;; @@7f6f 317
+                 bra run                                   ;; @@7f6f 317
+                 bra runc                                  ;; @@7f72 317
+                 bra clearc                               ; [910410] ;; @@7f75 317
+                 bra new                                   ;; @@7f78 317
+                 bra link_program                          ;; @@7f7b 317
+                 bra crunch                                ;; @@7f7e 317
+                 bra FindLine                              ;; @@7f81 317
+                 bra newstt                                ;; @@7f84 317
+                 bra eval                                  ;; @@7f87 317
+                 bra frmevl                                ;; @@7f8a 317
+                 bra run_a_program                         ;; @@7f8d 317
+                 bra setexc                                ;; @@7f90 317
+                 bra linget                                ;; @@7f93 317
+                 bra garba2                                ;; @@7f96 317
+                 bra execute_a_line                        ;; @@7f99 317
+ ;; @@7f9c 317
+; Temporaries for C65 development (???? used by graphics) [12] ;; @@7f9c 317
+ ;; @@7f9c 317
+                 bra chrget                                ;; @@7f9c 317
+                 bra chrgot                                ;; @@7f9f 317
+                 bra chkcom                                ;; @@7fa2 317
+                 bra frmnum                                ;; @@7fa5 317
+                 bra getadr                                ;; @@7fa8 317
+                 bra getnum                                ;; @@7fab 317
+                 bra getbyt                                ;; @@7fae 317
+                 bra plsv                                  ;; @@7fb1 317
+ ;; @@7fb4 317
+                 bra lda_far_ram0                         ; lda (.x),y from BASIC text bank [910716] ;; @@7fb4 317
+                 bra lda_far_ram1                         ; lda (.x),y from BASIC variable bank [910716] ;; @@7fb7 317
+                 bra sta_far_ram0                         ; sta (.x),y to   BASIC text bank [910716] ;; @@7fba 317
+                 bra sta_far_ram1                         ; sta (.x),y to   BASIC variable bank [910716] ;; @@7fbd 317
+ ;; @@7fc0 317
+; .page ;; @@7fc0 317
+; Graphic Kernel Call. (Temporary for C65 development ????) ;; @@7fc0 317
+; ;; @@7fc0 317
+;  syntax:  GRAPHIC command# [,args] ;; @@7fc0 317
+; ;; @@7fc0 317
+; Basically this is a modified C64-type SYS command, minus the address. ;; @@7fc0 317
+; In the final C65 system, this will represent the ML interface, not the ;; @@7fc0 317
+; BASIC 10.0 interface which is implemented here in the development system. ;; @@7fc0 317
+ ;; @@7fc0 317
+ ;; @@7fc0 317
+graphic                                                    ;; @@7fc0 317
+                 cmp #clr_token                           ; GRAPHIC CLR (graphic system initialize) ;; @@7fc0 317
+                 bne _local_1316_10                       ; no ;; @@7fc2 317
+                 jsr chrget                               ; yes advance past token ;; @@7fc4 317
+                 jmp ($8000)                              ; go initialize graphic kernel ;; @@7fc7 317
+ ;; @@7fca 317
+_local_1316_10                                             ;; @@7fca 317
+; tax ;; @@7fca 317
+; bmi snerr  ;Syntax error if any other secondary token ;; @@7fca 317
+; ;; @@7fca 317
+; ;; @@7fca 317
+                 jmp (graphic_vector)                     ; Else, call the Graphics Kernel's Parser... ;; @@7fca 317
+; ;; @@7fcd 317
+; ;; @@7fcd 317

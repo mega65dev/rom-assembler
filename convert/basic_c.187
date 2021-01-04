@@ -1,31 +1,31 @@
-tan              jsr mov1f                                ; move FAC into temporary ;; 66ee 187
-                 lda #0                                    ;; 66f1 187
-                 sta tansgn                               ; remember whether to negate ;; 66f3 187
-                 jsr sin                                  ; compute the sin ;; 66f5 187
-                 ldx #<tempf3                              ;; 66f8 187
-                 ldy #>tempf3                              ;; 66fa 187
-                 jsr movmf                                ; put sign into other temp ;; 66fc 187
-                 lda #<tempf1                              ;; 66ff 187
-                 ldy #>tempf1                              ;; 6701 187
-                 jsr movfm                                ; put this memory location into FAC ;; 6703 187
-                 lda #0                                    ;; 6706 187
-                 sta facsgn                               ; start off positive ;; 6708 187
-                 lda tansgn                                ;; 670a 187
-                 jsr _local_1186_10                       ; compute cosine ;; 670c 187
-                 lda #<tempf3                              ;; 670f 187
-                 ldy #>tempf3                             ; address of sine value ;; 6711 187
-; bra fdiv ;divide sine by cosine and return ;; 6713 187
-                 jsr conupk                               ; unpack constant    [910226] FAB ;; 6713 187
-                 beq overr                                ; overflow error     " ;; 6716 187
-                 bra fdivt                                ; " ;; 6719 187
- ;; 671c 187
-_local_1186_10   pha                                      ; cosc. ;; 671c 187
-                 bra sin1                                  ;; 671d 187
- ;; 671f 187
- ;; 671f 187
-; Arctangent function ;; 671f 187
-; ;; 671f 187
-; Use identities to get arg between 0 and 1 and then use an approximation ;; 671f 187
-; polynomial to compute arctan(x). ;; 671f 187
- ;; 671f 187
- ;; 671f 187
+tan              jsr mov1f                                ; move FAC into temporary ;; @@66ee 187
+                 lda #0                                    ;; @@66f1 187
+                 sta tansgn                               ; remember whether to negate ;; @@66f3 187
+                 jsr sin                                  ; compute the sin ;; @@66f5 187
+                 ldx #<tempf3                              ;; @@66f8 187
+                 ldy #>tempf3                              ;; @@66fa 187
+                 jsr movmf                                ; put sign into other temp ;; @@66fc 187
+                 lda #<tempf1                              ;; @@66ff 187
+                 ldy #>tempf1                              ;; @@6701 187
+                 jsr movfm                                ; put this memory location into FAC ;; @@6703 187
+                 lda #0                                    ;; @@6706 187
+                 sta facsgn                               ; start off positive ;; @@6708 187
+                 lda tansgn                                ;; @@670a 187
+                 jsr _local_1186_10                       ; compute cosine ;; @@670c 187
+                 lda #<tempf3                              ;; @@670f 187
+                 ldy #>tempf3                             ; address of sine value ;; @@6711 187
+; bra fdiv ;divide sine by cosine and return ;; @@6713 187
+                 jsr conupk                               ; unpack constant    [910226] FAB ;; @@6713 187
+                 beq overr                                ; overflow error     " ;; @@6716 187
+                 bra fdivt                                ; " ;; @@6719 187
+ ;; @@671c 187
+_local_1186_10   pha                                      ; cosc. ;; @@671c 187
+                 bra sin1                                  ;; @@671d 187
+ ;; @@671f 187
+ ;; @@671f 187
+; Arctangent function ;; @@671f 187
+; ;; @@671f 187
+; Use identities to get arg between 0 and 1 and then use an approximation ;; @@671f 187
+; polynomial to compute arctan(x). ;; @@671f 187
+ ;; @@671f 187
+ ;; @@671f 187

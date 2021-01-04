@@ -1,18 +1,18 @@
-ini              jsr frefac                               ; free temp descriptor ;; 6c53 206
-                 sta hulp                                 ; length string ;; 6c56 206
-                 ldx #$0a                                 ; printed in hulp ;; 6c58 206
-                 lda #0                                    ;; 6c5a 206
- ;; 6c5c 206
-_local_1205_10   sta swe,x                                ; init working registers ;; 6c5c 206
-                 dex                                       ;; 6c5f 206
-                 bpl _local_1205_10                        ;; 6c60 206
-                 stx flag                                 ; comma flag =ff ;; 6c62 206
-                 stx point                                ; point pointer=ff ;; 6c65 206
-                 stx dolr                                 ; dollar flag=ff ;; 6c67 206
-                 tax                                      ; x=y=0 ;; 6c6a 206
-                 tay                                       ;; 6c6b 206
-                 rts                                       ;; 6c6c 206
- ;; 6c6d 206
-; .page ;; 6c6d 206
-; Using- round number ;; 6c6d 206
- ;; 6c6d 206
+ini              jsr frefac                               ; free temp descriptor ;; @@6c53 206
+                 sta hulp                                 ; length string ;; @@6c56 206
+                 ldx #$0a                                 ; printed in hulp ;; @@6c58 206
+                 lda #0                                    ;; @@6c5a 206
+ ;; @@6c5c 206
+_local_1205_10   sta swe,x                                ; init working registers ;; @@6c5c 206
+                 dex                                       ;; @@6c5f 206
+                 bpl _local_1205_10                        ;; @@6c60 206
+                 stx flag                                 ; comma flag =ff ;; @@6c62 206
+                 stx point                                ; point pointer=ff ;; @@6c65 206
+                 stx dolr                                 ; dollar flag=ff ;; @@6c67 206
+                 tax                                      ; x=y=0 ;; @@6c6a 206
+                 tay                                       ;; @@6c6b 206
+                 rts                                       ;; @@6c6c 206
+ ;; @@6c6d 206
+; .page ;; @@6c6d 206
+; Using- round number ;; @@6c6d 206
+ ;; @@6c6d 206

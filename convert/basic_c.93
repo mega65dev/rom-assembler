@@ -1,43 +1,43 @@
-resume           jsr errdir                               ; no direct mode ;; 4468 93
-                 ldx errlin+1                             ; is there an error to resume from? ;; 446b 93
-                 inx                                       ;; 446e 93
-                 beq rescnt                               ; can't resume! ;; 446f 93
-                 jsr chrgot                               ; look for arguments ;; 4471 93
-                 beq resswp                               ; no arg's...restart err'd line ;; 4474 93
-                 bcc _local_1092_3                        ; numeric argument ;; 4476 93
-                 cmp #next_token                          ; only other choice is 'next' ;; 4478 93
-                 bne snerr                                ; if not, syntax error ;; 447a 93
- ;; 447d 93
-                 jsr resswp                               ; resume execution with next stm't ;; 447d 93
-                 ldy #0                                    ;; 4480 93
-                 jsr indtxt                                ;; 4482 93
-                 bne _local_1092_2                        ; must be a ':' ;; 4485 93
-                 iny                                      ; must be a null,get next line ;; 4487 93
-                 jsr indtxt                               ; make sure its not end-of-text ;; 4488 93
-                 bne _local_1092_1                         ;; 448b 93
-                 iny                                       ;; 448d 93
-                 jsr indtxt                                ;; 448e 93
-                 beq ready                                ; 2 nulls, eot. bye! ;; 4491 93
- ;; 4494 93
-_local_1092_1    ldy #3                                   ; new line, update pointers ;; 4494 93
-                 jsr indtxt                                ;; 4496 93
-                 sta curlin                                ;; 4499 93
-                 iny                                       ;; 449b 93
-                 jsr indtxt                                ;; 449c 93
-                 sta curlin+1                              ;; 449f 93
-                 tya                                       ;; 44a1 93
-                 clc                                       ;; 44a2 93
-                 adc txtptr                                ;; 44a3 93
-                 sta txtptr                                ;; 44a5 93
-                 bcc _local_1092_2                         ;; 44a7 93
-                 inc txtptr+1                              ;; 44a9 93
-_local_1092_2    jsr chrget                               ; skip over this character, into body of statement ;; 44ab 93
-                 bra data                                 ; advance until null or ':', then rts ;; 44ae 93
- ;; 44b1 93
- ;; 44b1 93
-_local_1092_3    jsr getwrd                               ; resnum. numeric argument ;; 44b1 93
-                 sta linnum+1                              ;; 44b4 93
-                 jsr resend                                ;; 44b6 93
-                 bra luk4it                                ;; 44b9 93
- ;; 44bc 93
- ;; 44bc 93
+resume           jsr errdir                               ; no direct mode ;; @@4468 93
+                 ldx errlin+1                             ; is there an error to resume from? ;; @@446b 93
+                 inx                                       ;; @@446e 93
+                 beq rescnt                               ; can't resume! ;; @@446f 93
+                 jsr chrgot                               ; look for arguments ;; @@4471 93
+                 beq resswp                               ; no arg's...restart err'd line ;; @@4474 93
+                 bcc _local_1092_3                        ; numeric argument ;; @@4476 93
+                 cmp #next_token                          ; only other choice is 'next' ;; @@4478 93
+                 bne snerr                                ; if not, syntax error ;; @@447a 93
+ ;; @@447d 93
+                 jsr resswp                               ; resume execution with next stm't ;; @@447d 93
+                 ldy #0                                    ;; @@4480 93
+                 jsr indtxt                                ;; @@4482 93
+                 bne _local_1092_2                        ; must be a ':' ;; @@4485 93
+                 iny                                      ; must be a null,get next line ;; @@4487 93
+                 jsr indtxt                               ; make sure its not end-of-text ;; @@4488 93
+                 bne _local_1092_1                         ;; @@448b 93
+                 iny                                       ;; @@448d 93
+                 jsr indtxt                                ;; @@448e 93
+                 beq ready                                ; 2 nulls, eot. bye! ;; @@4491 93
+ ;; @@4494 93
+_local_1092_1    ldy #3                                   ; new line, update pointers ;; @@4494 93
+                 jsr indtxt                                ;; @@4496 93
+                 sta curlin                                ;; @@4499 93
+                 iny                                       ;; @@449b 93
+                 jsr indtxt                                ;; @@449c 93
+                 sta curlin+1                              ;; @@449f 93
+                 tya                                       ;; @@44a1 93
+                 clc                                       ;; @@44a2 93
+                 adc txtptr                                ;; @@44a3 93
+                 sta txtptr                                ;; @@44a5 93
+                 bcc _local_1092_2                         ;; @@44a7 93
+                 inc txtptr+1                              ;; @@44a9 93
+_local_1092_2    jsr chrget                               ; skip over this character, into body of statement ;; @@44ab 93
+                 bra data                                 ; advance until null or ':', then rts ;; @@44ae 93
+ ;; @@44b1 93
+ ;; @@44b1 93
+_local_1092_3    jsr getwrd                               ; resnum. numeric argument ;; @@44b1 93
+                 sta linnum+1                              ;; @@44b4 93
+                 jsr resend                                ;; @@44b6 93
+                 bra luk4it                                ;; @@44b9 93
+ ;; @@44bc 93
+ ;; @@44bc 93

@@ -1,67 +1,67 @@
-link_error                                                ; [910103] ;; 30f5 28
-                 jsr highlight_text                       ; [911119] ;; 30f5 28
-                 jsr _primm                                ;; 30f8 28
-                 !byte cr,"?PROGRAM MANGLED",cr,0          ;; 30fb 28
-                 jsr highlight_done                       ; [911119] ;; 310e 28
- ;; 3111 28
- ;; 3111 28
-lnkrts           rts                                       ;; 3111 28
- ;; 3112 28
-; .page ;; 3112 28
-; Function to get a line one character at a time from the input ;; 3112 28
-; channel and build it in the input buffer. ;; 3112 28
-; ;; 3112 28
- ;; 3112 28
-PromptedInput                                             ; qinlin. ;; 3112 28
-                 lda channl                               ; entry for things line INPUT, wanting a prompt ;; 3112 28
-                 bne InputLine                            ; prompt only if terminal ;; 3114 28
-                 jsr outqst                               ; yes- print '? ' ;; 3116 28
-                 jsr realsp                                ;; 3119 28
- ;; 311c 28
- ;; 311c 28
-InputLine                                                 ; inlin. ;; 311c 28
-                 ldx #0                                   ; read & buffer data until 'return' or buffer full ;; 311c 28
-_local_1027_10   jsr inchr                                ; get a character ;; 311e 28
-                 cmp #0                                    ;; 3121 28
-                 beq _local_1027_20                        ;; 3123 28
-                 cmp #cr                                  ; a carriage return? ;; 3125 28
-                 beq _local_1027_20                       ; yes...done build ;; 3127 28
- ;; 3129 28
-                 sta buf,x                                ; no...buffer it ;; 3129 28
-                 inx                                       ;; 312c 28
-                 cpx #buflen                              ; buffer full? ;; 312d 28
-                 bcc _local_1027_10                       ; no...continue ;; 312f 28
-                 bra errlen                               ; yes...string too long error ;; 3131 28
- ;; 3134 28
- ;; 3134 28
-_local_1027_20   lda #0                                   ; fininl.  terminate input with a null ;; 3134 28
-                 sta buf,x                                 ;; 3136 28
-                 ldx #<buf_txtptr                         ; set up pointer to start of buffer-1 (for chrget) ;; 3139 28
-                 ldy #>buf_txtptr                          ;; 313b 28
-                 lda channl                               ; print 'return' only if terminal ;; 313d 28
-                 beq crdo                                  ;; 313f 28
-                 rts                                       ;; 3142 28
- ;; 3143 28
-;.end ;; 3143 28
-; .page ;; 3143 28
-; .subttl Runtime Stack Routines ;; 3143 28
- ;; 3143 28
-; Find a specific token in the run-time stack. token to be found is in srchtk. ;; 3143 28
-; ;; 3143 28
-; If called by 'for' or 'next', scan entries in stack, looking for a specific ;; 3143 28
-; 'for-variable' (in (forpnt)).  If found, (fndpnt) will point to it, and z is ;; 3143 28
-; set.  Otherwise, (fndpnt) will point to either: ;; 3143 28
-;  1) the non-for token ;; 3143 28
-;  2) bottom-of-stack ;; 3143 28
-; ;; 3143 28
-; Special case: 'next' with no argument will match first 'for' entry on stack ;; 3143 28
-; found, if any.  This case is signaled by a (forpnt) with a msb of $ff (an ;; 3143 28
-; impossible value). ;; 3143 28
-; ;; 3143 28
-; All other calls to search will result in either: ;; 3143 28
-;  1) (success) z = 1, (fndpnt) = address ;; 3143 28
-;  2) (failure) z = 0 ;; 3143 28
- ;; 3143 28
- ;; 3143 28
-; Set up temporary pointer with current top of stack ;; 3143 28
- ;; 3143 28
+link_error                                                ; [910103] ;; @@30f5 28
+                 jsr highlight_text                       ; [911119] ;; @@30f5 28
+                 jsr _primm                                ;; @@30f8 28
+                 !text cr,"?PROGRAM MANGLED",cr,0          ;; @@30fb 28
+                 jsr highlight_done                       ; [911119] ;; @@310e 28
+ ;; @@3111 28
+ ;; @@3111 28
+lnkrts           rts                                       ;; @@3111 28
+ ;; @@3112 28
+; .page ;; @@3112 28
+; Function to get a line one character at a time from the input ;; @@3112 28
+; channel and build it in the input buffer. ;; @@3112 28
+; ;; @@3112 28
+ ;; @@3112 28
+PromptedInput                                             ; qinlin. ;; @@3112 28
+                 lda channl                               ; entry for things line INPUT, wanting a prompt ;; @@3112 28
+                 bne InputLine                            ; prompt only if terminal ;; @@3114 28
+                 jsr outqst                               ; yes- print '? ' ;; @@3116 28
+                 jsr realsp                                ;; @@3119 28
+ ;; @@311c 28
+ ;; @@311c 28
+InputLine                                                 ; inlin. ;; @@311c 28
+                 ldx #0                                   ; read & buffer data until 'return' or buffer full ;; @@311c 28
+_local_1027_10   jsr inchr                                ; get a character ;; @@311e 28
+                 cmp #0                                    ;; @@3121 28
+                 beq _local_1027_20                        ;; @@3123 28
+                 cmp #cr                                  ; a carriage return? ;; @@3125 28
+                 beq _local_1027_20                       ; yes...done build ;; @@3127 28
+ ;; @@3129 28
+                 sta buf,x                                ; no...buffer it ;; @@3129 28
+                 inx                                       ;; @@312c 28
+                 cpx #buflen                              ; buffer full? ;; @@312d 28
+                 bcc _local_1027_10                       ; no...continue ;; @@312f 28
+                 bra errlen                               ; yes...string too long error ;; @@3131 28
+ ;; @@3134 28
+ ;; @@3134 28
+_local_1027_20   lda #0                                   ; fininl.  terminate input with a null ;; @@3134 28
+                 sta buf,x                                 ;; @@3136 28
+                 ldx #<buf_txtptr                         ; set up pointer to start of buffer-1 (for chrget) ;; @@3139 28
+                 ldy #>buf_txtptr                          ;; @@313b 28
+                 lda channl                               ; print 'return' only if terminal ;; @@313d 28
+                 beq crdo                                  ;; @@313f 28
+                 rts                                       ;; @@3142 28
+ ;; @@3143 28
+;.end ;; @@3143 28
+; .page ;; @@3143 28
+; .subttl Runtime Stack Routines ;; @@3143 28
+ ;; @@3143 28
+; Find a specific token in the run-time stack. token to be found is in srchtk. ;; @@3143 28
+; ;; @@3143 28
+; If called by 'for' or 'next', scan entries in stack, looking for a specific ;; @@3143 28
+; 'for-variable' (in (forpnt)).  If found, (fndpnt) will point to it, and z is ;; @@3143 28
+; set.  Otherwise, (fndpnt) will point to either: ;; @@3143 28
+;  1) the non-for token ;; @@3143 28
+;  2) bottom-of-stack ;; @@3143 28
+; ;; @@3143 28
+; Special case: 'next' with no argument will match first 'for' entry on stack ;; @@3143 28
+; found, if any.  This case is signaled by a (forpnt) with a msb of $ff (an ;; @@3143 28
+; impossible value). ;; @@3143 28
+; ;; @@3143 28
+; All other calls to search will result in either: ;; @@3143 28
+;  1) (success) z = 1, (fndpnt) = address ;; @@3143 28
+;  2) (failure) z = 0 ;; @@3143 28
+ ;; @@3143 28
+ ;; @@3143 28
+; Set up temporary pointer with current top of stack ;; @@3143 28
+ ;; @@3143 28

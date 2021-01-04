@@ -1,27 +1,27 @@
-kloop            clc                                      ; compute source address ;; 23de 9
-                 tya                                       ;; 23df 9
-                 adc txtptr                                ;; 23e0 9
-                 sta index1                                ;; 23e2 9
-                 lda txtptr+1                              ;; 23e4 9
-                 adc #0                                    ;; 23e6 9
-                 sta index1+1                              ;; 23e8 9
-                 ldy #$ff                                  ;; 23ea 9
- ;; 23ec 9
-_local_1008_10   iny                                       ;; 23ec 9
-                 lda (index1),y                           ; move source..  ????assumes text in common area ;; 23ed 9
-                 sta (txtptr),y                           ; to destination offset ????assumes text in common area ;; 23ef 9
-                 bne _local_1008_10                       ; not end of line ;; 23f1 9
-                 rts                                       ;; 23f3 9
- ;; 23f4 9
-; .page ;; 23f4 9
-;      RESER ;; 23f4 9
-; ;; 23f4 9
-;  Search reserved word list for a match ;; 23f4 9
-; ;; 23f4 9
-;  Entry:  (txtptr) is first char of word to match ;; 23f4 9
-;    (y,a) is start of table to check ;; 23f4 9
-; ;; 23f4 9
-;  Exit:   .y  length of word matched ;; 23f4 9
-;    .c  success/fail (set/clear) flag ;; 23f4 9
-;    count token value ;; 23f4 9
- ;; 23f4 9
+kloop            clc                                      ; compute source address ;; @@23de 9
+                 tya                                       ;; @@23df 9
+                 adc txtptr                                ;; @@23e0 9
+                 sta index1                                ;; @@23e2 9
+                 lda txtptr+1                              ;; @@23e4 9
+                 adc #0                                    ;; @@23e6 9
+                 sta index1+1                              ;; @@23e8 9
+                 ldy #$ff                                  ;; @@23ea 9
+ ;; @@23ec 9
+_local_1008_10   iny                                       ;; @@23ec 9
+                 lda (index1),y                           ; move source..  ????assumes text in common area ;; @@23ed 9
+                 sta (txtptr),y                           ; to destination offset ????assumes text in common area ;; @@23ef 9
+                 bne _local_1008_10                       ; not end of line ;; @@23f1 9
+                 rts                                       ;; @@23f3 9
+ ;; @@23f4 9
+; .page ;; @@23f4 9
+;      RESER ;; @@23f4 9
+; ;; @@23f4 9
+;  Search reserved word list for a match ;; @@23f4 9
+; ;; @@23f4 9
+;  Entry:  (txtptr) is first char of word to match ;; @@23f4 9
+;    (y,a) is start of table to check ;; @@23f4 9
+; ;; @@23f4 9
+;  Exit:   .y  length of word matched ;; @@23f4 9
+;    .c  success/fail (set/clear) flag ;; @@23f4 9
+;    count token value ;; @@23f4 9
+ ;; @@23f4 9

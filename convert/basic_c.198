@@ -1,34 +1,34 @@
-pudefs           !byte " ,.$"                             ; default:  fill, comma, dec pnt, money symbol ;; 69db 198
- ;; 69df 198
-using            ldx #$ff                                  ;; 69df 198
-                 stx endfd                                 ;; 69e1 198
-                 jsr chrget                                ;; 69e4 198
-                 jsr frmevl                               ; evaluate format string ;; 69e7 198
-                 jsr chkstr                               ; must be string type... ;; 69ea 198
- ;; 69ed 198
-                 lda facmo                                ; save temp descriptor ;; 69ed 198
-                 pha                                       ;; 69ef 198
-                 lda facmo+1                               ;; 69f0 198
-                 pha                                       ;; 69f2 198
- ;; 69f3 198
-                 ldy #2                                   ; move (facmo),1&2 to form,form+1 ;; 69f3 198
-_local_1197_10   jsr indfmo                                ;; 69f5 198
-                 dey                                       ;; 69f8 198
-                 sta form,y                                ;; 69f9 198
-                 bne _local_1197_10                        ;; 69fc 198
- ;; 69fe 198
-                 jsr indfmo                               ; get length ;; 69fe 198
-                 sta lfor                                  ;; 6a01 198
-                 tay                                       ;; 6a04 198
-                 beq _local_1197_99                       ; syntax error if length is zero ;; 6a05 198
- ;; 6a07 198
-_local_1197_20   dey                                       ;; 6a07 198
-                 jsr indfrm                                ;; 6a08 198
-                 cmp #'#'                                 ; at least one # in format? ;; 6a0b 198
-                 beq _local_1197_30                       ; yes... ;; 6a0d 198
-                 tya                                      ; no...end of format ;; 6a0f 198
-                 bne _local_1197_20                       ; no... ;; 6a10 198
-_local_1197_99   bra snerr                                ; yes...syntax error ;; 6a12 198
- ;; 6a15 198
- ;; 6a15 198
-_local_1197_30   lda #'                                   ; ' ;; 6a15 198
+pudefs           !text " ,.$"                             ; default:  fill, comma, dec pnt, money symbol ;; @@69db 198
+ ;; @@69df 198
+using            ldx #$ff                                  ;; @@69df 198
+                 stx endfd                                 ;; @@69e1 198
+                 jsr chrget                                ;; @@69e4 198
+                 jsr frmevl                               ; evaluate format string ;; @@69e7 198
+                 jsr chkstr                               ; must be string type... ;; @@69ea 198
+ ;; @@69ed 198
+                 lda facmo                                ; save temp descriptor ;; @@69ed 198
+                 pha                                       ;; @@69ef 198
+                 lda facmo+1                               ;; @@69f0 198
+                 pha                                       ;; @@69f2 198
+ ;; @@69f3 198
+                 ldy #2                                   ; move (facmo),1&2 to form,form+1 ;; @@69f3 198
+_local_1197_10   jsr indfmo                                ;; @@69f5 198
+                 dey                                       ;; @@69f8 198
+                 sta form,y                                ;; @@69f9 198
+                 bne _local_1197_10                        ;; @@69fc 198
+ ;; @@69fe 198
+                 jsr indfmo                               ; get length ;; @@69fe 198
+                 sta lfor                                  ;; @@6a01 198
+                 tay                                       ;; @@6a04 198
+                 beq _local_1197_99                       ; syntax error if length is zero ;; @@6a05 198
+ ;; @@6a07 198
+_local_1197_20   dey                                       ;; @@6a07 198
+                 jsr indfrm                                ;; @@6a08 198
+                 cmp #'#'                                 ; at least one # in format? ;; @@6a0b 198
+                 beq _local_1197_30                       ; yes... ;; @@6a0d 198
+                 tya                                      ; no...end of format ;; @@6a0f 198
+                 bne _local_1197_20                       ; no... ;; @@6a10 198
+_local_1197_99   bra snerr                                ; yes...syntax error ;; @@6a12 198
+ ;; @@6a15 198
+ ;; @@6a15 198
+_local_1197_30   lda #'                                   ; ' ;; @@6a15 198

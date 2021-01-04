@@ -1,32 +1,32 @@
-dcopy            jsr dospar                               ; parse the line ;; 737c 231
-                 and #$30                                  ;; 737f 231
-                 cmp #$30                                 ; check required parameters ;; 7381 231
-                 bne _local_1230_10                       ; branch if single drive copy ;; 7383 231
-                 lda parsts                               ; else check for dual drive params ;; 7385 231
-                 and #$c7                                  ;; 7387 231
-                 beq _local_1230_20                        ;; 7389 231
-                 and #3                                   ; special check for 2nd filename   [910717] ;; 738b 231
-                 cmp #3                                    ;; 738d 231
-                 beq _local_1230_10                       ; branch if given ;; 738f 231
-                 lda #'*'                                  ;; 7391 231
-                 sta dosdid                               ; else supply "*" for him, just like 'name2' ;; 7393 231
-                 lda #1                                    ;; 7396 231
-                 ldx #<dosdid                              ;; 7398 231
-                 ldy #>dosdid                              ;; 739a 231
-                 sta dosf2l                                ;; 739c 231
-                 stx dosf2a                                ;; 739f 231
-                 sty dosf2a+1                              ;; 73a2 231
-                 lda #2                                   ; and set filename2 flag ;; 73a5 231
-                 tsb parsts                               ; set flag in status ;; 73a7 231
-_local_1230_10   lda parsts                                ;; 73a9 231
-                 jsr chk4                                  ;; 73ab 231
-; lda parsts ;; 73ae 231
-_local_1230_20   ldy #fcopy                               ; tabld offset ;; 73ae 231
-                 lda #8                                   ; length ;; 73b0 231
-                 jsr trans                                ; send command ;; 73b2 231
-                 bra print_dos_error                      ; if any ;; 73b5 231
- ;; 73b8 231
- ;; 73b8 231
- ;; 73b8 231
-; CONCAT ;; 73b8 231
- ;; 73b8 231
+dcopy            jsr dospar                               ; parse the line ;; @@737c 231
+                 and #$30                                  ;; @@737f 231
+                 cmp #$30                                 ; check required parameters ;; @@7381 231
+                 bne _local_1230_10                       ; branch if single drive copy ;; @@7383 231
+                 lda parsts                               ; else check for dual drive params ;; @@7385 231
+                 and #$c7                                  ;; @@7387 231
+                 beq _local_1230_20                        ;; @@7389 231
+                 and #3                                   ; special check for 2nd filename   [910717] ;; @@738b 231
+                 cmp #3                                    ;; @@738d 231
+                 beq _local_1230_10                       ; branch if given ;; @@738f 231
+                 lda #'*'                                  ;; @@7391 231
+                 sta dosdid                               ; else supply "*" for him, just like 'name2' ;; @@7393 231
+                 lda #1                                    ;; @@7396 231
+                 ldx #<dosdid                              ;; @@7398 231
+                 ldy #>dosdid                              ;; @@739a 231
+                 sta dosf2l                                ;; @@739c 231
+                 stx dosf2a                                ;; @@739f 231
+                 sty dosf2a+1                              ;; @@73a2 231
+                 lda #2                                   ; and set filename2 flag ;; @@73a5 231
+                 tsb parsts                               ; set flag in status ;; @@73a7 231
+_local_1230_10   lda parsts                                ;; @@73a9 231
+                 jsr chk4                                  ;; @@73ab 231
+; lda parsts ;; @@73ae 231
+_local_1230_20   ldy #fcopy                               ; tabld offset ;; @@73ae 231
+                 lda #8                                   ; length ;; @@73b0 231
+                 jsr trans                                ; send command ;; @@73b2 231
+                 bra print_dos_error                      ; if any ;; @@73b5 231
+ ;; @@73b8 231
+ ;; @@73b8 231
+ ;; @@73b8 231
+; CONCAT ;; @@73b8 231
+ ;; @@73b8 231

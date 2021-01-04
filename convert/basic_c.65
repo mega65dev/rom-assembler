@@ -1,62 +1,62 @@
-tron                                                      ; trace mode on ;; 3b9a 65
-                 smb5 runmod                              ; trcflg ;; 3b9a 65
-                 rts                                       ;; 3b9c 65
- ;; 3b9d 65
- ;; 3b9d 65
-troff                                                     ; trace mode off ;; 3b9d 65
-                 rmb5 runmod                              ; trcflg ;; 3b9d 65
-                 rts                                       ;; 3b9f 65
- ;; 3ba0 65
- ;; 3ba0 65
-;.end ;; 3ba0 65
-; .page ;; 3ba0 65
-; .subttl  RREG ;; 3ba0 65
- ;; 3ba0 65
-; RREG - Return values of 6502 registers following a SYS call. ;; 3ba0 65
-; ;; 3ba0 65
-; Syntax : RREG [.A variable [,[.X[...Z] variable] [,[.S variable] ]]] ;; 3ba0 65
- ;; 3ba0 65
-rreg             lda #0                                    ;; 3ba0 65
-                 sta count                                 ;; 3ba2 65
- ;; 3ba4 65
-_local_1064_10   jsr chrgot                                ;; 3ba4 65
-                 beq _local_1064_50                       ; reached end of statement- done ;; 3ba7 65
-                 cmp #','                                 ; skip this arg? ;; 3ba9 65
-                 beq _local_1064_30                       ; branch if so ;; 3bab 65
-                 jsr ptrget                               ; get pointer to target variable ;; 3bad 65
-                 sta forpnt                               ; a little bit of set up so we can share LET code ;; 3bb0 65
-                 sty forpnt+1                              ;; 3bb2 65
-                 lda valtyp                               ; what kind of variable name did ptrget find? ;; 3bb4 65
-                 bne chkerr                               ; type mismatch error if string ;; 3bb6 65
- ;; 3bb9 65
-                 ldy count                                ; which register's value are we looking for? ;; 3bb9 65
-                 lda _a_reg,y                             ; .A, .X, .Y, & .Z are contiguious ;; 3bbb 65
-                 cpy #4                                    ;; 3bbe 65
-                 bne _local_1064_20                        ;; 3bc0 65
-                 lda _s_reg                               ; but .S isn't ;; 3bc2 65
- ;; 3bc4 65
-_local_1064_20   tay                                      ; low byte in .Y ;; 3bc4 65
-                 lda #0                                   ; high byte of zero ;; 3bc5 65
-                 jsr givayf                               ; go float it ;; 3bc7 65
-                 lda intflg                               ; set conditions for type of var (int/float) ;; 3bca 65
-                 jsr qintgr                               ; ..and use part of LET to do the work ;; 3bcc 65
- ;; 3bcf 65
-_local_1064_30   inc count                                ; 5 registers to do ;; 3bcf 65
-                 lda count                                 ;; 3bd1 65
-                 cmp #5                                    ;; 3bd3 65
-                 bcs _local_1064_50                        ;; 3bd5 65
-                 jsr chrgot                               ; was this e-o-statement? ;; 3bd7 65
-                 beq _local_1064_50                        ;; 3bda 65
-                 jsr chrget                               ; not e-o-s, skip over comma, ;; 3bdc 65
-                 bne _local_1064_10                       ; ..and go do next ;; 3bdf 65
- ;; 3be1 65
-_local_1064_50   rts                                       ;; 3be1 65
- ;; 3be2 65
-;.end ;; 3be2 65
-; .page ;; 3be2 65
-; .subttl MID$ ;; 3be2 65
- ;; 3be2 65
-; Alternate use of the MID$ function, as the target of an assignment. ;; 3be2 65
-; ;; 3be2 65
-; MID$(string_var,starting_position [,length]) = string_expression ;; 3be2 65
- ;; 3be2 65
+tron                                                      ; trace mode on ;; @@3b9a 65
+                 smb5 runmod                              ; trcflg ;; @@3b9a 65
+                 rts                                       ;; @@3b9c 65
+ ;; @@3b9d 65
+ ;; @@3b9d 65
+troff                                                     ; trace mode off ;; @@3b9d 65
+                 rmb5 runmod                              ; trcflg ;; @@3b9d 65
+                 rts                                       ;; @@3b9f 65
+ ;; @@3ba0 65
+ ;; @@3ba0 65
+;.end ;; @@3ba0 65
+; .page ;; @@3ba0 65
+; .subttl  RREG ;; @@3ba0 65
+ ;; @@3ba0 65
+; RREG - Return values of 6502 registers following a SYS call. ;; @@3ba0 65
+; ;; @@3ba0 65
+; Syntax : RREG [.A variable [,[.X[...Z] variable] [,[.S variable] ]]] ;; @@3ba0 65
+ ;; @@3ba0 65
+rreg             lda #0                                    ;; @@3ba0 65
+                 sta count                                 ;; @@3ba2 65
+ ;; @@3ba4 65
+_local_1064_10   jsr chrgot                                ;; @@3ba4 65
+                 beq _local_1064_50                       ; reached end of statement- done ;; @@3ba7 65
+                 cmp #','                                 ; skip this arg? ;; @@3ba9 65
+                 beq _local_1064_30                       ; branch if so ;; @@3bab 65
+                 jsr ptrget                               ; get pointer to target variable ;; @@3bad 65
+                 sta forpnt                               ; a little bit of set up so we can share LET code ;; @@3bb0 65
+                 sty forpnt+1                              ;; @@3bb2 65
+                 lda valtyp                               ; what kind of variable name did ptrget find? ;; @@3bb4 65
+                 bne chkerr                               ; type mismatch error if string ;; @@3bb6 65
+ ;; @@3bb9 65
+                 ldy count                                ; which register's value are we looking for? ;; @@3bb9 65
+                 lda _a_reg,y                             ; .A, .X, .Y, & .Z are contiguious ;; @@3bbb 65
+                 cpy #4                                    ;; @@3bbe 65
+                 bne _local_1064_20                        ;; @@3bc0 65
+                 lda _s_reg                               ; but .S isn't ;; @@3bc2 65
+ ;; @@3bc4 65
+_local_1064_20   tay                                      ; low byte in .Y ;; @@3bc4 65
+                 lda #0                                   ; high byte of zero ;; @@3bc5 65
+                 jsr givayf                               ; go float it ;; @@3bc7 65
+                 lda intflg                               ; set conditions for type of var (int/float) ;; @@3bca 65
+                 jsr qintgr                               ; ..and use part of LET to do the work ;; @@3bcc 65
+ ;; @@3bcf 65
+_local_1064_30   inc count                                ; 5 registers to do ;; @@3bcf 65
+                 lda count                                 ;; @@3bd1 65
+                 cmp #5                                    ;; @@3bd3 65
+                 bcs _local_1064_50                        ;; @@3bd5 65
+                 jsr chrgot                               ; was this e-o-statement? ;; @@3bd7 65
+                 beq _local_1064_50                        ;; @@3bda 65
+                 jsr chrget                               ; not e-o-s, skip over comma, ;; @@3bdc 65
+                 bne _local_1064_10                       ; ..and go do next ;; @@3bdf 65
+ ;; @@3be1 65
+_local_1064_50   rts                                       ;; @@3be1 65
+ ;; @@3be2 65
+;.end ;; @@3be2 65
+; .page ;; @@3be2 65
+; .subttl MID$ ;; @@3be2 65
+ ;; @@3be2 65
+; Alternate use of the MID$ function, as the target of an assignment. ;; @@3be2 65
+; ;; @@3be2 65
+; MID$(string_var,starting_position [,length]) = string_expression ;; @@3be2 65
+ ;; @@3be2 65

@@ -1,4 +1,4 @@
-c65.setdpat 
+C65__setdpat 
  jsr getbyt  ;get pattern type 
  cpx #4+1  ;63+1       [911028] 
 10$ bcs fcerr  ; if out of range 

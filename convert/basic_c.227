@@ -1,52 +1,52 @@
-print_dos_error                                           ; [900725] ;; 726e 227
-                 bbs7 runmod,header_rts                   ; branch if not direct mode ;; 726e 227
-                 jsr Check_DS                             ; get current disk error message ;; 7271 227
-                 ldy #0                                    ;; 7274 227
-                 lda #dsdesc+1                             ;; 7276 227
-                 jsr lda_far_ram1                         ; lda (dsdesc+1),y peek at first character ;; 7278 227
-                 cmp #'2'                                  ;; 727b 227
-                 bcc header_rts                           ; branch if no error occured ('00' or '01') ;; 727d 227
-                 cmp #'7'                                  ;; 727f 227
-                 bne _local_1226_1                        ; [900730] ;; 7281 227
-                 iny                                       ;; 7283 227
-                 lda #dsdesc+1                             ;; 7284 227
-                 jsr lda_far_ram1                         ; might be '73' powerup message ;; 7286 227
-                 cmp #'3'                                  ;; 7289 227
-                 beq header_rts                           ; yup ;; 728b 227
- ;; 728d 227
-; ldx #errbdk  ; bad disk error (carry is set) ;; 728d 227
-; bra error ;; 728d 227
- ;; 728d 227
-; Print DOS error message as if it were a BASIC error message   [900910] ;; 728d 227
- ;; 728d 227
-_local_1226_1    lda #$ff                                 ; reset error line ;; 728d 227
-                 sta errlin                               ;  ;; 728f 227
-                 sta errlin+1                              ;; 7292 227
-                 jsr _clrch                                ;; 7295 227
-; inc a   ;a=0 restore output to screen   [910909] ;; 7298 227
-                 sta channl                                ;; 7298 227
-                 jsr RestoreTextScreen                    ; make sure we're in text mode????  [910404] ;; 729a 227
-                 jsr init_stack                           ; clean up system, string temps, etc.  [910121] ;; 729d 227
- ;; 72a0 227
-                 jsr highlight_text                       ; [910624] ;; 72a0 227
-                 jsr _primm                               ; start a new line with '?DOS: ' ;; 72a3 227
-                 !byte cr,"?DOS: ",0                      ; (to distinguish ?DOS: SYNTAX ERROR from ?SYNTAX ERROR) ;; 72a6 227
- ;; 72ae 227
-                 ldy #3                                   ; print text part of message only ;; 72ae 227
-                 lda #dsdesc+1                             ;; 72b0 227
-                 jsr lda_far_ram1                         ; skip err#, comma, & leading space if any ;; 72b2 227
-                 cmp #' '                                  ;; 72b5 227
-                 bne _local_1226_20                        ;; 72b7 227
-                 iny                                       ;; 72b9 227
-_local_1226_10   lda #dsdesc+1                             ;; 72ba 227
-                 jsr lda_far_ram1                          ;; 72bc 227
-                 cmp #','                                 ; finished at comma preceding trk, sector ;; 72bf 227
-                 beq _local_1226_30                        ;; 72c1 227
-_local_1226_20   jsr outch                                 ;; 72c3 227
-                 iny                                       ;; 72c6 227
-                 bpl _local_1226_10                       ; loop always (bpl=failsafe) ;; 72c7 227
- ;; 72c9 227
-_local_1226_30   jsr highlight_done                       ; [910624] ;; 72c9 227
-                 jsr crdo                                  ;; 72cc 227
-                 bra ready                                ; we're in direct mode, error msg has been printed, abort ;; 72cf 227
- ;; 72d2 227
+print_dos_error                                           ; [900725] ;; @@726e 227
+                 bbs7 runmod,header_rts                   ; branch if not direct mode ;; @@726e 227
+                 jsr Check_DS                             ; get current disk error message ;; @@7271 227
+                 ldy #0                                    ;; @@7274 227
+                 lda #dsdesc+1                             ;; @@7276 227
+                 jsr lda_far_ram1                         ; lda (dsdesc+1),y peek at first character ;; @@7278 227
+                 cmp #'2'                                  ;; @@727b 227
+                 bcc header_rts                           ; branch if no error occured ('00' or '01') ;; @@727d 227
+                 cmp #'7'                                  ;; @@727f 227
+                 bne _local_1226_1                        ; [900730] ;; @@7281 227
+                 iny                                       ;; @@7283 227
+                 lda #dsdesc+1                             ;; @@7284 227
+                 jsr lda_far_ram1                         ; might be '73' powerup message ;; @@7286 227
+                 cmp #'3'                                  ;; @@7289 227
+                 beq header_rts                           ; yup ;; @@728b 227
+ ;; @@728d 227
+; ldx #errbdk  ; bad disk error (carry is set) ;; @@728d 227
+; bra error ;; @@728d 227
+ ;; @@728d 227
+; Print DOS error message as if it were a BASIC error message   [900910] ;; @@728d 227
+ ;; @@728d 227
+_local_1226_1    lda #$ff                                 ; reset error line ;; @@728d 227
+                 sta errlin                               ;  ;; @@728f 227
+                 sta errlin+1                              ;; @@7292 227
+                 jsr _clrch                                ;; @@7295 227
+; inc a   ;a=0 restore output to screen   [910909] ;; @@7298 227
+                 sta channl                                ;; @@7298 227
+                 jsr RestoreTextScreen                    ; make sure we're in text mode????  [910404] ;; @@729a 227
+                 jsr init_stack                           ; clean up system, string temps, etc.  [910121] ;; @@729d 227
+ ;; @@72a0 227
+                 jsr highlight_text                       ; [910624] ;; @@72a0 227
+                 jsr _primm                               ; start a new line with '?DOS: ' ;; @@72a3 227
+                 !text cr,"?DOS: ",0                      ; (to distinguish ?DOS: SYNTAX ERROR from ?SYNTAX ERROR) ;; @@72a6 227
+ ;; @@72ae 227
+                 ldy #3                                   ; print text part of message only ;; @@72ae 227
+                 lda #dsdesc+1                             ;; @@72b0 227
+                 jsr lda_far_ram1                         ; skip err#, comma, & leading space if any ;; @@72b2 227
+                 cmp #' '                                  ;; @@72b5 227
+                 bne _local_1226_20                        ;; @@72b7 227
+                 iny                                       ;; @@72b9 227
+_local_1226_10   lda #dsdesc+1                             ;; @@72ba 227
+                 jsr lda_far_ram1                          ;; @@72bc 227
+                 cmp #','                                 ; finished at comma preceding trk, sector ;; @@72bf 227
+                 beq _local_1226_30                        ;; @@72c1 227
+_local_1226_20   jsr outch                                 ;; @@72c3 227
+                 iny                                       ;; @@72c6 227
+                 bpl _local_1226_10                       ; loop always (bpl=failsafe) ;; @@72c7 227
+ ;; @@72c9 227
+_local_1226_30   jsr highlight_done                       ; [910624] ;; @@72c9 227
+                 jsr crdo                                  ;; @@72cc 227
+                 bra ready                                ; we're in direct mode, error msg has been printed, abort ;; @@72cf 227
+ ;; @@72d2 227

@@ -1,74 +1,74 @@
-AutoScrollprint                                            ;; 7e88 265
-                 ldy #2                                   ; get line number to print ;; 7e88 265
-                 jsr indlow                                ;; 7e8a 265
-                 tax                                       ;; 7e8d 265
-                 iny                                       ;; 7e8e 265
-                 jsr indlow                                ;; 7e8f 265
-                 jsr p1line                               ; print the number & the line ;; 7e92 265
-; bra AutoScrolldone ;Normal exit ;; 7e95 265
- ;; 7e95 265
-AutoScrolldone                                             ;; 7e95 265
-                 jsr _primm                               ; kill special Editor modes ;; 7e95 265
-                 !byte esc,esc,0                           ;; 7e98 265
-                 ldx point                                ; restore cursor position ;; 7e9b 265
-                 ldy point+1                               ;; 7e9d 265
-                 clc                                       ;; 7e9f 265
-                 jsr _plot                                 ;; 7ea0 265
-                 rmb1 helper                              ; remove LINGET flag ;; 7ea3 265
-                 pla                                      ; restore character ;; 7ea5 265
-                 clc                                      ; return to Editor, with flag we handled character ;; 7ea6 265
-                 rts                                       ;; 7ea7 265
- ;; 7ea8 265
-AutoSearch                                                 ;; 7ea8 265
-                 ldy #0                                   ; search for any line number on screen in leftmost column ;; 7ea8 265
-                 clc                                       ;; 7eaa 265
-                 jsr _plot                                ; move to beginning of next line ;; 7eab 265
-; bcs AutoScrollpop ;  exit if no more lines ;; 7eae 265
-                 bcs _local_1264_30                       ; no more lines- fake one   [910716] ;; 7eae 265
-                 sec                                       ;; 7eb0 265
-                 jsr _plot                                ; else check if wrapped line ;; 7eb1 265
-                 bcs _local_1264_10                       ; it's wrapped- move up one line ;; 7eb4 265
-                 lda _pnt                                  ;; 7eb6 265
-                 adc _screen_left                         ; (.c=0) ;; 7eb8 265
-                 sta txtptr                               ; copy screen address of logical line to txtptr ;; 7eba 265
-                 lda _pnt+1                                ;; 7ebc 265
-                 adc #0                                    ;; 7ebe 265
-                 sta txtptr+1                              ;; 7ec0 265
-                 ldy #0                                   ; get first character on this line in window ;; 7ec2 265
-                 lda (txtptr),y                            ;; 7ec4 265
-; jsr indtxt  ;    (I did not want to limit search to the first column, ;; 7ec6 265
-                 cmp #'9'+1                               ; but it was way too slow searching the entire screen) ;; 7ec6 265
-                 bcs _local_1264_10                       ; it's not a number ;; 7ec8 265
-                 cmp #'0'                                  ;; 7eca 265
-                 bcs _local_1264_20                       ; it's a digit 0-9, continue ;; 7ecc 265
- ;; 7ece 265
-_local_1264_10   bbs7 form,_local_1264_15                 ; not on this line- move to next line ;; 7ece 265
-                 dex                                      ; move up one line ;; 7ed1 265
-                 !byte $89                                 ;; 7ed2 265
-_local_1264_15   inx                                      ; move down one line ;; 7ed3 265
-                 bra AutoSearch                           ; loop until we find a numeric digit or run out of lines ;; 7ed4 265
- ;; 7ed6 265
-_local_1264_20   clc                                      ; found a digit, get entire number into linnum & rts ;; 7ed6 265
-                 bra linget                                ;; 7ed7 265
- ;; 7eda 265
-_local_1264_30   lda #$ff                                 ; no line found, fake end of program   [910716] ;; 7eda 265
-                 sta linnum+1                              ;; 7edc 265
-                 rts                                       ;; 7ede 265
- ;; 7edf 265
-; .ifgt *-$7f00 ;; 7edf 265
-; .messg ***ROM OVERFLOW: $7F00 ;; 7edf 265
-; .endif ;; 7edf 265
-;.end ;; 7edf 265
-; .page ;; 7edf 265
-; .subttl  GRAPHIC Interface ;; 7edf 265
- ;; 7edf 265
-                 * = $af00                                ; [911001] ;; 7edf 265
- ;; af00 265
-;***************************************************************** ;; af00 265
-; SCREEN DEF      define a screen ;; af00 265
-; SCREEN SET  set draw, view screen ;; af00 265
-; SCREEN CLR  clear a screen ;; af00 265
-; SCREEN OPEN  open a screen ;; af00 265
-; SCREEN CLOSE  close a screen ;; af00 265
-;***************************************************************** ;; af00 265
- ;; af00 265
+AutoScrollprint                                            ;; @@7e88 265
+                 ldy #2                                   ; get line number to print ;; @@7e88 265
+                 jsr indlow                                ;; @@7e8a 265
+                 tax                                       ;; @@7e8d 265
+                 iny                                       ;; @@7e8e 265
+                 jsr indlow                                ;; @@7e8f 265
+                 jsr p1line                               ; print the number & the line ;; @@7e92 265
+; bra AutoScrolldone ;Normal exit ;; @@7e95 265
+ ;; @@7e95 265
+AutoScrolldone                                             ;; @@7e95 265
+                 jsr _primm                               ; kill special Editor modes ;; @@7e95 265
+                 !text esc,esc,0                           ;; @@7e98 265
+                 ldx point                                ; restore cursor position ;; @@7e9b 265
+                 ldy point+1                               ;; @@7e9d 265
+                 clc                                       ;; @@7e9f 265
+                 jsr _plot                                 ;; @@7ea0 265
+                 rmb1 helper                              ; remove LINGET flag ;; @@7ea3 265
+                 pla                                      ; restore character ;; @@7ea5 265
+                 clc                                      ; return to Editor, with flag we handled character ;; @@7ea6 265
+                 rts                                       ;; @@7ea7 265
+ ;; @@7ea8 265
+AutoSearch                                                 ;; @@7ea8 265
+                 ldy #0                                   ; search for any line number on screen in leftmost column ;; @@7ea8 265
+                 clc                                       ;; @@7eaa 265
+                 jsr _plot                                ; move to beginning of next line ;; @@7eab 265
+; bcs AutoScrollpop ;  exit if no more lines ;; @@7eae 265
+                 bcs _local_1264_30                       ; no more lines- fake one   [910716] ;; @@7eae 265
+                 sec                                       ;; @@7eb0 265
+                 jsr _plot                                ; else check if wrapped line ;; @@7eb1 265
+                 bcs _local_1264_10                       ; it's wrapped- move up one line ;; @@7eb4 265
+                 lda _pnt                                  ;; @@7eb6 265
+                 adc _screen_left                         ; (.c=0) ;; @@7eb8 265
+                 sta txtptr                               ; copy screen address of logical line to txtptr ;; @@7eba 265
+                 lda _pnt+1                                ;; @@7ebc 265
+                 adc #0                                    ;; @@7ebe 265
+                 sta txtptr+1                              ;; @@7ec0 265
+                 ldy #0                                   ; get first character on this line in window ;; @@7ec2 265
+                 lda (txtptr),y                            ;; @@7ec4 265
+; jsr indtxt  ;    (I did not want to limit search to the first column, ;; @@7ec6 265
+                 cmp #'9'+1                               ; but it was way too slow searching the entire screen) ;; @@7ec6 265
+                 bcs _local_1264_10                       ; it's not a number ;; @@7ec8 265
+                 cmp #'0'                                  ;; @@7eca 265
+                 bcs _local_1264_20                       ; it's a digit 0-9, continue ;; @@7ecc 265
+ ;; @@7ece 265
+_local_1264_10   bbs7 form,_local_1264_15                 ; not on this line- move to next line ;; @@7ece 265
+                 dex                                      ; move up one line ;; @@7ed1 265
+                 !text $89                                 ;; @@7ed2 265
+_local_1264_15   inx                                      ; move down one line ;; @@7ed3 265
+                 bra AutoSearch                           ; loop until we find a numeric digit or run out of lines ;; @@7ed4 265
+ ;; @@7ed6 265
+_local_1264_20   clc                                      ; found a digit, get entire number into linnum & rts ;; @@7ed6 265
+                 bra linget                                ;; @@7ed7 265
+ ;; @@7eda 265
+_local_1264_30   lda #$ff                                 ; no line found, fake end of program   [910716] ;; @@7eda 265
+                 sta linnum+1                              ;; @@7edc 265
+                 rts                                       ;; @@7ede 265
+ ;; @@7edf 265
+; .ifgt *-$7f00 ;; @@7edf 265
+; .messg ***ROM OVERFLOW: $7F00 ;; @@7edf 265
+; .endif ;; @@7edf 265
+;.end ;; @@7edf 265
+; .page ;; @@7edf 265
+; .subttl  GRAPHIC Interface ;; @@7edf 265
+ ;; @@7edf 265
+                 * = $af00                                ; [911001] ;; @@7edf 265
+ ;; @@af00 265
+;***************************************************************** ;; @@af00 265
+; SCREEN DEF      define a screen ;; @@af00 265
+; SCREEN SET  set draw, view screen ;; @@af00 265
+; SCREEN CLR  clear a screen ;; @@af00 265
+; SCREEN OPEN  open a screen ;; @@af00 265
+; SCREEN CLOSE  close a screen ;; @@af00 265
+;***************************************************************** ;; @@af00 265
+ ;; @@af00 265

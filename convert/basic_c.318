@@ -1,41 +1,41 @@
-graphic_kernel                                            ; ...via indirect ;; 7fcd 318
-                 jmp ($8002)                               ;; 7fcd 318
- ;; 7fd0 318
-; .page ;; 7fd0 318
-; C65 Graphic Kernel Jump Table      [910826] ;; 7fd0 318
-; ;; 7fd0 318
-; 8000 init   ;sets up graphic vars ;; 7fd0 318
-; 8002 parser   ;GRAPHIC ML Parser???? ;; 7fd0 318
-; ;; 7fd0 318
-; 8004 kg65.start-1  ;0 commands ;; 7fd0 318
-; 8006 kg65.screendef-1 ;1 ;; 7fd0 318
-; 8008 kg65.screenopen-1 ;2 ;; 7fd0 318
-; 800a kg65.screenclose-1 ;3 ;; 7fd0 318
-; 800c kg65.screenclear-1 ;4 ;; 7fd0 318
-; 800e kg65.screen-1  ;5 ;; 7fd0 318
-; 8010 kg65.setpen-1  ;6 ;; 7fd0 318
-; 8012 kg65.setpalette-1 ;7 ;; 7fd0 318
-; 8014 kg65.setdmode-1  ;8 ;; 7fd0 318
-; 8016 kg65.setdpat-1  ;9 ;; 7fd0 318
-; 8018 kg65.line-1  ;10 ;; 7fd0 318
-; 801a kg65.box-1  ;11 ;; 7fd0 318
-; 801c kg65.circle-1  ;12 ;; 7fd0 318
-; 801e kg65.polygon-1  ;13 ;; 7fd0 318
-; 8020 kg65.ellipse-1  ;14 ;; 7fd0 318
-; 8022 kg65.viewpclr-1  ;15 ;; 7fd0 318
-; 8024 kg65.copy-1  ;16 ;; 7fd0 318
-; 8026 kg65.cut-1  ;17 ;; 7fd0 318
-; 8028 kg65.paste-1  ;18 ;; 7fd0 318
-; 802a kg65.load-1  ;19 ;; 7fd0 318
-; 802c kg65.char-1  ;20 ;; 7fd0 318
-; 802e kg65.paint-1  ;21 ;; 7fd0 318
-; 8030 kg65.viewpdef-1  ;22 ;; 7fd0 318
-; 8032 kg65.f.pixel-1  ;23 ;; 7fd0 318
-; 8034 kg65.f.rpalette-1 ;24 ;; 7fd0 318
-; 8036 kg65.f.index2color-1 ;25 ;; 7fd0 318
-; 8038 kg65.f.rgraphic  ;26 ;; 7fd0 318
- ;; 7fd0 318
-; .ifgt *-$8000 ;; 7fd0 318
-; .messg ***ROM OVERFLOW: $8000 ;; 7fd0 318
-; .endif ;; 7fd0 318
-; .end ;; 7fd0 318
+graphic_kernel                                            ; ...via indirect ;; @@7fcd 318
+                 jmp ($8002)                               ;; @@7fcd 318
+ ;; @@7fd0 318
+; .page ;; @@7fd0 318
+; C65 Graphic Kernel Jump Table      [910826] ;; @@7fd0 318
+; ;; @@7fd0 318
+; 8000 init   ;sets up graphic vars ;; @@7fd0 318
+; 8002 parser   ;GRAPHIC ML Parser???? ;; @@7fd0 318
+; ;; @@7fd0 318
+; 8004 kg65.start-1  ;0 commands ;; @@7fd0 318
+; 8006 kg65.screendef-1 ;1 ;; @@7fd0 318
+; 8008 kg65.screenopen-1 ;2 ;; @@7fd0 318
+; 800a kg65.screenclose-1 ;3 ;; @@7fd0 318
+; 800c kg65.screenclear-1 ;4 ;; @@7fd0 318
+; 800e kg65.screen-1  ;5 ;; @@7fd0 318
+; 8010 kg65.setpen-1  ;6 ;; @@7fd0 318
+; 8012 kg65.setpalette-1 ;7 ;; @@7fd0 318
+; 8014 kg65.setdmode-1  ;8 ;; @@7fd0 318
+; 8016 kg65.setdpat-1  ;9 ;; @@7fd0 318
+; 8018 kg65.line-1  ;10 ;; @@7fd0 318
+; 801a kg65.box-1  ;11 ;; @@7fd0 318
+; 801c kg65.circle-1  ;12 ;; @@7fd0 318
+; 801e kg65.polygon-1  ;13 ;; @@7fd0 318
+; 8020 kg65.ellipse-1  ;14 ;; @@7fd0 318
+; 8022 kg65.viewpclr-1  ;15 ;; @@7fd0 318
+; 8024 kg65.copy-1  ;16 ;; @@7fd0 318
+; 8026 kg65.cut-1  ;17 ;; @@7fd0 318
+; 8028 kg65.paste-1  ;18 ;; @@7fd0 318
+; 802a kg65.load-1  ;19 ;; @@7fd0 318
+; 802c kg65.char-1  ;20 ;; @@7fd0 318
+; 802e kg65.paint-1  ;21 ;; @@7fd0 318
+; 8030 kg65.viewpdef-1  ;22 ;; @@7fd0 318
+; 8032 kg65.f.pixel-1  ;23 ;; @@7fd0 318
+; 8034 kg65.f.rpalette-1 ;24 ;; @@7fd0 318
+; 8036 kg65.f.index2color-1 ;25 ;; @@7fd0 318
+; 8038 kg65.f.rgraphic  ;26 ;; @@7fd0 318
+ ;; @@7fd0 318
+; .ifgt *-$8000 ;; @@7fd0 318
+; .messg ***ROM OVERFLOW: $8000 ;; @@7fd0 318
+; .endif ;; @@7fd0 318
+; .end ;; @@7fd0 318

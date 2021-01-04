@@ -1,118 +1,118 @@
-foreign_esc_fn                                             ;; 2d8b 20
-                 sec                                      ; flag 'up for grabs' ;; 2d8b 20
-                 jsr go_foreign_esc_fn                     ;; 2d8c 20
-n_esc_fn_vec                                               ;; 2d8f 20
-                 bcs snerr                                ; it's unwanted. off to the refuse pile ;; 2d8f 20
-                 bra chknum                                ;; 2d92 20
- ;; 2d95 20
-go_foreign_esc_fn                                           ;; 2d95 20
-                 jmp (esc_fn_vec)                          ;; 2d95 20
- ;; 2d98 20
-; .page ;; 2d98 20
-orop             ldy #255                                 ; must always complement ;; 2d98 20
-                 !byte $2c                                 ;; 2d9a 20
- ;; 2d9b 20
-andop            ldy #0                                    ;; 2d9b 20
-                 sty count                                ; operator ;; 2d9d 20
-                 jsr ayint                                ; (facmo&lo)=int value and check size ;; 2d9f 20
-                 lda facmo                                ; use Demorgan's Law on high ;; 2da2 20
-                 eor count                                 ;; 2da4 20
-                 sta integr                                ;; 2da6 20
-                 lda faclo                                ; and low ;; 2da8 20
-                 eor count                                 ;; 2daa 20
-                 sta integr+1                              ;; 2dac 20
-                 jsr movfa                                 ;; 2dae 20
-                 jsr ayint                                ; (facmo&lo)=int of arg ;; 2db1 20
-                 lda faclo                                 ;; 2db4 20
-                 eor count                                 ;; 2db6 20
-                 and integr+1                              ;; 2db8 20
-                 eor count                                ; finish out Demorgan ;; 2dba 20
-                 tay                                      ; save high ;; 2dbc 20
-                 lda facmo                                 ;; 2dbd 20
-                 eor count                                 ;; 2dbf 20
-                 and integr                                ;; 2dc1 20
-                 eor count                                 ;; 2dc3 20
-                 bra givayf                               ; float (a,y) and return to user ;; 2dc5 20
- ;; 2dc8 20
- ;; 2dc8 20
- ;; 2dc8 20
-; Time to perform a relational operator. ;; 2dc8 20
-; (domask) contains the bits as to which relational operator it was. ;; 2dc8 20
-; Carry bit on = string compare. ;; 2dc8 20
- ;; 2dc8 20
- ;; 2dc8 20
-dorel            jsr chkval                               ; check for match ;; 2dc8 20
-                 bcs strcmp                               ; is it a string? ;; 2dcb 20
-                 lda argsgn                               ; pack argument for fcomp ;; 2dcd 20
-                 ora #$7f                                  ;; 2dcf 20
-                 and argho                                 ;; 2dd1 20
-                 sta argho                                 ;; 2dd3 20
-                 lda #<argexp                              ;; 2dd5 20
-                 ldy #>argexp                              ;; 2dd7 20
-                 jsr fcomp                                 ;; 2dd9 20
-                 tax                                       ;; 2ddc 20
-                 bra qcomp                                 ;; 2ddd 20
- ;; 2ddf 20
-; .page ;; 2ddf 20
-strcmp           lda #0                                    ;; 2ddf 20
-                 sta valtyp                                ;; 2de1 20
-                 dec opmask                                ;; 2de3 20
-                 jsr frefac                               ; free the faclo string ;; 2de5 20
-                 sta dsctmp                               ; save it for later ;; 2de8 20
-                 stx dsctmp+1                              ;; 2dea 20
-                 sty dsctmp+2                              ;; 2dec 20
-                 lda argmo                                ; get pointer to other string ;; 2dee 20
-                 ldy argmo+1                               ;; 2df0 20
-                 jsr fretmp                               ; frees first desc pointer ;; 2df2 20
-                 stx argmo                                 ;; 2df5 20
-                 sty argmo+1                               ;; 2df7 20
-                 tax                                      ; copy count into x ;; 2df9 20
-                 sec                                       ;; 2dfa 20
-                 sbc dsctmp                               ; which is greater. if 0, all set up ;; 2dfb 20
-                 beq stasgn                               ; just put sign of difference away ;; 2dfd 20
-                 lda #1                                    ;; 2dff 20
-                 bcc stasgn                               ; sign is positive ;; 2e01 20
-                 ldx dsctmp                               ; length of fac is shorter ;; 2e03 20
-                 lda #$ff                                 ; get a minus one for negatives ;; 2e05 20
-stasgn           sta facsgn                               ; keep for later ;; 2e07 20
-                 ldy #255                                 ; set pointer to first string. (arg) ;; 2e09 20
-                 inx                                      ; to loop properly ;; 2e0b 20
-nxtcmp           iny                                       ;; 2e0c 20
-                 dex                                      ; any characters left to compare? ;; 2e0d 20
-                 bne getcmp                               ; not done yet ;; 2e0e 20
-                 ldx facsgn                               ; use sign of length difference ;; 2e10 20
-;since all characters are the same ;; 2e12 20
-qcomp            bmi docmp                                ; c is always set then ;; 2e12 20
-                 clc                                       ;; 2e14 20
-                 bra docmp                                ; always branch ;; 2e15 20
- ;; 2e17 20
-; .page ;; 2e17 20
-getcmp           lda #argmo                                ;; 2e17 20
-                 jsr lda_far_ram1                         ; lda (argmo),y from RAM1 ;; 2e19 20
-                 pha                                       ;; 2e1c 20
-                 lda #dsctmp+1                             ;; 2e1d 20
-                 jsr lda_far_ram1                         ; lda (dsctmp+1),y from RAM1 ;; 2e1f 20
-                 sta syntmp                                ;; 2e22 20
-                 pla                                       ;; 2e24 20
-                 cmp syntmp                                ;; 2e25 20
-                 beq nxtcmp                                ;; 2e27 20
-                 ldx #$ff                                  ;; 2e29 20
-                 bcs docmp                                 ;; 2e2b 20
-                 ldx #1                                    ;; 2e2d 20
- ;; 2e2f 20
- ;; 2e2f 20
- ;; 2e2f 20
-docmp                                                      ;; 2e2f 20
-                 inx                                      ; -1 to 1, 0 to 2, 1 to 4 ;; 2e2f 20
-                 txa                                       ;; 2e30 20
-                 rol a                                     ;; 2e31 20
-                 and domask                                ;; 2e32 20
-                 beq _local_1019_10                        ;; 2e34 20
-                 lda #$ff                                 ; map 0 to 0, map all others to -1 ;; 2e36 20
-_local_1019_10   bra float                                ; float the one-byte result into FAC ;; 2e38 20
- ;; 2e3b 20
- ;; 2e3b 20
-;.end ;; 2e3b 20
-; .page ;; 2e3b 20
-; .subttl  Ready, Error, Main (CODE 0) ;; 2e3b 20
- ;; 2e3b 20
+foreign_esc_fn                                             ;; @@2d8b 20
+                 sec                                      ; flag 'up for grabs' ;; @@2d8b 20
+                 jsr go_foreign_esc_fn                     ;; @@2d8c 20
+n_esc_fn_vec                                               ;; @@2d8f 20
+                 bcs snerr                                ; it's unwanted. off to the refuse pile ;; @@2d8f 20
+                 bra chknum                                ;; @@2d92 20
+ ;; @@2d95 20
+go_foreign_esc_fn                                           ;; @@2d95 20
+                 jmp (esc_fn_vec)                          ;; @@2d95 20
+ ;; @@2d98 20
+; .page ;; @@2d98 20
+orop             ldy #255                                 ; must always complement ;; @@2d98 20
+                 !text $2c                                 ;; @@2d9a 20
+ ;; @@2d9b 20
+andop            ldy #0                                    ;; @@2d9b 20
+                 sty count                                ; operator ;; @@2d9d 20
+                 jsr ayint                                ; (facmo&lo)=int value and check size ;; @@2d9f 20
+                 lda facmo                                ; use Demorgan's Law on high ;; @@2da2 20
+                 eor count                                 ;; @@2da4 20
+                 sta integr                                ;; @@2da6 20
+                 lda faclo                                ; and low ;; @@2da8 20
+                 eor count                                 ;; @@2daa 20
+                 sta integr+1                              ;; @@2dac 20
+                 jsr movfa                                 ;; @@2dae 20
+                 jsr ayint                                ; (facmo&lo)=int of arg ;; @@2db1 20
+                 lda faclo                                 ;; @@2db4 20
+                 eor count                                 ;; @@2db6 20
+                 and integr+1                              ;; @@2db8 20
+                 eor count                                ; finish out Demorgan ;; @@2dba 20
+                 tay                                      ; save high ;; @@2dbc 20
+                 lda facmo                                 ;; @@2dbd 20
+                 eor count                                 ;; @@2dbf 20
+                 and integr                                ;; @@2dc1 20
+                 eor count                                 ;; @@2dc3 20
+                 bra givayf                               ; float (a,y) and return to user ;; @@2dc5 20
+ ;; @@2dc8 20
+ ;; @@2dc8 20
+ ;; @@2dc8 20
+; Time to perform a relational operator. ;; @@2dc8 20
+; (domask) contains the bits as to which relational operator it was. ;; @@2dc8 20
+; Carry bit on = string compare. ;; @@2dc8 20
+ ;; @@2dc8 20
+ ;; @@2dc8 20
+dorel            jsr chkval                               ; check for match ;; @@2dc8 20
+                 bcs strcmp                               ; is it a string? ;; @@2dcb 20
+                 lda argsgn                               ; pack argument for fcomp ;; @@2dcd 20
+                 ora #$7f                                  ;; @@2dcf 20
+                 and argho                                 ;; @@2dd1 20
+                 sta argho                                 ;; @@2dd3 20
+                 lda #<argexp                              ;; @@2dd5 20
+                 ldy #>argexp                              ;; @@2dd7 20
+                 jsr fcomp                                 ;; @@2dd9 20
+                 tax                                       ;; @@2ddc 20
+                 bra qcomp                                 ;; @@2ddd 20
+ ;; @@2ddf 20
+; .page ;; @@2ddf 20
+strcmp           lda #0                                    ;; @@2ddf 20
+                 sta valtyp                                ;; @@2de1 20
+                 dec opmask                                ;; @@2de3 20
+                 jsr frefac                               ; free the faclo string ;; @@2de5 20
+                 sta dsctmp                               ; save it for later ;; @@2de8 20
+                 stx dsctmp+1                              ;; @@2dea 20
+                 sty dsctmp+2                              ;; @@2dec 20
+                 lda argmo                                ; get pointer to other string ;; @@2dee 20
+                 ldy argmo+1                               ;; @@2df0 20
+                 jsr fretmp                               ; frees first desc pointer ;; @@2df2 20
+                 stx argmo                                 ;; @@2df5 20
+                 sty argmo+1                               ;; @@2df7 20
+                 tax                                      ; copy count into x ;; @@2df9 20
+                 sec                                       ;; @@2dfa 20
+                 sbc dsctmp                               ; which is greater. if 0, all set up ;; @@2dfb 20
+                 beq stasgn                               ; just put sign of difference away ;; @@2dfd 20
+                 lda #1                                    ;; @@2dff 20
+                 bcc stasgn                               ; sign is positive ;; @@2e01 20
+                 ldx dsctmp                               ; length of fac is shorter ;; @@2e03 20
+                 lda #$ff                                 ; get a minus one for negatives ;; @@2e05 20
+stasgn           sta facsgn                               ; keep for later ;; @@2e07 20
+                 ldy #255                                 ; set pointer to first string. (arg) ;; @@2e09 20
+                 inx                                      ; to loop properly ;; @@2e0b 20
+nxtcmp           iny                                       ;; @@2e0c 20
+                 dex                                      ; any characters left to compare? ;; @@2e0d 20
+                 bne getcmp                               ; not done yet ;; @@2e0e 20
+                 ldx facsgn                               ; use sign of length difference ;; @@2e10 20
+;since all characters are the same ;; @@2e12 20
+qcomp            bmi docmp                                ; c is always set then ;; @@2e12 20
+                 clc                                       ;; @@2e14 20
+                 bra docmp                                ; always branch ;; @@2e15 20
+ ;; @@2e17 20
+; .page ;; @@2e17 20
+getcmp           lda #argmo                                ;; @@2e17 20
+                 jsr lda_far_ram1                         ; lda (argmo),y from RAM1 ;; @@2e19 20
+                 pha                                       ;; @@2e1c 20
+                 lda #dsctmp+1                             ;; @@2e1d 20
+                 jsr lda_far_ram1                         ; lda (dsctmp+1),y from RAM1 ;; @@2e1f 20
+                 sta syntmp                                ;; @@2e22 20
+                 pla                                       ;; @@2e24 20
+                 cmp syntmp                                ;; @@2e25 20
+                 beq nxtcmp                                ;; @@2e27 20
+                 ldx #$ff                                  ;; @@2e29 20
+                 bcs docmp                                 ;; @@2e2b 20
+                 ldx #1                                    ;; @@2e2d 20
+ ;; @@2e2f 20
+ ;; @@2e2f 20
+ ;; @@2e2f 20
+docmp                                                      ;; @@2e2f 20
+                 inx                                      ; -1 to 1, 0 to 2, 1 to 4 ;; @@2e2f 20
+                 txa                                       ;; @@2e30 20
+                 rol a                                     ;; @@2e31 20
+                 and domask                                ;; @@2e32 20
+                 beq _local_1019_10                        ;; @@2e34 20
+                 lda #$ff                                 ; map 0 to 0, map all others to -1 ;; @@2e36 20
+_local_1019_10   bra float                                ; float the one-byte result into FAC ;; @@2e38 20
+ ;; @@2e3b 20
+ ;; @@2e3b 20
+;.end ;; @@2e3b 20
+; .page ;; @@2e3b 20
+; .subttl  Ready, Error, Main (CODE 0) ;; @@2e3b 20
+ ;; @@2e3b 20

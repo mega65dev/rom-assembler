@@ -1,74 +1,74 @@
-Sound_CLR                                                  ;; be55 315
-                 jsr chkeos                               ; eat CLR token, check eos   [910717] new ;; be55 315
-Sound_CLR_1                                                ;; be58 315
-                 php                                       ;; be58 315
-                 sei                                       ;; be59 315
-; jsr go_slow  ;      [910716] 4567R7A ;; be5a 315
-                 lda #0                                    ;; be5a 315
-                 ldx #24-1                                 ;; be5c 315
-_local_1314_40   sta sid1,x                               ; initialize SID chips ;; be5e 315
-                 sta sid2,x                                ;; be61 315
-                 dex                                       ;; be64 315
-                 bpl _local_1314_40                        ;; be65 315
- ;; be67 315
-                 sta filters1+2                           ; set filters off ;; be67 315
-                 sta filters2+2                            ;; be6a 315
- ;; be6d 315
-                 lda #8                                   ; set default volume ;; be6d 315
-                 sta filters1+3                            ;; be6f 315
-                 sta filters2+3                           ; [910612] ;; be72 315
-; sta filters+4  ;why?      [910612] ;; be75 315
-                 sta sid1+24                               ;; be75 315
-                 sta sid2+24                               ;; be78 315
- ;; be7b 315
-; jsr go_fast  ;      [910716] 4567R7A ;; be7b 315
- ;; be7b 315
-                 bit _pal_ntsc                            ; determine if PAL or NTSC system  [910724] ;; be7b 315
-                 bmi _local_1314_1                        ; ...branch if PAL ;; be7e 315
-                 lda #<beats_ntsc/4                       ; set beat to quarter note (4/4 time = .5 sec) ;; be80 315
-                 ldy #>beats_ntsc/4                        ;; be82 315
-                 bra _local_1314_2                         ;; be84 315
-_local_1314_1    lda #<beats_pal/4                         ;; be86 315
-                 ldy #>beats_pal/4                         ;; be88 315
-_local_1314_2    sta ntime                                 ;; be8a 315
-                 sty ntime+1                               ;; be8d 315
- ;; be90 315
-                 lda #4                                   ; set default octave ;; be90 315
-                 sta octave                                ;; be92 315
-                 lda #12                                  ; set default tempo    [910220] ;; be95 315
-                 sta tempo_rate                           ; 12 makes whole note in 4/4 time last 2 seconds ;; be97 315
- ;; be9a 315
-                 ldy #30-1                                ; initialize music tables ;; be9a 315
-_local_1314_10   lda atkmus,y                              ;; be9c 315
-                 sta atktab,y                              ;; be9f 315
-                 dey                                       ;; bea2 315
-                 bpl _local_1314_10                        ;; bea3 315
- ;; bea5 315
-                 ldx #10-1                                ; initialize pulse widths ;; bea5 315
-_local_1314_20   lda pwhmus,x                              ;; bea7 315
-                 sta pulshi,x                              ;; beaa 315
-                 dex                                       ;; bead 315
-                 bpl _local_1314_20                        ;; beae 315
- ;; beb0 315
-                 txa                                      ; $ff ;; beb0 315
-                 ldx #6-1                                 ; stereo SIDs   (save space) [911119] ;; beb1 315
-                 ldy #1                                    ;; beb3 315
-_local_1314_25   sta sound_time_hi,x                      ; turn all SOUND counters off ;; beb5 315
-                 sta voices,y                             ; turn all PLAY counters off ;; beb8 315
-                 iny                                       ;; bebb 315
-                 iny                                       ;; bebc 315
-                 dex                                       ;; bebd 315
-                 bpl _local_1314_25                        ;; bebe 315
- ;; bec0 315
-                 ldy #6-1                                 ; set default envelope (piano) for all voices (6) ;; bec0 315
-                 sty voice                                 ;; bec2 315
-_local_1314_30   ldx #0                                    ;; bec5 315
-                 jsr set_envelope_1                        ;; bec7 315
-                 dec voice                                 ;; beca 315
-                 bpl _local_1314_30                        ;; becd 315
-                 inc voice                                ; set default voice (0) ;; becf 315
- ;; bed2 315
-                 plp                                       ;; bed2 315
-                 rts                                       ;; bed3 315
- ;; bed4 315
-; .page ;; bed4 315
+Sound_CLR                                                  ;; @@be55 315
+                 jsr chkeos                               ; eat CLR token, check eos   [910717] new ;; @@be55 315
+Sound_CLR_1                                                ;; @@be58 315
+                 php                                       ;; @@be58 315
+                 sei                                       ;; @@be59 315
+; jsr go_slow  ;      [910716] 4567R7A ;; @@be5a 315
+                 lda #0                                    ;; @@be5a 315
+                 ldx #24-1                                 ;; @@be5c 315
+_local_1314_40   sta sid1,x                               ; initialize SID chips ;; @@be5e 315
+                 sta sid2,x                                ;; @@be61 315
+                 dex                                       ;; @@be64 315
+                 bpl _local_1314_40                        ;; @@be65 315
+ ;; @@be67 315
+                 sta filters1+2                           ; set filters off ;; @@be67 315
+                 sta filters2+2                            ;; @@be6a 315
+ ;; @@be6d 315
+                 lda #8                                   ; set default volume ;; @@be6d 315
+                 sta filters1+3                            ;; @@be6f 315
+                 sta filters2+3                           ; [910612] ;; @@be72 315
+; sta filters+4  ;why?      [910612] ;; @@be75 315
+                 sta sid1+24                               ;; @@be75 315
+                 sta sid2+24                               ;; @@be78 315
+ ;; @@be7b 315
+; jsr go_fast  ;      [910716] 4567R7A ;; @@be7b 315
+ ;; @@be7b 315
+                 bit _pal_ntsc                            ; determine if PAL or NTSC system  [910724] ;; @@be7b 315
+                 bmi _local_1314_1                        ; ...branch if PAL ;; @@be7e 315
+                 lda #<beats_ntsc/4                       ; set beat to quarter note (4/4 time = .5 sec) ;; @@be80 315
+                 ldy #>beats_ntsc/4                        ;; @@be82 315
+                 bra _local_1314_2                         ;; @@be84 315
+_local_1314_1    lda #<beats_pal/4                         ;; @@be86 315
+                 ldy #>beats_pal/4                         ;; @@be88 315
+_local_1314_2    sta ntime                                 ;; @@be8a 315
+                 sty ntime+1                               ;; @@be8d 315
+ ;; @@be90 315
+                 lda #4                                   ; set default octave ;; @@be90 315
+                 sta octave                                ;; @@be92 315
+                 lda #12                                  ; set default tempo    [910220] ;; @@be95 315
+                 sta tempo_rate                           ; 12 makes whole note in 4/4 time last 2 seconds ;; @@be97 315
+ ;; @@be9a 315
+                 ldy #30-1                                ; initialize music tables ;; @@be9a 315
+_local_1314_10   lda atkmus,y                              ;; @@be9c 315
+                 sta atktab,y                              ;; @@be9f 315
+                 dey                                       ;; @@bea2 315
+                 bpl _local_1314_10                        ;; @@bea3 315
+ ;; @@bea5 315
+                 ldx #10-1                                ; initialize pulse widths ;; @@bea5 315
+_local_1314_20   lda pwhmus,x                              ;; @@bea7 315
+                 sta pulshi,x                              ;; @@beaa 315
+                 dex                                       ;; @@bead 315
+                 bpl _local_1314_20                        ;; @@beae 315
+ ;; @@beb0 315
+                 txa                                      ; $ff ;; @@beb0 315
+                 ldx #6-1                                 ; stereo SIDs   (save space) [911119] ;; @@beb1 315
+                 ldy #1                                    ;; @@beb3 315
+_local_1314_25   sta sound_time_hi,x                      ; turn all SOUND counters off ;; @@beb5 315
+                 sta voices,y                             ; turn all PLAY counters off ;; @@beb8 315
+                 iny                                       ;; @@bebb 315
+                 iny                                       ;; @@bebc 315
+                 dex                                       ;; @@bebd 315
+                 bpl _local_1314_25                        ;; @@bebe 315
+ ;; @@bec0 315
+                 ldy #6-1                                 ; set default envelope (piano) for all voices (6) ;; @@bec0 315
+                 sty voice                                 ;; @@bec2 315
+_local_1314_30   ldx #0                                    ;; @@bec5 315
+                 jsr set_envelope_1                        ;; @@bec7 315
+                 dec voice                                 ;; @@beca 315
+                 bpl _local_1314_30                        ;; @@becd 315
+                 inc voice                                ; set default voice (0) ;; @@becf 315
+ ;; @@bed2 315
+                 plp                                       ;; @@bed2 315
+                 rts                                       ;; @@bed3 315
+ ;; @@bed4 315
+; .page ;; @@bed4 315

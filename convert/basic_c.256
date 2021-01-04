@@ -1,36 +1,36 @@
-music_irq                                                  ;; 7ac7 256
-                 ldx #0                                    ;; 7ac7 256
-_local_1255_100  ldy voices+1,x                            ;; 7ac9 256
-                 bmi _local_1255_110                      ; skip if not active ;; 7acc 256
- ;; 7ace 256
-                 lda voices,x                              ;; 7ace 256
-                 sec                                       ;; 7ad1 256
-                 sbc tempo_rate                           ; decrement current value by current tempo ;; 7ad2 256
-                 sta voices,x                              ;; 7ad5 256
-                 bcs _local_1255_110                       ;; 7ad8 256
-                 tya                                      ; lda voices+1,x ;; 7ada 256
-                 sbc #0                                    ;; 7adb 256
-                 sta voices+1,x                            ;; 7add 256
-                 bcs _local_1255_110                      ; ok, no underflow ;; 7ae0 256
- ;; 7ae2 256
-                 txa                                       ;; 7ae2 256
-                 lsr a                                    ; get offset to waveform ;; 7ae3 256
-                 tay                                       ;; 7ae4 256
-                 lda waveform,y                           ; get waveform ;; 7ae5 256
-                 and #$fe                                 ; mask out gate bit ;; 7ae8 256
-                 pha                                       ;; 7aea 256
-                 lda SID_offset,y                         ; get offset to correct oscillator ;; 7aeb 256
-                 tay                                       ;; 7aee 256
-                 pla                                       ;; 7aef 256
-; jsr go_slow  ;      [910716] 4567R7A ;; 7af0 256
-                 sta sid1+4,y                             ; turn off sound ;; 7af0 256
-; jsr go_fast  ;      [910716] 4567R7A ;; 7af3 256
- ;; 7af3 256
-_local_1255_110  inx                                       ;; 7af3 256
-                 inx                                       ;; 7af4 256
-                 cpx #6+6                                 ; [910612] ;; 7af5 256
-                 bcc _local_1255_100                      ; loop for 6 voices ;; 7af7 256
-;then continue with next IRQ task ;; 7af9 256
-; .page ;; 7af9 256
-; Test if SOUND command wants anything ;; 7af9 256
- ;; 7af9 256
+music_irq                                                  ;; @@7ac7 256
+                 ldx #0                                    ;; @@7ac7 256
+_local_1255_100  ldy voices+1,x                            ;; @@7ac9 256
+                 bmi _local_1255_110                      ; skip if not active ;; @@7acc 256
+ ;; @@7ace 256
+                 lda voices,x                              ;; @@7ace 256
+                 sec                                       ;; @@7ad1 256
+                 sbc tempo_rate                           ; decrement current value by current tempo ;; @@7ad2 256
+                 sta voices,x                              ;; @@7ad5 256
+                 bcs _local_1255_110                       ;; @@7ad8 256
+                 tya                                      ; lda voices+1,x ;; @@7ada 256
+                 sbc #0                                    ;; @@7adb 256
+                 sta voices+1,x                            ;; @@7add 256
+                 bcs _local_1255_110                      ; ok, no underflow ;; @@7ae0 256
+ ;; @@7ae2 256
+                 txa                                       ;; @@7ae2 256
+                 lsr a                                    ; get offset to waveform ;; @@7ae3 256
+                 tay                                       ;; @@7ae4 256
+                 lda waveform,y                           ; get waveform ;; @@7ae5 256
+                 and #$fe                                 ; mask out gate bit ;; @@7ae8 256
+                 pha                                       ;; @@7aea 256
+                 lda SID_offset,y                         ; get offset to correct oscillator ;; @@7aeb 256
+                 tay                                       ;; @@7aee 256
+                 pla                                       ;; @@7aef 256
+; jsr go_slow  ;      [910716] 4567R7A ;; @@7af0 256
+                 sta sid1+4,y                             ; turn off sound ;; @@7af0 256
+; jsr go_fast  ;      [910716] 4567R7A ;; @@7af3 256
+ ;; @@7af3 256
+_local_1255_110  inx                                       ;; @@7af3 256
+                 inx                                       ;; @@7af4 256
+                 cpx #6+6                                 ; [910612] ;; @@7af5 256
+                 bcc _local_1255_100                      ; loop for 6 voices ;; @@7af7 256
+;then continue with next IRQ task ;; @@7af9 256
+; .page ;; @@7af9 256
+; Test if SOUND command wants anything ;; @@7af9 256
+ ;; @@7af9 256

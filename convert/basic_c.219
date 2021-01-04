@@ -1,17 +1,17 @@
-ldir_end                                                   ;; 70c0 219
-                 lda sid_speed_flag                       ; serial bus kludge for open4,4:cmd4:dir ???? ;; 70c0 219
-                 tsb $d609                                ; restore fast serial bus enables ;; 70c2 219
-                 bra dcat11                                ;; 70c5 219
- ;; 70c7 219
- ;; 70c7 219
- ;; 70c7 219
-dcato            jsr _clrch                                ;; 70c7 219
-                 ldx channl                               ; restore output channel ;; 70ca 219
-                 beq _local_1218_10                       ; branch if screen (default output) ;; 70cc 219
-                 jmp _chkout                              ; else get output channel ;; 70ce 219
- ;; 70d1 219
-_local_1218_10   rts                                       ;; 70d1 219
- ;; 70d2 219
-; .page ;; 70d2 219
-; DOPEN dfn(,t(,r)) ;; 70d2 219
- ;; 70d2 219
+ldir_end                                                   ;; @@70c0 219
+                 lda sid_speed_flag                       ; serial bus kludge for open4,4:cmd4:dir ???? ;; @@70c0 219
+                 tsb $d609                                ; restore fast serial bus enables ;; @@70c2 219
+                 bra dcat11                                ;; @@70c5 219
+ ;; @@70c7 219
+ ;; @@70c7 219
+ ;; @@70c7 219
+dcato            jsr _clrch                                ;; @@70c7 219
+                 ldx channl                               ; restore output channel ;; @@70ca 219
+                 beq _local_1218_10                       ; branch if screen (default output) ;; @@70cc 219
+                 jmp _chkout                              ; else get output channel ;; @@70ce 219
+ ;; @@70d1 219
+_local_1218_10   rts                                       ;; @@70d1 219
+ ;; @@70d2 219
+; .page ;; @@70d2 219
+; DOPEN dfn(,t(,r)) ;; @@70d2 219
+ ;; @@70d2 219

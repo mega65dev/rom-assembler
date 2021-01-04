@@ -1,40 +1,40 @@
-doffl            lda #$02                                 ; check aux status ;; 752e 236
-                 jsr prxrpt                                ;; 7530 236
-                 jsr getoff                               ; get offset value ;; 7533 236
-                 sty dosofl                                ;; 7536 236
-                 sta dosofl+1                              ;; 7539 236
-                 lda #$02                                  ;; 753c 236
-dlimx1           ora parstx                               ; set aux status bits ;; 753e 236
-                 sta parstx                                ;; 7540 236
-                 bne delim1                               ; try for next param ;; 7542 236
- ;; 7544 236
- ;; 7544 236
-doffh            lda #$04                                  ;; 7544 236
-                 jsr prxrpt                                ;; 7546 236
-                 jsr getoff                                ;; 7549 236
-                 sty dosofh                                ;; 754c 236
-                 sta dosofh+1                              ;; 754f 236
-                 lda #$04                                  ;; 7552 236
-                 bra dlimx1                               ; set aux status ;; 7554 236
- ;; 7556 236
- ;; 7556 236
-recover          lda #$40                                  ;; 7556 236
-                 tsb dosflags                             ; set 'recover' bit ;; 7558 236
-                 bne snerr                                ; if repeated parameter ;; 755b 236
-                 jsr chrget                               ; continue ;; 755e 236
-                 bra delim2                                ;; 7561 236
- ;; 7563 236
- ;; 7563 236
-name1            lda #1                                   ; name1 allowed only once ;; 7563 236
-                 jsr newnam                               ; do name parsing ;; 7565 236
-                 sta dosf1l                                ;; 7568 236
- ;; 756b 236
-                 ldy #0                                    ;; 756b 236
-_local_1235_10   jsr indin1_ram1                           ;; 756d 236
-                 sta savram,y                             ; copy name into buffer ;; 7570 236
-                 iny                                       ;; 7573 236
-                 cpy dosf1l                                ;; 7574 236
-                 bcc _local_1235_10                       ; ...copy all of it ;; 7577 236
-                 lda #1                                   ; set name1 flag ;; 7579 236
- ;; 757b 236
- ;; 757b 236
+doffl            lda #$02                                 ; check aux status ;; @@752e 236
+                 jsr prxrpt                                ;; @@7530 236
+                 jsr getoff                               ; get offset value ;; @@7533 236
+                 sty dosofl                                ;; @@7536 236
+                 sta dosofl+1                              ;; @@7539 236
+                 lda #$02                                  ;; @@753c 236
+dlimx1           ora parstx                               ; set aux status bits ;; @@753e 236
+                 sta parstx                                ;; @@7540 236
+                 bne delim1                               ; try for next param ;; @@7542 236
+ ;; @@7544 236
+ ;; @@7544 236
+doffh            lda #$04                                  ;; @@7544 236
+                 jsr prxrpt                                ;; @@7546 236
+                 jsr getoff                                ;; @@7549 236
+                 sty dosofh                                ;; @@754c 236
+                 sta dosofh+1                              ;; @@754f 236
+                 lda #$04                                  ;; @@7552 236
+                 bra dlimx1                               ; set aux status ;; @@7554 236
+ ;; @@7556 236
+ ;; @@7556 236
+recover          lda #$40                                  ;; @@7556 236
+                 tsb dosflags                             ; set 'recover' bit ;; @@7558 236
+                 bne snerr                                ; if repeated parameter ;; @@755b 236
+                 jsr chrget                               ; continue ;; @@755e 236
+                 bra delim2                                ;; @@7561 236
+ ;; @@7563 236
+ ;; @@7563 236
+name1            lda #1                                   ; name1 allowed only once ;; @@7563 236
+                 jsr newnam                               ; do name parsing ;; @@7565 236
+                 sta dosf1l                                ;; @@7568 236
+ ;; @@756b 236
+                 ldy #0                                    ;; @@756b 236
+_local_1235_10   jsr indin1_ram1                           ;; @@756d 236
+                 sta savram,y                             ; copy name into buffer ;; @@7570 236
+                 iny                                       ;; @@7573 236
+                 cpy dosf1l                                ;; @@7574 236
+                 bcc _local_1235_10                       ; ...copy all of it ;; @@7577 236
+                 lda #1                                   ; set name1 flag ;; @@7579 236
+ ;; @@757b 236
+ ;; @@757b 236

@@ -1,67 +1,67 @@
-desc_free                                                 ; free temporary descriptor, set up pointers to string. ;; b8c2 297
-                 lda facmo                                ; get address of temp descriptor ;; b8c2 297
-                 ldy facmo+1                               ;; b8c4 297
-                 jsr fretms                                ;; b8c6 297
-                 ldy #0                                   ; get len, addr of string ;; b8c9 297
-                 jsr indfmo                                ;; b8cb 297
-                 tax                                       ;; b8ce 297
-                 iny                                       ;; b8cf 297
-                 jsr indfmo                                ;; b8d0 297
-                 pha                                       ;; b8d3 297
-                 iny                                       ;; b8d4 297
-                 jsr indfmo                                ;; b8d5 297
-                 tay                                       ;; b8d8 297
-                 pla                                       ;; b8d9 297
-                 sec                                      ; flag 'string found' ;; b8da 297
-                 rts                                      ; return w/ x=len, (a,y)==> string ;; b8db 297
- ;; b8dc 297
-;.end ;; b8dc 297
-; .page ;; b8dc 297
-; .subttl COLLISION Command ;; b8dc 297
- ;; b8dc 297
-;***************************************************************** ;; b8dc 297
-; COLLISION Command ;; b8dc 297
-; ;; b8dc 297
-; Syntax:  COLLISION n [,address] ;; b8dc 297
-; ;; b8dc 297
-; Where:   n= 1 ==> sprite / sprite ;; b8dc 297
-;   2 ==> sprite / background ;; b8dc 297
-;   3 ==> light pen ;; b8dc 297
-; ;; b8dc 297
-; Address ==> BASIC line number to trap to on interrupt ;; b8dc 297
-;      (no address ==> disable trapping) ;; b8dc 297
-;***************************************************************** ;; b8dc 297
- ;; b8dc 297
-collision                                                  ;; b8dc 297
-                 jsr getbyt                               ; get type in .X ;; b8dc 297
-                 dex                                      ; adjust 1..3 to 0..2 ;; b8df 297
-                 cpx #3                                    ;; b8e0 297
-                 bcs fcerr                                ; value error ;; b8e2 297
- ;; b8e5 297
-                 phx                                      ; save collision type ;; b8e5 297
-                 jsr optwrd                               ; get address (line number) in .Y,.A (optional) ;; b8e6 297
-                 plx                                       ;; b8e9 297
-; php   ;save .C (.C == 1 ==> real value) ;; b8ea 297
-                 sta int_adr_hi,x                         ; save address given ;; b8ea 297
-                 sty int_adr_lo,x                          ;; b8ed 297
- ;; b8f0 297
-                 lda intval                               ; this records valid interrupts ;; b8f0 297
-                 ora sbits,x                              ; set correct bit ;; b8f3 297
-; plp ;; b8f6 297
-                 bcs _local_1296_10                       ; ..unless this is a 'clear', ;; b8f6 297
-                 eor sbits,x                              ; ..in which case we'll reset bit ;; b8f8 297
-_local_1296_10   sta intval                                ;; b8fb 297
-                 rts                                       ;; b8fe 297
- ;; b8ff 297
-;.end ;; b8ff 297
-; .page ;; b8ff 297
-; .subttl  RCOLOR Function ;; b8ff 297
- ;; b8ff 297
-;************************************************************************ ;; b8ff 297
-;  RCOLOR (source)  --  return current color assigned to source ;; b8ff 297
-;   0  :  Background color ;; b8ff 297
-;   1  :  Foreground color ;; b8ff 297
-;   2  :  Highlight color ;; b8ff 297
-;   3  :  Border color ;; b8ff 297
-;************************************************************************ ;; b8ff 297
- ;; b8ff 297
+desc_free                                                 ; free temporary descriptor, set up pointers to string. ;; @@b8c2 297
+                 lda facmo                                ; get address of temp descriptor ;; @@b8c2 297
+                 ldy facmo+1                               ;; @@b8c4 297
+                 jsr fretms                                ;; @@b8c6 297
+                 ldy #0                                   ; get len, addr of string ;; @@b8c9 297
+                 jsr indfmo                                ;; @@b8cb 297
+                 tax                                       ;; @@b8ce 297
+                 iny                                       ;; @@b8cf 297
+                 jsr indfmo                                ;; @@b8d0 297
+                 pha                                       ;; @@b8d3 297
+                 iny                                       ;; @@b8d4 297
+                 jsr indfmo                                ;; @@b8d5 297
+                 tay                                       ;; @@b8d8 297
+                 pla                                       ;; @@b8d9 297
+                 sec                                      ; flag 'string found' ;; @@b8da 297
+                 rts                                      ; return w/ x=len, (a,y)==> string ;; @@b8db 297
+ ;; @@b8dc 297
+;.end ;; @@b8dc 297
+; .page ;; @@b8dc 297
+; .subttl COLLISION Command ;; @@b8dc 297
+ ;; @@b8dc 297
+;***************************************************************** ;; @@b8dc 297
+; COLLISION Command ;; @@b8dc 297
+; ;; @@b8dc 297
+; Syntax:  COLLISION n [,address] ;; @@b8dc 297
+; ;; @@b8dc 297
+; Where:   n= 1 ==> sprite / sprite ;; @@b8dc 297
+;   2 ==> sprite / background ;; @@b8dc 297
+;   3 ==> light pen ;; @@b8dc 297
+; ;; @@b8dc 297
+; Address ==> BASIC line number to trap to on interrupt ;; @@b8dc 297
+;      (no address ==> disable trapping) ;; @@b8dc 297
+;***************************************************************** ;; @@b8dc 297
+ ;; @@b8dc 297
+collision                                                  ;; @@b8dc 297
+                 jsr getbyt                               ; get type in .X ;; @@b8dc 297
+                 dex                                      ; adjust 1..3 to 0..2 ;; @@b8df 297
+                 cpx #3                                    ;; @@b8e0 297
+                 bcs fcerr                                ; value error ;; @@b8e2 297
+ ;; @@b8e5 297
+                 phx                                      ; save collision type ;; @@b8e5 297
+                 jsr optwrd                               ; get address (line number) in .Y,.A (optional) ;; @@b8e6 297
+                 plx                                       ;; @@b8e9 297
+; php   ;save .C (.C == 1 ==> real value) ;; @@b8ea 297
+                 sta int_adr_hi,x                         ; save address given ;; @@b8ea 297
+                 sty int_adr_lo,x                          ;; @@b8ed 297
+ ;; @@b8f0 297
+                 lda intval                               ; this records valid interrupts ;; @@b8f0 297
+                 ora sbits,x                              ; set correct bit ;; @@b8f3 297
+; plp ;; @@b8f6 297
+                 bcs _local_1296_10                       ; ..unless this is a 'clear', ;; @@b8f6 297
+                 eor sbits,x                              ; ..in which case we'll reset bit ;; @@b8f8 297
+_local_1296_10   sta intval                                ;; @@b8fb 297
+                 rts                                       ;; @@b8fe 297
+ ;; @@b8ff 297
+;.end ;; @@b8ff 297
+; .page ;; @@b8ff 297
+; .subttl  RCOLOR Function ;; @@b8ff 297
+ ;; @@b8ff 297
+;************************************************************************ ;; @@b8ff 297
+;  RCOLOR (source)  --  return current color assigned to source ;; @@b8ff 297
+;   0  :  Background color ;; @@b8ff 297
+;   1  :  Foreground color ;; @@b8ff 297
+;   2  :  Highlight color ;; @@b8ff 297
+;   3  :  Border color ;; @@b8ff 297
+;************************************************************************ ;; @@b8ff 297
+ ;; @@b8ff 297

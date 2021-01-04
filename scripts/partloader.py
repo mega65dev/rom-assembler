@@ -36,9 +36,9 @@ class PartLoader(object):
 				assert m.group(1) not in labels,"Duplicate "+ln
 				labels[m.group(1)] = "_local_"+str(PartLoader.labelCount)+"_"+m.group(1)[:-1]			
 		PartLoader.labelCount += 1
+
 		lKeys = [x for x in labels.keys()]											# keys
-		lKeys.sort()																# sort/reverse puts smallest last
-		lKeys.reverse()
+		lKeys.sort(key = lambda x:-len(x))											# sort/reverse puts smallest last
 		#
 		for i in range(0,len(src)):													# now do the replacement.
 			if src[i].find("$") >= 0:												# a $ present ?

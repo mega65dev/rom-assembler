@@ -1,180 +1,180 @@
-clear_play_flags                                           ;; 497b 112
-                 lda #0                                    ;; 497b 112
-                 sta sharp                                ; clear flags ;; 497d 112
-                 sta dnote                                 ;; 4980 112
-                 cli                                       ;; 4983 112
-                 rts                                       ;; 4984 112
- ;; 4985 112
- ;; 4985 112
-tempo            jsr getbyt                               ; duration of whole note 4/4 time = 24/rate ;; 4985 112
-                 txa                                       ;; 4988 112
-                 beq fcerr                                ; can't be zero- illegal quantity error ;; 4989 112
-                 stx tempo_rate                            ;; 498c 112
-                 rts                                       ;; 498f 112
- ;; 4990 112
-; .page ;; 4990 112
-times2           !byte 0,2,4,6,8,10                       ; [910612] stereo ;; 4990 112
- ;; 4996 112
-notes            !byte "WHQIS"                            ; sixteenth,eigth,quarter,half,and whole notes ;; 4996 112
- ;; 499b 112
-mutabl           !byte "VOTXUM"                           ; voice,octave,envelope,filter,volume,& measure ;; 499b 112
- ;; 49a1 112
-scalen           !byte 9,11,0,2,4,5,7                     ; a,b,c,d,e,f,g ;; 49a1 112
- ;; 49a8 112
-scalel           !byte $0f,$0c,$46,$bf,$7d,$83            ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (NTSC, octave 6) ;; 49a8 112
-                 !byte $d6,$7a,$73,$c8,$7c,$97            ; [910729] ;; 49ae 112
- ;; 49b4 112
-scaleh           !byte $43,$47,$4b,$4f,$54,$59            ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (NTSC, octave 6) ;; 49b4 112
-                 !byte $5e,$64,$6a,$70,$77,$7e            ; [910729] ;; 49ba 112
- ;; 49c0 112
-scalelp          !byte $87,$8b,$cc,$4e,$14,$24            ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (PAL,  octave 6) ;; 49c0 112
-                 !byte $80,$2d,$32,$91,$52,$7a            ; [910729] ;; 49c6 112
- ;; 49cc 112
-scalehp          !byte $43,$47,$4b,$50,$55,$5a            ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (PAL,  octave 6) ;; 49cc 112
-                 !byte $5f,$65,$6b,$71,$78,$7f            ; [910729] ;; 49d2 112
- ;; 49d8 112
-;  Music envelope tables, default values downloaded to RAM: ;; 49d8 112
-; ;; 49d8 112
-; 0: piano   1: accordion    2: calliope  3: drum     4: flute ;; 49d8 112
-; 5: guitar  6: harpsichord  7: organ     8: trumpet  9: xylophone ;; 49d8 112
- ;; 49d8 112
-;  Attack/decay rates ;; 49d8 112
- ;; 49d8 112
-atkmus           !byte $09,$c0,$00,$05,$94,$09,$09,$09,$89,$09  ;; 49d8 112
- ;; 49e2 112
-;  Sustain/release rates ;; 49e2 112
- ;; 49e2 112
-susmus           !byte $00,$c0,$f0,$50,$40,$21,$00,$90,$41,$00  ;; 49e2 112
- ;; 49ec 112
-;  Waveform table ;; 49ec 112
- ;; 49ec 112
-wavmus           !byte $41,$21,$11,$81,$11,$21,$41,$41,$41,$11  ;; 49ec 112
- ;; 49f6 112
-;  Pulse width hi table ;; 49f6 112
- ;; 49f6 112
-pwhmus           !byte $06,$00,$00,$00,$00,$00,$02,$08,$02,$00  ;; 49f6 112
- ;; 4a00 112
-;  Offset tables ;; 4a00 112
- ;; 4a00 112
-SID_offset                                                 ;; 4a00 112
-                 !byte $00,$07,$0e,$20,$27,$2e            ; [910612] stereo ;; 4a00 112
-filter_offset                                              ;; 4a06 112
-                 !byte 0,0,0,4,4,4                         ;; 4a06 112
- ;; 4a0c 112
-;  Volume levels ;; 4a0c 112
- ;; 4a0c 112
-voltab           !byte 0,1,3,5,7,8,10,12,14,15             ;; 4a0c 112
- ;; 4a16 112
-;.end ;; 4a16 112
-; .page ;; 4a16 112
-; .subttl  FILTER ;; 4a16 112
- ;; 4a16 112
-;****************************************************************** ;; 4a16 112
-; ;; 4a16 112
-;  FILTER  sid, freq, lp, bp, hp, res   --  set values for filter ;; 4a16 112
-; ;; 4a16 112
-;     sid =  right (1), left (2) ;; 4a16 112
-;          freq =  filter frequency (0-1023) ;; 4a16 112
-;            lp =  low pass filter on (1) or off (0) ;; 4a16 112
-;            bp =  band pass filter on (1) or off (0) ;; 4a16 112
-;            hp =  high pass filter on (1) or off (0) ;; 4a16 112
-;           res =  resonance (0-15) ;; 4a16 112
-; ;; 4a16 112
-;****************************************************************** ;; 4a16 112
- ;; 4a16 112
-filter           jsr getbyt                               ; get left/right SID    [910612] ;; 4a16 112
-                 dex                                       ;; 4a19 112
-                 cpx #2                                    ;; 4a1a 112
-                 bcs fcerr                                 ;; 4a1c 112
-                 lda filter_offset+2,x                    ; get filter offset for specified SID ;; 4a1f 112
-                 sta z_p_temp_1                            ;; 4a22 112
-                 tax                                       ;; 4a24 112
- ;; 4a25 112
-                 ldy #0                                    ;; 4a25 112
-_local_1111_10   lda filters1,x                           ; save current voice's filter params ;; 4a27 112
-                 sta fltsav,y                              ;; 4a2a 112
-                 inx                                       ;; 4a2d 112
-                 iny                                       ;; 4a2e 112
-                 cpy #4                                    ;; 4a2f 112
-                 bcc _local_1111_10                        ;; 4a31 112
- ;; 4a33 112
-                 jsr optwrd                               ; get filter frequency ;; 4a33 112
-                 bcc _local_1111_20                       ; skip if no value given ;; 4a36 112
-                 cmp #8                                   ; test m.s. byte ;; 4a38 112
-                 bcs fcerr                                ; error if > 2047 ;; 4a3a 112
-                 sty fltsav                               ; save lower byte ;; 4a3d 112
- ;; 4a40 112
-; Idea: shift lower 3 bits of upper byte into lower byte, forming bits 10-3 ;; 4a40 112
- ;; 4a40 112
-                 sty fltsav+1                              ;; 4a40 112
-                 lsr a                                     ;; 4a43 112
-                 ror fltsav+1                              ;; 4a44 112
-                 lsr a                                     ;; 4a47 112
-                 ror fltsav+1                             ; save upper 7 bits (10-3) ;; 4a48 112
-                 lsr a                                     ;; 4a4b 112
-                 ror fltsav+1                              ;; 4a4c 112
- ;; 4a4f 112
-_local_1111_20   lda #$10                                 ; start at type=LP ;; 4a4f 112
-                 sta fltflg                                ;; 4a51 112
-                 lda fltsav                                ;; 4a54 112
- ;; 4a57 112
-_local_1111_30   jsr optbyt                               ; get filter types (LP,BP,HP) ;; 4a57 112
-                 bcc _local_1111_50                       ; skip if no value input ;; 4a5a 112
-                 cpx #1                                   ; (set .c: 0=0, 1=1) ;; 4a5c 112
-                 bcc _local_1111_35                        ;; 4a5e 112
-                 beq _local_1111_35                        ;; 4a60 112
-                 bra fcerr                                ; error if >1 ;; 4a62 112
- ;; 4a65 112
-_local_1111_35   lda fltsav+3                             ; get filter flags byte ;; 4a65 112
-                 ora fltflg                               ; set filter on ;; 4a68 112
-                 bcs _local_1111_40                       ; skip if it should be on ;; 4a6b 112
-                 eor fltflg                               ; turn filter off ;; 4a6d 112
-_local_1111_40   sta fltsav+3                             ; save value ;; 4a70 112
- ;; 4a73 112
-_local_1111_50   asl fltflg                               ; shift for next filter ;; 4a73 112
-                 bpl _local_1111_30                       ; loop 3 times ;; 4a76 112
- ;; 4a78 112
-                 jsr optbyt                               ; get resonance value ;; 4a78 112
-                 bcc _local_1111_70                       ; skip if no value given ;; 4a7b 112
-; cpx #16 ;; 4a7d 112
-; bcs fcerr  ;error if >15 ;; 4a7d 112
-                 jsr chknyb                               ; [910930] ;; 4a7d 112
-                 txa                                       ;; 4a80 112
-                 asl a                                    ; shift to upper nibble ;; 4a81 112
-                 asl a                                     ;; 4a82 112
-                 asl a                                     ;; 4a83 112
-                 asl a                                     ;; 4a84 112
-                 sta nibble                                ;; 4a85 112
-                 lda fltsav+2                             ; get current value ;; 4a88 112
-                 and #$0f                                 ; mask it out ;; 4a8b 112
-                 ora nibble                               ; add new value ;; 4a8d 112
-                 sta fltsav+2                             ; save it ;; 4a90 112
- ;; 4a93 112
-_local_1111_70   ldx z_p_temp_1                           ; hardware offset for this voice's filter [910612] ;; 4a93 112
-                 ldy #0                                    ;; 4a95 112
-_local_1111_80   lda fltsav,y                             ; copy new filter params to hardware ;; 4a97 112
-                 sta filters1,x                            ;; 4a9a 112
-                 inx                                       ;; 4a9d 112
-                 iny                                       ;; 4a9e 112
-                 cpy #4                                    ;; 4a9f 112
-                 bcc _local_1111_80                        ;; 4aa1 112
-                 rts                                       ;; 4aa3 112
- ;; 4aa4 112
-;.end ;; 4aa4 112
-; .page ;; 4aa4 112
-; .subttl  ENVELOPE ;; 4aa4 112
- ;; 4aa4 112
-;**************************************************************** ;; 4aa4 112
-; ;; 4aa4 112
-;  ENVELOPE n, attack, decay, sustain, release, waveform, pulse width ;; 4aa4 112
-;        set music envelope ;; 4aa4 112
-;                n = envelope number (0-9) ;; 4aa4 112
-;            wave  =   0 : triangle waveform ;; 4aa4 112
-;                      1 : sawtooth waveform ;; 4aa4 112
-;                      2 : pulse waveform ;; 4aa4 112
-;                      3 : noise waveform ;; 4aa4 112
-;                      4 : ring modulation ;; 4aa4 112
-;            pulse = pulse width if pulse waveform is selected (0-4095) ;; 4aa4 112
-; ;; 4aa4 112
-;****************************************************************** ;; 4aa4 112
- ;; 4aa4 112
+clear_play_flags                                           ;; @@497b 112
+                 lda #0                                    ;; @@497b 112
+                 sta sharp                                ; clear flags ;; @@497d 112
+                 sta dnote                                 ;; @@4980 112
+                 cli                                       ;; @@4983 112
+                 rts                                       ;; @@4984 112
+ ;; @@4985 112
+ ;; @@4985 112
+tempo            jsr getbyt                               ; duration of whole note 4/4 time = 24/rate ;; @@4985 112
+                 txa                                       ;; @@4988 112
+                 beq fcerr                                ; can't be zero- illegal quantity error ;; @@4989 112
+                 stx tempo_rate                            ;; @@498c 112
+                 rts                                       ;; @@498f 112
+ ;; @@4990 112
+; .page ;; @@4990 112
+times2           !text 0,2,4,6,8,10                       ; [910612] stereo ;; @@4990 112
+ ;; @@4996 112
+notes            !text "WHQIS"                            ; sixteenth,eigth,quarter,half,and whole notes ;; @@4996 112
+ ;; @@499b 112
+mutabl           !text "VOTXUM"                           ; voice,octave,envelope,filter,volume,& measure ;; @@499b 112
+ ;; @@49a1 112
+scalen           !text 9,11,0,2,4,5,7                     ; a,b,c,d,e,f,g ;; @@49a1 112
+ ;; @@49a8 112
+scalel           !text $0f,$0c,$46,$bf,$7d,$83            ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (NTSC, octave 6) ;; @@49a8 112
+                 !text $d6,$7a,$73,$c8,$7c,$97            ; [910729] ;; @@49ae 112
+ ;; @@49b4 112
+scaleh           !text $43,$47,$4b,$4f,$54,$59            ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (NTSC, octave 6) ;; @@49b4 112
+                 !text $5e,$64,$6a,$70,$77,$7e            ; [910729] ;; @@49ba 112
+ ;; @@49c0 112
+scalelp          !text $87,$8b,$cc,$4e,$14,$24            ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (PAL,  octave 6) ;; @@49c0 112
+                 !text $80,$2d,$32,$91,$52,$7a            ; [910729] ;; @@49c6 112
+ ;; @@49cc 112
+scalehp          !text $43,$47,$4b,$50,$55,$5a            ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (PAL,  octave 6) ;; @@49cc 112
+                 !text $5f,$65,$6b,$71,$78,$7f            ; [910729] ;; @@49d2 112
+ ;; @@49d8 112
+;  Music envelope tables, default values downloaded to RAM: ;; @@49d8 112
+; ;; @@49d8 112
+; 0: piano   1: accordion    2: calliope  3: drum     4: flute ;; @@49d8 112
+; 5: guitar  6: harpsichord  7: organ     8: trumpet  9: xylophone ;; @@49d8 112
+ ;; @@49d8 112
+;  Attack/decay rates ;; @@49d8 112
+ ;; @@49d8 112
+atkmus           !text $09,$c0,$00,$05,$94,$09,$09,$09,$89,$09  ;; @@49d8 112
+ ;; @@49e2 112
+;  Sustain/release rates ;; @@49e2 112
+ ;; @@49e2 112
+susmus           !text $00,$c0,$f0,$50,$40,$21,$00,$90,$41,$00  ;; @@49e2 112
+ ;; @@49ec 112
+;  Waveform table ;; @@49ec 112
+ ;; @@49ec 112
+wavmus           !text $41,$21,$11,$81,$11,$21,$41,$41,$41,$11  ;; @@49ec 112
+ ;; @@49f6 112
+;  Pulse width hi table ;; @@49f6 112
+ ;; @@49f6 112
+pwhmus           !text $06,$00,$00,$00,$00,$00,$02,$08,$02,$00  ;; @@49f6 112
+ ;; @@4a00 112
+;  Offset tables ;; @@4a00 112
+ ;; @@4a00 112
+SID_offset                                                 ;; @@4a00 112
+                 !text $00,$07,$0e,$20,$27,$2e            ; [910612] stereo ;; @@4a00 112
+filter_offset                                              ;; @@4a06 112
+                 !text 0,0,0,4,4,4                         ;; @@4a06 112
+ ;; @@4a0c 112
+;  Volume levels ;; @@4a0c 112
+ ;; @@4a0c 112
+voltab           !text 0,1,3,5,7,8,10,12,14,15             ;; @@4a0c 112
+ ;; @@4a16 112
+;.end ;; @@4a16 112
+; .page ;; @@4a16 112
+; .subttl  FILTER ;; @@4a16 112
+ ;; @@4a16 112
+;****************************************************************** ;; @@4a16 112
+; ;; @@4a16 112
+;  FILTER  sid, freq, lp, bp, hp, res   --  set values for filter ;; @@4a16 112
+; ;; @@4a16 112
+;     sid =  right (1), left (2) ;; @@4a16 112
+;          freq =  filter frequency (0-1023) ;; @@4a16 112
+;            lp =  low pass filter on (1) or off (0) ;; @@4a16 112
+;            bp =  band pass filter on (1) or off (0) ;; @@4a16 112
+;            hp =  high pass filter on (1) or off (0) ;; @@4a16 112
+;           res =  resonance (0-15) ;; @@4a16 112
+; ;; @@4a16 112
+;****************************************************************** ;; @@4a16 112
+ ;; @@4a16 112
+filter           jsr getbyt                               ; get left/right SID    [910612] ;; @@4a16 112
+                 dex                                       ;; @@4a19 112
+                 cpx #2                                    ;; @@4a1a 112
+                 bcs fcerr                                 ;; @@4a1c 112
+                 lda filter_offset+2,x                    ; get filter offset for specified SID ;; @@4a1f 112
+                 sta z_p_temp_1                            ;; @@4a22 112
+                 tax                                       ;; @@4a24 112
+ ;; @@4a25 112
+                 ldy #0                                    ;; @@4a25 112
+_local_1111_10   lda filters1,x                           ; save current voice's filter params ;; @@4a27 112
+                 sta fltsav,y                              ;; @@4a2a 112
+                 inx                                       ;; @@4a2d 112
+                 iny                                       ;; @@4a2e 112
+                 cpy #4                                    ;; @@4a2f 112
+                 bcc _local_1111_10                        ;; @@4a31 112
+ ;; @@4a33 112
+                 jsr optwrd                               ; get filter frequency ;; @@4a33 112
+                 bcc _local_1111_20                       ; skip if no value given ;; @@4a36 112
+                 cmp #8                                   ; test m.s. byte ;; @@4a38 112
+                 bcs fcerr                                ; error if > 2047 ;; @@4a3a 112
+                 sty fltsav                               ; save lower byte ;; @@4a3d 112
+ ;; @@4a40 112
+; Idea: shift lower 3 bits of upper byte into lower byte, forming bits 10-3 ;; @@4a40 112
+ ;; @@4a40 112
+                 sty fltsav+1                              ;; @@4a40 112
+                 lsr a                                     ;; @@4a43 112
+                 ror fltsav+1                              ;; @@4a44 112
+                 lsr a                                     ;; @@4a47 112
+                 ror fltsav+1                             ; save upper 7 bits (10-3) ;; @@4a48 112
+                 lsr a                                     ;; @@4a4b 112
+                 ror fltsav+1                              ;; @@4a4c 112
+ ;; @@4a4f 112
+_local_1111_20   lda #$10                                 ; start at type=LP ;; @@4a4f 112
+                 sta fltflg                                ;; @@4a51 112
+                 lda fltsav                                ;; @@4a54 112
+ ;; @@4a57 112
+_local_1111_30   jsr optbyt                               ; get filter types (LP,BP,HP) ;; @@4a57 112
+                 bcc _local_1111_50                       ; skip if no value input ;; @@4a5a 112
+                 cpx #1                                   ; (set .c: 0=0, 1=1) ;; @@4a5c 112
+                 bcc _local_1111_35                        ;; @@4a5e 112
+                 beq _local_1111_35                        ;; @@4a60 112
+                 bra fcerr                                ; error if >1 ;; @@4a62 112
+ ;; @@4a65 112
+_local_1111_35   lda fltsav+3                             ; get filter flags byte ;; @@4a65 112
+                 ora fltflg                               ; set filter on ;; @@4a68 112
+                 bcs _local_1111_40                       ; skip if it should be on ;; @@4a6b 112
+                 eor fltflg                               ; turn filter off ;; @@4a6d 112
+_local_1111_40   sta fltsav+3                             ; save value ;; @@4a70 112
+ ;; @@4a73 112
+_local_1111_50   asl fltflg                               ; shift for next filter ;; @@4a73 112
+                 bpl _local_1111_30                       ; loop 3 times ;; @@4a76 112
+ ;; @@4a78 112
+                 jsr optbyt                               ; get resonance value ;; @@4a78 112
+                 bcc _local_1111_70                       ; skip if no value given ;; @@4a7b 112
+; cpx #16 ;; @@4a7d 112
+; bcs fcerr  ;error if >15 ;; @@4a7d 112
+                 jsr chknyb                               ; [910930] ;; @@4a7d 112
+                 txa                                       ;; @@4a80 112
+                 asl a                                    ; shift to upper nibble ;; @@4a81 112
+                 asl a                                     ;; @@4a82 112
+                 asl a                                     ;; @@4a83 112
+                 asl a                                     ;; @@4a84 112
+                 sta nibble                                ;; @@4a85 112
+                 lda fltsav+2                             ; get current value ;; @@4a88 112
+                 and #$0f                                 ; mask it out ;; @@4a8b 112
+                 ora nibble                               ; add new value ;; @@4a8d 112
+                 sta fltsav+2                             ; save it ;; @@4a90 112
+ ;; @@4a93 112
+_local_1111_70   ldx z_p_temp_1                           ; hardware offset for this voice's filter [910612] ;; @@4a93 112
+                 ldy #0                                    ;; @@4a95 112
+_local_1111_80   lda fltsav,y                             ; copy new filter params to hardware ;; @@4a97 112
+                 sta filters1,x                            ;; @@4a9a 112
+                 inx                                       ;; @@4a9d 112
+                 iny                                       ;; @@4a9e 112
+                 cpy #4                                    ;; @@4a9f 112
+                 bcc _local_1111_80                        ;; @@4aa1 112
+                 rts                                       ;; @@4aa3 112
+ ;; @@4aa4 112
+;.end ;; @@4aa4 112
+; .page ;; @@4aa4 112
+; .subttl  ENVELOPE ;; @@4aa4 112
+ ;; @@4aa4 112
+;**************************************************************** ;; @@4aa4 112
+; ;; @@4aa4 112
+;  ENVELOPE n, attack, decay, sustain, release, waveform, pulse width ;; @@4aa4 112
+;        set music envelope ;; @@4aa4 112
+;                n = envelope number (0-9) ;; @@4aa4 112
+;            wave  =   0 : triangle waveform ;; @@4aa4 112
+;                      1 : sawtooth waveform ;; @@4aa4 112
+;                      2 : pulse waveform ;; @@4aa4 112
+;                      3 : noise waveform ;; @@4aa4 112
+;                      4 : ring modulation ;; @@4aa4 112
+;            pulse = pulse width if pulse waveform is selected (0-4095) ;; @@4aa4 112
+; ;; @@4aa4 112
+;****************************************************************** ;; @@4aa4 112
+ ;; @@4aa4 112

@@ -1,20 +1,20 @@
-loadiff                                                    ;; b3af 279
-                 jsr CheckGraphicMode                      ;; b3af 279
-                 lda #$e6                                 ; parse:  filename [,U#] [,D#] ;; b3b2 279
-                 jsr dosprs                               ; (like dopen:  0 0 0 *  * 0 0 1 ) ;; b3b4 279
-                 jsr chk1                                 ; check parameters ;; b3b7 279
-                 lda #0                                    ;; b3ba 279
-                 sta dossa                                ; setup as dload would (0 = load channel) ;; b3bc 279
-                 jsr find_la                              ; find an available la to use (cannot use reserved one) ;; b3bf 279
-                 ldy #fopn                                 ;; b3c2 279
-                 ldx #4                                    ;; b3c4 279
-                 jsr open_file                            ; open the file ;; b3c6 279
-                 bcs _local_1278_10                       ; exit if error ;; b3c9 279
- ;; b3cb 279
-                 ldx dosla                                 ;; b3cb 279
-; stx GKI__parm1 ;; b3ce 279
-                 jsr _chkin                               ; get input channel ;; b3ce 279
-_local_1278_10   bcs list_err                             ; exit if error ;; b3d1 279
- ;; b3d4 279
-                 jsr ($802a)                              ; Load it ;; b3d4 279
- ;; b3d7 279
+loadiff                                                    ;; @@b3af 279
+                 jsr CheckGraphicMode                      ;; @@b3af 279
+                 lda #$e6                                 ; parse:  filename [,U#] [,D#] ;; @@b3b2 279
+                 jsr dosprs                               ; (like dopen:  0 0 0 *  * 0 0 1 ) ;; @@b3b4 279
+                 jsr chk1                                 ; check parameters ;; @@b3b7 279
+                 lda #0                                    ;; @@b3ba 279
+                 sta dossa                                ; setup as dload would (0 = load channel) ;; @@b3bc 279
+                 jsr find_la                              ; find an available la to use (cannot use reserved one) ;; @@b3bf 279
+                 ldy #fopn                                 ;; @@b3c2 279
+                 ldx #4                                    ;; @@b3c4 279
+                 jsr open_file                            ; open the file ;; @@b3c6 279
+                 bcs _local_1278_10                       ; exit if error ;; @@b3c9 279
+ ;; @@b3cb 279
+                 ldx dosla                                 ;; @@b3cb 279
+; stx GKI__parm1 ;; @@b3ce 279
+                 jsr _chkin                               ; get input channel ;; @@b3ce 279
+_local_1278_10   bcs list_err                             ; exit if error ;; @@b3d1 279
+ ;; @@b3d4 279
+                 jsr ($802a)                              ; Load it ;; @@b3d4 279
+ ;; @@b3d7 279

@@ -1,4 +1,4 @@
-c65.set 
+C65__set 
  cmp #verify_token ;SET VERIFY <ON | OFF>  new [910429] 
  beq verify_mode 
  cmp #def_token  ;SET DEF unit 

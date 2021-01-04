@@ -1,80 +1,80 @@
-autoboot_filename                                           ;; 6828 192
-                 !byte "AUTOBOOT.C65*",0                   ;; 6828 192
- ;; 6836 192
-; .page ;; 6836 192
-; .subttl  SAVE  LOAD  VERIFY  OPEN  CLOSE ;; 6836 192
- ;; 6836 192
-erexit           tax                                      ; set termination flags ;; 6836 192
-                 bne error                                ; normal error ;; 6837 192
-                 bra break_exit                           ; user break ;; 683a 192
- ;; 683d 192
- ;; 683d 192
- ;; 683d 192
-outch            jsr _bsout                                ;; 683d 192
-                 bcs erexit                                ;; 6840 192
-                 rts                                       ;; 6842 192
- ;; 6843 192
- ;; 6843 192
- ;; 6843 192
-inchr            jsr _basin                                ;; 6843 192
-                 bcs erexit                                ;; 6846 192
-                 rts                                       ;; 6848 192
- ;; 6849 192
- ;; 6849 192
-coout                                                      ;; 6849 192
-; jsr put_io_in_map ;; 6849 192
-                 jsr _chkout                               ;; 6849 192
-                 jsr dschk                                ; see if device # >=4, and clear DS if so ;; 684c 192
-                 bcs erexit                               ; take error exit of there was one ;; 684f 192
-                 rts                                       ;; 6851 192
- ;; 6852 192
- ;; 6852 192
-coin                                                       ;; 6852 192
-; jsr put_io_in_map ;; 6852 192
-                 jsr _chkin                                ;; 6852 192
-                 jsr dschk                                ; see if device # >=4, and clear DS if so ;; 6855 192
-                 bcs erexit                                ;; 6858 192
-                 rts                                       ;; 685a 192
- ;; 685b 192
-cgetl                                                      ;; 685b 192
-; jsr put_io_in_map ;; 685b 192
-                 jsr _getin                                ;; 685b 192
-                 bcs break_exit                           ; 'stop' key was pressed ;; 685e 192
-                 rts                                       ;; 6861 192
- ;; 6862 192
-; .page ;; 6862 192
-save             jsr plsv                                 ; parse parameters, dschk ;; 6862 192
- ;; 6865 192
- ;; 6865 192
-savenp                                                    ; Save Program (from DSave) ;; 6865 192
-                 ldx text_top                             ; ending address ;; 6865 192
-                 ldy text_top+1                            ;; 6867 192
-                 lda #<txttab                             ; pointer to start address ;; 6869 192
- ;; 686b 192
- ;; 686b 192
-savenb                                                    ; Save Binary (from BSave & KEY SAVE) ;; 686b 192
-; jsr put_io_in_map ;; 686b 192
-                 jsr _savesp                              ; save it ;; 686b 192
- ;; 686e 192
-; Any changes to the following code must be duplicated at: ;; 686e 192
-;  bload ;; 686e 192
-;  load (load_file) ;; 686e 192
- ;; 686e 192
-exit_disk_op                                               ;; 686e 192
-exit_disk_operation                                           ;; 686e 192
-                 php                                      ; preserve kernel error status (.c) ;; 686e 192
-                 pha                                      ; preserve kernel error # (.a) ;; 686f 192
-                 jsr print_dos_error                      ; print DOS error msg if any only in direct mode ;; 6870 192
-                 pla                                       ;; 6873 192
-                 plp                                       ;; 6874 192
-                 bcc _local_1191_30                       ; branch if no error (rts) ;; 6875 192
-                 bbs7 runmod,_local_1191_20               ; branch if run mode (erexit) ;; 6877 192
-                 cmp #errfnf                              ; is it 'file not found' catch-all? ;; 687a 192
-                 bne _local_1191_10                       ; no  (erexit) ;; 687c 192
-                 sta errnum                               ; yes- save error # for 'er' ;; 687e 192
-                 ora #$80                                 ; but no errdis ;; 6881 192
-_local_1191_10   sec                                       ;; 6883 192
-_local_1191_20   bcs erexit                               ; exit if kernel problem (rts) ;; 6884 192
-_local_1191_30   rts                                       ;; 6886 192
- ;; 6887 192
-; .page ;; 6887 192
+autoboot_filename                                           ;; @@6828 192
+                 !text "AUTOBOOT.C65*",0                   ;; @@6828 192
+ ;; @@6836 192
+; .page ;; @@6836 192
+; .subttl  SAVE  LOAD  VERIFY  OPEN  CLOSE ;; @@6836 192
+ ;; @@6836 192
+erexit           tax                                      ; set termination flags ;; @@6836 192
+                 bne error                                ; normal error ;; @@6837 192
+                 bra break_exit                           ; user break ;; @@683a 192
+ ;; @@683d 192
+ ;; @@683d 192
+ ;; @@683d 192
+outch            jsr _bsout                                ;; @@683d 192
+                 bcs erexit                                ;; @@6840 192
+                 rts                                       ;; @@6842 192
+ ;; @@6843 192
+ ;; @@6843 192
+ ;; @@6843 192
+inchr            jsr _basin                                ;; @@6843 192
+                 bcs erexit                                ;; @@6846 192
+                 rts                                       ;; @@6848 192
+ ;; @@6849 192
+ ;; @@6849 192
+coout                                                      ;; @@6849 192
+; jsr put_io_in_map ;; @@6849 192
+                 jsr _chkout                               ;; @@6849 192
+                 jsr dschk                                ; see if device # >=4, and clear DS if so ;; @@684c 192
+                 bcs erexit                               ; take error exit of there was one ;; @@684f 192
+                 rts                                       ;; @@6851 192
+ ;; @@6852 192
+ ;; @@6852 192
+coin                                                       ;; @@6852 192
+; jsr put_io_in_map ;; @@6852 192
+                 jsr _chkin                                ;; @@6852 192
+                 jsr dschk                                ; see if device # >=4, and clear DS if so ;; @@6855 192
+                 bcs erexit                                ;; @@6858 192
+                 rts                                       ;; @@685a 192
+ ;; @@685b 192
+cgetl                                                      ;; @@685b 192
+; jsr put_io_in_map ;; @@685b 192
+                 jsr _getin                                ;; @@685b 192
+                 bcs break_exit                           ; 'stop' key was pressed ;; @@685e 192
+                 rts                                       ;; @@6861 192
+ ;; @@6862 192
+; .page ;; @@6862 192
+save             jsr plsv                                 ; parse parameters, dschk ;; @@6862 192
+ ;; @@6865 192
+ ;; @@6865 192
+savenp                                                    ; Save Program (from DSave) ;; @@6865 192
+                 ldx text_top                             ; ending address ;; @@6865 192
+                 ldy text_top+1                            ;; @@6867 192
+                 lda #<txttab                             ; pointer to start address ;; @@6869 192
+ ;; @@686b 192
+ ;; @@686b 192
+savenb                                                    ; Save Binary (from BSave & KEY SAVE) ;; @@686b 192
+; jsr put_io_in_map ;; @@686b 192
+                 jsr _savesp                              ; save it ;; @@686b 192
+ ;; @@686e 192
+; Any changes to the following code must be duplicated at: ;; @@686e 192
+;  bload ;; @@686e 192
+;  load (load_file) ;; @@686e 192
+ ;; @@686e 192
+exit_disk_op                                               ;; @@686e 192
+exit_disk_operation                                           ;; @@686e 192
+                 php                                      ; preserve kernel error status (.c) ;; @@686e 192
+                 pha                                      ; preserve kernel error # (.a) ;; @@686f 192
+                 jsr print_dos_error                      ; print DOS error msg if any only in direct mode ;; @@6870 192
+                 pla                                       ;; @@6873 192
+                 plp                                       ;; @@6874 192
+                 bcc _local_1191_30                       ; branch if no error (rts) ;; @@6875 192
+                 bbs7 runmod,_local_1191_20               ; branch if run mode (erexit) ;; @@6877 192
+                 cmp #errfnf                              ; is it 'file not found' catch-all? ;; @@687a 192
+                 bne _local_1191_10                       ; no  (erexit) ;; @@687c 192
+                 sta errnum                               ; yes- save error # for 'er' ;; @@687e 192
+                 ora #$80                                 ; but no errdis ;; @@6881 192
+_local_1191_10   sec                                       ;; @@6883 192
+_local_1191_20   bcs erexit                               ; exit if kernel problem (rts) ;; @@6884 192
+_local_1191_30   rts                                       ;; @@6886 192
+ ;; @@6887 192
+; .page ;; @@6887 192

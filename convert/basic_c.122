@@ -1,76 +1,76 @@
-ldzr             lda #<zero                               ; set up pointer to simulated zero ;; 5018 122
-                 ldy #>zero                                ;; 501a 122
-                 rts                                      ; for strings or numeric ;; 501c 122
- ;; 501d 122
- ;; 501d 122
-qst001           cpy #'I'+$80                             ; we know first is T, is second <shift>I (TI$)? ;; 501d 122
-                 beq ldzr                                  ;; 501f 122
-                 cpy #'I'                                 ; or I (TI)? ;; 5021 122
-                 bne varok                                 ;; 5023 122
-                 beq gobadv                                ;; 5025 122
- ;; 5027 122
- ;; 5027 122
-qst004           cpy #'S'+$80                             ; check for DS$ ;; 5027 122
-                 beq gobadv                                ;; 5029 122
-                 cpy #'S'                                 ; check for DS ;; 502b 122
-                 bne varok                                 ;; 502d 122
-                 beq gobadv                                ;; 502f 122
- ;; 5031 122
- ;; 5031 122
-qst002           cpy #'T'                                 ; check for ST ;; 5031 122
-                 bne varok                                 ;; 5033 122
-                 beq gobadv                                ;; 5035 122
- ;; 5037 122
- ;; 5037 122
-qst003           cpy #'R'                                 ; check for ER ;; 5037 122
-                 beq gobadv                                ;; 5039 122
-                 cpy #'L'                                 ; check for EL ;; 503b 122
-                 bne varok                                 ;; 503d 122
- ;; 503f 122
- ;; 503f 122
-gobadv           bra snerr                                 ;; 503f 122
- ;; 5042 122
- ;; 5042 122
- ;; 5042 122
-notevl           lda varnam                                ;; 5042 122
-                 ldy varnam+1                              ;; 5044 122
-                 cmp #'T'                                 ; screen out TI ;; 5046 122
-                 beq qst001                                ;; 5048 122
-                 cmp #'S'                                 ; ...and ST ;; 504a 122
-                 beq qst002                                ;; 504c 122
-                 cmp #'E'                                 ; ...and ER and EL ;; 504e 122
-                 beq qst003                                ;; 5050 122
-                 cmp #'D'                                 ; ...and DS ;; 5052 122
-                 beq qst004                                ;; 5054 122
- ;; 5056 122
- ;; 5056 122
-varok            lda arytab                                ;; 5056 122
-                 ldy arytab+1                              ;; 5058 122
-                 sta lowtr                                 ;; 505a 122
-                 sty lowtr+1                               ;; 505c 122
-                 lda strend                                ;; 505e 122
-                 ldy strend+1                              ;; 5060 122
-                 sta hightr                                ;; 5062 122
-                 sty hightr+1                              ;; 5064 122
-                 clc                                       ;; 5066 122
-                 adc #7                                    ;; 5067 122
-                 bcc _local_1121_10                       ; not even ;; 5069 122
-                 iny                                       ;; 506b 122
- ;; 506c 122
-_local_1121_10   sta highds                                ;; 506c 122
-                 sty highds+1                              ;; 506e 122
-                 jsr bltu                                  ;; 5070 122
-                 lda highds                                ;; 5073 122
-                 ldy highds+1                              ;; 5075 122
-                 iny                                       ;; 5077 122
-                 sta arytab                                ;; 5078 122
-                 sty arytab+1                              ;; 507a 122
- ;; 507c 122
- ;; 507c 122
-; Scan thru array entries for string arrays.  If any are found it will be ;; 507c 122
-; necessary to adjust the back-links of the strings in that array, since ;; 507c 122
-; the array descriptor block itself was moved. ;; 507c 122
- ;; 507c 122
-                 sta arypnt                               ; set pointer to arrays ;; 507c 122
-                 sty arypnt+1                              ;; 507e 122
- ;; 5080 122
+ldzr             lda #<zero                               ; set up pointer to simulated zero ;; @@5018 122
+                 ldy #>zero                                ;; @@501a 122
+                 rts                                      ; for strings or numeric ;; @@501c 122
+ ;; @@501d 122
+ ;; @@501d 122
+qst001           cpy #'I'+$80                             ; we know first is T, is second <shift>I (TI$)? ;; @@501d 122
+                 beq ldzr                                  ;; @@501f 122
+                 cpy #'I'                                 ; or I (TI)? ;; @@5021 122
+                 bne varok                                 ;; @@5023 122
+                 beq gobadv                                ;; @@5025 122
+ ;; @@5027 122
+ ;; @@5027 122
+qst004           cpy #'S'+$80                             ; check for DS$ ;; @@5027 122
+                 beq gobadv                                ;; @@5029 122
+                 cpy #'S'                                 ; check for DS ;; @@502b 122
+                 bne varok                                 ;; @@502d 122
+                 beq gobadv                                ;; @@502f 122
+ ;; @@5031 122
+ ;; @@5031 122
+qst002           cpy #'T'                                 ; check for ST ;; @@5031 122
+                 bne varok                                 ;; @@5033 122
+                 beq gobadv                                ;; @@5035 122
+ ;; @@5037 122
+ ;; @@5037 122
+qst003           cpy #'R'                                 ; check for ER ;; @@5037 122
+                 beq gobadv                                ;; @@5039 122
+                 cpy #'L'                                 ; check for EL ;; @@503b 122
+                 bne varok                                 ;; @@503d 122
+ ;; @@503f 122
+ ;; @@503f 122
+gobadv           bra snerr                                 ;; @@503f 122
+ ;; @@5042 122
+ ;; @@5042 122
+ ;; @@5042 122
+notevl           lda varnam                                ;; @@5042 122
+                 ldy varnam+1                              ;; @@5044 122
+                 cmp #'T'                                 ; screen out TI ;; @@5046 122
+                 beq qst001                                ;; @@5048 122
+                 cmp #'S'                                 ; ...and ST ;; @@504a 122
+                 beq qst002                                ;; @@504c 122
+                 cmp #'E'                                 ; ...and ER and EL ;; @@504e 122
+                 beq qst003                                ;; @@5050 122
+                 cmp #'D'                                 ; ...and DS ;; @@5052 122
+                 beq qst004                                ;; @@5054 122
+ ;; @@5056 122
+ ;; @@5056 122
+varok            lda arytab                                ;; @@5056 122
+                 ldy arytab+1                              ;; @@5058 122
+                 sta lowtr                                 ;; @@505a 122
+                 sty lowtr+1                               ;; @@505c 122
+                 lda strend                                ;; @@505e 122
+                 ldy strend+1                              ;; @@5060 122
+                 sta hightr                                ;; @@5062 122
+                 sty hightr+1                              ;; @@5064 122
+                 clc                                       ;; @@5066 122
+                 adc #7                                    ;; @@5067 122
+                 bcc _local_1121_10                       ; not even ;; @@5069 122
+                 iny                                       ;; @@506b 122
+ ;; @@506c 122
+_local_1121_10   sta highds                                ;; @@506c 122
+                 sty highds+1                              ;; @@506e 122
+                 jsr bltu                                  ;; @@5070 122
+                 lda highds                                ;; @@5073 122
+                 ldy highds+1                              ;; @@5075 122
+                 iny                                       ;; @@5077 122
+                 sta arytab                                ;; @@5078 122
+                 sty arytab+1                              ;; @@507a 122
+ ;; @@507c 122
+ ;; @@507c 122
+; Scan thru array entries for string arrays.  If any are found it will be ;; @@507c 122
+; necessary to adjust the back-links of the strings in that array, since ;; @@507c 122
+; the array descriptor block itself was moved. ;; @@507c 122
+ ;; @@507c 122
+                 sta arypnt                               ; set pointer to arrays ;; @@507c 122
+                 sty arypnt+1                              ;; @@507e 122
+ ;; @@5080 122

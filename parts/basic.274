@@ -1,4 +1,4 @@
-c65.box 
+C65__box 
  jsr CheckGraphicMode 
  jsr sadwrd  ; get x0 
  sty GKI__parm1 
@@ -52,7 +52,7 @@ c65.box
 ;*         parm7 = solid flag 0=no, 1=yes 
 ;***************************************************************** 
  
-c65.circle 
+C65__circle 
  jsr CheckGraphicMode 
  jsr sadwrd  ; get center x 
  sty GKI__parm1 
@@ -92,7 +92,7 @@ c65.circle
 ;*         parm9 = solid flag 0-1 
 ;***************************************************************** 
  
-c65.ellipse 
+C65__ellipse 
  jsr CheckGraphicMode 
  jsr sadwrd  ; get center x 
  sty GKI__parm1 
@@ -141,7 +141,7 @@ c65.ellipse
 ;*         parm14 = subtend flag 0-1 
 ;**************************************************************** 
  
-c65.polygon   ;changed BASIC syntax to something more reasonable [910923] FAB 
+C65__polygon   ;changed BASIC syntax to something more reasonable [910923] FAB 
  jsr CheckGraphicMode 
  jsr sadwrd  ;get center x 
  sty GKI__parm1 

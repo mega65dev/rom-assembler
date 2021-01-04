@@ -1,110 +1,110 @@
-zerofc           lda #0                                   ; not needed by NORMAL, but by others ;; 5e49 170
-zerof1           sta facexp                               ; number must be zero ;; 5e4b 170
-zeroml           sta facsgn                               ; make sign positive ;; 5e4d 170
-zerrts           rts                                      ; all done ;; 5e4f 170
- ;; 5e50 170
- ;; 5e50 170
-fadd2            adc oldov                                 ;; 5e50 170
-                 sta facov                                 ;; 5e52 170
-                 lda faclo                                 ;; 5e54 170
-                 adc arglo                                 ;; 5e56 170
-                 sta faclo                                 ;; 5e58 170
-                 lda facmo                                 ;; 5e5a 170
-                 adc argmo                                 ;; 5e5c 170
-                 sta facmo                                 ;; 5e5e 170
-                 lda facmoh                                ;; 5e60 170
-                 adc argmoh                                ;; 5e62 170
-                 sta facmoh                                ;; 5e64 170
-                 lda facho                                 ;; 5e66 170
-                 adc argho                                 ;; 5e68 170
-                 sta facho                                 ;; 5e6a 170
-                 bra squeez                               ; go round if signs same ;; 5e6c 170
- ;; 5e6e 170
- ;; 5e6e 170
-norm2            adc #1                                   ; decrement shift counter ;; 5e6e 170
-                 asl facov                                ; shift all left one bit ;; 5e70 170
-                 rol faclo                                 ;; 5e72 170
-                 rol facmo                                 ;; 5e74 170
-                 rol facmoh                                ;; 5e76 170
-                 rol facho                                 ;; 5e78 170
- ;; 5e7a 170
-norm1            bpl norm2                                ; if msb=0 shift again ;; 5e7a 170
-                 sec                                       ;; 5e7c 170
-                 sbc facexp                                ;; 5e7d 170
-                 bcs zerofc                                ;; 5e7f 170
-                 eor #$ff                                  ;; 5e81 170
-                 adc #1                                   ; complement ;; 5e83 170
-                 sta facexp                                ;; 5e85 170
- ;; 5e87 170
-squeez           bcc rndrts                               ; bits to shift? ;; 5e87 170
-rndshf           inc facexp                                ;; 5e89 170
-                 beq overr                                 ;; 5e8b 170
-                 ror facho                                 ;; 5e8e 170
-                 ror facmoh                                ;; 5e90 170
-                 ror facmo                                 ;; 5e92 170
-                 ror faclo                                 ;; 5e94 170
-                 ror facov                                 ;; 5e96 170
-rndrts           rts                                      ; all done adding ;; 5e98 170
- ;; 5e99 170
- ;; 5e99 170
-negfac           lda facsgn                                ;; 5e99 170
-                 eor #$ff                                 ; complement FAC entirely ;; 5e9b 170
-                 sta facsgn                                ;; 5e9d 170
- ;; 5e9f 170
-negfch           lda facho                                 ;; 5e9f 170
-                 eor #$ff                                 ; complement just the number ;; 5ea1 170
-                 sta facho                                 ;; 5ea3 170
-                 lda facmoh                                ;; 5ea5 170
-                 eor #$ff                                  ;; 5ea7 170
-                 sta facmoh                                ;; 5ea9 170
-                 lda facmo                                 ;; 5eab 170
-                 eor #$ff                                  ;; 5ead 170
-                 sta facmo                                 ;; 5eaf 170
-                 lda faclo                                 ;; 5eb1 170
-                 eor #$ff                                  ;; 5eb3 170
-                 sta faclo                                 ;; 5eb5 170
-                 lda facov                                 ;; 5eb7 170
-                 eor #$ff                                  ;; 5eb9 170
-                 sta facov                                 ;; 5ebb 170
-                 inc facov                                 ;; 5ebd 170
-                 bne incfrt                                ;; 5ebf 170
- ;; 5ec1 170
-incfac           inc faclo                                 ;; 5ec1 170
-                 bne incfrt                                ;; 5ec3 170
-                 inc facmo                                 ;; 5ec5 170
-                 bne incfrt                               ; if no carry, return ;; 5ec7 170
-                 inc facmoh                                ;; 5ec9 170
-                 bne incfrt                                ;; 5ecb 170
-                 inc facho                                ; carry complement ;; 5ecd 170
-incfrt           rts                                       ;; 5ecf 170
- ;; 5ed0 170
- ;; 5ed0 170
-; SHIFTR shifts (x+1:x+3) (-a) bits right.  Shifts bits to start with ;; 5ed0 170
-; if possible. ;; 5ed0 170
- ;; 5ed0 170
-mulshf           ldx #resho-1                             ; entry point for multiplier ;; 5ed0 170
-shftr2           ldy 4,x                                  ; shift bits first ;; 5ed2 170
-                 sty facov                                 ;; 5ed4 170
-                 ldy 3,x                                   ;; 5ed6 170
-                 sty 4,x                                   ;; 5ed8 170
-                 ldy 2,x                                  ; get mo ;; 5eda 170
-                 sty 3,x                                  ; store lo ;; 5edc 170
-                 ldy 1,x                                  ; get ho ;; 5ede 170
-                 sty 2,x                                  ; store mo ;; 5ee0 170
-                 ldy bits                                  ;; 5ee2 170
-                 sty 1,x                                  ; store ho ;; 5ee5 170
- ;; 5ee7 170
-shiftr           adc #8                                    ;; 5ee7 170
-                 bmi shftr2                                ;; 5ee9 170
-                 beq shftr2                                ;; 5eeb 170
-                 sbc #8                                   ; c can be either 1,0 and it works! ;; 5eed 170
-                 tay                                       ;; 5eef 170
-                 lda facov                                 ;; 5ef0 170
-                 bcs shftrt                               ; equiv to beq here ;; 5ef2 170
- ;; 5ef4 170
-shftr3           asl 1,x                                   ;; 5ef4 170
-                 bcc _local_1169_10                        ;; 5ef6 170
-                 inc 1,x                                   ;; 5ef8 170
-_local_1169_10   ror 1,x                                   ;; 5efa 170
-                 ror 1,x                                  ; yes, two of them ;; 5efc 170
- ;; 5efe 170
+zerofc           lda #0                                   ; not needed by NORMAL, but by others ;; @@5e49 170
+zerof1           sta facexp                               ; number must be zero ;; @@5e4b 170
+zeroml           sta facsgn                               ; make sign positive ;; @@5e4d 170
+zerrts           rts                                      ; all done ;; @@5e4f 170
+ ;; @@5e50 170
+ ;; @@5e50 170
+fadd2            adc oldov                                 ;; @@5e50 170
+                 sta facov                                 ;; @@5e52 170
+                 lda faclo                                 ;; @@5e54 170
+                 adc arglo                                 ;; @@5e56 170
+                 sta faclo                                 ;; @@5e58 170
+                 lda facmo                                 ;; @@5e5a 170
+                 adc argmo                                 ;; @@5e5c 170
+                 sta facmo                                 ;; @@5e5e 170
+                 lda facmoh                                ;; @@5e60 170
+                 adc argmoh                                ;; @@5e62 170
+                 sta facmoh                                ;; @@5e64 170
+                 lda facho                                 ;; @@5e66 170
+                 adc argho                                 ;; @@5e68 170
+                 sta facho                                 ;; @@5e6a 170
+                 bra squeez                               ; go round if signs same ;; @@5e6c 170
+ ;; @@5e6e 170
+ ;; @@5e6e 170
+norm2            adc #1                                   ; decrement shift counter ;; @@5e6e 170
+                 asl facov                                ; shift all left one bit ;; @@5e70 170
+                 rol faclo                                 ;; @@5e72 170
+                 rol facmo                                 ;; @@5e74 170
+                 rol facmoh                                ;; @@5e76 170
+                 rol facho                                 ;; @@5e78 170
+ ;; @@5e7a 170
+norm1            bpl norm2                                ; if msb=0 shift again ;; @@5e7a 170
+                 sec                                       ;; @@5e7c 170
+                 sbc facexp                                ;; @@5e7d 170
+                 bcs zerofc                                ;; @@5e7f 170
+                 eor #$ff                                  ;; @@5e81 170
+                 adc #1                                   ; complement ;; @@5e83 170
+                 sta facexp                                ;; @@5e85 170
+ ;; @@5e87 170
+squeez           bcc rndrts                               ; bits to shift? ;; @@5e87 170
+rndshf           inc facexp                                ;; @@5e89 170
+                 beq overr                                 ;; @@5e8b 170
+                 ror facho                                 ;; @@5e8e 170
+                 ror facmoh                                ;; @@5e90 170
+                 ror facmo                                 ;; @@5e92 170
+                 ror faclo                                 ;; @@5e94 170
+                 ror facov                                 ;; @@5e96 170
+rndrts           rts                                      ; all done adding ;; @@5e98 170
+ ;; @@5e99 170
+ ;; @@5e99 170
+negfac           lda facsgn                                ;; @@5e99 170
+                 eor #$ff                                 ; complement FAC entirely ;; @@5e9b 170
+                 sta facsgn                                ;; @@5e9d 170
+ ;; @@5e9f 170
+negfch           lda facho                                 ;; @@5e9f 170
+                 eor #$ff                                 ; complement just the number ;; @@5ea1 170
+                 sta facho                                 ;; @@5ea3 170
+                 lda facmoh                                ;; @@5ea5 170
+                 eor #$ff                                  ;; @@5ea7 170
+                 sta facmoh                                ;; @@5ea9 170
+                 lda facmo                                 ;; @@5eab 170
+                 eor #$ff                                  ;; @@5ead 170
+                 sta facmo                                 ;; @@5eaf 170
+                 lda faclo                                 ;; @@5eb1 170
+                 eor #$ff                                  ;; @@5eb3 170
+                 sta faclo                                 ;; @@5eb5 170
+                 lda facov                                 ;; @@5eb7 170
+                 eor #$ff                                  ;; @@5eb9 170
+                 sta facov                                 ;; @@5ebb 170
+                 inc facov                                 ;; @@5ebd 170
+                 bne incfrt                                ;; @@5ebf 170
+ ;; @@5ec1 170
+incfac           inc faclo                                 ;; @@5ec1 170
+                 bne incfrt                                ;; @@5ec3 170
+                 inc facmo                                 ;; @@5ec5 170
+                 bne incfrt                               ; if no carry, return ;; @@5ec7 170
+                 inc facmoh                                ;; @@5ec9 170
+                 bne incfrt                                ;; @@5ecb 170
+                 inc facho                                ; carry complement ;; @@5ecd 170
+incfrt           rts                                       ;; @@5ecf 170
+ ;; @@5ed0 170
+ ;; @@5ed0 170
+; SHIFTR shifts (x+1:x+3) (-a) bits right.  Shifts bits to start with ;; @@5ed0 170
+; if possible. ;; @@5ed0 170
+ ;; @@5ed0 170
+mulshf           ldx #resho-1                             ; entry point for multiplier ;; @@5ed0 170
+shftr2           ldy 4,x                                  ; shift bits first ;; @@5ed2 170
+                 sty facov                                 ;; @@5ed4 170
+                 ldy 3,x                                   ;; @@5ed6 170
+                 sty 4,x                                   ;; @@5ed8 170
+                 ldy 2,x                                  ; get mo ;; @@5eda 170
+                 sty 3,x                                  ; store lo ;; @@5edc 170
+                 ldy 1,x                                  ; get ho ;; @@5ede 170
+                 sty 2,x                                  ; store mo ;; @@5ee0 170
+                 ldy bits                                  ;; @@5ee2 170
+                 sty 1,x                                  ; store ho ;; @@5ee5 170
+ ;; @@5ee7 170
+shiftr           adc #8                                    ;; @@5ee7 170
+                 bmi shftr2                                ;; @@5ee9 170
+                 beq shftr2                                ;; @@5eeb 170
+                 sbc #8                                   ; c can be either 1,0 and it works! ;; @@5eed 170
+                 tay                                       ;; @@5eef 170
+                 lda facov                                 ;; @@5ef0 170
+                 bcs shftrt                               ; equiv to beq here ;; @@5ef2 170
+ ;; @@5ef4 170
+shftr3           asl 1,x                                   ;; @@5ef4 170
+                 bcc _local_1169_10                        ;; @@5ef6 170
+                 inc 1,x                                   ;; @@5ef8 170
+_local_1169_10   ror 1,x                                   ;; @@5efa 170
+                 ror 1,x                                  ; yes, two of them ;; @@5efc 170
+ ;; @@5efe 170

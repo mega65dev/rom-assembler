@@ -1,72 +1,72 @@
-qplus            cmp #'+'                                 ; plus sign? ;; 63a3 178
-                 bne fin1                                 ; yes, skip it ;; 63a5 178
- ;; 63a7 178
-finc             jsr fin_chrget                            ;; 63a7 178
- ;; 63aa 178
-findgq           bcc findig                                ;; 63aa 178
- ;; 63ac 178
-fin1             cmp #'.'                                 ; the dp? ;; 63ac 178
-                 beq findp                                ; no kidding ;; 63ae 178
-                 cmp #'E'                                 ; exponent follows ;; 63b0 178
-                 bne fine                                 ; no ;; 63b2 178
- ;; 63b4 178
-                 jsr fin_chrget                           ; yes, get another, to check sign of exponent ;; 63b4 178
-                 bcc fnedg1                               ; is it a digit. (easier than backing up pointer) ;; 63b7 178
-                 cmp #minus_token                         ; minus? ;; 63b9 178
-                 beq finec1                               ; negate ;; 63bb 178
-                 cmp #'-'                                 ; minus sign? ;; 63bd 178
-                 beq finec1                                ;; 63bf 178
-                 cmp #plus_token                          ; plus? ;; 63c1 178
-                 beq finec                                 ;; 63c3 178
-                 cmp #'+'                                 ; plus sign? ;; 63c5 178
-                 beq finec                                 ;; 63c7 178
-                 bra finec2                                ;; 63c9 178
- ;; 63cb 178
-finec1           ror expsgn                               ; turn it on ;; 63cb 178
- ;; 63cd 178
-finec            jsr fin_chrget                           ; get another ;; 63cd 178
- ;; 63d0 178
-fnedg1           bcc finedg                               ; it is a digit ;; 63d0 178
-finec2           bbr7 expsgn,fine                          ;; 63d2 178
-                 lda #0                                    ;; 63d5 178
-                 sec                                       ;; 63d7 178
-                 sbc tenexp                                ;; 63d8 178
-                 bra fine1                                 ;; 63da 178
- ;; 63dc 178
-findp            ror dptflg                                ;; 63dc 178
-                 bbr6 dptflg,finc                          ;; 63de 178
- ;; 63e1 178
-fine             lda tenexp                                ;; 63e1 178
-fine1            sec                                       ;; 63e3 178
-                 sbc deccnt                               ; get number of places to shift ;; 63e4 178
-                 sta tenexp                                ;; 63e6 178
-                 beq finqng                               ; negate? ;; 63e8 178
-                 bpl finmul                               ; positive, so multiply ;; 63ea 178
- ;; 63ec 178
-findiv           jsr div10                                 ;; 63ec 178
-                 inc tenexp                               ; done? ;; 63ef 178
-                 bne findiv                               ; no ;; 63f1 178
-                 bra finqng                               ; yes ;; 63f3 178
- ;; 63f5 178
- ;; 63f5 178
-finmul           jsr mul10                                 ;; 63f5 178
-                 dec tenexp                               ; done? ;; 63f8 178
-                 bne finmul                               ; no ;; 63fa 178
-finqng           lda sgnflg                                ;; 63fc 178
-                 bmi negop                                ; if negative, negate and return ;; 63fe 178
-                 rts                                      ; if positive, return ;; 6401 178
- ;; 6402 178
- ;; 6402 178
- ;; 6402 178
-findig           pha                                       ;; 6402 178
-                 bbr7 dptflg,_local_1177_10                ;; 6403 178
-                 inc deccnt                                ;; 6406 178
-_local_1177_10   jsr mul10                                 ;; 6408 178
-                 pla                                      ; get it back ;; 640b 178
-                 sec                                       ;; 640c 178
-                 sbc #'0'                                  ;; 640d 178
-                 jsr finlog                               ; add it in ;; 640f 178
-                 bra finc                                  ;; 6412 178
- ;; 6414 178
- ;; 6414 178
- ;; 6414 178
+qplus            cmp #'+'                                 ; plus sign? ;; @@63a3 178
+                 bne fin1                                 ; yes, skip it ;; @@63a5 178
+ ;; @@63a7 178
+finc             jsr fin_chrget                            ;; @@63a7 178
+ ;; @@63aa 178
+findgq           bcc findig                                ;; @@63aa 178
+ ;; @@63ac 178
+fin1             cmp #'.'                                 ; the dp? ;; @@63ac 178
+                 beq findp                                ; no kidding ;; @@63ae 178
+                 cmp #'E'                                 ; exponent follows ;; @@63b0 178
+                 bne fine                                 ; no ;; @@63b2 178
+ ;; @@63b4 178
+                 jsr fin_chrget                           ; yes, get another, to check sign of exponent ;; @@63b4 178
+                 bcc fnedg1                               ; is it a digit. (easier than backing up pointer) ;; @@63b7 178
+                 cmp #minus_token                         ; minus? ;; @@63b9 178
+                 beq finec1                               ; negate ;; @@63bb 178
+                 cmp #'-'                                 ; minus sign? ;; @@63bd 178
+                 beq finec1                                ;; @@63bf 178
+                 cmp #plus_token                          ; plus? ;; @@63c1 178
+                 beq finec                                 ;; @@63c3 178
+                 cmp #'+'                                 ; plus sign? ;; @@63c5 178
+                 beq finec                                 ;; @@63c7 178
+                 bra finec2                                ;; @@63c9 178
+ ;; @@63cb 178
+finec1           ror expsgn                               ; turn it on ;; @@63cb 178
+ ;; @@63cd 178
+finec            jsr fin_chrget                           ; get another ;; @@63cd 178
+ ;; @@63d0 178
+fnedg1           bcc finedg                               ; it is a digit ;; @@63d0 178
+finec2           bbr7 expsgn,fine                          ;; @@63d2 178
+                 lda #0                                    ;; @@63d5 178
+                 sec                                       ;; @@63d7 178
+                 sbc tenexp                                ;; @@63d8 178
+                 bra fine1                                 ;; @@63da 178
+ ;; @@63dc 178
+findp            ror dptflg                                ;; @@63dc 178
+                 bbr6 dptflg,finc                          ;; @@63de 178
+ ;; @@63e1 178
+fine             lda tenexp                                ;; @@63e1 178
+fine1            sec                                       ;; @@63e3 178
+                 sbc deccnt                               ; get number of places to shift ;; @@63e4 178
+                 sta tenexp                                ;; @@63e6 178
+                 beq finqng                               ; negate? ;; @@63e8 178
+                 bpl finmul                               ; positive, so multiply ;; @@63ea 178
+ ;; @@63ec 178
+findiv           jsr div10                                 ;; @@63ec 178
+                 inc tenexp                               ; done? ;; @@63ef 178
+                 bne findiv                               ; no ;; @@63f1 178
+                 bra finqng                               ; yes ;; @@63f3 178
+ ;; @@63f5 178
+ ;; @@63f5 178
+finmul           jsr mul10                                 ;; @@63f5 178
+                 dec tenexp                               ; done? ;; @@63f8 178
+                 bne finmul                               ; no ;; @@63fa 178
+finqng           lda sgnflg                                ;; @@63fc 178
+                 bmi negop                                ; if negative, negate and return ;; @@63fe 178
+                 rts                                      ; if positive, return ;; @@6401 178
+ ;; @@6402 178
+ ;; @@6402 178
+ ;; @@6402 178
+findig           pha                                       ;; @@6402 178
+                 bbr7 dptflg,_local_1177_10                ;; @@6403 178
+                 inc deccnt                                ;; @@6406 178
+_local_1177_10   jsr mul10                                 ;; @@6408 178
+                 pla                                      ; get it back ;; @@640b 178
+                 sec                                       ;; @@640c 178
+                 sbc #'0'                                  ;; @@640d 178
+                 jsr finlog                               ; add it in ;; @@640f 178
+                 bra finc                                  ;; @@6412 178
+ ;; @@6414 178
+ ;; @@6414 178
+ ;; @@6414 178

@@ -1,27 +1,27 @@
-rpalette                                                   ;; b9b8 300
-                 jsr CheckGraphicMode                     ; verify screen open ;; b9b8 300
-                 jsr PushParms                            ; Save graphics parameters ;; b9bb 300
- ;; b9be 300
-                 jsr conint                               ; get screen# in .x ;; b9be 300
-                 cpx #4                                    ;; b9c1 300
-                 bcs _local_1299_10                       ; illegal screen# ;; b9c3 300
-                 stx GKI__parm1                            ;; b9c5 300
- ;; b9c8 300
-                 jsr combyt                               ; get color# in .x ????check for legal color# ;; b9c8 300
-                 stx GKI__parm2                            ;; b9cb 300
- ;; b9ce 300
-                 jsr ($8034)                              ; get RGB components of color# in PARM3,4,5 ;; b9ce 300
-                 bcs _local_1299_10                       ; something is wrong???? ;; b9d1 300
- ;; b9d3 300
-                 jsr combyt                               ; get r,g,b component# ;; b9d3 300
-                 cpx #3                                    ;; b9d6 300
-_local_1299_10   bcs fcerr                                ; illegal value ;; b9d8 300
- ;; b9db 300
-                 ldy GKI__parm3,x                         ; get r,g,b value ;; b9db 300
-                 jsr sngflt                               ; float 1 byte arg in .y ;; b9de 300
- ;; b9e1 300
-                 jsr chkcls                               ; check for closing paren ;; b9e1 300
-                 jsr PopParms                             ; restore graphics parameters ;; b9e4 300
-                 rts                                       ;; b9e7 300
- ;; b9e8 300
-; .page ;; b9e8 300
+rpalette                                                   ;; @@b9b8 300
+                 jsr CheckGraphicMode                     ; verify screen open ;; @@b9b8 300
+                 jsr PushParms                            ; Save graphics parameters ;; @@b9bb 300
+ ;; @@b9be 300
+                 jsr conint                               ; get screen# in .x ;; @@b9be 300
+                 cpx #4                                    ;; @@b9c1 300
+                 bcs _local_1299_10                       ; illegal screen# ;; @@b9c3 300
+                 stx GKI__parm1                            ;; @@b9c5 300
+ ;; @@b9c8 300
+                 jsr combyt                               ; get color# in .x ????check for legal color# ;; @@b9c8 300
+                 stx GKI__parm2                            ;; @@b9cb 300
+ ;; @@b9ce 300
+                 jsr ($8034)                              ; get RGB components of color# in PARM3,4,5 ;; @@b9ce 300
+                 bcs _local_1299_10                       ; something is wrong???? ;; @@b9d1 300
+ ;; @@b9d3 300
+                 jsr combyt                               ; get r,g,b component# ;; @@b9d3 300
+                 cpx #3                                    ;; @@b9d6 300
+_local_1299_10   bcs fcerr                                ; illegal value ;; @@b9d8 300
+ ;; @@b9db 300
+                 ldy GKI__parm3,x                         ; get r,g,b value ;; @@b9db 300
+                 jsr sngflt                               ; float 1 byte arg in .y ;; @@b9de 300
+ ;; @@b9e1 300
+                 jsr chkcls                               ; check for closing paren ;; @@b9e1 300
+                 jsr PopParms                             ; restore graphics parameters ;; @@b9e4 300
+                 rts                                       ;; @@b9e7 300
+ ;; @@b9e8 300
+; .page ;; @@b9e8 300

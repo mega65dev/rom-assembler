@@ -1,4 +1,4 @@
-c65.paint   ;      new [910228] FAB 
+C65__paint   ;      new [910228] FAB 
  jsr CheckGraphicMode 
  jsr sadwrd  ; get x 
  sty GKI__parm1 

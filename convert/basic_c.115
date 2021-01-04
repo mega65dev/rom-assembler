@@ -1,169 +1,169 @@
-sound            cmp #clr_token                           ; SOUND CLR: init sound/music environment [910717] ;; 4b7d 115
-                 beq Sound_CLR                            ; yes ;; 4b7f 115
- ;; 4b82 115
-                 jsr getbyt                               ; get voice number in .X ;; 4b82 115
-                 dex                                      ; adjust 1..3 to 0..2 ;; 4b85 115
-                 cpx #6                                   ; [910612] ;; 4b86 115
-_local_1114_98   bcs fcerr                                ; illegal value ;; 4b88 115
- ;; 4b8b 115
-_local_1114_10   stx sound_voice                           ;; 4b8b 115
- ;; 4b8e 115
-; Get frequency ;; 4b8e 115
- ;; 4b8e 115
-                 jsr comwrd                               ; eat comma, get frequency in y,a ;; 4b8e 115
-                 sty temp_max_lo                          ; save our copy of max, also set up as current ;; 4b91 115
-                 sta temp_max_hi                           ;; 4b94 115
-                 sty temp_freq_lo                          ;; 4b97 115
-                 sta temp_freq_hi                          ;; 4b9a 115
- ;; 4b9d 115
-; Get duration ;; 4b9d 115
- ;; 4b9d 115
-                 jsr comwrd                               ; eat comma, get number of jiffys to play ;; 4b9d 115
-                 cmp #$80                                  ;; 4ba0 115
-                 bcs _local_1114_98                        ;; 4ba2 115
-                 sty temp_time_lo                          ;; 4ba4 115
-                 sta temp_time_hi                          ;; 4ba7 115
- ;; 4baa 115
-; Get sweep direction ;; 4baa 115
- ;; 4baa 115
-                 jsr optzer                               ; get optional sweep (default = 0, up) ;; 4baa 115
-                 cpx #3                                    ;; 4bad 115
-                 bcs _local_1114_98                        ;; 4baf 115
-                 txa                                       ;; 4bb1 115
-                 sta temp_direction                        ;; 4bb2 115
-                 and #1                                   ; set .Z if sweep up or oscillate ;; 4bb5 115
-                 php                                      ; save .Z for step (below) ;; 4bb7 115
- ;; 4bb8 115
-; Get minimum frequency value (sweep lo) ;; 4bb8 115
- ;; 4bb8 115
-                 jsr optwrd                                ;; 4bb8 115
-                 sty temp_min_lo                           ;; 4bbb 115
-                 sta temp_min_hi                           ;; 4bbe 115
- ;; 4bc1 115
-; Get step value for sweep ;; 4bc1 115
- ;; 4bc1 115
-                 jsr optwrd                               ; get optional step, default is zero ;; 4bc1 115
-                 plp                                      ; get flags from direction ;; 4bc4 115
-                 beq _local_1114_75                       ; branch if 'up' or oscillate ;; 4bc5 115
-                 pha                                      ; if 'down', make step 2's complement ;; 4bc7 115
-                 tya                                       ;; 4bc8 115
-                 eor #$ff                                  ;; 4bc9 115
-                 clc                                       ;; 4bcb 115
-                 adc #1                                    ;; 4bcc 115
-                 tay                                       ;; 4bce 115
-                 pla                                       ;; 4bcf 115
-                 eor #$ff                                  ;; 4bd0 115
-                 adc #0                                    ;; 4bd2 115
-_local_1114_75   sta temp_step_hi                          ;; 4bd4 115
-                 tya                                       ;; 4bd7 115
-                 sta temp_step_lo                          ;; 4bd8 115
- ;; 4bdb 115
-; Get waveform ;; 4bdb 115
- ;; 4bdb 115
-                 ldx #2                                   ; get waveform. default is square (2) ;; 4bdb 115
-                 jsr optbyt                                ;; 4bdd 115
-                 cpx #4                                    ;; 4be0 115
-                 bcs _local_1114_98                       ; illegal value ;; 4be2 115
-                 lda sbits+4,x                            ; get bit pattern for selected waveform ;; 4be4 115
-                 ora #1                                   ; add in the gate bit ;; 4be7 115
-                 sta temp_waveform                         ;; 4be9 115
- ;; 4bec 115
-; Get pulse width ;; 4bec 115
- ;; 4bec 115
-                 jsr optwrd                               ; get optional pulse width in y,a ;; 4bec 115
-                 bcs _local_1114_80                        ;; 4bef 115
-                 lda #8                                   ; no arg's given, use default pulse width ;; 4bf1 115
-                 ldy #0                                    ;; 4bf3 115
-_local_1114_80   cmp #16                                   ;; 4bf5 115
-                 bcs _local_1114_98                        ;; 4bf7 115
-                 sty temp_pulse_lo                         ;; 4bf9 115
-                 sta temp_pulse_hi                         ;; 4bfc 115
- ;; 4bff 115
-; All arg's in, time to get to work ;; 4bff 115
- ;; 4bff 115
-                 lda temp_time_lo                          ;; 4bff 115
-                 ora temp_time_hi                          ;; 4c02 115
-                 beq _local_1114_100                      ; special case: time=0 means 'kill it NOW' ;; 4c05 115
- ;; 4c07 115
-; Wait for all current uses of this voice to time out ;; 4c07 115
- ;; 4c07 115
-                 ldx sound_voice                          ; first test 'PLAY' ;; 4c07 115
-                 txa                                      ; make an index into PLAY's tables ;; 4c0a 115
-                 asl a                                     ;; 4c0b 115
-                 tay                                       ;; 4c0c 115
-_local_1114_60   lda voices+1,y                            ;; 4c0d 115
-                 bpl _local_1114_60                        ;; 4c10 115
- ;; 4c12 115
-_local_1114_70   lda sound_time_hi,x                      ; now test 'SOUND' ;; 4c12 115
-                 bpl _local_1114_70                        ;; 4c15 115
- ;; 4c17 115
-; All clear, now set up for current effect ;; 4c17 115
- ;; 4c17 115
-                 ldy #0                                   ; download max freq l&h, min freq l&h, ;; 4c17 115
-_local_1114_90   lda temp_max_lo,y                        ; ..sweep direction, step value l&h, & freq l&h ;; 4c19 115
-                 sta sound_max_lo,x                        ;; 4c1c 115
-                 inx                                       ;; 4c1f 115
-                 inx                                       ;; 4c20 115
-                 inx                                       ;; 4c21 115
-                 inx                                      ; [910612] stereo ;; 4c22 115
-                 inx                                       ;; 4c23 115
-                 inx                                       ;; 4c24 115
-                 iny                                       ;; 4c25 115
-                 cpy #9                                    ;; 4c26 115
-                 bcc _local_1114_90                        ;; 4c28 115
- ;; 4c2a 115
-; Now set up SID ;; 4c2a 115
- ;; 4c2a 115
-                 ldx sound_voice                           ;; 4c2a 115
-                 ldy SID_offset,x                         ; get index to SID voices ;; 4c2d 115
-; jsr put_io_in_map ;; 4c30 115
-; jsr go_slow  ;      [910716] 4567R7A ;; 4c30 115
- ;; 4c30 115
-                 lda #$08                                 ; turn off SID gate ;; 4c30 115
-                 sta sid1+4,y                              ;; 4c32 115
- ;; 4c35 115
-                 lda #0                                   ; set up attack & decay, ;; 4c35 115
-                 sta sid1+5,y                              ;; 4c37 115
-                 lda #$f0                                 ; ..and sustain & release ;; 4c3a 115
-                 sta sid1+6,y                              ;; 4c3c 115
- ;; 4c3f 115
-                 ldx #0                                   ; set up freq (l&h), pulse width (l&h), & waveform ;; 4c3f 115
-_local_1114_95   lda temp_freq_lo,x                        ;; 4c41 115
-                 sta sid1,y                                ;; 4c44 115
-                 iny                                       ;; 4c47 115
-                 inx                                       ;; 4c48 115
-                 cpx #5                                    ;; 4c49 115
-                 bne _local_1114_95                        ;; 4c4b 115
-; jsr go_fast  ;      [910716] 4567R7A ;; 4c4d 115
- ;; 4c4d 115
-; Now set up time to play ;; 4c4d 115
- ;; 4c4d 115
-_local_1114_100  ldx sound_voice                           ;; 4c4d 115
-                 ldy temp_time_lo                          ;; 4c50 115
-                 lda temp_time_hi                          ;; 4c53 115
- ;; 4c56 115
-                 sei                                       ;; 4c56 115
-                 sta sound_time_hi,x                       ;; 4c57 115
-                 tya                                       ;; 4c5a 115
-                 sta sound_time_lo,x                       ;; 4c5b 115
-                 cli                                       ;; 4c5e 115
- ;; 4c5f 115
-                 rts                                       ;; 4c5f 115
- ;; 4c60 115
-;.end ;; 4c60 115
-; .page ;; 4c60 115
-; .subttl  WINDOW ;; 4c60 115
- ;; 4c60 115
-;**************************************************************** ;; 4c60 115
-;* ;; 4c60 115
-;*  WINDOW Command ;; 4c60 115
-;* ;; 4c60 115
-;*  Syntax : WINDOW upper-left col, upper-left row, ;; 4c60 115
-;*      lower-left col, lower-right row [,clear] ;; 4c60 115
-;* ;; 4c60 115
-;*  Where  :  0 <= row <= 24 ;; 4c60 115
-;*       0 <= column <= (80/40) ;; 4c60 115
-;*       clear : 0 (no) or 1 (yes) ;; 4c60 115
-;* ;; 4c60 115
-;**************************************************************** ;; 4c60 115
- ;; 4c60 115
+sound            cmp #clr_token                           ; SOUND CLR: init sound/music environment [910717] ;; @@4b7d 115
+                 beq Sound_CLR                            ; yes ;; @@4b7f 115
+ ;; @@4b82 115
+                 jsr getbyt                               ; get voice number in .X ;; @@4b82 115
+                 dex                                      ; adjust 1..3 to 0..2 ;; @@4b85 115
+                 cpx #6                                   ; [910612] ;; @@4b86 115
+_local_1114_98   bcs fcerr                                ; illegal value ;; @@4b88 115
+ ;; @@4b8b 115
+_local_1114_10   stx sound_voice                           ;; @@4b8b 115
+ ;; @@4b8e 115
+; Get frequency ;; @@4b8e 115
+ ;; @@4b8e 115
+                 jsr comwrd                               ; eat comma, get frequency in y,a ;; @@4b8e 115
+                 sty temp_max_lo                          ; save our copy of max, also set up as current ;; @@4b91 115
+                 sta temp_max_hi                           ;; @@4b94 115
+                 sty temp_freq_lo                          ;; @@4b97 115
+                 sta temp_freq_hi                          ;; @@4b9a 115
+ ;; @@4b9d 115
+; Get duration ;; @@4b9d 115
+ ;; @@4b9d 115
+                 jsr comwrd                               ; eat comma, get number of jiffys to play ;; @@4b9d 115
+                 cmp #$80                                  ;; @@4ba0 115
+                 bcs _local_1114_98                        ;; @@4ba2 115
+                 sty temp_time_lo                          ;; @@4ba4 115
+                 sta temp_time_hi                          ;; @@4ba7 115
+ ;; @@4baa 115
+; Get sweep direction ;; @@4baa 115
+ ;; @@4baa 115
+                 jsr optzer                               ; get optional sweep (default = 0, up) ;; @@4baa 115
+                 cpx #3                                    ;; @@4bad 115
+                 bcs _local_1114_98                        ;; @@4baf 115
+                 txa                                       ;; @@4bb1 115
+                 sta temp_direction                        ;; @@4bb2 115
+                 and #1                                   ; set .Z if sweep up or oscillate ;; @@4bb5 115
+                 php                                      ; save .Z for step (below) ;; @@4bb7 115
+ ;; @@4bb8 115
+; Get minimum frequency value (sweep lo) ;; @@4bb8 115
+ ;; @@4bb8 115
+                 jsr optwrd                                ;; @@4bb8 115
+                 sty temp_min_lo                           ;; @@4bbb 115
+                 sta temp_min_hi                           ;; @@4bbe 115
+ ;; @@4bc1 115
+; Get step value for sweep ;; @@4bc1 115
+ ;; @@4bc1 115
+                 jsr optwrd                               ; get optional step, default is zero ;; @@4bc1 115
+                 plp                                      ; get flags from direction ;; @@4bc4 115
+                 beq _local_1114_75                       ; branch if 'up' or oscillate ;; @@4bc5 115
+                 pha                                      ; if 'down', make step 2's complement ;; @@4bc7 115
+                 tya                                       ;; @@4bc8 115
+                 eor #$ff                                  ;; @@4bc9 115
+                 clc                                       ;; @@4bcb 115
+                 adc #1                                    ;; @@4bcc 115
+                 tay                                       ;; @@4bce 115
+                 pla                                       ;; @@4bcf 115
+                 eor #$ff                                  ;; @@4bd0 115
+                 adc #0                                    ;; @@4bd2 115
+_local_1114_75   sta temp_step_hi                          ;; @@4bd4 115
+                 tya                                       ;; @@4bd7 115
+                 sta temp_step_lo                          ;; @@4bd8 115
+ ;; @@4bdb 115
+; Get waveform ;; @@4bdb 115
+ ;; @@4bdb 115
+                 ldx #2                                   ; get waveform. default is square (2) ;; @@4bdb 115
+                 jsr optbyt                                ;; @@4bdd 115
+                 cpx #4                                    ;; @@4be0 115
+                 bcs _local_1114_98                       ; illegal value ;; @@4be2 115
+                 lda sbits+4,x                            ; get bit pattern for selected waveform ;; @@4be4 115
+                 ora #1                                   ; add in the gate bit ;; @@4be7 115
+                 sta temp_waveform                         ;; @@4be9 115
+ ;; @@4bec 115
+; Get pulse width ;; @@4bec 115
+ ;; @@4bec 115
+                 jsr optwrd                               ; get optional pulse width in y,a ;; @@4bec 115
+                 bcs _local_1114_80                        ;; @@4bef 115
+                 lda #8                                   ; no arg's given, use default pulse width ;; @@4bf1 115
+                 ldy #0                                    ;; @@4bf3 115
+_local_1114_80   cmp #16                                   ;; @@4bf5 115
+                 bcs _local_1114_98                        ;; @@4bf7 115
+                 sty temp_pulse_lo                         ;; @@4bf9 115
+                 sta temp_pulse_hi                         ;; @@4bfc 115
+ ;; @@4bff 115
+; All arg's in, time to get to work ;; @@4bff 115
+ ;; @@4bff 115
+                 lda temp_time_lo                          ;; @@4bff 115
+                 ora temp_time_hi                          ;; @@4c02 115
+                 beq _local_1114_100                      ; special case: time=0 means 'kill it NOW' ;; @@4c05 115
+ ;; @@4c07 115
+; Wait for all current uses of this voice to time out ;; @@4c07 115
+ ;; @@4c07 115
+                 ldx sound_voice                          ; first test 'PLAY' ;; @@4c07 115
+                 txa                                      ; make an index into PLAY's tables ;; @@4c0a 115
+                 asl a                                     ;; @@4c0b 115
+                 tay                                       ;; @@4c0c 115
+_local_1114_60   lda voices+1,y                            ;; @@4c0d 115
+                 bpl _local_1114_60                        ;; @@4c10 115
+ ;; @@4c12 115
+_local_1114_70   lda sound_time_hi,x                      ; now test 'SOUND' ;; @@4c12 115
+                 bpl _local_1114_70                        ;; @@4c15 115
+ ;; @@4c17 115
+; All clear, now set up for current effect ;; @@4c17 115
+ ;; @@4c17 115
+                 ldy #0                                   ; download max freq l&h, min freq l&h, ;; @@4c17 115
+_local_1114_90   lda temp_max_lo,y                        ; ..sweep direction, step value l&h, & freq l&h ;; @@4c19 115
+                 sta sound_max_lo,x                        ;; @@4c1c 115
+                 inx                                       ;; @@4c1f 115
+                 inx                                       ;; @@4c20 115
+                 inx                                       ;; @@4c21 115
+                 inx                                      ; [910612] stereo ;; @@4c22 115
+                 inx                                       ;; @@4c23 115
+                 inx                                       ;; @@4c24 115
+                 iny                                       ;; @@4c25 115
+                 cpy #9                                    ;; @@4c26 115
+                 bcc _local_1114_90                        ;; @@4c28 115
+ ;; @@4c2a 115
+; Now set up SID ;; @@4c2a 115
+ ;; @@4c2a 115
+                 ldx sound_voice                           ;; @@4c2a 115
+                 ldy SID_offset,x                         ; get index to SID voices ;; @@4c2d 115
+; jsr put_io_in_map ;; @@4c30 115
+; jsr go_slow  ;      [910716] 4567R7A ;; @@4c30 115
+ ;; @@4c30 115
+                 lda #$08                                 ; turn off SID gate ;; @@4c30 115
+                 sta sid1+4,y                              ;; @@4c32 115
+ ;; @@4c35 115
+                 lda #0                                   ; set up attack & decay, ;; @@4c35 115
+                 sta sid1+5,y                              ;; @@4c37 115
+                 lda #$f0                                 ; ..and sustain & release ;; @@4c3a 115
+                 sta sid1+6,y                              ;; @@4c3c 115
+ ;; @@4c3f 115
+                 ldx #0                                   ; set up freq (l&h), pulse width (l&h), & waveform ;; @@4c3f 115
+_local_1114_95   lda temp_freq_lo,x                        ;; @@4c41 115
+                 sta sid1,y                                ;; @@4c44 115
+                 iny                                       ;; @@4c47 115
+                 inx                                       ;; @@4c48 115
+                 cpx #5                                    ;; @@4c49 115
+                 bne _local_1114_95                        ;; @@4c4b 115
+; jsr go_fast  ;      [910716] 4567R7A ;; @@4c4d 115
+ ;; @@4c4d 115
+; Now set up time to play ;; @@4c4d 115
+ ;; @@4c4d 115
+_local_1114_100  ldx sound_voice                           ;; @@4c4d 115
+                 ldy temp_time_lo                          ;; @@4c50 115
+                 lda temp_time_hi                          ;; @@4c53 115
+ ;; @@4c56 115
+                 sei                                       ;; @@4c56 115
+                 sta sound_time_hi,x                       ;; @@4c57 115
+                 tya                                       ;; @@4c5a 115
+                 sta sound_time_lo,x                       ;; @@4c5b 115
+                 cli                                       ;; @@4c5e 115
+ ;; @@4c5f 115
+                 rts                                       ;; @@4c5f 115
+ ;; @@4c60 115
+;.end ;; @@4c60 115
+; .page ;; @@4c60 115
+; .subttl  WINDOW ;; @@4c60 115
+ ;; @@4c60 115
+;**************************************************************** ;; @@4c60 115
+;* ;; @@4c60 115
+;*  WINDOW Command ;; @@4c60 115
+;* ;; @@4c60 115
+;*  Syntax : WINDOW upper-left col, upper-left row, ;; @@4c60 115
+;*      lower-left col, lower-right row [,clear] ;; @@4c60 115
+;* ;; @@4c60 115
+;*  Where  :  0 <= row <= 24 ;; @@4c60 115
+;*       0 <= column <= (80/40) ;; @@4c60 115
+;*       clear : 0 (no) or 1 (yes) ;; @@4c60 115
+;* ;; @@4c60 115
+;**************************************************************** ;; @@4c60 115
+ ;; @@4c60 115

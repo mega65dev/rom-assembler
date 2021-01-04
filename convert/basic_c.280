@@ -1,63 +1,63 @@
-exit_GKI_disk_op                                           ;; b3d7 280
-                 php                                      ; preserve completion status ;; b3d7 280
-                 pha                                       ;; b3d8 280
-                 jsr _clrch                                ;; b3d9 280
-                 lda dosla                                 ;; b3dc 280
-                 jsr close_out                            ; close channel ;; b3df 280
- ;; b3e2 280
-                 jsr is_stop_key_down                     ; weed out BREAK error ;; b3e2 280
-                 plx                                       ;; b3e5 280
-                 plp                                       ;; b3e6 280
-                 bcs error                                ; must be I/O or file data error ;; b3e7 280
-                 rts                                      ; load was successful ;; b3ea 280
- ;; b3eb 280
-; .page ;; b3eb 280
-;***************************************************************** ;; b3eb 280
-;* ;; b3eb 280
-;*   SAVEIFF "[@]filename" [,U#] [,D#]      [910930] FAB ;; b3eb 280
-;* ;; b3eb 280
-;***************************************************************** ;; b3eb 280
- ;; b3eb 280
-saveiff                                                    ;; b3eb 280
-                 jsr CheckGraphicMode                      ;; b3eb 280
-                 lda #$66                                 ; set error flags ;; b3ee 280
-                 jsr dosprs                               ; parse the line ;; b3f0 280
-                 jsr chk2                                 ; check required parameters ;; b3f3 280
-                 lda #1                                    ;; b3f6 280
-                 sta dossa                                ; setup as dsave would (1 = save channel) ;; b3f8 280
-                 jsr find_la                              ; find an available la to use (cannot use reserved one) ;; b3fb 280
-                 ldy #fopn                                 ;; b3fe 280
-                 ldx #4                                    ;; b400 280
-                 jsr open_file                            ; open the file ;; b402 280
-                 bcs _local_1279_10                       ; exit if error ;; b405 280
- ;; b407 280
-                 ldx dosla                                 ;; b407 280
-; stx GKI__parm1 ;; b40a 280
-                 jsr _chkout                              ; get output channel ;; b40a 280
-_local_1279_10   bcs list_err                             ; exit if error ;; b40d 280
- ;; b410 280
-                 jsr ($803a)                              ; Save it ;; b410 280
-                 bra exit_GKI_disk_op                      ;; b413 280
- ;; b415 280
-; php   ;preserve completion status ;; b415 280
-; pha ;; b415 280
-; jsr _clrch ;; b415 280
-; lda dosla ;; b415 280
-; jsr close_out  ;close channel ;; b415 280
-; ;; b415 280
-; jsr is_stop_key_down ; weed out BREAK error ;; b415 280
-; plx ;; b415 280
-; plp ;; b415 280
-; bcs error  ; must be I/O or file data error ;; b415 280
-; rts   ; load was successful ;; b415 280
- ;; b415 280
-;.end ;; b415 280
-; .page ;; b415 280
-; .subttl   VIEWPORT Commands ;; b415 280
- ;; b415 280
-;***************************************************************** ;; b415 280
-;*   VIEWPORT <CLR | DEF>  x, y, viewport_width, viewport_height ;; b415 280
-;* ;; b415 280
-;* assumes SCREEN already opened   910626 FAB ;; b415 280
-;***************************************************************** ;; b415 280
- ;; b415 280
+exit_GKI_disk_op                                           ;; @@b3d7 280
+                 php                                      ; preserve completion status ;; @@b3d7 280
+                 pha                                       ;; @@b3d8 280
+                 jsr _clrch                                ;; @@b3d9 280
+                 lda dosla                                 ;; @@b3dc 280
+                 jsr close_out                            ; close channel ;; @@b3df 280
+ ;; @@b3e2 280
+                 jsr is_stop_key_down                     ; weed out BREAK error ;; @@b3e2 280
+                 plx                                       ;; @@b3e5 280
+                 plp                                       ;; @@b3e6 280
+                 bcs error                                ; must be I/O or file data error ;; @@b3e7 280
+                 rts                                      ; load was successful ;; @@b3ea 280
+ ;; @@b3eb 280
+; .page ;; @@b3eb 280
+;***************************************************************** ;; @@b3eb 280
+;* ;; @@b3eb 280
+;*   SAVEIFF "[@]filename" [,U#] [,D#]      [910930] FAB ;; @@b3eb 280
+;* ;; @@b3eb 280
+;***************************************************************** ;; @@b3eb 280
+ ;; @@b3eb 280
+saveiff                                                    ;; @@b3eb 280
+                 jsr CheckGraphicMode                      ;; @@b3eb 280
+                 lda #$66                                 ; set error flags ;; @@b3ee 280
+                 jsr dosprs                               ; parse the line ;; @@b3f0 280
+                 jsr chk2                                 ; check required parameters ;; @@b3f3 280
+                 lda #1                                    ;; @@b3f6 280
+                 sta dossa                                ; setup as dsave would (1 = save channel) ;; @@b3f8 280
+                 jsr find_la                              ; find an available la to use (cannot use reserved one) ;; @@b3fb 280
+                 ldy #fopn                                 ;; @@b3fe 280
+                 ldx #4                                    ;; @@b400 280
+                 jsr open_file                            ; open the file ;; @@b402 280
+                 bcs _local_1279_10                       ; exit if error ;; @@b405 280
+ ;; @@b407 280
+                 ldx dosla                                 ;; @@b407 280
+; stx GKI__parm1 ;; @@b40a 280
+                 jsr _chkout                              ; get output channel ;; @@b40a 280
+_local_1279_10   bcs list_err                             ; exit if error ;; @@b40d 280
+ ;; @@b410 280
+                 jsr ($803a)                              ; Save it ;; @@b410 280
+                 bra exit_GKI_disk_op                      ;; @@b413 280
+ ;; @@b415 280
+; php   ;preserve completion status ;; @@b415 280
+; pha ;; @@b415 280
+; jsr _clrch ;; @@b415 280
+; lda dosla ;; @@b415 280
+; jsr close_out  ;close channel ;; @@b415 280
+; ;; @@b415 280
+; jsr is_stop_key_down ; weed out BREAK error ;; @@b415 280
+; plx ;; @@b415 280
+; plp ;; @@b415 280
+; bcs error  ; must be I/O or file data error ;; @@b415 280
+; rts   ; load was successful ;; @@b415 280
+ ;; @@b415 280
+;.end ;; @@b415 280
+; .page ;; @@b415 280
+; .subttl   VIEWPORT Commands ;; @@b415 280
+ ;; @@b415 280
+;***************************************************************** ;; @@b415 280
+;*   VIEWPORT <CLR | DEF>  x, y, viewport_width, viewport_height ;; @@b415 280
+;* ;; @@b415 280
+;* assumes SCREEN already opened   910626 FAB ;; @@b415 280
+;***************************************************************** ;; @@b415 280
+ ;; @@b415 280

@@ -1,36 +1,36 @@
-auto                                                       ;; 3c5a 67
-                 jsr errind                                ;; 3c5a 67
-                 jsr linget                                ;; 3c5d 67
-                 lda linnum                                ;; 3c60 67
-                 sta autinc                                ;; 3c62 67
-                 lda linnum+1                              ;; 3c64 67
-                 sta autinc+1                              ;; 3c66 67
-                 rts                                       ;; 3c68 67
- ;; 3c69 67
-;.end ;; 3c69 67
-; .page ;; 3c69 67
-; .subttl  HELP ;; 3c69 67
- ;; 3c69 67
-help             ldx errnum                               ; check for error status ;; 3c69 67
-                 inx                                       ;; 3c6c 67
-                 beq _local_1066_1                        ; exit if there is no current error ;; 3c6d 67
-                 lda errlin                                ;; 3c6f 67
-                 ldy errlin+1                              ;; 3c72 67
-                 sta linnum                                ;; 3c75 67
-                 sty linnum+1                              ;; 3c77 67
-                 jsr FindLine                             ; find the beginning of line with error ;; 3c79 67
-                 bcc _local_1066_1                        ; exit if line not found? ;; 3c7c 67
- ;; 3c7e 67
-                 jsr crdo                                 ; begin a new line ;; 3c7e 67
-                 ldx linnum                                ;; 3c81 67
-                 lda linnum+1                              ;; 3c83 67
-                 ldz helper                                ;; 3c85 67
-                 rmb4 helper                              ; temporarily disable token highlighting ;; 3c88 67
-                 smb7 helper                              ; set 'help' flag for P1LINE ;; 3c8a 67
-                 jsr p1line                               ; display line & highlight error ;; 3c8c 67
-                 stz helper                                ;; 3c8f 67
-_local_1066_1    rmb7 helper                              ; reset 'help' flag ;; 3c91 67
-                 bra crdo                                 ; and return to caller ;; 3c93 67
- ;; 3c96 67
- ;; 3c96 67
- ;; 3c96 67
+auto                                                       ;; @@3c5a 67
+                 jsr errind                                ;; @@3c5a 67
+                 jsr linget                                ;; @@3c5d 67
+                 lda linnum                                ;; @@3c60 67
+                 sta autinc                                ;; @@3c62 67
+                 lda linnum+1                              ;; @@3c64 67
+                 sta autinc+1                              ;; @@3c66 67
+                 rts                                       ;; @@3c68 67
+ ;; @@3c69 67
+;.end ;; @@3c69 67
+; .page ;; @@3c69 67
+; .subttl  HELP ;; @@3c69 67
+ ;; @@3c69 67
+help             ldx errnum                               ; check for error status ;; @@3c69 67
+                 inx                                       ;; @@3c6c 67
+                 beq _local_1066_1                        ; exit if there is no current error ;; @@3c6d 67
+                 lda errlin                                ;; @@3c6f 67
+                 ldy errlin+1                              ;; @@3c72 67
+                 sta linnum                                ;; @@3c75 67
+                 sty linnum+1                              ;; @@3c77 67
+                 jsr FindLine                             ; find the beginning of line with error ;; @@3c79 67
+                 bcc _local_1066_1                        ; exit if line not found? ;; @@3c7c 67
+ ;; @@3c7e 67
+                 jsr crdo                                 ; begin a new line ;; @@3c7e 67
+                 ldx linnum                                ;; @@3c81 67
+                 lda linnum+1                              ;; @@3c83 67
+                 ldz helper                                ;; @@3c85 67
+                 rmb4 helper                              ; temporarily disable token highlighting ;; @@3c88 67
+                 smb7 helper                              ; set 'help' flag for P1LINE ;; @@3c8a 67
+                 jsr p1line                               ; display line & highlight error ;; @@3c8c 67
+                 stz helper                                ;; @@3c8f 67
+_local_1066_1    rmb7 helper                              ; reset 'help' flag ;; @@3c91 67
+                 bra crdo                                 ; and return to caller ;; @@3c93 67
+ ;; @@3c96 67
+ ;; @@3c96 67
+ ;; @@3c96 67

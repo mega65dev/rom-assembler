@@ -1,199 +1,199 @@
-c65.box                                                    ;; b107 274
-                 jsr CheckGraphicMode                      ;; b107 274
-                 jsr sadwrd                               ; get x0 ;; b10a 274
-                 sty GKI__parm1                            ;; b10d 274
-                 sta GKI__parm2                            ;; b110 274
- ;; b113 274
-                 jsr comsad                               ; get y0 ;; b113 274
-                 sty GKI__parm3                            ;; b116 274
-                 sta GKI__parm4                            ;; b119 274
- ;; b11c 274
-                 jsr comsad                               ; get x1 ;; b11c 274
-                 sty GKI__parm5                            ;; b11f 274
-                 sta GKI__parm6                            ;; b122 274
- ;; b125 274
-                 jsr comsad                               ; get y1 ;; b125 274
-                 sty GKI__parm7                            ;; b128 274
-                 sta GKI__parm8                            ;; b12b 274
- ;; b12e 274
-                 jsr comsad                               ; get x2 ;; b12e 274
-                 sty GKI__parm9                            ;; b131 274
-                 sta GKI__parm10                           ;; b134 274
- ;; b137 274
-                 jsr comsad                               ; get y2 ;; b137 274
-                 sty GKI__parm11                           ;; b13a 274
-                 sta GKI__parm12                           ;; b13d 274
- ;; b140 274
-                 jsr comsad                               ; get x3 ;; b140 274
-                 sty GKI__parm13                           ;; b143 274
-                 sta GKI__parm14                           ;; b146 274
- ;; b149 274
-                 jsr comsad                               ; get y3 ;; b149 274
-                 sty GKI__parm15                           ;; b14c 274
-                 sta GKI__parm16                           ;; b14f 274
- ;; b152 274
-                 jsr optzer                               ; get solid flag ;; b152 274
-                 stx GKI__parm17                           ;; b155 274
- ;; b158 274
-                 jmp ($801a)                              ; bra box ;; b158 274
- ;; b15b 274
-; .page ;; b15b 274
-;***************************************************************** ;; b15b 274
-;* CIRCLE   draw a Circle ;; b15b 274
-;* ;; b15b 274
-;*  Syntax : CIRCLE  CenterX, CenterY, radius [,solid flag] ;; b15b 274
-;* ;; b15b 274
-;*         parm1 = center x lo ;; b15b 274
-;*         parm2 = center x hi ;; b15b 274
-;*         parm3 = center y lo ;; b15b 274
-;*         parm4 = center y hi ;; b15b 274
-;*         parm5 = radius lo ;; b15b 274
-;*         parm6 = radius hi ;; b15b 274
-;*         parm7 = solid flag 0=no, 1=yes ;; b15b 274
-;***************************************************************** ;; b15b 274
- ;; b15b 274
-c65.circle                                                 ;; b15b 274
-                 jsr CheckGraphicMode                      ;; b15b 274
-                 jsr sadwrd                               ; get center x ;; b15e 274
-                 sty GKI__parm1                            ;; b161 274
-                 sta GKI__parm2                            ;; b164 274
- ;; b167 274
-                 jsr comsad                               ; get center y ;; b167 274
-                 sty GKI__parm3                            ;; b16a 274
-                 sta GKI__parm4                            ;; b16d 274
- ;; b170 274
-                 jsr comsad                               ; get radius ;; b170 274
-                 sty GKI__parm5                            ;; b173 274
-                 sta GKI__parm6                            ;; b176 274
- ;; b179 274
-                 jsr optzer                               ; get solid flag ;; b179 274
-                 cpx #2                                    ;; b17c 274
-                 bcs fcerr                                 ;; b17e 274
-                 stx GKI__parm7                            ;; b181 274
- ;; b184 274
-                 jmp ($801c)                              ; bra circle ;; b184 274
- ;; b187 274
-; .page ;; b187 274
-; .subttl  ELLIPSE ;; b187 274
- ;; b187 274
-;***************************************************************** ;; b187 274
-;* ELLIPSE   draw an Ellipse ;; b187 274
-;* ;; b187 274
-;*  Syntax : ELLIPSE  CenterX, CenterY, RadiusX,  RadiusY  [,solid flag] ;; b187 274
-;* ;; b187 274
-;*         parm1 = center x lo ;; b187 274
-;*         parm2 = center x hi ;; b187 274
-;*         parm3 = center y lo ;; b187 274
-;*         parm4 = center y hi ;; b187 274
-;*         parm5 = x radius lo ;; b187 274
-;*         parm6 = x radius hi ;; b187 274
-;*         parm7 = y radius lo ;; b187 274
-;*         parm8 = y radius hi ;; b187 274
-;*         parm9 = solid flag 0-1 ;; b187 274
-;***************************************************************** ;; b187 274
- ;; b187 274
-c65.ellipse                                                ;; b187 274
-                 jsr CheckGraphicMode                      ;; b187 274
-                 jsr sadwrd                               ; get center x ;; b18a 274
-                 sty GKI__parm1                            ;; b18d 274
-                 sta GKI__parm2                            ;; b190 274
- ;; b193 274
-                 jsr comsad                               ; get center y ;; b193 274
-                 sty GKI__parm3                            ;; b196 274
-                 sta GKI__parm4                            ;; b199 274
- ;; b19c 274
-                 jsr comsad                               ; get xradius ;; b19c 274
-                 sty GKI__parm5                            ;; b19f 274
-                 sta GKI__parm6                            ;; b1a2 274
- ;; b1a5 274
-                 jsr comsad                               ; get yradius ;; b1a5 274
-                 sty GKI__parm7                            ;; b1a8 274
-                 sta GKI__parm8                            ;; b1ab 274
- ;; b1ae 274
-                 jsr optzer                               ; get solid flag ;; b1ae 274
-                 cpx #2                                    ;; b1b1 274
-                 bcs fcerr                                 ;; b1b3 274
-                 stx GKI__parm9                            ;; b1b6 274
- ;; b1b9 274
-                 jmp ($8020)                              ; bra ellipse ;; b1b9 274
- ;; b1bc 274
-; .page ;; b1bc 274
-; .subttl  POLYGON ;; b1bc 274
- ;; b1bc 274
-;***************************************************************** ;; b1bc 274
-;* POLYGON   draw a regular n-sided Polygon ;; b1bc 274
-;* ;; b1bc 274
-;*  POLYGON  X,Y, Xradius, Yradius, sides [,drawsides [,subtend [,angle [,solid] ]]] ;; b1bc 274
-;* ;; b1bc 274
-;*         parm1 = center x lo ;; b1bc 274
-;*         parm2 = center x hi ;; b1bc 274
-;*         parm3 = center y lo ;; b1bc 274
-;*         parm4 = center y hi ;; b1bc 274
-;*         parm5 = xradius lo ;; b1bc 274
-;*         parm6 = xradius hi ;; b1bc 274
-;*         parm7 = yradius lo ;; b1bc 274
-;*         parm8 = yradius hi ;; b1bc 274
-;*         parm9 = solid flag 0-1 ;; b1bc 274
-;*         parm10 = sa lo (starting angle 0-360) ;; b1bc 274
-;*         parm11 = sa hi ;; b1bc 274
-;*         parm12 = # of sides to draw (1 to 127) ;; b1bc 274
-;*         parm13 = # of sides (3 to parm12) ;; b1bc 274
-;*         parm14 = subtend flag 0-1 ;; b1bc 274
-;**************************************************************** ;; b1bc 274
- ;; b1bc 274
-c65.polygon                                               ; changed BASIC syntax to something more reasonable [910923] FAB ;; b1bc 274
-                 jsr CheckGraphicMode                      ;; b1bc 274
-                 jsr sadwrd                               ; get center x ;; b1bf 274
-                 sty GKI__parm1                            ;; b1c2 274
-                 sta GKI__parm2                            ;; b1c5 274
- ;; b1c8 274
-                 jsr comsad                               ; get center y ;; b1c8 274
-                 sty GKI__parm3                            ;; b1cb 274
-                 sta GKI__parm4                            ;; b1ce 274
- ;; b1d1 274
-                 jsr comwrd                               ; get x radius ;; b1d1 274
-                 sty GKI__parm5                            ;; b1d4 274
-                 sta GKI__parm6                            ;; b1d7 274
- ;; b1da 274
-                 jsr comwrd                               ; get y radius ;; b1da 274
-                 sty GKI__parm7                            ;; b1dd 274
-                 sta GKI__parm8                            ;; b1e0 274
- ;; b1e3 274
-                 jsr combyt                               ; get number of sides ;; b1e3 274
-                 cpx #3                                    ;; b1e6 274
-                 bcc _local_1273_20                       ; too few ;; b1e8 274
-                 cpx #128                                  ;; b1ea 274
-_local_1273_10   bcs fcerr                                ; too many ;; b1ec 274
-                 stx GKI__parm13                           ;; b1ef 274
- ;; b1f2 274
-; ldx GKI__parm13  ;get number of sides to draw (default=#sides) ;; b1f2 274
-                 jsr optbyt                                ;; b1f2 274
-                 cpx #1                                   ; must be at least 1 side ;; b1f5 274
-_local_1273_20   bcc fcerr                                 ;; b1f7 274
-                 stx GKI__parm12                           ;; b1fa 274
-                 dex                                       ;; b1fd 274
-                 cpx GKI__parm13                          ; draw sides must be <= #sides ;; b1fe 274
-                 bcs _local_1273_10                        ;; b201 274
- ;; b203 274
-                 jsr optzer                               ; get subtend flag ;; b203 274
-; cpx #2 ;; b206 274
-; bcs _local_1273_10 ;; b206 274
-                 stx GKI__parm14                           ;; b206 274
- ;; b209 274
-                 jsr optwrd                               ; get starting angle (default=0 degrees) ;; b209 274
-                 sty GKI__parm10                          ; lo ;; b20c 274
-                 sta GKI__parm11                          ; hi ;; b20f 274
- ;; b212 274
-                 jsr optzer                               ; get solid flag ;; b212 274
-; cpx #2 ;; b215 274
-; bcs _local_1273_10 ;; b215 274
-                 stx GKI__parm9                            ;; b215 274
- ;; b218 274
-                 jmp ($801e)                              ; bra polygon ;; b218 274
- ;; b21b 274
-; .page ;; b21b 274
-; .subttl  SET multipurpose command ;; b21b 274
- ;; b21b 274
-;  SET  A multipurpose command initiator ;; b21b 274
- ;; b21b 274
- ;; b21b 274
+C65__box                                                   ;; @@b107 274
+                 jsr CheckGraphicMode                      ;; @@b107 274
+                 jsr sadwrd                               ; get x0 ;; @@b10a 274
+                 sty GKI__parm1                            ;; @@b10d 274
+                 sta GKI__parm2                            ;; @@b110 274
+ ;; @@b113 274
+                 jsr comsad                               ; get y0 ;; @@b113 274
+                 sty GKI__parm3                            ;; @@b116 274
+                 sta GKI__parm4                            ;; @@b119 274
+ ;; @@b11c 274
+                 jsr comsad                               ; get x1 ;; @@b11c 274
+                 sty GKI__parm5                            ;; @@b11f 274
+                 sta GKI__parm6                            ;; @@b122 274
+ ;; @@b125 274
+                 jsr comsad                               ; get y1 ;; @@b125 274
+                 sty GKI__parm7                            ;; @@b128 274
+                 sta GKI__parm8                            ;; @@b12b 274
+ ;; @@b12e 274
+                 jsr comsad                               ; get x2 ;; @@b12e 274
+                 sty GKI__parm9                            ;; @@b131 274
+                 sta GKI__parm10                           ;; @@b134 274
+ ;; @@b137 274
+                 jsr comsad                               ; get y2 ;; @@b137 274
+                 sty GKI__parm11                           ;; @@b13a 274
+                 sta GKI__parm12                           ;; @@b13d 274
+ ;; @@b140 274
+                 jsr comsad                               ; get x3 ;; @@b140 274
+                 sty GKI__parm13                           ;; @@b143 274
+                 sta GKI__parm14                           ;; @@b146 274
+ ;; @@b149 274
+                 jsr comsad                               ; get y3 ;; @@b149 274
+                 sty GKI__parm15                           ;; @@b14c 274
+                 sta GKI__parm16                           ;; @@b14f 274
+ ;; @@b152 274
+                 jsr optzer                               ; get solid flag ;; @@b152 274
+                 stx GKI__parm17                           ;; @@b155 274
+ ;; @@b158 274
+                 jmp ($801a)                              ; bra box ;; @@b158 274
+ ;; @@b15b 274
+; .page ;; @@b15b 274
+;***************************************************************** ;; @@b15b 274
+;* CIRCLE   draw a Circle ;; @@b15b 274
+;* ;; @@b15b 274
+;*  Syntax : CIRCLE  CenterX, CenterY, radius [,solid flag] ;; @@b15b 274
+;* ;; @@b15b 274
+;*         parm1 = center x lo ;; @@b15b 274
+;*         parm2 = center x hi ;; @@b15b 274
+;*         parm3 = center y lo ;; @@b15b 274
+;*         parm4 = center y hi ;; @@b15b 274
+;*         parm5 = radius lo ;; @@b15b 274
+;*         parm6 = radius hi ;; @@b15b 274
+;*         parm7 = solid flag 0=no, 1=yes ;; @@b15b 274
+;***************************************************************** ;; @@b15b 274
+ ;; @@b15b 274
+C65__circle                                                ;; @@b15b 274
+                 jsr CheckGraphicMode                      ;; @@b15b 274
+                 jsr sadwrd                               ; get center x ;; @@b15e 274
+                 sty GKI__parm1                            ;; @@b161 274
+                 sta GKI__parm2                            ;; @@b164 274
+ ;; @@b167 274
+                 jsr comsad                               ; get center y ;; @@b167 274
+                 sty GKI__parm3                            ;; @@b16a 274
+                 sta GKI__parm4                            ;; @@b16d 274
+ ;; @@b170 274
+                 jsr comsad                               ; get radius ;; @@b170 274
+                 sty GKI__parm5                            ;; @@b173 274
+                 sta GKI__parm6                            ;; @@b176 274
+ ;; @@b179 274
+                 jsr optzer                               ; get solid flag ;; @@b179 274
+                 cpx #2                                    ;; @@b17c 274
+                 bcs fcerr                                 ;; @@b17e 274
+                 stx GKI__parm7                            ;; @@b181 274
+ ;; @@b184 274
+                 jmp ($801c)                              ; bra circle ;; @@b184 274
+ ;; @@b187 274
+; .page ;; @@b187 274
+; .subttl  ELLIPSE ;; @@b187 274
+ ;; @@b187 274
+;***************************************************************** ;; @@b187 274
+;* ELLIPSE   draw an Ellipse ;; @@b187 274
+;* ;; @@b187 274
+;*  Syntax : ELLIPSE  CenterX, CenterY, RadiusX,  RadiusY  [,solid flag] ;; @@b187 274
+;* ;; @@b187 274
+;*         parm1 = center x lo ;; @@b187 274
+;*         parm2 = center x hi ;; @@b187 274
+;*         parm3 = center y lo ;; @@b187 274
+;*         parm4 = center y hi ;; @@b187 274
+;*         parm5 = x radius lo ;; @@b187 274
+;*         parm6 = x radius hi ;; @@b187 274
+;*         parm7 = y radius lo ;; @@b187 274
+;*         parm8 = y radius hi ;; @@b187 274
+;*         parm9 = solid flag 0-1 ;; @@b187 274
+;***************************************************************** ;; @@b187 274
+ ;; @@b187 274
+C65__ellipse                                               ;; @@b187 274
+                 jsr CheckGraphicMode                      ;; @@b187 274
+                 jsr sadwrd                               ; get center x ;; @@b18a 274
+                 sty GKI__parm1                            ;; @@b18d 274
+                 sta GKI__parm2                            ;; @@b190 274
+ ;; @@b193 274
+                 jsr comsad                               ; get center y ;; @@b193 274
+                 sty GKI__parm3                            ;; @@b196 274
+                 sta GKI__parm4                            ;; @@b199 274
+ ;; @@b19c 274
+                 jsr comsad                               ; get xradius ;; @@b19c 274
+                 sty GKI__parm5                            ;; @@b19f 274
+                 sta GKI__parm6                            ;; @@b1a2 274
+ ;; @@b1a5 274
+                 jsr comsad                               ; get yradius ;; @@b1a5 274
+                 sty GKI__parm7                            ;; @@b1a8 274
+                 sta GKI__parm8                            ;; @@b1ab 274
+ ;; @@b1ae 274
+                 jsr optzer                               ; get solid flag ;; @@b1ae 274
+                 cpx #2                                    ;; @@b1b1 274
+                 bcs fcerr                                 ;; @@b1b3 274
+                 stx GKI__parm9                            ;; @@b1b6 274
+ ;; @@b1b9 274
+                 jmp ($8020)                              ; bra ellipse ;; @@b1b9 274
+ ;; @@b1bc 274
+; .page ;; @@b1bc 274
+; .subttl  POLYGON ;; @@b1bc 274
+ ;; @@b1bc 274
+;***************************************************************** ;; @@b1bc 274
+;* POLYGON   draw a regular n-sided Polygon ;; @@b1bc 274
+;* ;; @@b1bc 274
+;*  POLYGON  X,Y, Xradius, Yradius, sides [,drawsides [,subtend [,angle [,solid] ]]] ;; @@b1bc 274
+;* ;; @@b1bc 274
+;*         parm1 = center x lo ;; @@b1bc 274
+;*         parm2 = center x hi ;; @@b1bc 274
+;*         parm3 = center y lo ;; @@b1bc 274
+;*         parm4 = center y hi ;; @@b1bc 274
+;*         parm5 = xradius lo ;; @@b1bc 274
+;*         parm6 = xradius hi ;; @@b1bc 274
+;*         parm7 = yradius lo ;; @@b1bc 274
+;*         parm8 = yradius hi ;; @@b1bc 274
+;*         parm9 = solid flag 0-1 ;; @@b1bc 274
+;*         parm10 = sa lo (starting angle 0-360) ;; @@b1bc 274
+;*         parm11 = sa hi ;; @@b1bc 274
+;*         parm12 = # of sides to draw (1 to 127) ;; @@b1bc 274
+;*         parm13 = # of sides (3 to parm12) ;; @@b1bc 274
+;*         parm14 = subtend flag 0-1 ;; @@b1bc 274
+;**************************************************************** ;; @@b1bc 274
+ ;; @@b1bc 274
+C65__polygon                                              ; changed BASIC syntax to something more reasonable [910923] FAB ;; @@b1bc 274
+                 jsr CheckGraphicMode                      ;; @@b1bc 274
+                 jsr sadwrd                               ; get center x ;; @@b1bf 274
+                 sty GKI__parm1                            ;; @@b1c2 274
+                 sta GKI__parm2                            ;; @@b1c5 274
+ ;; @@b1c8 274
+                 jsr comsad                               ; get center y ;; @@b1c8 274
+                 sty GKI__parm3                            ;; @@b1cb 274
+                 sta GKI__parm4                            ;; @@b1ce 274
+ ;; @@b1d1 274
+                 jsr comwrd                               ; get x radius ;; @@b1d1 274
+                 sty GKI__parm5                            ;; @@b1d4 274
+                 sta GKI__parm6                            ;; @@b1d7 274
+ ;; @@b1da 274
+                 jsr comwrd                               ; get y radius ;; @@b1da 274
+                 sty GKI__parm7                            ;; @@b1dd 274
+                 sta GKI__parm8                            ;; @@b1e0 274
+ ;; @@b1e3 274
+                 jsr combyt                               ; get number of sides ;; @@b1e3 274
+                 cpx #3                                    ;; @@b1e6 274
+                 bcc _local_1273_20                       ; too few ;; @@b1e8 274
+                 cpx #128                                  ;; @@b1ea 274
+_local_1273_10   bcs fcerr                                ; too many ;; @@b1ec 274
+                 stx GKI__parm13                           ;; @@b1ef 274
+ ;; @@b1f2 274
+; ldx GKI__parm13  ;get number of sides to draw (default=#sides) ;; @@b1f2 274
+                 jsr optbyt                                ;; @@b1f2 274
+                 cpx #1                                   ; must be at least 1 side ;; @@b1f5 274
+_local_1273_20   bcc fcerr                                 ;; @@b1f7 274
+                 stx GKI__parm12                           ;; @@b1fa 274
+                 dex                                       ;; @@b1fd 274
+                 cpx GKI__parm13                          ; draw sides must be <= #sides ;; @@b1fe 274
+                 bcs _local_1273_10                        ;; @@b201 274
+ ;; @@b203 274
+                 jsr optzer                               ; get subtend flag ;; @@b203 274
+; cpx #2 ;; @@b206 274
+; bcs _local_1273_10 ;; @@b206 274
+                 stx GKI__parm14                           ;; @@b206 274
+ ;; @@b209 274
+                 jsr optwrd                               ; get starting angle (default=0 degrees) ;; @@b209 274
+                 sty GKI__parm10                          ; lo ;; @@b20c 274
+                 sta GKI__parm11                          ; hi ;; @@b20f 274
+ ;; @@b212 274
+                 jsr optzer                               ; get solid flag ;; @@b212 274
+; cpx #2 ;; @@b215 274
+; bcs _local_1273_10 ;; @@b215 274
+                 stx GKI__parm9                            ;; @@b215 274
+ ;; @@b218 274
+                 jmp ($801e)                              ; bra polygon ;; @@b218 274
+ ;; @@b21b 274
+; .page ;; @@b21b 274
+; .subttl  SET multipurpose command ;; @@b21b 274
+ ;; @@b21b 274
+;  SET  A multipurpose command initiator ;; @@b21b 274
+ ;; @@b21b 274
+ ;; @@b21b 274

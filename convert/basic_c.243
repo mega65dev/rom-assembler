@@ -1,16 +1,16 @@
-rdfn             lda dosf2a                                ;; 77b9 243
-                 sta index1                                ;; 77bc 243
-                 lda dosf2a+1                              ;; 77be 243
-                 sta index1+1                              ;; 77c1 243
-                 ldy dosf2l                                ;; 77c3 243
-                 beq rdrt0                                ; if null string ;; 77c6 243
- ;; 77c8 243
-                 ldy #0                                   ; move name to dosstr ;; 77c8 243
-_local_1242_10   jsr indin1_ram1                           ;; 77ca 243
-                 sta dosstr,x                              ;; 77cd 243
-                 inx                                       ;; 77d0 243
-                 iny                                       ;; 77d1 243
-                 cpy dosf2l                                ;; 77d2 243
-                 bne _local_1242_10                       ; if move not complete ;; 77d5 243
-                 !byte $89                                ; hop ;; 77d7 243
- ;; 77d8 243
+rdfn             lda dosf2a                                ;; @@77b9 243
+                 sta index1                                ;; @@77bc 243
+                 lda dosf2a+1                              ;; @@77be 243
+                 sta index1+1                              ;; @@77c1 243
+                 ldy dosf2l                                ;; @@77c3 243
+                 beq rdrt0                                ; if null string ;; @@77c6 243
+ ;; @@77c8 243
+                 ldy #0                                   ; move name to dosstr ;; @@77c8 243
+_local_1242_10   jsr indin1_ram1                           ;; @@77ca 243
+                 sta dosstr,x                              ;; @@77cd 243
+                 inx                                       ;; @@77d0 243
+                 iny                                       ;; @@77d1 243
+                 cpy dosf2l                                ;; @@77d2 243
+                 bne _local_1242_10                       ; if move not complete ;; @@77d5 243
+                 !text $89                                ; hop ;; @@77d7 243
+ ;; @@77d8 243

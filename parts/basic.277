@@ -23,7 +23,7 @@ verify_cmd .byte 'U0>V' ;Verify on/off command
 ;* parm12 = bank of character set   [910912] 
 ;**************************************************************** 
  
-c65.char 
+C65__char 
  jsr CheckGraphicMode 
  jsr getbyt  ; get column 
  stx GKI__parm1 

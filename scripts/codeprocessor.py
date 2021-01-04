@@ -128,7 +128,7 @@ class CodeProcessor(BaseProcessor):
 					assert self.readROM(self.currentPC) == int(element)		
 				self.currentPC += 1 											# and add a byte
 		#
-		self.body = "!byte "+",".join(byteElements)
+		self.body = "!text "+",".join(byteElements)
 	#
 	#		Process word
 	#
@@ -152,7 +152,7 @@ class CodeProcessor(BaseProcessor):
 
 if __name__ == "__main__":
 	hp = CodeProcessor()
-	print("Converting segments.")
+	print("Converting segments to ACME.")
 	for page in range(1,319):
 		tgt = open("convert/basic_c."+str(page),"w")
 		for l in PartLoader().load(page):
@@ -160,7 +160,7 @@ if __name__ == "__main__":
 			startPC = 0 if hp.currentPC is None else hp.currentPC 
 			p = hp.process(l)
 			if p is not None:
-				tgt.write("{0} ;; {1:04x} {2}\n".format(p,startPC,page))
+				tgt.write("{0} ;; @@{1:04x} {2}\n".format(p,startPC,page))
 			else:
 				assert False,"Couldn't fathom {"+l+"}"
 		tgt.close()

@@ -1,82 +1,82 @@
-xor              phw poker                                ; protect the poker value (could be in use)  [910911] ;; 5795 148
-                 jsr chknum                                ;; 5798 148
-                 jsr getadr                               ; get first arg ;; 579b 148
-                 pha                                      ; save MSB ;; 579e 148
-                 phy                                      ; save LSB ;; 579f 148
- ;; 57a0 148
-                 jsr comwrd                               ; check for comma, get word ;; 57a0 148
-                 jsr chkcls                               ; check for closing parens ;; 57a3 148
- ;; 57a6 148
-                 pla                                       ;; 57a6 148
-                 eor poker                                ; xor LSB (comwrd left a copy of its arg in POKER) ;; 57a7 148
-                 tay                                       ;; 57a9 148
-                 pla                                       ;; 57aa 148
-                 eor poker+1                              ; ..and MSB ;; 57ab 148
-                 jsr nosflt                               ; ..and go float 'em ;; 57ad 148
- ;; 57b0 148
-                 pla                                       ;; 57b0 148
-                 sta poker+1                               ;; 57b1 148
-                 pla                                       ;; 57b3 148
-                 sta poker                                 ;; 57b4 148
-                 rts                                       ;; 57b6 148
- ;; 57b7 148
-;.end ;; 57b7 148
-; .page ;; 57b7 148
-; .subttl  MOD ;; 57b7 148
- ;; 57b7 148
-;************************************************************** ;; 57b7 148
-;* ;; 57b7 148
-;* MOD  -  Modulus of a number ;; 57b7 148
-;* ;; 57b7 148
-;* Syntax : MOD (number, range) ;; 57b7 148
-;*      910402 FAB ;; 57b7 148
-;************************************************************** ;; 57b7 148
- ;; 57b7 148
-; Calculate   MOD = NUMBER-RANGE*INT(NUMBER/RANGE) ;; 57b7 148
- ;; 57b7 148
-mod              jsr chknum                               ; 1st arg in FAC1 (number) ;; 57b7 148
-                 jsr pushf1                               ; save two copies of it for later ;; 57ba 148
-                 jsr pushf1                                ;; 57bd 148
-                 jsr chkcom                               ; check for comma ;; 57c0 148
-                 jsr frmnum                               ; 2nd arg in FAC1 (range) ;; 57c3 148
-                 jsr chkcls                               ; check for closing paren ;; 57c6 148
- ;; 57c9 148
-                 jsr movaf                                ; save range in FAC2 ;; 57c9 148
-                 jsr pullf1                               ; get back number in FAC1 ;; 57cc 148
-                 ldx #5                                   ; swap FAC1 and FAC2 ;; 57cf 148
-_local_1147_10   lda facexp,x                              ;; 57d1 148
-                 ldy argexp,x                              ;; 57d3 148
-                 sta argexp,x                              ;; 57d5 148
-                 sty facexp,x                              ;; 57d7 148
-                 dex                                       ;; 57d9 148
-                 bpl _local_1147_10                        ;; 57da 148
-                 jsr pushf1                               ; save one copy of range for later ;; 57dc 148
- ;; 57df 148
-                 jsr fdivt_c65                            ; number/range ;; 57df 148
-                 jsr int                                  ; INT(number/range) ;; 57e2 148
-                 jsr movaf                                ; round & move to FAC2 ;; 57e5 148
-                 jsr pullf1                               ; retrieve arg2 (range) ;; 57e8 148
-                 jsr fmultt_c65                           ; range*INT(number/range) ;; 57eb 148
-                 jsr negop                                ; -range*INT(number/range) ;; 57ee 148
-                 jsr movaf                                ; move to FAC2 ;; 57f1 148
-                 jsr pullf1                               ; retrieve arg1 (number) ;; 57f4 148
-                 bra faddt_c65                            ; number-range*INT(number/range) ;; 57f7 148
- ;; 57fa 148
- ;; 57fa 148
-;.end ;; 57fa 148
-; .page ;; 57fa 148
-; .subttl  RWINDOW ;; 57fa 148
- ;; 57fa 148
-;****************************************************************************** ;; 57fa 148
-; ;; 57fa 148
-; RWINDOW  - Returns information about the current console display environment. ;; 57fa 148
-; ;; 57fa 148
-;   Syntax : RWINDOW (n) ;; 57fa 148
-; ;; 57fa 148
-;   Where: n=0 : number of lines in the current window ;; 57fa 148
-;   =1 : number of rows in the current window ;; 57fa 148
-;   =2 : returns either 40 or 80, depending on the ;; 57fa 148
-;   current console device ;; 57fa 148
-; ;; 57fa 148
-;****************************************************************************** ;; 57fa 148
- ;; 57fa 148
+xor              phw poker                                ; protect the poker value (could be in use)  [910911] ;; @@5795 148
+                 jsr chknum                                ;; @@5798 148
+                 jsr getadr                               ; get first arg ;; @@579b 148
+                 pha                                      ; save MSB ;; @@579e 148
+                 phy                                      ; save LSB ;; @@579f 148
+ ;; @@57a0 148
+                 jsr comwrd                               ; check for comma, get word ;; @@57a0 148
+                 jsr chkcls                               ; check for closing parens ;; @@57a3 148
+ ;; @@57a6 148
+                 pla                                       ;; @@57a6 148
+                 eor poker                                ; xor LSB (comwrd left a copy of its arg in POKER) ;; @@57a7 148
+                 tay                                       ;; @@57a9 148
+                 pla                                       ;; @@57aa 148
+                 eor poker+1                              ; ..and MSB ;; @@57ab 148
+                 jsr nosflt                               ; ..and go float 'em ;; @@57ad 148
+ ;; @@57b0 148
+                 pla                                       ;; @@57b0 148
+                 sta poker+1                               ;; @@57b1 148
+                 pla                                       ;; @@57b3 148
+                 sta poker                                 ;; @@57b4 148
+                 rts                                       ;; @@57b6 148
+ ;; @@57b7 148
+;.end ;; @@57b7 148
+; .page ;; @@57b7 148
+; .subttl  MOD ;; @@57b7 148
+ ;; @@57b7 148
+;************************************************************** ;; @@57b7 148
+;* ;; @@57b7 148
+;* MOD  -  Modulus of a number ;; @@57b7 148
+;* ;; @@57b7 148
+;* Syntax : MOD (number, range) ;; @@57b7 148
+;*      910402 FAB ;; @@57b7 148
+;************************************************************** ;; @@57b7 148
+ ;; @@57b7 148
+; Calculate   MOD = NUMBER-RANGE*INT(NUMBER/RANGE) ;; @@57b7 148
+ ;; @@57b7 148
+mod              jsr chknum                               ; 1st arg in FAC1 (number) ;; @@57b7 148
+                 jsr pushf1                               ; save two copies of it for later ;; @@57ba 148
+                 jsr pushf1                                ;; @@57bd 148
+                 jsr chkcom                               ; check for comma ;; @@57c0 148
+                 jsr frmnum                               ; 2nd arg in FAC1 (range) ;; @@57c3 148
+                 jsr chkcls                               ; check for closing paren ;; @@57c6 148
+ ;; @@57c9 148
+                 jsr movaf                                ; save range in FAC2 ;; @@57c9 148
+                 jsr pullf1                               ; get back number in FAC1 ;; @@57cc 148
+                 ldx #5                                   ; swap FAC1 and FAC2 ;; @@57cf 148
+_local_1147_10   lda facexp,x                              ;; @@57d1 148
+                 ldy argexp,x                              ;; @@57d3 148
+                 sta argexp,x                              ;; @@57d5 148
+                 sty facexp,x                              ;; @@57d7 148
+                 dex                                       ;; @@57d9 148
+                 bpl _local_1147_10                        ;; @@57da 148
+                 jsr pushf1                               ; save one copy of range for later ;; @@57dc 148
+ ;; @@57df 148
+                 jsr fdivt_c65                            ; number/range ;; @@57df 148
+                 jsr int                                  ; INT(number/range) ;; @@57e2 148
+                 jsr movaf                                ; round & move to FAC2 ;; @@57e5 148
+                 jsr pullf1                               ; retrieve arg2 (range) ;; @@57e8 148
+                 jsr fmultt_c65                           ; range*INT(number/range) ;; @@57eb 148
+                 jsr negop                                ; -range*INT(number/range) ;; @@57ee 148
+                 jsr movaf                                ; move to FAC2 ;; @@57f1 148
+                 jsr pullf1                               ; retrieve arg1 (number) ;; @@57f4 148
+                 bra faddt_c65                            ; number-range*INT(number/range) ;; @@57f7 148
+ ;; @@57fa 148
+ ;; @@57fa 148
+;.end ;; @@57fa 148
+; .page ;; @@57fa 148
+; .subttl  RWINDOW ;; @@57fa 148
+ ;; @@57fa 148
+;****************************************************************************** ;; @@57fa 148
+; ;; @@57fa 148
+; RWINDOW  - Returns information about the current console display environment. ;; @@57fa 148
+; ;; @@57fa 148
+;   Syntax : RWINDOW (n) ;; @@57fa 148
+; ;; @@57fa 148
+;   Where: n=0 : number of lines in the current window ;; @@57fa 148
+;   =1 : number of rows in the current window ;; @@57fa 148
+;   =2 : returns either 40 or 80, depending on the ;; @@57fa 148
+;   current console device ;; @@57fa 148
+; ;; @@57fa 148
+;****************************************************************************** ;; @@57fa 148
+ ;; @@57fa 148

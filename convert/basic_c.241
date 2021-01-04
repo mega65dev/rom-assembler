@@ -1,21 +1,21 @@
-rid              lda dosdid                               ; include id ;; 777b 241
-                 sta dosstr,x                              ;; 777e 241
-                 inx                                       ;; 7781 241
-                 lda dosdid+1                              ;; 7782 241
-                 bra sdp5                                 ; always ;; 7785 241
- ;; 7787 241
- ;; 7787 241
-rwrt             lda dosrcl                               ; check for L or W ;; 7787 241
-                 beq _local_1240_10                       ; zero then write ;; 778a 241
-                 lda #'L'                                  ;; 778c 241
-                 bra sdp5                                 ; always ;; 778e 241
- ;; 7790 241
-_local_1240_10   lda #'S'                                 ; send W,S ;; 7790 241
-                 sta dosrcl                                ;; 7792 241
-                 lda #'W'                                  ;; 7795 241
-                 bra sdp5                                 ; always ;; 7797 241
- ;; 7799 241
- ;; 7799 241
- ;; 7799 241
-; Move record number ;; 7799 241
- ;; 7799 241
+rid              lda dosdid                               ; include id ;; @@777b 241
+                 sta dosstr,x                              ;; @@777e 241
+                 inx                                       ;; @@7781 241
+                 lda dosdid+1                              ;; @@7782 241
+                 bra sdp5                                 ; always ;; @@7785 241
+ ;; @@7787 241
+ ;; @@7787 241
+rwrt             lda dosrcl                               ; check for L or W ;; @@7787 241
+                 beq _local_1240_10                       ; zero then write ;; @@778a 241
+                 lda #'L'                                  ;; @@778c 241
+                 bra sdp5                                 ; always ;; @@778e 241
+ ;; @@7790 241
+_local_1240_10   lda #'S'                                 ; send W,S ;; @@7790 241
+                 sta dosrcl                                ;; @@7792 241
+                 lda #'W'                                  ;; @@7795 241
+                 bra sdp5                                 ; always ;; @@7797 241
+ ;; @@7799 241
+ ;; @@7799 241
+ ;; @@7799 241
+; Move record number ;; @@7799 241
+ ;; @@7799 241

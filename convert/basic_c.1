@@ -1,186 +1,186 @@
-                 * = $2000                                 ;; 0000 1
- ;; 2000 1
-basic                                                      ;; 2000 1
-                 jmp hard_reset                            ;; 2000 1
-                 jmp soft_reset                            ;; 2003 1
-                 jmp basic_irq                             ;; 2006 1
-                 jmp basic_nmi                            ; (removed)    [910523] audio ;; 2009 1
- ;; 200c 1
-soft_reset                                                ; warm start BASIC... ;; 200c 1
-                 jsr release_channels                     ; restore default terminal I/O channels ;; 200c 1
-                 lda #doslfn                              ; restore reserved disk channel ;; 200f 1
-                 sec                                      ; not a real close ;; 2011 1
-                 jsr _close                                ;; 2012 1
-                 jsr Clear_DS                             ; zap DS$ just in case ;; 2015 1
-; (might have been in Monitor or building DS$) ;; 2018 1
-                 jsr init_sound_sprites                   ; init interrupt & dma stuff   [910523] ;; 2018 1
-                 jsr init_stack                           ; restore stack ;; 201b 1
-                 lda #1                                    ;; 201e 1
-                 tsb _init_status                         ; tell Kernel to give BASIC a call at IRQ time ;; 2020 1
-                 bra go_ready                             ; enable IRQ, print READY, and go MAIN ;; 2023 1
- ;; 2025 1
- ;; 2025 1
-hard_reset                                                 ;; 2025 1
-                 jsr init_vectors                         ; init vectors ;; 2025 1
-                 jsr init_storage                         ; init variables, voices,  & download RAM code ;; 2028 1
-                 jsr signon_message                       ; print initialization message ;; 202b 1
- ;; 202e 1
-                 lda #0                                   ; init bank pointers   [900509] ;; 202e 1
-                 sta text_bank                             ;; 2030 1
-                 sta helper                               ; reset all LIST flags ;; 2032 1
-                 lda #1                                    ;; 2034 1
-                 sta var_bank                              ;; 2036 1
-                 lda #2                                    ;; 2038 1
-                 sta highlight_color                      ; set highlight color (2=red) ;; 203a 1
-                 ldx #<basic+3                             ;; 203d 1
-                 stx _restart_vector                      ; point system restart vector at warm start entry ;; 203f 1
-                 jsr init_stack                           ; initialize system stack pointer ;; 2042 1
-                 lda #1                                    ;; 2045 1
-                 tsb _init_status                         ; tell Kernel to give BASIC a call at IRQ time ;; 2047 1
-                 jsr ($8000)                              ; initialize graphics ;; 204a 1
-                 jsr _phoenix                             ; call cartridges, check out expansion card ;; 204d 1
-                 jsr autobootCSG                          ; attempt to boot program from disk ;; 2050 1
- ;; 2053 1
-go_ready                                                   ;; 2053 1
-                 cli                                      ; enable IRQ ;; 2053 1
-                 bra ready                                 ;; 2054 1
- ;; 2057 1
-; .page ;; 2057 1
-init_storage                                               ;; 2057 1
-                 lda #76                                  ; 'jmp' opcode ;; 2057 1
-                 sta jmper                                 ;; 2059 1
-                 sta usrpok                                ;; 205b 1
- ;; 205e 1
-                 lda #<errguf                             ; init USR vector to 'undef'd function'  [910226] FAB ;; 205e 1
-                 ldy #>errguf                              ;; 2060 1
-                 sta usrpok+1                              ;; 2062 1
-                 sty usrpok+2                              ;; 2065 1
- ;; 2068 1
-                 lda #<flpint                             ; ???? why keep ;; 2068 1
-                 ldy #>flpint                              ;; 206a 1
-                 sta adray1                                ;; 206c 1
-                 sty adray1+1                              ;; 206f 1
- ;; 2072 1
-                 lda #<givayf                             ; ???? why keep ;; 2072 1
-                 ldy #>givayf                              ;; 2074 1
-                 sta adray2                                ;; 2076 1
-                 sty adray2+1                              ;; 2079 1
- ;; 207c 1
-; Download CHRGET (and INDSUB code????) to RAM ;; 207c 1
-; ;; 207c 1
-; ldx #endmov-chrget_pattern ;; 207c 1
-;1$ lda chrget_pattern-1,x ;; 207c 1
-; sta chrget-1,x ;; 207c 1
-; dex ;; 207c 1
-; bne 1$ ;; 207c 1
- ;; 207c 1
-                 ldx #0                                    ;; 207c 1
-                 stx zero                                 ; zero constant ;; 207e 1
-                 stx zero+1                                ;; 2081 1
-                 stx zero+2                                ;; 2084 1
-                 stx bits                                 ; reset bit/byte shifter ;; 2087 1
-                 stx channl                               ; default channels ;; 208a 1
-                 stx runmod                               ; direct mode ;; 208c 1
-                 stx lastpt+1                              ;; 208e 1
-                 stx autinc                               ; turn off auto increment ;; 2090 1
-                 stx autinc+1                              ;; 2092 1
-                 stx rndx                                 ; zero-ing MSB will guarantee a legal value ;; 2094 1
-; stx dosfa  ;zero device number     [910429] ;; 2097 1
- ;; 2097 1
-                 stx intval                               ; reset all BASIC IRQ stuff ;; 2097 1
-                 stx int_trip_flag                        ; (BASIC IRQ enabled in init_voices) ;; 209a 1
-                 stx int_trip_flag+1                       ;; 209d 1
-                 stx int_trip_flag+2                       ;; 20a0 1
-                 stx lightpen_xpos                         ;; 20a3 1
-                 stx lightpen_ypos                         ;; 20a6 1
- ;; 20a9 1
-; stx mvdflg  ;flag '8k graphics screen not allocated' ;; 20a9 1
-; stx width  ;init to single-width lines ;; 20a9 1
-; stx scalem  ;turn off scaleing ;; 20a9 1
-; stx filflg ;; 20a9 1
- ;; 20a9 1
-; inx   ;.x=1 ???? why init stack with $0101 ???? ;; 20a9 1
-; stx buf-3 ;; 20a9 1
-; stx buf-4 ;; 20a9 1
- ;; 20a9 1
-; ldy #88   ;zero out sprite information area ;; 20a9 1
-;2$ sta sprite_data,y ;???? this is done later at init_as_0 ;; 20a9 1
-; dey ;; 20a9 1
-; bpl 2$ ;; 20a9 1
- ;; 20a9 1
-; ldx #13 ;; 20a9 1
-; stx foreground  ;init bit map's fg color to light green ;; 20a9 1
-; ldx #1 ;; 20a9 1
-; stx multicolor_1 ;init mc1 to white ;; 20a9 1
-; ldx #2 ;; 20a9 1
-; stx multicolor_2 ;init mc2 to red ;; 20a9 1
-; jsr set_packed_color ;set up packed fg/bg and fg/mc1 bytes ;; 20a9 1
- ;; 20a9 1
-                 ldx _default_drive                        ;; 20a9 1
-                 stx dosfa                                ; init device number to system default   [910429] ;; 20ac 1
- ;; 20af 1
-                 ldx #$80                                 ; bank 0 with I/O???? ;; 20af 1
-                 stx current_bank                         ; set default bank for PEEK,POKE,BOOT,SYS,WAIT,BLOAD/SAVE ;; 20b1 1
- ;; 20b4 1
-                 ldx #tempst                               ;; 20b4 1
-                 stx temppt                               ; init temp descriptor pointer ;; 20b6 1
- ;; 20b8 1
-                 ldx #<baswrk                             ; set up bottom of bank 0 (text area) ;; 20b8 1
-                 ldy #>baswrk                              ;; 20ba 1
-                 stx txttab                                ;; 20bc 1
-                 sty txttab+1                              ;; 20be 1
- ;; 20c0 1
-                 lda #<varbgn                             ; set up bottom of bank 1 (storage area) ;; 20c0 1
-                 ldy #>varbgn                              ;; 20c2 1
-                 sta vartab                                ;; 20c4 1
-                 sty vartab+1                              ;; 20c6 1
- ;; 20c8 1
-                 lda #<bank_0_top                         ; set up top of bank 0 ;; 20c8 1
-                 ldy #>bank_0_top                          ;; 20ca 1
-                 sta max_mem_0                             ;; 20cc 1
-                 sty max_mem_0+1                           ;; 20cf 1
- ;; 20d2 1
-                 lda #<bank_1_top                         ; set up  top of bank 1 ;; 20d2 1
-                 ldy #>bank_1_top                          ;; 20d4 1
-                 sta max_mem_1                             ;; 20d6 1
-                 sty max_mem_1+1                           ;; 20d8 1
- ;; 20da 1
-                 lda #0                                   ; init text input buffer  (these are for autoboot) ;; 20da 1
-                 sta buf                                   ;; 20dc 1
-                 dec a                                     ;; 20df 1
-                 sta curlin+1                             ; init line pointer ;; 20e0 1
-                 ldx #<buf_txtptr                         ; init txtptr ;; 20e2 1
-                 ldy #>buf_txtptr                          ;; 20e4 1
-                 stx txtptr                                ;; 20e6 1
-                 sty txtptr+1                              ;; 20e8 1
- ;; 20ea 1
-; Set up sprite pointers ;; 20ea 1
- ;; 20ea 1
-                 lda #sprite_base/64+7                     ;; 20ea 1
-                 ldy #7                                    ;; 20ec 1
-_local_1000_10   bbr7 _mode,_local_1000_20                 ;; 20ee 1
-                 sta sprite_ptrs_40,y                     ; 40 col screen ;; 20f1 1
-                 bra _local_1000_30                        ;; 20f4 1
-_local_1000_20   sta sprite_ptrs_80,y                     ; 80 col screen ;; 20f6 1
-_local_1000_30   dec a                                     ;; 20f9 1
-                 dey                                       ;; 20fa 1
-                 bpl _local_1000_10                        ;; 20fb 1
- ;; 20fd 1
-; Zero out sprite movement stuff and some VIC stuff too ;; 20fd 1
- ;; 20fd 1
-                 lda #0                                    ;; 20fd 1
-                 ldx #init_as_0                            ;; 20ff 1
-_local_1000_40   sta sprite_data,x                         ;; 2101 1
-                 dex                                       ;; 2104 1
-                 bpl _local_1000_40                        ;; 2105 1
- ;; 2107 1
-                 jsr init_sound_sprites                   ; init misc. interrupt & dma stuff ;; 2107 1
- ;; 210a 1
-; lda #$d0  ;initialize pointers to character ROM ;; 210a 1
-; sta upper_graphic ;; 210a 1
-; lda #$d8 ;; 210a 1
-; sta upper_lower ;; 210a 1
- ;; 210a 1
-                 bra init_text                            ; go to 'new' ;; 210a 1
- ;; 210d 1
-; .page ;; 210d 1
+                 * = $2000                                 ;; @@0000 1
+ ;; @@2000 1
+basic                                                      ;; @@2000 1
+                 jmp hard_reset                            ;; @@2000 1
+                 jmp soft_reset                            ;; @@2003 1
+                 jmp basic_irq                             ;; @@2006 1
+                 jmp basic_nmi                            ; (removed)    [910523] audio ;; @@2009 1
+ ;; @@200c 1
+soft_reset                                                ; warm start BASIC... ;; @@200c 1
+                 jsr release_channels                     ; restore default terminal I/O channels ;; @@200c 1
+                 lda #doslfn                              ; restore reserved disk channel ;; @@200f 1
+                 sec                                      ; not a real close ;; @@2011 1
+                 jsr _close                                ;; @@2012 1
+                 jsr Clear_DS                             ; zap DS$ just in case ;; @@2015 1
+; (might have been in Monitor or building DS$) ;; @@2018 1
+                 jsr init_sound_sprites                   ; init interrupt & dma stuff   [910523] ;; @@2018 1
+                 jsr init_stack                           ; restore stack ;; @@201b 1
+                 lda #1                                    ;; @@201e 1
+                 tsb _init_status                         ; tell Kernel to give BASIC a call at IRQ time ;; @@2020 1
+                 bra go_ready                             ; enable IRQ, print READY, and go MAIN ;; @@2023 1
+ ;; @@2025 1
+ ;; @@2025 1
+hard_reset                                                 ;; @@2025 1
+                 jsr init_vectors                         ; init vectors ;; @@2025 1
+                 jsr init_storage                         ; init variables, voices,  & download RAM code ;; @@2028 1
+                 jsr signon_message                       ; print initialization message ;; @@202b 1
+ ;; @@202e 1
+                 lda #0                                   ; init bank pointers   [900509] ;; @@202e 1
+                 sta text_bank                             ;; @@2030 1
+                 sta helper                               ; reset all LIST flags ;; @@2032 1
+                 lda #1                                    ;; @@2034 1
+                 sta var_bank                              ;; @@2036 1
+                 lda #2                                    ;; @@2038 1
+                 sta highlight_color                      ; set highlight color (2=red) ;; @@203a 1
+                 ldx #<basic+3                             ;; @@203d 1
+                 stx _restart_vector                      ; point system restart vector at warm start entry ;; @@203f 1
+                 jsr init_stack                           ; initialize system stack pointer ;; @@2042 1
+                 lda #1                                    ;; @@2045 1
+                 tsb _init_status                         ; tell Kernel to give BASIC a call at IRQ time ;; @@2047 1
+                 jsr ($8000)                              ; initialize graphics ;; @@204a 1
+                 jsr _phoenix                             ; call cartridges, check out expansion card ;; @@204d 1
+                 jsr autobootCSG                          ; attempt to boot program from disk ;; @@2050 1
+ ;; @@2053 1
+go_ready                                                   ;; @@2053 1
+                 cli                                      ; enable IRQ ;; @@2053 1
+                 bra ready                                 ;; @@2054 1
+ ;; @@2057 1
+; .page ;; @@2057 1
+init_storage                                               ;; @@2057 1
+                 lda #76                                  ; 'jmp' opcode ;; @@2057 1
+                 sta jmper                                 ;; @@2059 1
+                 sta usrpok                                ;; @@205b 1
+ ;; @@205e 1
+                 lda #<errguf                             ; init USR vector to 'undef'd function'  [910226] FAB ;; @@205e 1
+                 ldy #>errguf                              ;; @@2060 1
+                 sta usrpok+1                              ;; @@2062 1
+                 sty usrpok+2                              ;; @@2065 1
+ ;; @@2068 1
+                 lda #<flpint                             ; ???? why keep ;; @@2068 1
+                 ldy #>flpint                              ;; @@206a 1
+                 sta adray1                                ;; @@206c 1
+                 sty adray1+1                              ;; @@206f 1
+ ;; @@2072 1
+                 lda #<givayf                             ; ???? why keep ;; @@2072 1
+                 ldy #>givayf                              ;; @@2074 1
+                 sta adray2                                ;; @@2076 1
+                 sty adray2+1                              ;; @@2079 1
+ ;; @@207c 1
+; Download CHRGET (and INDSUB code????) to RAM ;; @@207c 1
+; ;; @@207c 1
+; ldx #endmov-chrget_pattern ;; @@207c 1
+;1$ lda chrget_pattern-1,x ;; @@207c 1
+; sta chrget-1,x ;; @@207c 1
+; dex ;; @@207c 1
+; bne 1$ ;; @@207c 1
+ ;; @@207c 1
+                 ldx #0                                    ;; @@207c 1
+                 stx zero                                 ; zero constant ;; @@207e 1
+                 stx zero+1                                ;; @@2081 1
+                 stx zero+2                                ;; @@2084 1
+                 stx bits                                 ; reset bit/byte shifter ;; @@2087 1
+                 stx channl                               ; default channels ;; @@208a 1
+                 stx runmod                               ; direct mode ;; @@208c 1
+                 stx lastpt+1                              ;; @@208e 1
+                 stx autinc                               ; turn off auto increment ;; @@2090 1
+                 stx autinc+1                              ;; @@2092 1
+                 stx rndx                                 ; zero-ing MSB will guarantee a legal value ;; @@2094 1
+; stx dosfa  ;zero device number     [910429] ;; @@2097 1
+ ;; @@2097 1
+                 stx intval                               ; reset all BASIC IRQ stuff ;; @@2097 1
+                 stx int_trip_flag                        ; (BASIC IRQ enabled in init_voices) ;; @@209a 1
+                 stx int_trip_flag+1                       ;; @@209d 1
+                 stx int_trip_flag+2                       ;; @@20a0 1
+                 stx lightpen_xpos                         ;; @@20a3 1
+                 stx lightpen_ypos                         ;; @@20a6 1
+ ;; @@20a9 1
+; stx mvdflg  ;flag '8k graphics screen not allocated' ;; @@20a9 1
+; stx width  ;init to single-width lines ;; @@20a9 1
+; stx scalem  ;turn off scaleing ;; @@20a9 1
+; stx filflg ;; @@20a9 1
+ ;; @@20a9 1
+; inx   ;.x=1 ???? why init stack with $0101 ???? ;; @@20a9 1
+; stx buf-3 ;; @@20a9 1
+; stx buf-4 ;; @@20a9 1
+ ;; @@20a9 1
+; ldy #88   ;zero out sprite information area ;; @@20a9 1
+;2$ sta sprite_data,y ;???? this is done later at init_as_0 ;; @@20a9 1
+; dey ;; @@20a9 1
+; bpl 2$ ;; @@20a9 1
+ ;; @@20a9 1
+; ldx #13 ;; @@20a9 1
+; stx foreground  ;init bit map's fg color to light green ;; @@20a9 1
+; ldx #1 ;; @@20a9 1
+; stx multicolor_1 ;init mc1 to white ;; @@20a9 1
+; ldx #2 ;; @@20a9 1
+; stx multicolor_2 ;init mc2 to red ;; @@20a9 1
+; jsr set_packed_color ;set up packed fg/bg and fg/mc1 bytes ;; @@20a9 1
+ ;; @@20a9 1
+                 ldx _default_drive                        ;; @@20a9 1
+                 stx dosfa                                ; init device number to system default   [910429] ;; @@20ac 1
+ ;; @@20af 1
+                 ldx #$80                                 ; bank 0 with I/O???? ;; @@20af 1
+                 stx current_bank                         ; set default bank for PEEK,POKE,BOOT,SYS,WAIT,BLOAD/SAVE ;; @@20b1 1
+ ;; @@20b4 1
+                 ldx #tempst                               ;; @@20b4 1
+                 stx temppt                               ; init temp descriptor pointer ;; @@20b6 1
+ ;; @@20b8 1
+                 ldx #<baswrk                             ; set up bottom of bank 0 (text area) ;; @@20b8 1
+                 ldy #>baswrk                              ;; @@20ba 1
+                 stx txttab                                ;; @@20bc 1
+                 sty txttab+1                              ;; @@20be 1
+ ;; @@20c0 1
+                 lda #<varbgn                             ; set up bottom of bank 1 (storage area) ;; @@20c0 1
+                 ldy #>varbgn                              ;; @@20c2 1
+                 sta vartab                                ;; @@20c4 1
+                 sty vartab+1                              ;; @@20c6 1
+ ;; @@20c8 1
+                 lda #<bank_0_top                         ; set up top of bank 0 ;; @@20c8 1
+                 ldy #>bank_0_top                          ;; @@20ca 1
+                 sta max_mem_0                             ;; @@20cc 1
+                 sty max_mem_0+1                           ;; @@20cf 1
+ ;; @@20d2 1
+                 lda #<bank_1_top                         ; set up  top of bank 1 ;; @@20d2 1
+                 ldy #>bank_1_top                          ;; @@20d4 1
+                 sta max_mem_1                             ;; @@20d6 1
+                 sty max_mem_1+1                           ;; @@20d8 1
+ ;; @@20da 1
+                 lda #0                                   ; init text input buffer  (these are for autoboot) ;; @@20da 1
+                 sta buf                                   ;; @@20dc 1
+                 dec a                                     ;; @@20df 1
+                 sta curlin+1                             ; init line pointer ;; @@20e0 1
+                 ldx #<buf_txtptr                         ; init txtptr ;; @@20e2 1
+                 ldy #>buf_txtptr                          ;; @@20e4 1
+                 stx txtptr                                ;; @@20e6 1
+                 sty txtptr+1                              ;; @@20e8 1
+ ;; @@20ea 1
+; Set up sprite pointers ;; @@20ea 1
+ ;; @@20ea 1
+                 lda #sprite_base/64+7                     ;; @@20ea 1
+                 ldy #7                                    ;; @@20ec 1
+_local_1000_10   bbr7 _mode,_local_1000_20                 ;; @@20ee 1
+                 sta sprite_ptrs_40,y                     ; 40 col screen ;; @@20f1 1
+                 bra _local_1000_30                        ;; @@20f4 1
+_local_1000_20   sta sprite_ptrs_80,y                     ; 80 col screen ;; @@20f6 1
+_local_1000_30   dec a                                     ;; @@20f9 1
+                 dey                                       ;; @@20fa 1
+                 bpl _local_1000_10                        ;; @@20fb 1
+ ;; @@20fd 1
+; Zero out sprite movement stuff and some VIC stuff too ;; @@20fd 1
+ ;; @@20fd 1
+                 lda #0                                    ;; @@20fd 1
+                 ldx #init_as_0                            ;; @@20ff 1
+_local_1000_40   sta sprite_data,x                         ;; @@2101 1
+                 dex                                       ;; @@2104 1
+                 bpl _local_1000_40                        ;; @@2105 1
+ ;; @@2107 1
+                 jsr init_sound_sprites                   ; init misc. interrupt & dma stuff ;; @@2107 1
+ ;; @@210a 1
+; lda #$d0  ;initialize pointers to character ROM ;; @@210a 1
+; sta upper_graphic ;; @@210a 1
+; lda #$d8 ;; @@210a 1
+; sta upper_lower ;; @@210a 1
+ ;; @@210a 1
+                 bra init_text                            ; go to 'new' ;; @@210a 1
+ ;; @@210d 1
+; .page ;; @@210d 1

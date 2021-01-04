@@ -1,31 +1,31 @@
-response_fake                                              ;; 78ef 248
-                 lda #0                                   ; ...or not in direct mode ;; 78ef 248
-                 rts                                       ;; 78f1 248
- ;; 78f2 248
-;.end ;; 78f2 248
-; .page ;; 78f2 248
-; .subttl  General Purpose Subroutines ;; 78f2 248
- ;; 78f2 248
-;***************************************************************** ;; 78f2 248
-;  OPTWRD - get an optional, unsigned 2-byte value in y,a. ;; 78f2 248
-; ;; 78f2 248
-;      case 1 : pointer at end of line: ;; 78f2 248
-;   return a=y=0, clear c to flag 'default' ;; 78f2 248
-;      case 2 : pointer is at comma, next non-blank is also a comma: ;; 78f2 248
-;   return a=y=0, clear c to flag 'default' ;; 78f2 248
-;      case 3 : pointer is at comma, next non-blank is not a comma: ;; 78f2 248
-;   get word in y,a, set c to flag 'non-default' ;; 78f2 248
-;***************************************************************** ;; 78f2 248
- ;; 78f2 248
-optwrd           jsr chrgot                                ;; 78f2 248
-                 beq _local_1247_10                        ;; 78f5 248
-                 jsr chkcom                                ;; 78f7 248
-                 cmp #','                                  ;; 78fa 248
-                 beq _local_1247_10                        ;; 78fc 248
-                 jsr getwrd                                ;; 78fe 248
-                 sec                                       ;; 7901 248
-                 rts                                       ;; 7902 248
- ;; 7903 248
-_local_1247_10   lda #0                                    ;; 7903 248
-                 tay                                       ;; 7905 248
- ;; 7906 248
+response_fake                                              ;; @@78ef 248
+                 lda #0                                   ; ...or not in direct mode ;; @@78ef 248
+                 rts                                       ;; @@78f1 248
+ ;; @@78f2 248
+;.end ;; @@78f2 248
+; .page ;; @@78f2 248
+; .subttl  General Purpose Subroutines ;; @@78f2 248
+ ;; @@78f2 248
+;***************************************************************** ;; @@78f2 248
+;  OPTWRD - get an optional, unsigned 2-byte value in y,a. ;; @@78f2 248
+; ;; @@78f2 248
+;      case 1 : pointer at end of line: ;; @@78f2 248
+;   return a=y=0, clear c to flag 'default' ;; @@78f2 248
+;      case 2 : pointer is at comma, next non-blank is also a comma: ;; @@78f2 248
+;   return a=y=0, clear c to flag 'default' ;; @@78f2 248
+;      case 3 : pointer is at comma, next non-blank is not a comma: ;; @@78f2 248
+;   get word in y,a, set c to flag 'non-default' ;; @@78f2 248
+;***************************************************************** ;; @@78f2 248
+ ;; @@78f2 248
+optwrd           jsr chrgot                                ;; @@78f2 248
+                 beq _local_1247_10                        ;; @@78f5 248
+                 jsr chkcom                                ;; @@78f7 248
+                 cmp #','                                  ;; @@78fa 248
+                 beq _local_1247_10                        ;; @@78fc 248
+                 jsr getwrd                                ;; @@78fe 248
+                 sec                                       ;; @@7901 248
+                 rts                                       ;; @@7902 248
+ ;; @@7903 248
+_local_1247_10   lda #0                                    ;; @@7903 248
+                 tay                                       ;; @@7905 248
+ ;; @@7906 248

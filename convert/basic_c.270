@@ -1,49 +1,49 @@
-c65.setdpat                                                ;; b002 270
-                 jsr getbyt                               ; get pattern type ;; b002 270
-                 cpx #4+1                                 ; 63+1       [911028] ;; b005 270
-_local_1269_10   bcs fcerr                                ; if out of range ;; b007 270
-                 stx GKI__parm1                            ;; b00a 270
-                 txa                                       ;; b00d 270
-                 bne _local_1269_20                       ; if parm1 is 0 then get extra stuff ;; b00e 270
- ;; b010 270
-                 jsr combyt                               ; get number of bytes ;; b010 270
-                 cpx #5                                    ;; b013 270
-                 bcs _local_1269_10                       ; too many bytes ;; b015 270
-                 stx GKI__parm2                            ;; b017 270
-                 stx z_p_temp_1                           ; save for count ;; b01a 270
- ;; b01c 270
-                 jsr combyt                               ; get byte 1 ;; b01c 270
-                 stx GKI__parm3                            ;; b01f 270
-                 dec z_p_temp_1                            ;; b022 270
-                 beq _local_1269_20                        ;; b024 270
-                 bmi fcerr                                ; too few bytes ;; b026 270
- ;; b029 270
-                 jsr combyt                               ; get byte 2 ;; b029 270
-                 stx GKI__parm4                            ;; b02c 270
-                 dec z_p_temp_1                            ;; b02f 270
-                 beq _local_1269_20                        ;; b031 270
- ;; b033 270
-                 jsr combyt                               ; get byte 3 ;; b033 270
-                 stx GKI__parm5                            ;; b036 270
-                 dec z_p_temp_1                            ;; b039 270
-                 beq _local_1269_20                        ;; b03b 270
- ;; b03d 270
-                 jsr combyt                               ; get byte 4 ;; b03d 270
-                 stx GKI__parm6                            ;; b040 270
- ;; b043 270
-_local_1269_20   jmp ($8016)                              ; bra setdpat ;; b043 270
- ;; b046 270
-; .page ;; b046 270
-;***************************************************************** ;; b046 270
-;* PALETTE   set palette colors ;; b046 270
-;* ;; b046 270
-;*  Syntax : PALETTE {screen|COLOR}, color_index, red, green, blue ;; b046 270
-;*           PALETTE RESTORE ;; b046 270
-;* ;; b046 270
-;*           parm1 = screen  0-3     [910711] ;; b046 270
-;*           parm2 = color_index 0-255 ;; b046 270
-;*           parm3 = red           0-31 (b0-3 red, b4=fgbg)  [910520] ;; b046 270
-;*           parm4 = green         0-15 ;; b046 270
-;*           parm5 = blue          0-15 ;; b046 270
-;***************************************************************** ;; b046 270
- ;; b046 270
+C65__setdpat                                               ;; @@b002 270
+                 jsr getbyt                               ; get pattern type ;; @@b002 270
+                 cpx #4+1                                 ; 63+1       [911028] ;; @@b005 270
+_local_1269_10   bcs fcerr                                ; if out of range ;; @@b007 270
+                 stx GKI__parm1                            ;; @@b00a 270
+                 txa                                       ;; @@b00d 270
+                 bne _local_1269_20                       ; if parm1 is 0 then get extra stuff ;; @@b00e 270
+ ;; @@b010 270
+                 jsr combyt                               ; get number of bytes ;; @@b010 270
+                 cpx #5                                    ;; @@b013 270
+                 bcs _local_1269_10                       ; too many bytes ;; @@b015 270
+                 stx GKI__parm2                            ;; @@b017 270
+                 stx z_p_temp_1                           ; save for count ;; @@b01a 270
+ ;; @@b01c 270
+                 jsr combyt                               ; get byte 1 ;; @@b01c 270
+                 stx GKI__parm3                            ;; @@b01f 270
+                 dec z_p_temp_1                            ;; @@b022 270
+                 beq _local_1269_20                        ;; @@b024 270
+                 bmi fcerr                                ; too few bytes ;; @@b026 270
+ ;; @@b029 270
+                 jsr combyt                               ; get byte 2 ;; @@b029 270
+                 stx GKI__parm4                            ;; @@b02c 270
+                 dec z_p_temp_1                            ;; @@b02f 270
+                 beq _local_1269_20                        ;; @@b031 270
+ ;; @@b033 270
+                 jsr combyt                               ; get byte 3 ;; @@b033 270
+                 stx GKI__parm5                            ;; @@b036 270
+                 dec z_p_temp_1                            ;; @@b039 270
+                 beq _local_1269_20                        ;; @@b03b 270
+ ;; @@b03d 270
+                 jsr combyt                               ; get byte 4 ;; @@b03d 270
+                 stx GKI__parm6                            ;; @@b040 270
+ ;; @@b043 270
+_local_1269_20   jmp ($8016)                              ; bra setdpat ;; @@b043 270
+ ;; @@b046 270
+; .page ;; @@b046 270
+;***************************************************************** ;; @@b046 270
+;* PALETTE   set palette colors ;; @@b046 270
+;* ;; @@b046 270
+;*  Syntax : PALETTE {screen|COLOR}, color_index, red, green, blue ;; @@b046 270
+;*           PALETTE RESTORE ;; @@b046 270
+;* ;; @@b046 270
+;*           parm1 = screen  0-3     [910711] ;; @@b046 270
+;*           parm2 = color_index 0-255 ;; @@b046 270
+;*           parm3 = red           0-31 (b0-3 red, b4=fgbg)  [910520] ;; @@b046 270
+;*           parm4 = green         0-15 ;; @@b046 270
+;*           parm5 = blue          0-15 ;; @@b046 270
+;***************************************************************** ;; @@b046 270
+ ;; @@b046 270

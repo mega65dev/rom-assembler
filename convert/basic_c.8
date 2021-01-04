@@ -1,192 +1,192 @@
-sta_far_in1                                               ; [910624] ;; 2306 8
-                 ldx #index1                               ;; 2306 8
-                 bra sta_far_ram0                          ;; 2308 8
- ;; 230a 8
-sta_far_txt                                                ;; 230a 8
-                 ldx #txtptr                               ;; 230a 8
- ;; 230c 8
-sta_far_ram0                                               ;; 230c 8
-                 php                                      ; save registers ;; 230c 8
-                 phz                                       ;; 230d 8
-                 ldz text_bank                            ; RAM0 ;; 230e 8
-                 jsr _sta_far                             ; STA (.x),Y to bank .z ;; 2311 8
-                 plz                                       ;; 2314 8
-                 plp                                       ;; 2315 8
-                 rts                                       ;; 2316 8
- ;; 2317 8
- ;; 2317 8
-indcmp_in1                                                ; [910620] ;; 2317 8
-                 ldx #index1                               ;; 2317 8
-                 ldz text_bank                            ; RAM0 ;; 2319 8
-                 jmp _cmp_far                             ; STA (.x),Y to bank .z ;; 231c 8
- ;; 231f 8
-;.end ;; 231f 8
-; .page ;; 231f 8
-; .subttl Crunch - Tokenization Routine ;; 231f 8
- ;; 231f 8
-;        CRUNCH ;; 231f 8
-; ;; 231f 8
-;  Entry:  TXTPTR points to start of text to crunch ;; 231f 8
-;  Exit:   TXTPTR points to start of crunched text ;; 231f 8
-; ;; 231f 8
-;  Calls:  CHRGET ;; 231f 8
-;          CHRGOT ;; 231f 8
-;          RESER ;; 231f 8
-;          KLOOP ;; 231f 8
-;          REM ;; 231f 8
-;          DATA ;; 231f 8
-; ;; 231f 8
-;  CRUNCH collapses all reserved words into tokens.  It removes all graphic ;; 231f 8
-;  characters (characters with msb set) not in quoted strings, DATA or REM ;; 231f 8
-;  statements. ;; 231f 8
-; ;; 231f 8
-;  An escape token is implemented as follows: ;; 231f 8
-; ;; 231f 8
-; As each character on a line of text to be crunched is scanned, an ;; 231f 8
-; indirect jump is performed.  Anyone wishing to scan for their own ;; 231f 8
-; commands should grab off this vector, saving the return vector. ;; 231f 8
-; On entry, if the carry flag is set, it is still up for grabs. ;; 231f 8
-; The current text pointer is at TXTPTR.  If the escape routine ;; 231f 8
-; recognizes the command, it should: ;; 231f 8
-; ;; 231f 8
-;  ) put the length of the reserved word in .y ;; 231f 8
-;  ) put the desired 'second' token in .a ;; 231f 8
-;  ) clear the carry flag ;; 231f 8
-;  ) put type of token in x: 0==>command, ff==>function ;; 231f 8
-; ;; 231f 8
-; If it is not your command, leave .a and the carry flag intact. ;; 231f 8
-; NOTE:  The reserved word must be >= 2 characters long.  Exit through ;; 231f 8
-; the old vector (for daisy chaining).  If the carry flag is clear on ;; 231f 8
-; entry it means someone else before you recognized this command.  In ;; 231f 8
-; this case, just pass control through the old vector. ;; 231f 8
- ;; 231f 8
- ;; 231f 8
-crunch           jmp (icrnch)                              ;; 231f 8
- ;; 2322 8
- ;; 2322 8
-ncrnch           phw txtptr                               ; save old text pointer ;; 2322 8
- ;; 2325 8
-crun05           jsr chrgot                                ;; 2325 8
-                 bra crun20                                ;; 2328 8
- ;; 232a 8
-crun10           jsr chrget                                ;; 232a 8
- ;; 232d 8
- ;; 232d 8
-crun20           bcc crun10                               ; don't crunch numbers ;; 232d 8
-                 jmp (iesclk)                             ; give others a chance at this.  (carry is set) ;; 232f 8
- ;; 2332 8
-nesclk                                                     ;; 2332 8
-                 bcc 1_local_1007_30                      ; carry clear if someone wanted it ;; 2332 8
-                 cmp #0                                   ; end of line? ;; 2335 8
-                 beq _local_1007_110                      ; yes ;; 2337 8
-                 cmp #':'                                 ; multi-stmt char? ;; 2339 8
-                 beq crun10                               ; yes ;; 233b 8
-                 cmp #'?'                                 ; print ('?') abreviation? ;; 233d 8
-                 bne _local_1007_20                       ; no ;; 233f 8
-                 lda #print_token                         ; yes- substitute print token ;; 2341 8
-                 bra _local_1007_90                        ;; 2343 8
- ;; 2345 8
-_local_1007_20   cmp #$80                                 ; graphics? ;; 2345 8
-                 bcc _local_1007_30                       ; no ;; 2347 8
-                 cmp #pi                                  ; pi? (special case) ;; 2349 8
-                 beq crun10                               ; yes, leave alone ;; 234b 8
-                 ldy #1                                    ;; 234d 8
-                 jsr kloop                                ; crunch out graphics ;; 234f 8
-                 bra crun05                                ;; 2352 8
- ;; 2354 8
- ;; 2354 8
-_local_1007_30   cmp #'"'                                 ; quote string? ;; 2354 8
-                 bne _local_1007_50                       ; no- try escape token ;; 2356 8
- ;; 2358 8
-_local_1007_40   jsr chrget                                ;; 2358 8
-                 cmp #0                                   ; end of line? ;; 235b 8
-                 beq _local_1007_110                      ; yes ;; 235d 8
-                 cmp #'"'                                 ; close quote? ;; 235f 8
-                 beq crun10                               ; yes ;; 2361 8
-                 bra _local_1007_40                       ; no, continue skipping characters ;; 2363 8
- ;; 2365 8
- ;; 2365 8
-; Crunch escape token ;; 2365 8
- ;; 2365 8
-_local_1007_50   lda #>esc_command_list                   ; look for token in escape-command list ;; 2365 8
-                 ldy #<esc_command_list                    ;; 2367 8
-                 jsr reser                                 ;; 2369 8
-                 bcc _local_1007_60                       ; not found ;; 236c 8
-                 lda #first_esc_command_token+$80-1       ; set up for common escape routine ;; 236e 8
-                 ldx #0                                   ; ..flag 'cmd' type escape ;; 2370 8
-                 bra 1_local_1007_20                      ; ..and go to it. ;; 2372 8
- ;; 2374 8
-_local_1007_60   lda #>esc_function_list                  ; look for token in escape-function list ;; 2374 8
-                 ldy #<esc_function_list                   ;; 2376 8
-                 jsr reser                                 ;; 2378 8
-                 bcc _local_1007_70                       ; not found ;; 237b 8
-                 lda #first_esc_function_token+$80-1      ; set up for common escape routine ;; 237d 8
-                 ldx #$ff                                 ; ..flag 'function' type escape ;; 237f 8
-                 bra 1_local_1007_20                      ; ..and go to it ;; 2381 8
- ;; 2383 8
-_local_1007_70   lda #>keyword_list                       ; look for token in normal list ;; 2383 8
-                 ldy #<keyword_list                        ;; 2385 8
-                 jsr reser                                 ;; 2387 8
-                 bcc crun10                               ; not found ;; 238a 8
-                 cpy #0                                   ; anything to move? ;; 238c 8
-                 beq _local_1007_80                       ; no ;; 238e 8
-                 jsr kloop                                ; crunch it out ;; 2390 8
-_local_1007_80   lda count                                 ;; 2393 8
- ;; 2395 8
-_local_1007_90   ldy #0                                    ;; 2395 8
-                 jsr sta_far_txt                          ; put token into text  (bleed-thru) ;; 2397 8
-                 cmp #rem_token                            ;; 239a 8
-                 beq _local_1007_100                       ;; 239c 8
-                 cmp #data_token                           ;; 239e 8
-                 bne crun10                                ;; 23a0 8
-                 jsr chrget                                ;; 23a2 8
-                 jsr data                                  ;; 23a5 8
-                 bra crun05                                ;; 23a8 8
- ;; 23ab 8
-_local_1007_100  jsr chrget                                ;; 23ab 8
-                 jsr rem                                   ;; 23ae 8
- ;; 23b1 8
- ;; 23b1 8
-;  No other statements can follow a REM ;; 23b1 8
- ;; 23b1 8
-_local_1007_110  ldx txtptr                                ;; 23b1 8
-                 pla                                       ;; 23b3 8
-                 sta txtptr+1                              ;; 23b4 8
-                 pla                                       ;; 23b6 8
-                 sta txtptr                                ;; 23b7 8
-                 sec                                      ; compute length of line ;; 23b9 8
-                 txa                                       ;; 23ba 8
-                 sbc txtptr                                ;; 23bb 8
-                 tay                                       ;; 23bd 8
-                 iny                                       ;; 23be 8
-                 rts                                       ;; 23bf 8
- ;; 23c0 8
- ;; 23c0 8
-; Crunch out old text, install an escape token ;; 23c0 8
- ;; 23c0 8
-1_local_1007_20  adc count                                ; make pointer into a token ;; 23c0 8
-1_local_1007_30  pha                                      ; save second token ;; 23c2 8
-                 dey                                      ; waste (# of chars) - 1 ;; 23c3 8
-                 jsr kloop                                 ;; 23c4 8
- ;; 23c7 8
-; See if this is function (x=ff) or command (x=0) ;; 23c7 8
- ;; 23c7 8
-                 lda #esc_command_token                   ; assume command ;; 23c7 8
-                 inx                                       ;; 23c9 8
-                 bne 1_local_1007_40                      ; branch if command ;; 23ca 8
-                 lda #esc_function_token                  ; ..else get correct token ;; 23cc 8
- ;; 23ce 8
-1_local_1007_40  ldy #0                                    ;; 23ce 8
-                 jsr sta_far_txt                          ; install escape token... (bleed-thru) ;; 23d0 8
-                 iny                                       ;; 23d3 8
-                 pla                                       ;; 23d4 8
-                 jsr sta_far_txt                          ; ..and second token  (bleed-thru) ;; 23d5 8
-                 jsr chrget                               ; skip over token, ;; 23d8 8
-                 bra crun10                               ; ..and continue with line. ;; 23db 8
- ;; 23de 8
-; .page ;; 23de 8
-;      KLOOP ;; 23de 8
-; ;; 23de 8
-;  Crunch loop.  Moves offset .y characters from txtptr to end of line. ;; 23de 8
-;  .x is preserved ;; 23de 8
- ;; 23de 8
+sta_far_in1                                               ; [910624] ;; @@2306 8
+                 ldx #index1                               ;; @@2306 8
+                 bra sta_far_ram0                          ;; @@2308 8
+ ;; @@230a 8
+sta_far_txt                                                ;; @@230a 8
+                 ldx #txtptr                               ;; @@230a 8
+ ;; @@230c 8
+sta_far_ram0                                               ;; @@230c 8
+                 php                                      ; save registers ;; @@230c 8
+                 phz                                       ;; @@230d 8
+                 ldz text_bank                            ; RAM0 ;; @@230e 8
+                 jsr _sta_far                             ; STA (.x),Y to bank .z ;; @@2311 8
+                 plz                                       ;; @@2314 8
+                 plp                                       ;; @@2315 8
+                 rts                                       ;; @@2316 8
+ ;; @@2317 8
+ ;; @@2317 8
+indcmp_in1                                                ; [910620] ;; @@2317 8
+                 ldx #index1                               ;; @@2317 8
+                 ldz text_bank                            ; RAM0 ;; @@2319 8
+                 jmp _cmp_far                             ; STA (.x),Y to bank .z ;; @@231c 8
+ ;; @@231f 8
+;.end ;; @@231f 8
+; .page ;; @@231f 8
+; .subttl Crunch - Tokenization Routine ;; @@231f 8
+ ;; @@231f 8
+;        CRUNCH ;; @@231f 8
+; ;; @@231f 8
+;  Entry:  TXTPTR points to start of text to crunch ;; @@231f 8
+;  Exit:   TXTPTR points to start of crunched text ;; @@231f 8
+; ;; @@231f 8
+;  Calls:  CHRGET ;; @@231f 8
+;          CHRGOT ;; @@231f 8
+;          RESER ;; @@231f 8
+;          KLOOP ;; @@231f 8
+;          REM ;; @@231f 8
+;          DATA ;; @@231f 8
+; ;; @@231f 8
+;  CRUNCH collapses all reserved words into tokens.  It removes all graphic ;; @@231f 8
+;  characters (characters with msb set) not in quoted strings, DATA or REM ;; @@231f 8
+;  statements. ;; @@231f 8
+; ;; @@231f 8
+;  An escape token is implemented as follows: ;; @@231f 8
+; ;; @@231f 8
+; As each character on a line of text to be crunched is scanned, an ;; @@231f 8
+; indirect jump is performed.  Anyone wishing to scan for their own ;; @@231f 8
+; commands should grab off this vector, saving the return vector. ;; @@231f 8
+; On entry, if the carry flag is set, it is still up for grabs. ;; @@231f 8
+; The current text pointer is at TXTPTR.  If the escape routine ;; @@231f 8
+; recognizes the command, it should: ;; @@231f 8
+; ;; @@231f 8
+;  ) put the length of the reserved word in .y ;; @@231f 8
+;  ) put the desired 'second' token in .a ;; @@231f 8
+;  ) clear the carry flag ;; @@231f 8
+;  ) put type of token in x: 0==>command, ff==>function ;; @@231f 8
+; ;; @@231f 8
+; If it is not your command, leave .a and the carry flag intact. ;; @@231f 8
+; NOTE:  The reserved word must be >= 2 characters long.  Exit through ;; @@231f 8
+; the old vector (for daisy chaining).  If the carry flag is clear on ;; @@231f 8
+; entry it means someone else before you recognized this command.  In ;; @@231f 8
+; this case, just pass control through the old vector. ;; @@231f 8
+ ;; @@231f 8
+ ;; @@231f 8
+crunch           jmp (icrnch)                              ;; @@231f 8
+ ;; @@2322 8
+ ;; @@2322 8
+ncrnch           phw txtptr                               ; save old text pointer ;; @@2322 8
+ ;; @@2325 8
+crun05           jsr chrgot                                ;; @@2325 8
+                 bra crun20                                ;; @@2328 8
+ ;; @@232a 8
+crun10           jsr chrget                                ;; @@232a 8
+ ;; @@232d 8
+ ;; @@232d 8
+crun20           bcc crun10                               ; don't crunch numbers ;; @@232d 8
+                 jmp (iesclk)                             ; give others a chance at this.  (carry is set) ;; @@232f 8
+ ;; @@2332 8
+nesclk                                                     ;; @@2332 8
+                 bcc _local_1007_130                      ; carry clear if someone wanted it ;; @@2332 8
+                 cmp #0                                   ; end of line? ;; @@2335 8
+                 beq _local_1007_110                      ; yes ;; @@2337 8
+                 cmp #':'                                 ; multi-stmt char? ;; @@2339 8
+                 beq crun10                               ; yes ;; @@233b 8
+                 cmp #'?'                                 ; print ('?') abreviation? ;; @@233d 8
+                 bne _local_1007_20                       ; no ;; @@233f 8
+                 lda #print_token                         ; yes- substitute print token ;; @@2341 8
+                 bra _local_1007_90                        ;; @@2343 8
+ ;; @@2345 8
+_local_1007_20   cmp #$80                                 ; graphics? ;; @@2345 8
+                 bcc _local_1007_30                       ; no ;; @@2347 8
+                 cmp #pi                                  ; pi? (special case) ;; @@2349 8
+                 beq crun10                               ; yes, leave alone ;; @@234b 8
+                 ldy #1                                    ;; @@234d 8
+                 jsr kloop                                ; crunch out graphics ;; @@234f 8
+                 bra crun05                                ;; @@2352 8
+ ;; @@2354 8
+ ;; @@2354 8
+_local_1007_30   cmp #'"'                                 ; quote string? ;; @@2354 8
+                 bne _local_1007_50                       ; no- try escape token ;; @@2356 8
+ ;; @@2358 8
+_local_1007_40   jsr chrget                                ;; @@2358 8
+                 cmp #0                                   ; end of line? ;; @@235b 8
+                 beq _local_1007_110                      ; yes ;; @@235d 8
+                 cmp #'"'                                 ; close quote? ;; @@235f 8
+                 beq crun10                               ; yes ;; @@2361 8
+                 bra _local_1007_40                       ; no, continue skipping characters ;; @@2363 8
+ ;; @@2365 8
+ ;; @@2365 8
+; Crunch escape token ;; @@2365 8
+ ;; @@2365 8
+_local_1007_50   lda #>esc_command_list                   ; look for token in escape-command list ;; @@2365 8
+                 ldy #<esc_command_list                    ;; @@2367 8
+                 jsr reser                                 ;; @@2369 8
+                 bcc _local_1007_60                       ; not found ;; @@236c 8
+                 lda #first_esc_command_token+$80-1       ; set up for common escape routine ;; @@236e 8
+                 ldx #0                                   ; ..flag 'cmd' type escape ;; @@2370 8
+                 bra _local_1007_120                      ; ..and go to it. ;; @@2372 8
+ ;; @@2374 8
+_local_1007_60   lda #>esc_function_list                  ; look for token in escape-function list ;; @@2374 8
+                 ldy #<esc_function_list                   ;; @@2376 8
+                 jsr reser                                 ;; @@2378 8
+                 bcc _local_1007_70                       ; not found ;; @@237b 8
+                 lda #first_esc_function_token+$80-1      ; set up for common escape routine ;; @@237d 8
+                 ldx #$ff                                 ; ..flag 'function' type escape ;; @@237f 8
+                 bra _local_1007_120                      ; ..and go to it ;; @@2381 8
+ ;; @@2383 8
+_local_1007_70   lda #>keyword_list                       ; look for token in normal list ;; @@2383 8
+                 ldy #<keyword_list                        ;; @@2385 8
+                 jsr reser                                 ;; @@2387 8
+                 bcc crun10                               ; not found ;; @@238a 8
+                 cpy #0                                   ; anything to move? ;; @@238c 8
+                 beq _local_1007_80                       ; no ;; @@238e 8
+                 jsr kloop                                ; crunch it out ;; @@2390 8
+_local_1007_80   lda count                                 ;; @@2393 8
+ ;; @@2395 8
+_local_1007_90   ldy #0                                    ;; @@2395 8
+                 jsr sta_far_txt                          ; put token into text  (bleed-thru) ;; @@2397 8
+                 cmp #rem_token                            ;; @@239a 8
+                 beq _local_1007_100                       ;; @@239c 8
+                 cmp #data_token                           ;; @@239e 8
+                 bne crun10                                ;; @@23a0 8
+                 jsr chrget                                ;; @@23a2 8
+                 jsr data                                  ;; @@23a5 8
+                 bra crun05                                ;; @@23a8 8
+ ;; @@23ab 8
+_local_1007_100  jsr chrget                                ;; @@23ab 8
+                 jsr rem                                   ;; @@23ae 8
+ ;; @@23b1 8
+ ;; @@23b1 8
+;  No other statements can follow a REM ;; @@23b1 8
+ ;; @@23b1 8
+_local_1007_110  ldx txtptr                                ;; @@23b1 8
+                 pla                                       ;; @@23b3 8
+                 sta txtptr+1                              ;; @@23b4 8
+                 pla                                       ;; @@23b6 8
+                 sta txtptr                                ;; @@23b7 8
+                 sec                                      ; compute length of line ;; @@23b9 8
+                 txa                                       ;; @@23ba 8
+                 sbc txtptr                                ;; @@23bb 8
+                 tay                                       ;; @@23bd 8
+                 iny                                       ;; @@23be 8
+                 rts                                       ;; @@23bf 8
+ ;; @@23c0 8
+ ;; @@23c0 8
+; Crunch out old text, install an escape token ;; @@23c0 8
+ ;; @@23c0 8
+_local_1007_120  adc count                                ; make pointer into a token ;; @@23c0 8
+_local_1007_130  pha                                      ; save second token ;; @@23c2 8
+                 dey                                      ; waste (# of chars) - 1 ;; @@23c3 8
+                 jsr kloop                                 ;; @@23c4 8
+ ;; @@23c7 8
+; See if this is function (x=ff) or command (x=0) ;; @@23c7 8
+ ;; @@23c7 8
+                 lda #esc_command_token                   ; assume command ;; @@23c7 8
+                 inx                                       ;; @@23c9 8
+                 bne _local_1007_140                      ; branch if command ;; @@23ca 8
+                 lda #esc_function_token                  ; ..else get correct token ;; @@23cc 8
+ ;; @@23ce 8
+_local_1007_140  ldy #0                                    ;; @@23ce 8
+                 jsr sta_far_txt                          ; install escape token... (bleed-thru) ;; @@23d0 8
+                 iny                                       ;; @@23d3 8
+                 pla                                       ;; @@23d4 8
+                 jsr sta_far_txt                          ; ..and second token  (bleed-thru) ;; @@23d5 8
+                 jsr chrget                               ; skip over token, ;; @@23d8 8
+                 bra crun10                               ; ..and continue with line. ;; @@23db 8
+ ;; @@23de 8
+; .page ;; @@23de 8
+;      KLOOP ;; @@23de 8
+; ;; @@23de 8
+;  Crunch loop.  Moves offset .y characters from txtptr to end of line. ;; @@23de 8
+;  .x is preserved ;; @@23de 8
+ ;; @@23de 8
