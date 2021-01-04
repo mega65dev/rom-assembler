@@ -17,45 +17,45 @@
 
 !macro lbra addr {
 	!byte $83
-	!word (addr-*-2) & $FFFF
+	!word (addr-*-1) & $FFFF
 }
 
 !macro lbcc addr {
 	!byte $93
-	!word (addr-*-2) & $FFFF
+	!word (addr-*-1) & $FFFF
 }
 
 !macro lbcs addr {
 	!byte $B3
-	!word (addr-*-2) & $FFFF
+	!word (addr-*-1) & $FFFF
 }
 
 !macro lbne addr {
 	!byte $D3
-	!word (addr-*-2) & $FFFF
+	!word (addr-*-1) & $FFFF
 }
 
 !macro lbeq addr {
 	!byte $F3
-	!word (addr-*-2) & $FFFF
+	!word (addr-*-1) & $FFFF
 }
 
 !macro lbpl addr {
 	!byte $13
-	!word (addr-*-2) & $FFFF
+	!word (addr-*-1) & $FFFF
 }
 
 !macro lbmi addr {
 	!byte $33
-	!word (addr-*-2) & $FFFF
+	!word (addr-*-1) & $FFFF
 }
 
 !macro lbvs addr {
 	!byte $73
-	!word (addr-*-2) & $FFFF
+	!word (addr-*-1) & $FFFF
 }
 
 !macro lbvc addr {
 	!byte $53
-	!word (addr-*-2) & $FFFF
+	!word (addr-*-1) & $FFFF
 }
