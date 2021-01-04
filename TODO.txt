@@ -1,2 +1,5 @@
-Fix other things up
 Assemble it and see what happens :)
+	Write macro that does long branch and substitute that
+	Fix the other bugettes.
+		[902110] in code w/o comment.
+		neg a unsupported.

@@ -161,6 +161,7 @@ if __name__ == "__main__":
 			p = hp.process(l)
 			if p is not None:
 				tgt.write("{0} ;; @@{1:04x} {2}\n".format(p,startPC,page))
+				print("{0:2}:${1:02x} {2}".format(page,startPC,p))
 			else:
 				assert False,"Couldn't fathom {"+l+"}"
 		tgt.close()
