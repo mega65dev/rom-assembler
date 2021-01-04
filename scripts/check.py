@@ -31,5 +31,12 @@ print("\t{0} errors.".format(errorCount))
 if errorCount != 0:
 	sys.exit(1)
 
+#
+#		Throw first 8k and pad to 40960
+#
+newROM = newROM[0x2000:]				
+while len(newROM) != 40960:
+	newROM += bytes([0])
 
+open("bin/rom.bin","wb").write(newROM)
 sys.exit(0)	

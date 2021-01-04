@@ -1,8 +1,31 @@
+#!/bin/bash
+#
+#		ROM conversion code.
+#
 set -e
 rm -f parts/* tmp/* convert/*
+#
+#		Split into local groups
+#
 python scripts/split.py
+#
+#		Convert basic.header
+#
 python scripts/headerprocessor.py 
+#
+#		Convert basic groups
+#
 python scripts/codeprocessor.py
+#
+#		Stick back together and assemble
+#
 python scripts/rejoin.py
-acme -v2 --cpu m65 -o tmp/basic.bin -r tmp/basic.lst tmp/basic.asm
+acme -v1 --cpu m65 -o tmp/basic.bin -r tmp/basic.lst tmp/basic.asm
+#
+#		Binary check & ROM construction
+#
 python scripts/check.py
+#
+#		Check the binary matches.
+#
+cmp bin/rom.bin original/b65.rom

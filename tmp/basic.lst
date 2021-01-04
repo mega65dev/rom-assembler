@@ -20674,7 +20674,7 @@
  20672                           ;; @@be7b 315
  20673  be7b 2c0311                              bit _pal_ntsc                            ; determine if PAL or NTSC system  [910724] ;; @@be7b 315
  20674  be7e 3006                                bmi _local_1314_1                        ; ...branch if PAL ;; @@be7e 315
- 20675  be80 a968                                lda #<beats_ntsc/4                       ; set beat to quarter note (4/4 time = .5 sec) ;; @@be80 315
+ 20675  be80 a928                                lda #(<beats_ntsc)/4                     ; set beat to quarter note (4/4 time = .5 sec) ;; @@be80 315
  20676  be82 a001                                ldy #>beats_ntsc/4                        ;; @@be82 315
  20677  be84 8004                                bra _local_1314_2                         ;; @@be84 315
  20678  be86 a92c               _local_1314_1    lda #<beats_pal/4                         ;; @@be86 315

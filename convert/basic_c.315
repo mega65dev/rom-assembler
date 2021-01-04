@@ -25,7 +25,7 @@ _local_1314_40   sta sid1,x                               ; initialize SID chips
  ;; @@be7b 315
                  bit _pal_ntsc                            ; determine if PAL or NTSC system  [910724] ;; @@be7b 315
                  bmi _local_1314_1                        ; ...branch if PAL ;; @@be7e 315
-                 lda #<beats_ntsc/4                       ; set beat to quarter note (4/4 time = .5 sec) ;; @@be80 315
+                 lda #(<beats_ntsc)/4                     ; set beat to quarter note (4/4 time = .5 sec) ;; @@be80 315
                  ldy #>beats_ntsc/4                        ;; @@be82 315
                  bra _local_1314_2                         ;; @@be84 315
 _local_1314_1    lda #<beats_pal/4                         ;; @@be86 315

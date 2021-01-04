@@ -110,7 +110,6 @@ class CodeProcessor(BaseProcessor):
 			romOpcode == 0xF3 or romOpcode == 0xB3 or romOpcode == 0x33 or romOpcode == 0x73 or \
 			romOpcode == 0x53:
 			self.body = "+l"+self.body
-			print(self.body)
 		#
 		else: 
 			if ((romOpcode & 0x1F) == 0x13):
@@ -145,6 +144,11 @@ class CodeProcessor(BaseProcessor):
 		#
 		if self.body == "beq inz":
 			self.body = "beq inz1"
+		#
+		#		Precedence I think
+		#
+		if self.body == "lda #<beats_ntsc/4":
+			self.body = "lda #(<beats_ntsc)/4"
 	#			
 	#		Read ROM.
 	#		
@@ -231,7 +235,7 @@ if __name__ == "__main__":
 			p = hp.process(l)
 			if p is not None:
 				tgt.write("{0} ;; @@{1:04x} {2}\n".format(p,startPC,page))
-				print("{0:2}:${1:02x} {2}".format(page,startPC,p))
+				#print("{0:2}:${1:02x} {2}".format(page,startPC,p))
 			else:
 				assert False,"Couldn't fathom {"+l+"}"
 		tgt.close()
