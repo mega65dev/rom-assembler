@@ -90,6 +90,7 @@ fingo
 ;string functions remove this ret addr
                 +lbra   chknum                          ; check for "numeric-ness" and return
 
+;;[[system.escape]]
 
 ; Escape Function handler
 
@@ -113,7 +114,6 @@ l19_1           cmp     #first_esc_function_token       ; see if this esc fn is 
                 adc     #last_function_token-first_esc_function_token-1
                 bra     fingo                           ; always
 
-
 foreign_esc_fn
                 sec                                     ; flag 'up for grabs'
                 jsr     go_foreign_esc_fn
@@ -123,33 +123,6 @@ n_esc_fn_vec
 
 go_foreign_esc_fn
                 jmp     (esc_fn_vec)
-
-
-orop            ldy     #255                            ; must always complement
-                !text $2c
-
-andop           ldy     #0
-                sty     count                           ; operator
-                jsr     ayint                           ; (facmo&lo)=int value and check size
-                lda     facmo                           ; use Demorgan's Law on high
-                eor     count
-                sta     integr
-                lda     faclo                           ; and low
-                eor     count
-                sta     integr+1
-                jsr     movfa
-                jsr     ayint                           ; (facmo&lo)=int of arg
-                lda     faclo
-                eor     count
-                and     integr+1
-                eor     count                           ; finish out Demorgan
-                tay                                     ; save high
-                lda     facmo
-                eor     count
-                and     integr
-                eor     count
-                +lbra   givayf                          ; float (a,y) and return to user
-
 
 
 ; ********************************************************************************************

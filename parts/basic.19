@@ -15,6 +15,7 @@ fingo
    ;string functions remove this ret addr 
  bra chknum ;check for "numeric-ness" and return 
  
+;;[[system.escape]] 
  .page 
 ; Escape Function handler 
  
@@ -37,5 +38,4 @@ do_esc_fn
  
  adc #last_function_token-first_esc_function_token-1 
  bra fingo  ;always 
- 
  

@@ -2745,6 +2745,7 @@ fingo
 ;string functions remove this ret addr
                 +lbra   chknum                          ; check for "numeric-ness" and return
 
+;;[[system.escape]]
 
 ; Escape Function handler
 
@@ -2768,7 +2769,6 @@ l19_1           cmp     #first_esc_function_token       ; see if this esc fn is 
                 adc     #last_function_token-first_esc_function_token-1
                 bra     fingo                           ; always
 
-
 foreign_esc_fn
                 sec                                     ; flag 'up for grabs'
                 jsr     go_foreign_esc_fn
@@ -2779,6 +2779,7 @@ n_esc_fn_vec
 go_foreign_esc_fn
                 jmp     (esc_fn_vec)
 
+;[[operator.binary]]
 
 orop            ldy     #255                            ; must always complement
                 !text $2c

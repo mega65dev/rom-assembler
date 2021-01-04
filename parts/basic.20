@@ -8,6 +8,7 @@ n_esc_fn_vec
 go_foreign_esc_fn 
  jmp (esc_fn_vec) 
  
+;[[operator.binary]] 
  .page 
 orop ldy #255 ;must always complement 
    .byte $2c 

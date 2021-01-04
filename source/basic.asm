@@ -20,6 +20,7 @@
 !source "system/dispatcher.asm"
 !source "command/set1.asm"
 !source "function/dispatch.asm"
+!source "operator/binary.asm"
 !source "operator/relational.asm"
 !source "system/readyerror.asm"
 !source "error/handler.asm"

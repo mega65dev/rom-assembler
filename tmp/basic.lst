@@ -3140,29 +3140,29 @@
     90                          ;string functions remove this ret addr
     91  2d67 83721f                             +lbra   chknum                          ; check for "numeric-ness" and return
     92                          
-    93                          
-    94                          ; Escape Function handler
-    95                          
-    96                          do_esc_fn
-    97  2d6a 208322                             jsr     chrget                          ; get second token
-    98  2d6d f3db00                             +lbeq   snerr                           ; error if no second token
-    99  2d70 c90a                               cmp     #pointer_token
-   100  2d72 f00b                               beq     l19_1                           ; skip pre-parse if 'POINTER()'
-   101  2d74 48                                 pha
-   102  2d75 208322                             jsr     chrget                          ; should be '('
-   103  2d78 20584e                             jsr     chkopn
-   104  2d7b 20ef4c                             jsr     frmevl                          ; evaluate first argument
-   105  2d7e 68                                 pla
-   106  2d7f c902               l19_1           cmp     #first_esc_function_token       ; see if this esc fn is one of ours
-   107  2d81 9008                               bcc     foreign_esc_fn                  ; nope.
-   108  2d83 c90e                               cmp     #last_esc_function_token+1
-   109  2d85 b004                               bcs     foreign_esc_fn                  ; nope
-   110                          
-   111                          ; Convert to index into the function dispatch table
-   112                          
-   113  2d87 69d1                               adc     #last_function_token-first_esc_function_token-1
-   114  2d89 80ca                               bra     fingo                           ; always
-   115                          
+    93                          ;;[[system.escape]]
+    94                          
+    95                          ; Escape Function handler
+    96                          
+    97                          do_esc_fn
+    98  2d6a 208322                             jsr     chrget                          ; get second token
+    99  2d6d f3db00                             +lbeq   snerr                           ; error if no second token
+   100  2d70 c90a                               cmp     #pointer_token
+   101  2d72 f00b                               beq     l19_1                           ; skip pre-parse if 'POINTER()'
+   102  2d74 48                                 pha
+   103  2d75 208322                             jsr     chrget                          ; should be '('
+   104  2d78 20584e                             jsr     chkopn
+   105  2d7b 20ef4c                             jsr     frmevl                          ; evaluate first argument
+   106  2d7e 68                                 pla
+   107  2d7f c902               l19_1           cmp     #first_esc_function_token       ; see if this esc fn is one of ours
+   108  2d81 9008                               bcc     foreign_esc_fn                  ; nope.
+   109  2d83 c90e                               cmp     #last_esc_function_token+1
+   110  2d85 b004                               bcs     foreign_esc_fn                  ; nope
+   111                          
+   112                          ; Convert to index into the function dispatch table
+   113                          
+   114  2d87 69d1                               adc     #last_function_token-first_esc_function_token-1
+   115  2d89 80ca                               bra     fingo                           ; always
    116                          
    117                          foreign_esc_fn
    118  2d8b 38                                 sec                                     ; flag 'up for grabs'
@@ -3175,39 +3175,61 @@
    125  2d95 6cfc02                             jmp     (esc_fn_vec)
    126                          
    127                          
-   128  2d98 a0ff               orop            ldy     #255                            ; must always complement
-   129  2d9a 2c                                 !text $2c
-   130                          
-   131  2d9b a000               andop           ldy     #0
-   132  2d9d 840d                               sty     count                           ; operator
-   133  2d9f 20b458                             jsr     ayint                           ; (facmo&lo)=int value and check size
-   134  2da2 a566                               lda     facmo                           ; use Demorgan's Law on high
-   135  2da4 450d                               eor     count
-   136  2da6 850a                               sta     integr
-   137  2da8 a567                               lda     faclo                           ; and low
-   138  2daa 450d                               eor     count
-   139  2dac 850b                               sta     integr+1
-   140  2dae 209362                             jsr     movfa
-   141  2db1 20b458                             jsr     ayint                           ; (facmo&lo)=int of arg
-   142  2db4 a567                               lda     faclo
-   143  2db6 450d                               eor     count
-   144  2db8 250b                               and     integr+1
-   145  2dba 450d                               eor     count                           ; finish out Demorgan
-   146  2dbc a8                                 tay                                     ; save high
-   147  2dbd a566                               lda     facmo
-   148  2dbf 450d                               eor     count
-   149  2dc1 250a                               and     integr
-   150  2dc3 450d                               eor     count
-   151  2dc5 837820                             +lbra   givayf                          ; float (a,y) and return to user
-   152                          
-   153                          
-   154                          
-   155                          ; ********************************************************************************************
-   156                          ;
-   157                          ;	Date		Changes
-   158                          ;	====		=======
-   159                          ;
-   160                          ; ********************************************************************************************
+   128                          ; ********************************************************************************************
+   129                          ;
+   130                          ;	Date		Changes
+   131                          ;	====		=======
+   132                          ;
+   133                          ; ********************************************************************************************
+
+; ******** Source: basic.asm
+
+; ******** Source: operator/binary.asm
+     1                          ; ********************************************************************************************
+     2                          ; ********************************************************************************************
+     3                          ;
+     4                          ;	Name :      binary.asm
+     5                          ;	Purpose :   ..
+     6                          ;	Created :   15th Nov 1991
+     7                          ;	Updated :   4th Jan 2021
+     8                          ;	Authors :   Fred Bowen
+     9                          ;
+    10                          ; ********************************************************************************************
+    11                          ; ********************************************************************************************
+    12                          
+    13  2d98 a0ff               orop            ldy     #255                            ; must always complement
+    14  2d9a 2c                                 !text $2c
+    15                          
+    16  2d9b a000               andop           ldy     #0
+    17  2d9d 840d                               sty     count                           ; operator
+    18  2d9f 20b458                             jsr     ayint                           ; (facmo&lo)=int value and check size
+    19  2da2 a566                               lda     facmo                           ; use Demorgan's Law on high
+    20  2da4 450d                               eor     count
+    21  2da6 850a                               sta     integr
+    22  2da8 a567                               lda     faclo                           ; and low
+    23  2daa 450d                               eor     count
+    24  2dac 850b                               sta     integr+1
+    25  2dae 209362                             jsr     movfa
+    26  2db1 20b458                             jsr     ayint                           ; (facmo&lo)=int of arg
+    27  2db4 a567                               lda     faclo
+    28  2db6 450d                               eor     count
+    29  2db8 250b                               and     integr+1
+    30  2dba 450d                               eor     count                           ; finish out Demorgan
+    31  2dbc a8                                 tay                                     ; save high
+    32  2dbd a566                               lda     facmo
+    33  2dbf 450d                               eor     count
+    34  2dc1 250a                               and     integr
+    35  2dc3 450d                               eor     count
+    36  2dc5 837820                             +lbra   givayf                          ; float (a,y) and return to user
+    37                          
+    38                          
+    39                          
+    40                          ; ********************************************************************************************
+    41                          ;
+    42                          ;	Date		Changes
+    43                          ;	====		=======
+    44                          ;
+    45                          ; ********************************************************************************************
 
 ; ******** Source: basic.asm
 
