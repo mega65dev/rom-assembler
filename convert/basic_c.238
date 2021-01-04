@@ -1,0 +1,47 @@
+on2              jsr on                                    ;; 75cd 238
+                 bra del2                                  ;; 75d0 238
+ ;; 75d2 238
+ ;; 75d2 238
+unit2            jsr unit                                 ; do unit# parsing ;; 75d2 238
+                 bra del2                                 ; always ;; 75d5 238
+ ;; 75d7 238
+name2            lda #2                                   ; name2 allowed only once ;; 75d7 238
+                 jsr newnam                                ;; 75d9 238
+                 sta dosf2l                                ;; 75dc 238
+                 stx dosf2a                                ;; 75df 238
+                 sty dosf2a+1                              ;; 75e2 238
+ ;; 75e5 238
+                 lda #2                                   ; set filename2 flag & ;; 75e5 238
+del2             tsb parsts                               ; set flag in status ;; 75e7 238
+                 jsr chrgot                                ;; 75e9 238
+                 beq done                                 ; done on <cr>/<> ;; 75ec 238
+                 cmp #','                                  ;; 75ef 238
+                 beq parse2                                ;; 75f1 238
+                 cmp #on_token                            ; "on" token ;; 75f3 238
+                 beq on2                                   ;; 75f5 238
+                 cmp #'U'                                  ;; 75f7 238
+                 beq unit2                                 ;; 75f9 238
+                 bra snerr                                 ;; 75fb 238
+ ;; 75fe 238
+ ;; 75fe 238
+on               jsr chrget                                ;; 75fe 238
+                 cmp #'B'                                  ;; 7601 238
+                 beq dbank                                 ;; 7603 238
+                 cmp #'U'                                  ;; 7605 238
+                 bne snerr                                 ;; 7607 238
+ ;; 760a 238
+ ;; 760a 238
+unit             jsr gtbytc                               ; getval ;; 760a 238
+                 cpx #31                                   ;; 760d 238
+                 bcs err_ild                              ; error if >30 ;; 760f 238
+                 cpx #1                                   ; drive 1 = use system default drive  [910221] ;; 7611 238
+                 bne _local_1237_10                        ;; 7613 238
+                 ldx _default_drive                        ;; 7615 238
+                 bra _local_1237_20                        ;; 7618 238
+_local_1237_10   cpx #4                                    ;; 761a 238
+                 bcc err_ild                              ; error if <4 ;; 761c 238
+_local_1237_20   stx dosfa                                 ;; 761e 238
+                 lda #$08                                 ; set parser's unit flag ;; 7621 238
+                 rts                                       ;; 7623 238
+ ;; 7624 238
+ ;; 7624 238

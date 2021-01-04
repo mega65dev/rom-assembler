@@ -1,0 +1,49 @@
+finlog           pha                                       ;; 6414 179
+                 jsr movaf                                ; save it for later ;; 6415 179
+                 pla                                       ;; 6418 179
+                 jsr float                                ; float the value in (a) ;; 6419 179
+ ;; 641c 179
+faddt_c65                                                 ; [910402] ;; 641c 179
+                 lda argsgn                                ;; 641c 179
+                 eor facsgn                                ;; 641e 179
+                 sta arisgn                               ; resultant sign ;; 6420 179
+                 ldx facexp                               ; set signs on thing to add ;; 6422 179
+                 bra faddt                                ; add together and return ;; 6424 179
+ ;; 6427 179
+; .page ;; 6427 179
+; Pack in the next digit of the exponent. ;; 6427 179
+; Multiply the old exp by 10 and add in the next digit. ;; 6427 179
+; (note: does not check for exp overflow) ;; 6427 179
+ ;; 6427 179
+finedg           lda tenexp                               ; get exp so far ;; 6427 179
+                 cmp #10                                  ; will result be >= 100? ;; 6429 179
+                 bcc _local_1178_5                         ;; 642b 179
+                 lda #100                                  ;; 642d 179
+                 bbs7 expsgn,_local_1178_30               ; if neg exp, no chk for overr ;; 642f 179
+                 bra overr                                 ;; 6432 179
+ ;; 6435 179
+_local_1178_5    asl a                                    ; max is 120 ;; 6435 179
+                 asl a                                    ; mult by 2 twice ;; 6436 179
+                 clc                                      ; possible shift out of high ;; 6437 179
+                 adc tenexp                               ; like multiplying by five ;; 6438 179
+                 asl a                                    ; and now by ten ;; 643a 179
+                 clc                                       ;; 643b 179
+                 ldy #0                                    ;; 643c 179
+                 sta syntmp                                ;; 643e 179
+ ;; 6440 179
+                 lda fin_bank                             ; text or string bank? ;; 6440 179
+                 bne _local_1178_10                        ;; 6443 179
+                 jsr indtxt                               ; text ;; 6445 179
+                 bra _local_1178_20                        ;; 6448 179
+_local_1178_10   jsr indin1_ram1                          ; string ;; 644a 179
+ ;; 644d 179
+_local_1178_20   adc syntmp                                ;; 644d 179
+                 sec                                       ;; 644f 179
+                 sbc #'0'                                  ;; 6450 179
+_local_1178_30   sta tenexp                               ; save result ;; 6452 179
+                 bra finec                                 ;; 6454 179
+ ;; 6457 179
+; .page ;; 6457 179
+; Get a character from either text or string area, and set the flags ;; 6457 179
+; in the manner performed by CHRGET. ;; 6457 179
+ ;; 6457 179

@@ -1,0 +1,10 @@
+if               jsr frmevl                               ; evaluate the conditional expression ;; 357e 44
+                 jsr chrgot                               ; re-get current character ;; 3581 44
+                 cmp #goto_token                          ; is terminating character a GOTO? ;; 3584 44
+                 beq _local_1043_10                       ; yes ;; 3586 44
+                 lda #then_token                          ; no, it must be THEN ;; 3588 44
+                 jsr synchr                                ;; 358a 44
+ ;; 358d 44
+_local_1043_10   lda facexp                               ; test truth value of argument ;; 358d 44
+                 bne if_true                              ; branch if true ;; 358f 44
+ ;; 3591 44

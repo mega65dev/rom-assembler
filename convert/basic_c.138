@@ -1,0 +1,39 @@
+fre              jsr conint                               ; get integer argument in .x ;; 5513 138
+                 cpx #1                                   ; which bank? ;; 5516 138
+                 beq _local_1137_20                       ; go do bank one ;; 5518 138
+                 cpx #2                                   ; go do expansion banks   [910107] ;; 551a 138
+                 beq _local_1137_30                       ; else it must be bank zero ;; 551c 138
+                 bcs fcerr                                ; any other is unpleasant to talk about ;; 551e 138
+ ;; 5521 138
+                 sec                                      ; FRE(text_bank) ;; 5521 138
+                 lda max_mem_0                             ;; 5522 138
+                 sbc text_top                              ;; 5525 138
+                 tay                                      ; set up result for nosflt ;; 5527 138
+                 lda max_mem_0+1                           ;; 5528 138
+                 sbc text_top+1                            ;; 552b 138
+                 bra _local_1137_40                       ; assumes text_top < max_mem ;; 552d 138
+ ;; 552f 138
+ ;; 552f 138
+_local_1137_20   jsr garba2                               ; FRE(var_bank) do garbage collect first ;; 552f 138
+                 sec                                       ;; 5532 138
+                 lda fretop                                ;; 5533 138
+                 sbc strend                                ;; 5535 138
+                 tay                                       ;; 5537 138
+                 lda fretop+1                              ;; 5538 138
+                 sbc strend+1                              ;; 553a 138
+                 bra _local_1137_40                        ;; 553c 138
+ ;; 553e 138
+_local_1137_30   ldy _expansion                           ; FRE(expansion banks)    [910107] ;; 553e 138
+                 lda #0                                    ;; 5541 138
+ ;; 5543 138
+_local_1137_40   bra nosflt                               ; go float the number (y,a)=(lo,hi) ;; 5543 138
+ ;; 5546 138
+;.end ;; 5546 138
+; .page ;; 5546 138
+; .subttl  VAL ;; 5546 138
+ ;; 5546 138
+; The VAL function takes a string and turns it into a number by interpreting ;; 5546 138
+; the PETSCII digits etc.  Except for the problem that a terminator must be ;; 5546 138
+; supplied by replacing the character beyond the string, VAL is merely a call ;; 5546 138
+; to floating point input (FIN). ;; 5546 138
+ ;; 5546 138

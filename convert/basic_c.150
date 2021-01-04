@@ -1,0 +1,60 @@
+rnd              jsr sign                                 ; get sign into .a ;; 5823 150
+ ;; 5826 150
+rnd_0            bmi _local_1149_20                       ; /// entry from jump table ;; 5826 150
+                 bne _local_1149_10                        ;; 5828 150
+ ;; 582a 150
+ ;; 582a 150
+; Get value from hardware ;; 582a 150
+ ;; 582a 150
+                 jsr go_slow                              ; Use CIA#1 timer B & SID#2 pot X & Y for seeds  [910314] ;; 582a 150
+                 lda sid2+25                              ; go slow to read POT-X ;; 582d 150
+                 asl a                                     ;; 5830 150
+                 asl a                                     ;; 5831 150
+                 asl a                                     ;; 5832 150
+                 asl a                                     ;; 5833 150
+                 ora sid2+26                              ; and POT-Y ;; 5834 150
+                 eor vic+18                               ; ???? should be okay- we're in Slow mode ;; 5837 150
+                 sta facmoh                                ;; 583a 150
+                 jsr go_fast                              ; restore speed ;; 583c 150
+                 lda d1pra+6                              ; timer B is free-running ;; 583f 150
+                 sta facmo                                 ;; 5842 150
+                 lda d1pra+7                               ;; 5844 150
+                 sta faclo                                 ;; 5847 150
+                 eor facho                                 ;; 5849 150
+                 adc facmoh                                ;; 584b 150
+                 eor facmo                                 ;; 584d 150
+                 adc faclo                                 ;; 584f 150
+                 sta facho                                 ;; 5851 150
+                 bra _local_1149_30                        ;; 5853 150
+ ;; 5855 150
+; .page ;; 5855 150
+_local_1149_10   lda #<rndx                               ; get last one into FAC ;; 5855 150
+                 ldy #>rndx                                ;; 5857 150
+                 jsr movfm                                 ;; 5859 150
+                 lda #<rmulc                               ;; 585c 150
+                 ldy #>rmulc                              ; FAC was zero.  restore last one ;; 585e 150
+                 jsr rommlt                               ; multiply by random constant ;; 5860 150
+                 lda #<raddc                               ;; 5863 150
+                 ldy #>raddc                               ;; 5865 150
+                 jsr romadd                               ; add random constant ;; 5867 150
+ ;; 586a 150
+_local_1149_20   ldx faclo                                 ;; 586a 150
+                 lda facho                                 ;; 586c 150
+                 sta faclo                                 ;; 586e 150
+                 stx facho                                ; reverse hi and lo ;; 5870 150
+                 ldx facmoh                                ;; 5872 150
+                 lda facmo                                 ;; 5874 150
+                 sta facmoh                                ;; 5876 150
+                 stx facmo                                 ;; 5878 150
+ ;; 587a 150
+_local_1149_30   lda #0                                   ; strnex.  make number positive ;; 587a 150
+                 sta facsgn                                ;; 587c 150
+                 lda facexp                               ; put exp where it will ;; 587e 150
+                 sta facov                                ; be shifted in by normal ;; 5880 150
+                 lda #$80                                  ;; 5882 150
+                 sta facexp                               ; make result between 0 and 1 ;; 5884 150
+                 jsr normal                               ; normalize ;; 5886 150
+                 ldx #<rndx                                ;; 5889 150
+                 ldy #>rndx                                ;; 588b 150
+                 bra movmf                                ; put new one into memory ;; 588d 150
+ ;; 5890 150

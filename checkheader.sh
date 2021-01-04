@@ -1,4 +1,4 @@
 rm parts/* tmp/*
 python scripts/split.py
 python scripts/headerprocessor.py 
-acme  -r tmp/test.lst convert/basic.header
+acme  -r tmp/test.lst convert/basic_c.header

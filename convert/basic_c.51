@@ -1,0 +1,73 @@
+let              jsr ptrget                               ; get pntr to variable into "varpnt" ;; 3676 51
+                 sta forpnt                               ; preserve pointer ;; 3679 51
+                 sty forpnt+1                              ;; 367b 51
+                 lda #equal_token                          ;; 367d 51
+                 jsr synchr                               ; "=" is necessary ;; 367f 51
+ ;; 3682 51
+                 lda intflg                               ; save type for later ;; 3682 51
+                 pha                                       ;; 3684 51
+                 lda valtyp                               ; retain the variable's value type too ;; 3685 51
+                 pha                                       ;; 3687 51
+ ;; 3688 51
+                 jsr frmevl                               ; get value of formula into FAC ;; 3688 51
+                 pla                                       ;; 368b 51
+                 rol a                                    ; carry set for string, off for numeric ;; 368c 51
+                 jsr chkval                               ; make sure VALTYP matches carry ;; 368d 51
+;and set zero flag for numeric ;; 3690 51
+                 bne copstr                               ; if numeric, copy it ;; 3690 51
+                 pla                                      ; get number type ;; 3692 51
+ ;; 3693 51
+qintgr           bpl copflt                               ; store a floating point number ;; 3693 51
+                 jsr round                                ; round integer ;; 3695 51
+                 jsr ayint                                ; make two-byte number ;; 3698 51
+                 ldy #0                                    ;; 369b 51
+                 lda facmo                                ; get high ;; 369d 51
+                 phx                                       ;; 369f 51
+                 ldx #forpnt                               ;; 36a0 51
+                 jsr sta_far_ram1 ;sta (forpnt),y         ; store it ;; 36a2 51
+                 iny                                       ;; 36a5 51
+                 lda faclo                                ; get low ;; 36a6 51
+                 jsr sta_far_ram1                         ; sta (forpnt),y ;; 36a8 51
+                 plx                                       ;; 36ab 51
+                 rts                                       ;; 36ac 51
+ ;; 36ad 51
+ ;; 36ad 51
+ ;; 36ad 51
+copflt           ldx forpnt                                ;; 36ad 51
+                 ldy forpnt+1                              ;; 36af 51
+                 bra movmf_ram1                           ; put number @forpnt in var bank ;; 36b1 51
+ ;; 36b4 51
+ ;; 36b4 51
+ ;; 36b4 51
+copstr           pla                                      ; if string, no INTFLG ;; 36b4 51
+ ;; 36b5 51
+inpcom           ldy forpnt+1                             ; TI$? ;; 36b5 51
+                 cpy #>zero                               ; (only TI$ can be this on assign) ;; 36b7 51
+                 beq Set_TI_String                        ; yes ;; 36b9 51
+                 bra getspt                               ; no ;; 36bc 51
+ ;; 36be 51
+; .page ;; 36be 51
+dskx1            pla                                       ;; 36be 51
+                 iny                                       ;; 36bf 51
+ ;; 36c0 51
+dskx2            cmp fretop+1                              ;; 36c0 51
+                 bcc _local_1050_20                        ;; 36c2 51
+                 bne _local_1050_10                        ;; 36c4 51
+                 dey                                       ;; 36c6 51
+                 jsr indfmo                                ;; 36c7 51
+                 cmp fretop                                ;; 36ca 51
+                 bcc _local_1050_20                        ;; 36cc 51
+ ;; 36ce 51
+_local_1050_10   ldy faclo                                ; qvaria ;; 36ce 51
+                 cpy vartab+1                             ; if (vartab) > (facmo), don't copy ;; 36d0 51
+                 bcc _local_1050_20                        ;; 36d2 51
+                 bne copy                                 ; it is less ;; 36d4 51
+                 lda facmo                                 ;; 36d6 51
+                 cmp vartab                               ; compare low orders ;; 36d8 51
+                 bcs copy                                  ;; 36da 51
+ ;; 36dc 51
+_local_1050_20   lda facmo                                ; dntcpy ;; 36dc 51
+                 ldy facmo+1                               ;; 36de 51
+                 bra copyc                                 ;; 36e0 51
+ ;; 36e2 51
+; .page ;; 36e2 51

@@ -1,0 +1,45 @@
+p3code                                                     ;; 3fe3 79
+                 inx                                       ;; 3fe3 79
+                 lda fbuffr+1,x                           ; get character from number ;; 3fe4 79
+                 beq _local_1078_30                       ; end of number ;; 3fe7 79
+ ;; 3fe9 79
+                 pha                                      ; save digit from new number ;; 3fe9 79
+                 jsr chargt                               ; get digit from old number ;; 3fea 79
+                 cmp #':'                                 ; command terminator or letter? ;; 3fed 79
+                 bcs _local_1078_10                        ;; 3fef 79
+                 cmp #' '                                 ; space? (fix for goto10 :rem) ;; 3ff1 79
+                 beq _local_1078_10                        ;; 3ff3 79
+                 sec                                       ;; 3ff5 79
+                 sbc #'0'                                 ; number? ;; 3ff6 79
+                 sec                                       ;; 3ff8 79
+                 sbc #$d0                                  ;; 3ff9 79
+                 bcc _local_1078_20                       ; digit...move on ;; 3ffb 79
+ ;; 3ffd 79
+_local_1078_10   jsr move_init                            ; other char...move up ;; 3ffd 79
+                 jsr moveup                                ;; 4000 79
+                 inw text_top                              ;; 4003 79
+ ;; 4005 79
+_local_1078_20   pla                                       ;; 4005 79
+                 phx                                       ;; 4006 79
+                 ldy #0                                    ;; 4007 79
+                 jsr sta_far_txt                          ; put new digit in new number (bleed-thru) ;; 4009 79
+                 plx                                       ;; 400c 79
+                 bra p3code                                ;; 400d 79
+ ;; 400f 79
+ ;; 400f 79
+_local_1078_30   jsr chrget                                ;; 400f 79
+                 bcs iline_20                             ; old stuff after # is other char ;; 4012 79
+ ;; 4014 79
+_local_1078_40   jsr move_init                            ; digit...move down ;; 4014 79
+                 jsr movedown                              ;; 4017 79
+                 dew text_top                              ;; 401a 79
+                 jsr chrgot                                ;; 401c 79
+                 bcc _local_1078_40                       ; still digits... ;; 401f 79
+ ;; 4021 79
+                 bra iline_20                             ; branch always ;; 4021 79
+ ;; 4023 79
+; .page ;; 4023 79
+;*************************** FORM_LINE ********************************* ;; 4023 79
+ ;; 4023 79
+; Remaps the destination line if it is greater than n3 ;; 4023 79
+ ;; 4023 79

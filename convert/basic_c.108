@@ -1,0 +1,35 @@
+play_bad_value                                             ;; 4890 108
+                 jsr clear_flag                            ;; 4890 108
+                 bra fcerr                                ; illegal quantity ;; 4893 108
+ ;; 4896 108
+play_dot                                                   ;; 4896 108
+                 sta dnote                                 ;; 4896 108
+                 rts                                       ;; 4899 108
+ ;; 489a 108
+ ;; 489a 108
+ ;; 489a 108
+set_note_length                                            ;; 489a 108
+; ldy #<beats  ;found note (.x), divide beats accordingly ;; 489a 108
+; sty ntime ;; 489a 108
+; ldy #>beats ;; 489a 108
+; sty ntime+1 ;; 489a 108
+ ;; 489a 108
+                 bit _pal_ntsc                            ; determine if PAL or NTSC system  [910724] ;; 489a 108
+                 bmi _local_1107_1                        ; ...branch if PAL ;; 489d 108
+                 ldz #<beats_ntsc                         ; (whole note 4/4 time = 2 sec) ;; 489f 108
+                 ldy #>beats_ntsc                          ;; 48a1 108
+                 bra _local_1107_2                         ;; 48a3 108
+_local_1107_1    ldz #<beats_pal                           ;; 48a5 108
+                 ldy #>beats_pal                           ;; 48a7 108
+_local_1107_2    stz ntime                                 ;; 48a9 108
+                 sty ntime+1                               ;; 48ac 108
+ ;; 48af 108
+_local_1107_10   dex                                       ;; 48af 108
+                 bmi _local_1107_20                       ; finished dividing, exit ;; 48b0 108
+                 lsr ntime+1                               ;; 48b2 108
+                 ror ntime                                 ;; 48b5 108
+                 bra _local_1107_10                        ;; 48b8 108
+ ;; 48ba 108
+_local_1107_20   rts                                       ;; 48ba 108
+ ;; 48bb 108
+; .page ;; 48bb 108

@@ -1,0 +1,26 @@
+dclear           jsr dospar                               ; parse the line ;; 7355 230
+                 ldy #finit                               ; set code ;; 7358 230
+                 lda #2                                    ;; 735a 230
+                 jsr trans                                ; send command ;; 735c 230
+                 jsr print_dos_error                      ; if any ;; 735f 230
+                 bra dclall                                ;; 7362 230
+ ;; 7365 230
+ ;; 7365 230
+ ;; 7365 230
+ ;; 7365 230
+; COLLECT v<drive#> ;; 7365 230
+ ;; 7365 230
+collect          jsr dospar                               ; parse the line ;; 7365 230
+                 jsr chk3                                 ; check optional parameters ;; 7368 230
+                 jsr _clall                               ; close all files ;; 736b 230
+                 ldy #fcoll                               ; tabld offset ;; 736e 230
+                 lda #1                                   ; length ;; 7370 230
+                 bbr4 parsts,_local_1229_10                ;; 7372 230
+                 inc a                                    ; include drive ;; 7375 230
+_local_1229_10   jsr trans                                ; send command ;; 7376 230
+                 bra print_dos_error                      ; if any ;; 7379 230
+ ;; 737c 230
+ ;; 737c 230
+; .page ;; 737c 230
+; COPY cdddfn=sdsfn ;; 737c 230
+ ;; 737c 230

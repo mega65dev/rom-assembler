@@ -1,0 +1,65 @@
+list_exit                                                  ;; 3320 36
+                 jsr dcato                                ; flush last line with a <cr> ;; 3320 36
+                 jsr crdo                                 ; flush current line ;; 3323 36
+                 clc                                      ; no errors    [910404] ;; 3326 36
+list_err                                                   ;; 3327 36
+                 php                                      ; save error status   [910404] ;; 3327 36
+                 pha                                       ;; 3328 36
+                 jsr release_channels                     ; release cmd channel, restore terminal ;; 3329 36
+                 lda dosla                                 ;; 332c 36
+; bra close_out  ;    removed [900725] ;; 332f 36
+                 clc                                      ; a real close   new [910404] ;; 332f 36
+                 jsr _close                                ;; 3330 36
+                 pla                                      ; pop error status, if any ;; 3333 36
+                 plp                                       ;; 3334 36
+                 bra exit_disk_op                          ;; 3335 36
+ ;; 3338 36
+; .page ;; 3338 36
+; LIST command is of the form  LIST [range] ;; 3338 36
+ ;; 3338 36
+list_memory                                                ;; 3338 36
+                 jsr range                                ; set up line range ;; 3338 36
+ ;; 333b 36
+_local_1035_10   ldy #1                                    ;; 333b 36
+                 jsr indlow                               ; get ms byte of line to list's pointer ;; 333d 36
+                 bne _local_1035_20                       ; ok if not zero, but.. ;; 3340 36
+                 dey                                       ;; 3342 36
+                 jsr indlow                                ;; 3343 36
+                 beq crdo                                 ; ..if ls byte is also zero, we're done ;; 3346 36
+ ;; 3349 36
+_local_1035_20   jsr is_stop_key_down                      ;; 3349 36
+                 jsr crdo                                 ; new line ;; 334c 36
+                 ldy #2                                    ;; 334f 36
+                 jsr indlow                               ; get ms byte of line number ;; 3351 36
+                 tax                                       ;; 3354 36
+                 iny                                       ;; 3355 36
+                 jsr indlow                               ; get ls byte ;; 3356 36
+ ;; 3359 36
+                 cmp linnum+1                             ; test if we are past the last line requested ;; 3359 36
+                 bne _local_1035_30                        ;; 335b 36
+                 cpx linnum                                ;; 335d 36
+                 beq _local_1035_40                        ;; 335f 36
+_local_1035_30   bcs crdo                                 ; next line is > last line requested, exit ;; 3361 36
+_local_1035_40   jsr p1line                               ; print line #, space, and the line of code ;; 3364 36
+                 ldy #0                                   ; move 'pointer to next line' into (lowtr) ;; 3367 36
+                 jsr indlow                                ;; 3369 36
+                 tax                                       ;; 336c 36
+                 iny                                       ;; 336d 36
+                 jsr indlow                                ;; 336e 36
+                 stx lowtr                                 ;; 3371 36
+                 sta lowtr+1                               ;; 3373 36
+                 bra _local_1035_10                        ;; 3375 36
+ ;; 3377 36
+; .page ;; 3377 36
+;****************************************************** ;; 3377 36
+; P1LINE Print 1 line of BASIC text ;; 3377 36
+; ;; 3377 36
+; Entry: (a,x) contains line number low,high ;; 3377 36
+;  (lowtr) points to beginning of line ;; 3377 36
+; ;; 3377 36
+; next-line   line-num  BASIC text......  null ;; 3377 36
+; lo    hi    lo    hi  byte byte...byte   00 ;; 3377 36
+;        ^           ^     ^ ;; 3377 36
+;    (lowtr)        .A    .X ;; 3377 36
+;****************************************************** ;; 3377 36
+ ;; 3377 36

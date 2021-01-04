@@ -25,7 +25,12 @@ class PartLoader(object):
 		src = open("parts/basic."+str(partID)).readlines()							# get code in.
 		labels = {}
 		for ln in src:																# scan it
-			if ln != "" and ln[0] >= '0' and ln[0] <= '9':							# found a label
+			if ln != "" and ln[0] >= 'a' and ln[0] <= 'z':							# found a normal label.
+				label = ln.split()[0]												# get the label
+				if label.find("$") >= 0:											# found a label$nn
+					labels[label] = label.replace("$","__")							# add a sub in for that.
+					
+			if ln != "" and ln[0] >= '0' and ln[0] <= '9':							# found a label 0-9 a local.
 				m = re.match("^([0-9]+\\$)",ln)
 				assert m is not None,"Bad line "+ln
 				assert m.group(1) not in labels,"Duplicate "+ln

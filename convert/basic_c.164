@@ -1,0 +1,51 @@
+chkgrb           cpy fretop+1                             ; end of strings? ;; 5cde 164
+                 bcc _local_1163_50                        ;; 5ce0 164
+                 bne _local_1163_10                       ; if not equal ;; 5ce2 164
+                 cmp fretop                                ;; 5ce4 164
+                 beq _local_1163_50                        ;; 5ce6 164
+                 bcc _local_1163_50                        ;; 5ce8 164
+ ;; 5cea 164
+_local_1163_10   bit highds                               ; check flag ;; 5cea 164
+                 bmi _local_1163_20                       ; if empty string found ;; 5cec 164
+                 lda #2                                   ; skip pointers past ;; 5cee 164
+                 jsr movtop                               ; move top pointer ;; 5cf0 164
+ ;; 5cf3 164
+_local_1163_20   lda #2                                   ; skip pointers past ;; 5cf3 164
+                 jsr movpnt                               ; move pointers ;; 5cf5 164
+                 ldy #1                                    ;; 5cf8 164
+                 jsr indgrb                               ; garbage? ;; 5cfa 164
+                 cmp #$ff                                  ;; 5cfd 164
+                 beq _local_1163_40                       ; yes ;; 5cff 164
+ ;; 5d01 164
+_local_1163_30   jsr indgrb                               ; to link bytes ;; 5d01 164
+                 sta index1,y                              ;; 5d04 164
+                 dey                                       ;; 5d07 164
+                 bpl _local_1163_30                       ; if two bytes not moved ;; 5d08 164
+_local_1163_40   rts                                       ;; 5d0a 164
+ ;; 5d0b 164
+ ;; 5d0b 164
+_local_1163_50   ldx temppt                               ; ptr to temp. strings ;; 5d0b 164
+ ;; 5d0d 164
+_local_1163_60   cpx #tempst                              ; any out there? ;; 5d0d 164
+                 beq _local_1163_70                       ; no ;; 5d0f 164
+                 jsr slr1                                 ; setup ptr (tempf2) to temp. string's bkptr. ;; 5d11 164
+                 beq _local_1163_60                       ; (skip if null string!) ;; 5d14 164
+                 phx                                       ;; 5d16 164
+                 ldx #tempf2                               ;; 5d17 164
+                 ldy #0                                   ; .a = string length ;; 5d19 164
+                 jsr sta_far_ram1 ;sta (tempf2),y         ; remove backpointer built at garba2 ;; 5d1b 164
+                 iny                                       ;; 5d1e 164
+                 lda #$ff                                  ;; 5d1f 164
+                 jsr sta_far_ram1 ;sta (tempf2),y         ; and mark as garbage ;; 5d21 164
+                 plx                                       ;; 5d24 164
+                 bra _local_1163_60                       ; always ;; 5d25 164
+ ;; 5d27 164
+_local_1163_70   pla                                      ; throw away return address ;; 5d27 164
+                 pla                                       ;; 5d28 164
+                 lda frespc                               ; fix fretop and frespc ;; 5d29 164
+                 ldy frespc+1                              ;; 5d2b 164
+                 sta fretop                                ;; 5d2d 164
+                 sty fretop+1                              ;; 5d2f 164
+                 rts                                       ;; 5d31 164
+ ;; 5d32 164
+; .page ;; 5d32 164

@@ -1,0 +1,24 @@
+Suck_DS                                                    ;; 789a 246
+                 ldx dosfa                                ; fa ;; 789a 246
+                 lda #doslfn                              ; la (reserved la) ;; 789d 246
+                 ldy #$6f                                 ; sa (command channel) ;; 789f 246
+                 jsr _setlfs                               ;; 78a1 246
+                 lda #0                                   ; no name (so no setbank) ;; 78a4 246
+                 jsr _setnam                               ;; 78a6 246
+                 jsr _open                                ; get command channel ;; 78a9 246
+                 ldx #doslfn                               ;; 78ac 246
+                 jsr _chkin                                ;; 78ae 246
+                 bcs _local_1245_20                       ; skip input if problem ;; 78b1 246
+ ;; 78b3 246
+_local_1245_10   jsr _basin                               ; read disk error message ;; 78b3 246
+                 cmp #cr                                   ;; 78b6 246
+                 bne _local_1245_10                       ; loop until eol ;; 78b8 246
+ ;; 78ba 246
+_local_1245_20   jsr _clrch                               ; shut down command channel ;; 78ba 246
+                 lda #doslfn                               ;; 78bd 246
+                 sec                                      ; not a real close ;; 78bf 246
+                 jmp _close                               ; close it ;; 78c0 246
+ ;; 78c3 246
+; .page ;; 78c3 246
+; R-U-sure subroutine ;; 78c3 246
+ ;; 78c3 246

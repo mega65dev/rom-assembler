@@ -1,0 +1,39 @@
+PopParms                                                  ; [910820] ;; b9f9 302
+                 ply                                      ; Grab return address ;; b9f9 302
+                 plz                                       ;; b9fa 302
+ ;; b9fb 302
+                 ldx #0                                    ;; b9fb 302
+_local_1301_10   pla                                      ; Restore Graphics parameters ;; b9fd 302
+                 sta GKI__parm1,x                          ;; b9fe 302
+                 inx                                       ;; ba01 302
+                 cpx #17                                   ;; ba02 302
+                 bcc _local_1301_10                        ;; ba04 302
+ ;; ba06 302
+                 pla                                      ; Restore 'poker' value ;; ba06 302
+                 sta linnum+1                              ;; ba07 302
+                 pla                                       ;; ba09 302
+                 sta linnum                                ;; ba0a 302
+ ;; ba0c 302
+                 phz                                      ; Restore return address ;; ba0c 302
+                 phy                                       ;; ba0d 302
+                 rts                                       ;; ba0e 302
+ ;; ba0f 302
+;.end ;; ba0f 302
+; .page ;; ba0f 302
+; .subttl RSPRITE Function ;; ba0f 302
+ ;; ba0f 302
+;****************************************************************** ;; ba0f 302
+;* RSPRITE - Return sprite information ;; ba0f 302
+;* ;; ba0f 302
+;* Syntax : RSPRITE (sprite_number, argument) ;; ba0f 302
+;* ;; ba0f 302
+;* Where  : sprite_number = [0..7] ;; ba0f 302
+;*   argument = [0..5] ;; ba0f 302
+;*   0 : enabled?   (y(1)/n(0)) ;; ba0f 302
+;*   1 : color?     (0-15) ;; ba0f 302
+;*   2 : priority over background? (y(1)/n(0)) ;; ba0f 302
+;*   3 : expand in x direction? (y(1)/n(0)) ;; ba0f 302
+;*   4 : expand in Y direction? (y(1)/n(0)) ;; ba0f 302
+;*   5 : multicolor sprite?  (y(1)/n(0)) ;; ba0f 302
+;****************************************************************** ;; ba0f 302
+ ;; ba0f 302

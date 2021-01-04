@@ -1,0 +1,61 @@
+dma                                                       ; params are not longer optional-  [910520] F018A ;; 3b34 64
+                 jsr getbyt                               ; get command ;; 3b34 64
+_local_1063_1    bcc _local_1063_10                        ;; 3b37 64
+                 txa                                      ; [910102] ;; 3b39 64
+                 and #%00000100                           ;  ;; 3b3a 64
+                 bne fcerr                                ; (disallow chained DMA lists) ;; 3b3c 64
+                 stx dma2_cmd                              ;; 3b3f 64
+ ;; 3b42 64
+_local_1063_10   jsr comwrd                               ; get length ;; 3b42 64
+; bcc _local_1063_20 ;; 3b45 64
+                 sty dma2_cnt_lo                           ;; 3b45 64
+                 sta dma2_cnt_hi                           ;; 3b48 64
+ ;; 3b4b 64
+_local_1063_20   jsr comwrd                               ; get source address & bank ;; 3b4b 64
+; bcc _local_1063_30 ;; 3b4e 64
+                 sty dma2_src_lo                           ;; 3b4e 64
+                 sta dma2_src_hi                           ;; 3b51 64
+_local_1063_30   jsr combyt                                ;; 3b54 64
+; bcc _local_1063_40 ;; 3b57 64
+                 stx dma2_src_bank                         ;; 3b57 64
+ ;; 3b5a 64
+_local_1063_40   jsr comwrd                               ; get destination address & bank ;; 3b5a 64
+; bcc _local_1063_50 ;; 3b5d 64
+                 sty dma2_dest_lo                          ;; 3b5d 64
+                 sta dma2_dest_hi                          ;; 3b60 64
+_local_1063_50   jsr combyt                                ;; 3b63 64
+; bcc _local_1063_60 ;; 3b66 64
+                 stx dma2_dest_bank                        ;; 3b66 64
+ ;; 3b69 64
+_local_1063_60   jsr optzer                               ; get subcmd, default=0    [910520] F018A ;; 3b69 64
+; bcc _local_1063_65 ;; 3b6c 64
+                 stx dma2_subcmd                           ;; 3b6c 64
+ ;; 3b6f 64
+_local_1063_65   jsr optzer                               ; get mod lo/hi, default=0   [910102] ;; 3b6f 64
+; bcc _local_1063_70 ;; 3b72 64
+                 stx dma2_mod_lo                           ;; 3b72 64
+_local_1063_70   jsr optzer                                ;; 3b75 64
+; bcc _local_1063_80 ;; 3b78 64
+                 stx dma2_mod_hi                           ;; 3b78 64
+ ;; 3b7b 64
+_local_1063_80   ldy #0                                   ; dma_list (bank 0) ;; 3b7b 64
+                 ldx #>dma2_cmd                            ;; 3b7d 64
+                 lda #<dma2_cmd                            ;; 3b7f 64
+                 sty dma_ctlr+2                           ; dma_list bank ;; 3b81 64
+                 stx dma_ctlr+1                           ; dma_list hi ;; 3b84 64
+                 sta dma_ctlr                             ; dma_list lo & trigger ;; 3b87 64
+_local_1063_85   bit dma_ctlr+3                           ; check status (in case IRQ enabled)  [910103] ;; 3b8a 64
+                 bmi _local_1063_85                       ; busy ;; 3b8d 64
+ ;; 3b8f 64
+                 jsr chrgot                               ; eol? ;; 3b8f 64
+                 beq _local_1063_90                       ; yes ;; 3b92 64
+                 jsr optbyt                               ; no- continue after getting comma & next cmd byte ;; 3b94 64
+                 bra _local_1063_1                         ;; 3b97 64
+ ;; 3b99 64
+_local_1063_90   rts                                       ;; 3b99 64
+ ;; 3b9a 64
+;.end ;; 3b9a 64
+; .page ;; 3b9a 64
+; .subttl  TRON  TROFF ;; 3b9a 64
+ ;; 3b9a 64
+ ;; 3b9a 64

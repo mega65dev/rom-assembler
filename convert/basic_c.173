@@ -1,0 +1,233 @@
+mldvex           lda facsgn                               ; get sign ;; 6143 173
+                 eor #$ff                                 ; complement it ;; 6145 173
+                 bmi overr                                 ;; 6147 173
+ ;; 614a 173
+zeremv           pla                                      ; get addr off stack ;; 614a 173
+                 pla                                       ;; 614b 173
+                 bra zerofc                               ; underflow ;; 614c 173
+ ;; 614f 173
+; .page ;; 614f 173
+; Multiply FAC by 10 ;; 614f 173
+ ;; 614f 173
+mul10            jsr movaf                                ; copy FAC into ARG ;; 614f 173
+                 tax                                       ;; 6152 173
+                 beq mul10r                               ; if (FAC)=0, got answer ;; 6153 173
+                 clc                                       ;; 6155 173
+                 adc #2                                   ; augment exp by 2 ;; 6156 173
+                 bcs overr                                ; overflow ;; 6158 173
+ ;; 615b 173
+finml6           ldx #0                                    ;; 615b 173
+                 stx arisgn                               ; signs are same ;; 615d 173
+                 jsr faddc                                ; add together ;; 615f 173
+                 inc facexp                               ; multiply by two ;; 6162 173
+                 beq overr                                ; overflow ;; 6164 173
+ ;; 6167 173
+mul10r           rts                                       ;; 6167 173
+ ;; 6168 173
+; .page ;; 6168 173
+div10            jsr movaf                                ; move FAC to ARG ;; 6168 173
+                 lda #<tenc                                ;; 616b 173
+                 ldy #>tenc                               ; point to constant of 10.0 ;; 616d 173
+                 ldx #0                                   ; signs are both positive ;; 616f 173
+ ;; 6171 173
+fdivf            stx arisgn                                ;; 6171 173
+                 jsr movfm                                ; put it into FAC ;; 6173 173
+                 bra fdivt                                 ;; 6176 173
+ ;; 6178 173
+fdivt_c65                                                 ; [910402] ;; 6178 173
+                 lda argsgn                                ;; 6178 173
+                 eor facsgn                                ;; 617a 173
+                 sta arisgn                               ; resultant sign ;; 617c 173
+                 ldx facexp                               ; set signs on thing to divide ;; 617e 173
+                 bra fdivt                                ; go divide ;; 6180 173
+ ;; 6182 173
+fdiv             jsr conupk                               ; unpack constant ;; 6182 173
+fdivt            beq doverr                               ; can't divide by zero ;; 6185 173
+                 jsr round                                ; take FACOV into account in FAC ;; 6188 173
+                 lda #0                                   ; negate facexp ;; 618b 173
+                 sec                                       ;; 618d 173
+                 sbc facexp                                ;; 618e 173
+                 sta facexp                                ;; 6190 173
+                 jsr muldiv                               ; fix up exponents ;; 6192 173
+                 inc facexp                               ; scale it right ;; 6195 173
+                 beq overr                                ; overflow ;; 6197 173
+                 ldx #$fc                                 ; set up procedure ;; 619a 173
+                 lda #1                                    ;; 619c 173
+ ;; 619e 173
+; .page ;; 619e 173
+divide                                                    ; this is the best code in the whole pile ;; 619e 173
+                 ldy argho                                ; see what relation holds ;; 619e 173
+                 cpy facho                                 ;; 61a0 173
+                 bne savquo                               ; (c)=0,1. n(c=0)=0. ;; 61a2 173
+                 ldy argmoh                                ;; 61a4 173
+                 cpy facmoh                                ;; 61a6 173
+                 bne savquo                                ;; 61a8 173
+                 ldy argmo                                 ;; 61aa 173
+                 cpy facmo                                 ;; 61ac 173
+                 bne savquo                                ;; 61ae 173
+                 ldy arglo                                 ;; 61b0 173
+                 cpy faclo                                 ;; 61b2 173
+ ;; 61b4 173
+savquo           php                                       ;; 61b4 173
+                 rol a                                    ; save result ;; 61b5 173
+                 bcc qshft                                ; if not done, continue ;; 61b6 173
+                 inx                                       ;; 61b8 173
+                 sta reslo,x                               ;; 61b9 173
+                 beq ld100                                 ;; 61bb 173
+                 bpl divnrm                               ; note this req 1 no ram then access ;; 61bd 173
+                 lda #1                                    ;; 61bf 173
+ ;; 61c1 173
+qshft            plp                                      ; return condition codes ;; 61c1 173
+                 bcs divsub                               ; FAC <= ARG ;; 61c2 173
+ ;; 61c4 173
+shfarg           asl arglo                                ; shift ARG one place left ;; 61c4 173
+                 rol argmo                                 ;; 61c6 173
+                 rol argmoh                                ;; 61c8 173
+                 rol argho                                 ;; 61ca 173
+                 bcs savquo                               ; save a result of one for this position and divide ;; 61cc 173
+                 bmi divide                               ; if msb on, go decide whether to sub ;; 61ce 173
+                 bpl savquo                                ;; 61d0 173
+ ;; 61d2 173
+; .page ;; 61d2 173
+divsub           tay                                      ; notice c must be on here ;; 61d2 173
+                 lda arglo                                 ;; 61d3 173
+                 sbc faclo                                 ;; 61d5 173
+                 sta arglo                                 ;; 61d7 173
+                 lda argmo                                 ;; 61d9 173
+                 sbc facmo                                 ;; 61db 173
+                 sta argmo                                 ;; 61dd 173
+                 lda argmoh                                ;; 61df 173
+                 sbc facmoh                                ;; 61e1 173
+                 sta argmoh                                ;; 61e3 173
+                 lda argho                                 ;; 61e5 173
+                 sbc facho                                 ;; 61e7 173
+                 sta argho                                 ;; 61e9 173
+                 tya                                       ;; 61eb 173
+                 bra shfarg                                ;; 61ec 173
+ ;; 61ee 173
+ ;; 61ee 173
+ ;; 61ee 173
+ld100            lda #$40                                 ; only want two more bits ;; 61ee 173
+                 bra qshft                                ; always branches ;; 61f0 173
+ ;; 61f2 173
+ ;; 61f2 173
+ ;; 61f2 173
+divnrm           asl a                                    ; get last two bits into MSB and B6 ;; 61f2 173
+                 asl a                                     ;; 61f3 173
+                 asl a                                     ;; 61f4 173
+                 asl a                                     ;; 61f5 173
+                 asl a                                     ;; 61f6 173
+                 asl a                                     ;; 61f7 173
+                 sta facov                                 ;; 61f8 173
+                 plp                                       ;; 61fa 173
+ ;; 61fb 173
+ ;; 61fb 173
+; .page ;; 61fb 173
+movfr            lda resho                                ; move result to FAC ;; 61fb 173
+                 sta facho                                 ;; 61fd 173
+                 lda resmoh                                ;; 61ff 173
+                 sta facmoh                                ;; 6201 173
+                 lda resmo                                 ;; 6203 173
+                 sta facmo                                 ;; 6205 173
+                 lda reslo                                ; move lo and sign ;; 6207 173
+                 sta faclo                                 ;; 6209 173
+                 bra normal                               ; all done ;; 620b 173
+ ;; 620e 173
+ ;; 620e 173
+ ;; 620e 173
+movfm            sta index1                               ; move memory into FAC from ROM (unpacked) ;; 620e 173
+                 sty index1+1                              ;; 6210 173
+                 ldy #4                                    ;; 6212 173
+                 lda (index1),y                            ;; 6214 173
+                 sta faclo                                 ;; 6216 173
+                 dey                                       ;; 6218 173
+                 lda (index1),y                            ;; 6219 173
+                 sta facmo                                 ;; 621b 173
+                 dey                                       ;; 621d 173
+                 lda (index1),y                            ;; 621e 173
+                 sta facmoh                                ;; 6220 173
+                 dey                                       ;; 6222 173
+                 lda (index1),y                            ;; 6223 173
+                 sta facsgn                                ;; 6225 173
+                 ora #$80                                  ;; 6227 173
+                 sta facho                                 ;; 6229 173
+                 dey                                       ;; 622b 173
+                 lda (index1),y                            ;; 622c 173
+                 sta facexp                                ;; 622e 173
+                 sty facov                                 ;; 6230 173
+                 rts                                       ;; 6232 173
+ ;; 6233 173
+; .page ;; 6233 173
+; Move number from FAC to memory ;; 6233 173
+ ;; 6233 173
+mov2f            ldx #tempf2                              ; move from FAC to temp FAC2 ;; 6233 173
+                 !byte $2c                                 ;; 6235 173
+ ;; 6236 173
+mov1f            ldx #tempf1                              ; move from FAC to temp FAC1 ;; 6236 173
+ ;; 6238 173
+                 ldy #0                                    ;; 6238 173
+movmf            jsr round                                 ;; 623a 173
+                 stx index1                                ;; 623d 173
+                 sty index1+1                              ;; 623f 173
+                 ldy #4                                    ;; 6241 173
+                 lda faclo                                 ;; 6243 173
+                 sta (index),y                            ; BasePage ;; 6245 173
+                 dey                                       ;; 6247 173
+                 lda facmo                                 ;; 6248 173
+                 sta (index),y                            ; BasePage ;; 624a 173
+                 dey                                       ;; 624c 173
+                 lda facmoh                                ;; 624d 173
+                 sta (index),y                            ; BasePage ;; 624f 173
+                 dey                                       ;; 6251 173
+                 lda facsgn                               ; include sign in ho ;; 6252 173
+                 ora #$7f                                  ;; 6254 173
+                 and facho                                 ;; 6256 173
+                 sta (index),y                            ; BasePage ;; 6258 173
+                 dey                                       ;; 625a 173
+                 lda facexp                                ;; 625b 173
+                 sta (index),y                            ; BasePage ;; 625d 173
+                 sty facov                                ; zero it since rounded ;; 625f 173
+                 rts                                      ; (y)=0 ;; 6261 173
+ ;; 6262 173
+; .page ;; 6262 173
+movmf_ram1                                                 ;; 6262 173
+                 jsr round                                 ;; 6262 173
+                 stx index1                                ;; 6265 173
+                 sty index1+1                              ;; 6267 173
+                 phx                                       ;; 6269 173
+                 ldx #index                                ;; 626a 173
+                 ldy #4                                    ;; 626c 173
+                 lda faclo                                 ;; 626e 173
+                 jsr sta_far_ram1                         ; sta (index),y ;; 6270 173
+                 dey                                       ;; 6273 173
+                 lda facmo                                 ;; 6274 173
+                 jsr sta_far_ram1                         ; sta (index),y ;; 6276 173
+                 dey                                       ;; 6279 173
+                 lda facmoh                                ;; 627a 173
+                 jsr sta_far_ram1                         ; sta (index),y ;; 627c 173
+                 dey                                       ;; 627f 173
+                 lda facsgn                               ; include sign in ho ;; 6280 173
+                 ora #$7f                                  ;; 6282 173
+                 and facho                                 ;; 6284 173
+                 jsr sta_far_ram1                         ; sta (index),y ;; 6286 173
+                 dey                                       ;; 6289 173
+                 lda facexp                                ;; 628a 173
+                 jsr sta_far_ram1                         ; sta (index),y ;; 628c 173
+                 sty facov                                ; zero it since rounded ;; 628f 173
+                 plx                                       ;; 6291 173
+                 rts                                      ; (y)=0 ;; 6292 173
+ ;; 6293 173
+; .page ;; 6293 173
+movfa            lda argsgn                                ;; 6293 173
+ ;; 6295 173
+movfa1           sta facsgn                                ;; 6295 173
+ ;; 6297 173
+                 ldx #5                                    ;; 6297 173
+_local_1172_1    lda argexp-1,x                            ;; 6299 173
+                 sta facexp-1,x                            ;; 629b 173
+                 dex                                       ;; 629d 173
+                 bne _local_1172_1                         ;; 629e 173
+                 stx facov                                 ;; 62a0 173
+                 rts                                       ;; 62a2 173
+ ;; 62a3 173
+ ;; 62a3 173

@@ -1,0 +1,49 @@
+c65.paint                                                 ; new [910228] FAB ;; b35b 278
+                 jsr CheckGraphicMode                      ;; b35b 278
+                 jsr sadwrd                               ; get x ;; b35e 278
+                 sty GKI__parm1                            ;; b361 278
+                 sta GKI__parm2                            ;; b364 278
+ ;; b367 278
+                 jsr comsad                               ; get y ;; b367 278
+                 sty GKI__parm3                            ;; b36a 278
+                 sta GKI__parm4                            ;; b36d 278
+ ;; b370 278
+                 ldx #0                                   ; [910916] ;; b370 278
+                 jsr optbyt                               ; mode, default = 0 (fill region pointed to) ;; b372 278
+                 cpx #3                                    ;; b375 278
+                 bcs fcerr                                ; (range 0-2) ;; b377 278
+                 stx GKI__parm5                            ;; b37a 278
+                 ldx #0                                    ;; b37d 278
+                 jsr optbyt                               ; boundary color, default = 0 ;; b37f 278
+                 stx GKI__parm6                            ;; b382 278
+ ;; b385 278
+_local_1277_10   jsr garba2                               ; create space in var bank for paint stack [910716] ;; b385 278
+                 lda strend                                ;; b388 278
+                 sta GKI__parm7                           ; pass pointer to bottom of bank-1 free space ;; b38a 278
+                 lda strend+1                             ; (top of stack) ;; b38d 278
+                 sta GKI__parm8                            ;; b38f 278
+                 sec                                       ;; b392 278
+                 lda fretop                               ; pass pointer to top of free space ;; b393 278
+                 sbc #3                                   ; (bottom of stack) ;; b395 278
+                 sta GKI__parm9                            ;; b397 278
+                 lda fretop+1                              ;; b39a 278
+                 sbc #0                                    ;; b39c 278
+                 sta GKI__parm10                           ;; b39e 278
+ ;; b3a1 278
+                 jsr ($802e)                              ; bra paint ;; b3a1 278
+                 bcs _local_1277_20                       ; error- stack overflow or stop key ;; b3a4 278
+                 rts                                       ;; b3a6 278
+ ;; b3a7 278
+_local_1277_20   cpx #errom                                ;; b3a7 278
+                 beq error                                ; stack overflow, say 'out of memory' ;; b3a9 278
+                 bra break_exit                           ; user hit stop key ;; b3ac 278
+ ;; b3af 278
+; .page ;; b3af 278
+; .subttl   LOAD/SAVE IFF ;; b3af 278
+ ;; b3af 278
+;***************************************************************** ;; b3af 278
+;*   LOADIFF "filename" [,U#] [,D#] ;; b3af 278
+;* ;; b3af 278
+;* ???? requires SCREEN already opened   910402 FAB ;; b3af 278
+;***************************************************************** ;; b3af 278
+ ;; b3af 278

@@ -1,0 +1,19 @@
+rleft2           txa                                       ;; 59e1 153
+rleft3           pha                                      ; save length ;; 59e2 153
+                 jsr strspa                               ; get space ;; 59e3 153
+                 lda dscpnt                                ;; 59e6 153
+                 ldy dscpnt+1                              ;; 59e8 153
+                 jsr fretmp                                ;; 59ea 153
+                 ply                                       ;; 59ed 153
+                 pla                                       ;; 59ee 153
+                 clc                                       ;; 59ef 153
+                 adc index                                ; compute where to copy ;; 59f0 153
+                 sta index                                 ;; 59f2 153
+                 bcc _local_1152_1                         ;; 59f4 153
+                 inc index+1                               ;; 59f6 153
+_local_1152_1    tya                                       ;; 59f8 153
+                 jsr movdo                                ; go move it ;; 59f9 153
+                 bra putnew                                ;; 59fc 153
+ ;; 59ff 153
+ ;; 59ff 153
+ ;; 59ff 153

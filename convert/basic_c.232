@@ -1,0 +1,45 @@
+concat           jsr dospar                               ; parse the line ;; 73b8 232
+                 jsr chk4                                  ;; 73bb 232
+                 ldy #fconc                               ; offset ;; 73be 232
+                 lda #12                                  ; length ;; 73c0 232
+                 jsr trans                                ; send command ;; 73c2 232
+                 bra print_dos_error                      ; if any ;; 73c5 232
+ ;; 73c8 232
+ ;; 73c8 232
+ ;; 73c8 232
+ ;; 73c8 232
+; RENAME rdddfn=sdsfn ;; 73c8 232
+ ;; 73c8 232
+rename           lda #$e4                                 ; set error flags ;; 73c8 232
+                 jsr dosprs                               ; parse the line ;; 73ca 232
+                 jsr chk5                                  ;; 73cd 232
+                 ldy #fren                                ; offset ;; 73d0 232
+                 lda #8                                   ; length ;; 73d2 232
+                 jsr trans                                ; send command ;; 73d4 232
+                 bra print_dos_error                      ; if any ;; 73d7 232
+ ;; 73da 232
+ ;; 73da 232
+; .page ;; 73da 232
+; BACKUP D<destination_drive>=D<source_drive> ;; 73da 232
+; ;; 73da 232
+; where destination|source_drive is [0...9] ;; 73da 232
+ ;; 73da 232
+backup           lda #$c7                                 ; set error flags ;; 73da 232
+                 jsr dosprs                               ; parse the line ;; 73dc 232
+                 and #$30                                 ; required parameters ;; 73df 232
+                 cmp #$30                                  ;; 73e1 232
+                 bne snerr                                 ;; 73e3 232
+                 jsr are_you_sure                          ;; 73e6 232
+                 beq _local_1231_10                       ; if run mode or not 'yes' ;; 73e9 232
+                 rts                                       ;; 73eb 232
+ ;; 73ec 232
+_local_1231_10   jsr dclall                               ; close disk ;; 73ec 232
+                 ldy #fbak                                 ;; 73ef 232
+                 lda #4                                   ; length ;; 73f1 232
+                 jsr trans                                ; send command ;; 73f3 232
+                 bra print_dos_error                      ; if any ;; 73f6 232
+ ;; 73f9 232
+ ;; 73f9 232
+; .page ;; 73f9 232
+; Trans subroutine ;; 73f9 232
+ ;; 73f9 232

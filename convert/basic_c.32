@@ -1,0 +1,41 @@
+movtos           lda tos                                   ;; 31dd 32
+                 sta fndpnt                                ;; 31df 32
+                 lda tos+1                                 ;; 31e1 32
+                 sta fndpnt+1                              ;; 31e3 32
+                 rts                                       ;; 31e5 32
+ ;; 31e6 32
+ ;; 31e6 32
+ ;; 31e6 32
+; move (fndpnt) to (tos) ;; 31e6 32
+ ;; 31e6 32
+movfnd           lda fndpnt                                ;; 31e6 32
+                 sta tos                                   ;; 31e8 32
+                 lda fndpnt+1                              ;; 31ea 32
+                 sta tos+1                                 ;; 31ec 32
+                 rts                                       ;; 31ee 32
+ ;; 31ef 32
+; Reduce size of run-time stack by (y).  No error checking performed! ;; 31ef 32
+ ;; 31ef 32
+rlsstk           tya                                       ;; 31ef 32
+                 clc                                       ;; 31f0 32
+                 adc tos                                   ;; 31f1 32
+                 sta tos                                   ;; 31f3 32
+                 bcc _local_1031_10                        ;; 31f5 32
+                 inc tos+1                                 ;; 31f7 32
+_local_1031_10   rts                                       ;; 31f9 32
+ ;; 31fa 32
+;.end ;; 31fa 32
+; .page ;; 31fa 32
+; .subttl FindLine ;; 31fa 32
+ ;; 31fa 32
+; FindLine ;; 31fa 32
+; Searches the program text for the line whose number is passed in "linnum". ;; 31fa 32
+; There are two possible returns: ;; 31fa 32
+; ;; 31fa 32
+; 1) carry set. ;; 31fa 32
+;  Line found.  (lowtr) points to the link bytes of line sought. ;; 31fa 32
+; ;; 31fa 32
+; 2) carry clear. ;; 31fa 32
+;  Line not found.  (lowtr) points to the link bytes of the next ;; 31fa 32
+;  line greater than the one sought. ;; 31fa 32
+ ;; 31fa 32

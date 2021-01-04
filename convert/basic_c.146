@@ -1,0 +1,31 @@
+lpen             jsr chkcls                               ; look for closing parens ;; 5752 146
+                 jsr conint                               ; get 1 byte arg in .X ;; 5755 146
+; dex   ;convert [1-2] to [0-1] ;; 5758 146
+                 cpx #2                                    ;; 5758 146
+                 bcs fcerr                                ; bad value ;; 575a 146
+ ;; 575d 146
+                 lda #0                                    ;; 575d 146
+                 sei                                       ;; 575f 146
+                 ldy lightpen_xpos,x                      ; get latched light pen value (a=msb, y=lsb) ;; 5760 146
+                 sta lightpen_xpos,x                      ; reset to zero (????preserve last latched position) ;; 5763 146
+                 cli                                       ;; 5766 146
+                 cpx #0                                    ;; 5767 146
+                 bne _local_1145_10                       ; done if y position ;; 5769 146
+                 tya                                       ;; 576b 146
+                 asl a                                    ; else multiply *2 to get correct x position ;; 576c 146
+                 tay                                      ; lsb ;; 576d 146
+                 lda #0                                    ;; 576e 146
+                 rol a                                    ; msb ;; 5770 146
+_local_1145_10   bra nosflt                               ; float it (y,a) ;; 5771 146
+ ;; 5774 146
+ ;; 5774 146
+;.end ;; 5774 146
+; .page ;; 5774 146
+; .subttl  POINTER ;; 5774 146
+ ;; 5774 146
+;****************************************************************** ;; 5774 146
+; ;; 5774 146
+; POINTER(var_name) - Return address of descriptor for var_name ;; 5774 146
+; ;; 5774 146
+;****************************************************************** ;; 5774 146
+ ;; 5774 146

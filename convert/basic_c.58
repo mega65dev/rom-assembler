@@ -1,0 +1,7 @@
+qdata            bmi datlop                               ; branch if READ ;; 3958 58
+                 lda channl                               ; else it's INPUT ;; 395b 58
+                 bne _local_1057_10                        ;; 395d 58
+                 jsr outqst                               ; console input, so display '? ' prompt ;; 395f 58
+ ;; 3962 58
+_local_1057_10   jsr PromptedInput                        ; get another line ;; 3962 58
+ ;; 3965 58

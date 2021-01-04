@@ -1,0 +1,61 @@
+getdef           jsr indlow_ram1                          ; get # of dim's from string bank ;; 52cf 129
+                 sta count                                ; save a counter ;; 52d2 129
+                 lda #0                                   ; zero (curtol) ;; 52d4 129
+                 sta curtol                                ;; 52d6 129
+ ;; 52d8 129
+inlpnm           sta curtol+1                              ;; 52d8 129
+                 plx                                      ; get low indice ;; 52da 129
+                 stx indice                                ;; 52db 129
+                 iny                                       ;; 52dd 129
+                 jsr indlow_ram1                           ;; 52de 129
+                 sta syntmp                                ;; 52e1 129
+                 pla                                      ; and the high part ;; 52e3 129
+                 sta indice+1                              ;; 52e4 129
+                 cmp syntmp                               ; compare with max indice ;; 52e6 129
+                 bcc inlpn2                                ;; 52e8 129
+                 bne bserr7                               ; if greater, "bad subscript" error ;; 52ea 129
+                 iny                                       ;; 52ec 129
+                 jsr indlow_ram1                           ;; 52ed 129
+                 sta syntmp                                ;; 52f0 129
+                 cpx syntmp                                ;; 52f2 129
+                 bcc inlpn1                                ;; 52f4 129
+ ;; 52f6 129
+bserr7           bra bserr                                 ;; 52f6 129
+ ;; 52f9 129
+ ;; 52f9 129
+inlpn2           iny                                       ;; 52f9 129
+inlpn1           lda curtol+1                             ; don't multiply if curtol=0 ;; 52fa 129
+                 ora curtol                                ;; 52fc 129
+                 clc                                      ; prepare to get indice back ;; 52fe 129
+                 beq _local_1128_10                       ; get high part of indice back ;; 52ff 129
+                 jsr umult                                ; multiply (curtol) by (5&6,lowtr) ;; 5301 129
+                 txa                                       ;; 5304 129
+                 adc indice                               ; add in (indice) ;; 5305 129
+                 tax                                       ;; 5307 129
+                 tya                                       ;; 5308 129
+                 ldy index1                                ;; 5309 129
+ ;; 530b 129
+_local_1128_10   adc indice+1                              ;; 530b 129
+                 stx curtol                                ;; 530d 129
+                 dec count                                ; any more? ;; 530f 129
+                 bne inlpnm                               ; yes ;; 5311 129
+                 sta curtol+1                              ;; 5313 129
+                 ldx #5                                    ;; 5315 129
+                 lda varnam                                ;; 5317 129
+                 bpl _local_1128_20                        ;; 5319 129
+                 dex                                       ;; 531b 129
+_local_1128_20   lda varnam+1                              ;; 531c 129
+                 bpl _local_1128_30                        ;; 531e 129
+                 dex                                       ;; 5320 129
+                 dex                                       ;; 5321 129
+_local_1128_30   stx addend                                ;; 5322 129
+                 lda #0                                    ;; 5324 129
+                 jsr umultd                               ; on rts, a & y = hi. x = lo. ;; 5326 129
+                 txa                                       ;; 5329 129
+                 adc arypnt                                ;; 532a 129
+                 sta varpnt                                ;; 532c 129
+                 tya                                       ;; 532e 129
+                 adc arypnt+1                              ;; 532f 129
+                 sta varpnt+1                              ;; 5331 129
+                 tay                                       ;; 5333 129
+                 lda varpnt                                ;; 5334 129

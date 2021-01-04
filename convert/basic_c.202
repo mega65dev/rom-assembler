@@ -1,0 +1,34 @@
+eoa              lda point                                ; decimal found? ;; 6ae9 202
+                 bpl _local_1201_20                       ; yes... ;; 6aeb 202
+                 stx point                                ; no...add point ;; 6aed 202
+ ;; 6aef 202
+_local_1201_20   jsr anaf                                 ; analyze format ;; 6aef 202
+                 lda vf                                    ;; 6af2 202
+                 cmp #$ff                                  ;; 6af5 202
+                 beq _local_1201_40                       ; field overflow ;; 6af7 202
+                 lda fesp                                 ; exponent in field ;; 6af9 202
+                 beq cff                                  ; convert to f format if not ;; 6afc 202
+                 lda uexp                                 ; exponent in number? ;; 6afe 202
+                 bne _local_1201_30                       ; yes... ;; 6b01 202
+                 ldx enr                                   ;; 6b03 202
+                 jsr et2                                  ; add exponent to number ;; 6b06 202
+                 dec fbuffr+2,x                            ;; 6b09 202
+                 inx                                       ;; 6b0c 202
+                 stx uexp                                  ;; 6b0d 202
+                 jsr alg                                  ; delete leading zeros ;; 6b10 202
+                 beq hup                                  ; all zero ;; 6b13 202
+ ;; 6b15 202
+_local_1201_30   ldy posp                                 ; + or - in format? ;; 6b15 202
+                 bne sswe                                 ; yes... ;; 6b18 202
+                 ldy sno                                  ; +? ;; 6b1a 202
+                 bmi sswe                                 ; yes... ;; 6b1d 202
+                 lda vf                                    ;; 6b1f 202
+ ;; 6b22 202
+_local_1201_40   beq errf                                 ; no room for sign ;; 6b22 202
+                 dec vf                                   ; reserve room ;; 6b24 202
+                 bne _local_1201_50                        ;; 6b27 202
+                 lda nf                                   ; one #? ;; 6b29 202
+                 beq errf                                 ; yes...error ;; 6b2c 202
+ ;; 6b2e 202
+_local_1201_50   inc swe                                   ;; 6b2e 202
+ ;; 6b31 202

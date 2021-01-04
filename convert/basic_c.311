@@ -1,0 +1,58 @@
+angval                                                     ;; bca1 311
+                 !byte $00,$00                            ; sine 00 degrees -  .0000 ;; bca1 311
+                 !byte $2c,$71                            ; sine 10 degrees -  .1736 ;; bca3 311
+                 !byte $57,$8d                            ; sine 20 degrees -  .3420 ;; bca5 311
+                 !byte $80,$00                            ; sine 30 degrees -  .5000 ;; bca7 311
+                 !byte $a4,$8f                            ; sine 40 degrees -  .6428 ;; bca9 311
+                 !byte $c4,$19                            ; sine 50 degrees -  .7660 ;; bcab 311
+                 !byte $dd,$b2                            ; sine 60 degrees -  .8660 ;; bcad 311
+                 !byte $f0,$90                            ; sine 70 degrees -  .9397 ;; bcaf 311
+                 !byte $fc,$1c                            ; sine 80 degrees -  .9848 ;; bcb1 311
+                 !byte $ff,$ff                            ; sine 90 degrees - 1.0000 ;; bcb3 311
+ ;; bcb5 311
+;  INCVAL  -- Table of incremental values between 10 degrees ;; bcb5 311
+;  Values based on fraction of 65536 ;; bcb5 311
+ ;; bcb5 311
+incval                                                     ;; bcb5 311
+                 !byte $04,$72                            ; 01 - 09 degrees -  .01739 ;; bcb5 311
+                 !byte $04,$50                            ; 11 - 19 degrees -  .01692 ;; bcb7 311
+                 !byte $04,$0b                            ; 21 - 29 degrees -  .01592 ;; bcb9 311
+                 !byte $03,$a8                            ; 31 - 39 degrees -  .01443 ;; bcbb 311
+                 !byte $03,$28                            ; 41 - 49 degrees -  .01252 ;; bcbd 311
+                 !byte $02,$90                            ; 51 - 59 degrees -  .01023 ;; bcbf 311
+                 !byte $01,$e3                            ; 61 - 69 degrees -  .00762 ;; bcc1 311
+                 !byte $01,$28                            ; 71 - 79 degrees -  .00477 ;; bcc3 311
+                 !byte $00,$63                            ; 81 - 89 degrees -  .00179 ;; bcc5 311
+ ;; bcc7 311
+;.end ;; bcc7 311
+; .page ;; bcc7 311
+; .subttl  EDIT Mode ;; bcc7 311
+ ;; bcc7 311
+; Edit mode is simply a poor man's word processor.  Text is entered normally ;; bcc7 311
+; as if the user were typing in a program, but tokenization is turned off. ;; bcc7 311
+; This affects only that text which follows a line number.  CRUNCH and QPLOP ;; bcc7 311
+; test for this mode, and deal with the text accordingly.  RUN, GOTO, etc. ;; bcc7 311
+; test for this mode and error-out if it's enabled.  LOADing a text file ;; bcc7 311
+; will automatically add line numbers, SAVEing a text file will remove them. ;; bcc7 311
+; ;; bcc7 311
+; Syntax:  EDIT < ON | OFF > ;; bcc7 311
+; ;; bcc7 311
+; F. Bowen        [910620] ;; bcc7 311
+ ;; bcc7 311
+edit             jsr errind                               ; direct mode only command ;; bcc7 311
+                 cmp #on_token                             ;; bcca 311
+                 bne _local_1310_10                        ;; bccc 311
+                 lda #%00010000                           ; EDIT ON ;; bcce 311
+                 bra _local_1310_30                       ; (this kills trace mode, too) ;; bcd0 311
+ ;; bcd2 311
+_local_1310_10   jsr chkesc                               ; [910930] ;; bcd2 311
+; cmp #esc_command_token ;; bcd5 311
+; bne _local_1310_20 ;; bcd5 311
+; jsr chrget ;; bcd5 311
+                 cmp #off_token                            ;; bcd5 311
+_local_1310_20   bne snerr                                 ;; bcd7 311
+                 lda #0                                   ; EDIT OFF ;; bcda 311
+_local_1310_30   sta runmod                                ;; bcdc 311
+                 jmp chrget                               ; exit ;; bcde 311
+ ;; bce1 311
+ ;; bce1 311

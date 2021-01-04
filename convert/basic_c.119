@@ -1,0 +1,207 @@
+ds_rts           rts                                       ;; 4ed1 119
+ ;; 4ed2 119
+; .page ;; 4ed2 119
+is_numeric                                                 ;; 4ed2 119
+                 bbr7 intflg,is_floating                  ; branch if not an integer ;; 4ed2 119
+                 ldy #0                                    ;; 4ed5 119
+                 jsr indfmo                               ; fetch high ;; 4ed7 119
+                 tax                                       ;; 4eda 119
+                 iny                                       ;; 4edb 119
+                 jsr indfmo                               ; fetch low ;; 4edc 119
+                 tay                                      ; put low in y ;; 4edf 119
+                 txa                                      ; get high in a ;; 4ee0 119
+                 bra givayf                               ; float and return ;; 4ee1 119
+ ;; 4ee4 119
+ ;; 4ee4 119
+; Screen out TI, ST, ER, and EL, and assign values to them.  First test ;; 4ee4 119
+; if the pointer points to "ROM" zero.  If not, it can't be any of the above. ;; 4ee4 119
+ ;; 4ee4 119
+is_floating                                                ;; 4ee4 119
+                 lda facmo+1                               ;; 4ee4 119
+                 cmp #>zero                                ;; 4ee6 119
+                 bne gomovf                               ; not TI, etc. ;; 4ee8 119
+                 lda facmo                                 ;; 4eea 119
+                 cmp #<zero                                ;; 4eec 119
+                 bne gomovf                               ; not TI, etc. ;; 4eee 119
+ ;; 4ef0 119
+; .page ;; 4ef0 119
+; The pointer does point to the ROM zero.  Now it is necessary to ;; 4ef0 119
+; examine the actual variable name case by case. ;; 4ef0 119
+ ;; 4ef0 119
+                 cpx #'T'                                 ; TI? ;; 4ef0 119
+                 bne qstatv                               ; no ;; 4ef2 119
+                 cpy #'I'                                  ;; 4ef4 119
+                 bne gomovf                               ; no, and it can't be ST either ;; 4ef6 119
+                 beq Get_TI                                ;; 4ef8 119
+ ;; 4efb 119
+ ;; 4efb 119
+qstatv           cpx #'S'                                 ; ST? ;; 4efb 119
+                 bne qdsav                                ; no, go test DS ;; 4efd 119
+                 cpy #'T'                                  ;; 4eff 119
+                 bne gomovf                                ;; 4f01 119
+                 jsr _readst                              ; (???? system bank for rs232 st) ;; 4f03 119
+                 bra float                                 ;; 4f06 119
+ ;; 4f09 119
+ ;; 4f09 119
+qdsav            cpx #'D'                                 ; DS? ;; 4f09 119
+                 bne qerlin                               ; no, go test ER & EL ;; 4f0b 119
+                 cpy #'S'                                  ;; 4f0d 119
+                 bne gomovf                                ;; 4f0f 119
+ ;; 4f11 119
+; Get disk status - make the first two characters of DS$ string into a number. ;; 4f11 119
+ ;; 4f11 119
+                 jsr Check_DS                             ; get a DS$ string if one doesn't exist already ;; 4f11 119
+                 ldy #0                                    ;; 4f14 119
+                 lda #dsdesc+1                             ;; 4f16 119
+                 jsr lda_far_ram1                         ; lda (dsdesc+1),y ;; 4f18 119
+                 and #$0f                                  ;; 4f1b 119
+                 asl a                                     ;; 4f1d 119
+                 sta garbfl                                ;; 4f1e 119
+                 asl a                                     ;; 4f20 119
+                 asl a                                     ;; 4f21 119
+                 adc garbfl                                ;; 4f22 119
+                 sta garbfl                                ;; 4f24 119
+                 iny                                       ;; 4f26 119
+                 lda #dsdesc+1                             ;; 4f27 119
+                 jsr lda_far_ram1                         ; lda (dsdesc+1),y ;; 4f29 119
+                 and #$0f                                  ;; 4f2c 119
+                 adc garbfl                                ;; 4f2e 119
+                 bra float                                 ;; 4f30 119
+ ;; 4f33 119
+ ;; 4f33 119
+qerlin           cpx #'E'                                 ; ER or EL? ;; 4f33 119
+                 bne gomovf                                ;; 4f35 119
+                 cpy #'R'                                  ;; 4f37 119
+                 beq qnumer                                ;; 4f39 119
+                 cpy #'L'                                  ;; 4f3b 119
+                 bne gomovf                                ;; 4f3d 119
+ ;; 4f3f 119
+                 lda errlin+1                             ; want EL (last error line #) ;; 4f3f 119
+                 ldy errlin                                ;; 4f42 119
+                 bra nosflt                                ;; 4f45 119
+ ;; 4f48 119
+qnumer           lda errnum                               ; want ER (number of last error) ;; 4f48 119
+                 bra float                                 ;; 4f4b 119
+ ;; 4f4e 119
+; .page ;; 4f4e 119
+gomovf           lda facmo                                 ;; 4f4e 119
+                 ldy facmo+1                               ;; 4f50 119
+ ;; 4f52 119
+movfrm           sta index1                               ; move value from RAM ;; 4f52 119
+                 sty index1+1                              ;; 4f54 119
+ ;; 4f56 119
+                 ldy #0                                    ;; 4f56 119
+                 jsr indin1_ram1                           ;; 4f58 119
+                 sta facexp                                ;; 4f5b 119
+                 sty facov                                 ;; 4f5d 119
+ ;; 4f5f 119
+                 iny                                      ; (1) ;; 4f5f 119
+                 jsr indin1_ram1                           ;; 4f60 119
+                 sta facsgn                                ;; 4f63 119
+                 ora #$80                                  ;; 4f65 119
+                 sta facho                                 ;; 4f67 119
+ ;; 4f69 119
+                 iny                                      ; (2) ;; 4f69 119
+                 jsr indin1_ram1                           ;; 4f6a 119
+                 sta facmoh                                ;; 4f6d 119
+ ;; 4f6f 119
+                 iny                                      ; (3) ;; 4f6f 119
+                 jsr indin1_ram1                           ;; 4f70 119
+                 sta facmo                                 ;; 4f73 119
+ ;; 4f75 119
+                 iny                                      ; (4) ;; 4f75 119
+                 jsr indin1_ram1                           ;; 4f76 119
+                 sta faclo                                 ;; 4f79 119
+                 rts                                       ;; 4f7b 119
+ ;; 4f7c 119
+;.end ;; 4f7c 119
+; .page ;; 4f7c 119
+; .subttl Variable Search ;; 4f7c 119
+ ;; 4f7c 119
+;  Read the variable name at the current text position and put a pointer ;; 4f7c 119
+;  to its value in VARPNT.   TXTPTR points to the terminating character. ;; 4f7c 119
+;  Note that evaluating subscripts in a variable name can cause recursive ;; 4f7c 119
+;  calls to PTRGET, so all values must be stored on the stack. ;; 4f7c 119
+ ;; 4f7c 119
+ptrget           ldx #0                                    ;; 4f7c 119
+                 jsr chrgot                                ;; 4f7e 119
+ptrgt1           stx dimflg                               ; store flag away ;; 4f81 119
+ptrgt2           sta varnam                                ;; 4f83 119
+                 jsr chrgot                               ; get current character ;; 4f85 119
+                 jsr isletc                               ; check for a letter ;; 4f88 119
+                 bcc snerr                                ; not a letter ;; 4f8b 119
+ ;; 4f8e 119
+                 ldx #0                                   ; assume no second character ;; 4f8e 119
+                 stx valtyp                               ; default is numeric ;; 4f90 119
+                 stx intflg                               ; assume floating ;; 4f92 119
+                 jsr chrget                               ; get following character ;; 4f94 119
+                 bcc _local_1118_10                       ; branch if numeric ;; 4f97 119
+                 jsr isletc                               ; is it alpha? ;; 4f99 119
+                 bcc _local_1118_30                       ; no, no second character. branch ;; 4f9c 119
+_local_1118_10   tax                                      ; issec. save second character of name ;; 4f9e 119
+ ;; 4f9f 119
+_local_1118_20   jsr chrget                               ; skip over remainder of name. we only care about 2 chars. ;; 4f9f 119
+                 bcc _local_1118_20                       ; ..eat numbers, ;; 4fa2 119
+                 jsr isletc                                ;; 4fa4 119
+                 bcs _local_1118_20                       ; ..and alphas, too! ;; 4fa7 119
+ ;; 4fa9 119
+_local_1118_30   cmp #'$'                                 ; nosec. is this a string? ;; 4fa9 119
+                 bne _local_1118_40                       ; if not, VALTYP = 0 ;; 4fab 119
+                 lda #$ff                                  ;; 4fad 119
+                 sta valtyp                               ; ..else, flag 'string' ;; 4faf 119
+                 bra _local_1118_50                        ;; 4fb1 119
+ ;; 4fb3 119
+_local_1118_40   cmp #'%'                                 ; notstr. isn't string. is it integer? ;; 4fb3 119
+                 bne _local_1118_60                       ; branch if not ;; 4fb5 119
+                 lda subflg                                ;; 4fb7 119
+; bne snerr ; syntax error if integers disabled ;; 4fb9 119
+                 bne chkerr                               ; integers disallowed- type mismatch error  [910114] ;; 4fb9 119
+                 lda #$80                                 ; flag integer by turning on both high bits ;; 4fbc 119
+                 sta intflg                                ;; 4fbe 119
+                 tsb varnam                                ;; 4fc0 119
+ ;; 4fc2 119
+_local_1118_50   txa                                      ; turnon. turn on msb of second character ;; 4fc2 119
+                 ora #$80                                  ;; 4fc3 119
+                 tax                                       ;; 4fc5 119
+                 jsr chrget                               ; get character after $ or % ;; 4fc6 119
+ ;; 4fc9 119
+_local_1118_60   stx varnam+1                             ; strnam. store away second character ;; 4fc9 119
+                 sec                                       ;; 4fcb 119
+                 ora subflg                               ; add flag whether to allow arrays ;; 4fcc 119
+                 sbc #'('                                  ;; 4fce 119
+                 beq is_array                             ; note: won't match if SUBFLG set ;; 4fd0 119
+ ;; 4fd3 119
+                 ldy #0                                    ;; 4fd3 119
+                 sty subflg                               ; allow subscripts again ;; 4fd5 119
+                 lda vartab                               ; place to start search ;; 4fd7 119
+                 ldx vartab+1                              ;; 4fd9 119
+ ;; 4fdb 119
+_local_1118_70   stx lowtr+1                              ; stxfnd. ;; 4fdb 119
+_local_1118_80   sta lowtr                                 ;; 4fdd 119
+                 cpx arytab+1                             ; at end of table yet? ;; 4fdf 119
+                 bne _local_1118_90                        ;; 4fe1 119
+                 cmp arytab                                ;; 4fe3 119
+                 beq notfns                               ; yes, we couldn't find it ;; 4fe5 119
+ ;; 4fe7 119
+_local_1118_90   jsr indlow_ram1                          ; lda (lowtr),y ;; 4fe7 119
+                 cmp varnam                               ; compare high orders ;; 4fea 119
+                 bne _local_1118_100                       ;; 4fec 119
+                 iny                                       ;; 4fee 119
+                 jsr indlow_ram1                           ;; 4fef 119
+                 cmp varnam+1                             ; and the low part? ;; 4ff2 119
+                 beq finptr                               ; !!that's it!! ;; 4ff4 119
+ ;; 4ff7 119
+                 dey                                       ;; 4ff7 119
+_local_1118_100  clc                                       ;; 4ff8 119
+                 lda lowtr                                 ;; 4ff9 119
+                 adc #7                                   ; makes no difference among types ;; 4ffb 119
+                 bcc _local_1118_80                        ;; 4ffd 119
+                 inx                                       ;; 4fff 119
+                 bra _local_1118_70                       ; branch always ;; 5000 119
+ ;; 5002 119
+ ;; 5002 119
+ ;; 5002 119
+ ;; 5002 119
+; Test for a letter: (c)=0 not a letter ;; 5002 119
+;   (c)=1 a letter ;; 5002 119
+ ;; 5002 119

@@ -1,0 +1,37 @@
+reason           cpy fretop+1                              ;; 31af 31
+                 bcc _local_1030_4                         ;; 31b1 31
+                 bne _local_1030_1                        ; go garbage collect ;; 31b3 31
+                 cmp fretop                                ;; 31b5 31
+                 bcc _local_1030_4                         ;; 31b7 31
+ ;; 31b9 31
+_local_1030_1    pha                                       ;; 31b9 31
+                 ldx #9                                   ; if tempf2 has zero in between ;; 31ba 31
+                 tya                                       ;; 31bc 31
+ ;; 31bd 31
+_local_1030_2    pha                                       ;; 31bd 31
+                 lda highds-1,x                           ; save highds on stack ;; 31be 31
+                 dex                                       ;; 31c0 31
+                 bpl _local_1030_2                        ; put 8 of them on stack ;; 31c1 31
+                 jsr garba2                               ; go garbage collect ;; 31c3 31
+                 ldx #$f7                                  ;; 31c6 31
+ ;; 31c8 31
+_local_1030_3    pla                                       ;; 31c8 31
+                 sta highds+9,x                           ; restore after garbage collect ;; 31c9 31
+                 inx                                       ;; 31cb 31
+                 bmi _local_1030_3                         ;; 31cc 31
+                 ply                                       ;; 31ce 31
+                 pla                                      ; restore .a and .y ;; 31cf 31
+                 cpy fretop+1                             ; compare highs ;; 31d0 31
+                 bcc _local_1030_4                         ;; 31d2 31
+                 bne omerr                                ; higher is bad ;; 31d4 31
+                 cmp fretop                               ; compare the lows ;; 31d7 31
+                 bcs omerr                                 ;; 31d9 31
+_local_1030_4    rts                                       ;; 31dc 31
+ ;; 31dd 31
+; .page ;; 31dd 31
+ ;; 31dd 31
+;  Utilities involved in the operation of the BASIC run-time stack. ;; 31dd 31
+ ;; 31dd 31
+ ;; 31dd 31
+; Move top-of-stack pointer to (fndpnt) ;; 31dd 31
+ ;; 31dd 31

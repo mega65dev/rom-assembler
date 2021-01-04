@@ -1,0 +1,24 @@
+Key_List                                                   ;; 460a 98
+                 ldx #0                                   ; display all key definitions ;; 460a 98
+                 ldy #0                                    ;; 460c 98
+ ;; 460e 98
+lstky1           inx                                      ; get key number = 1-16 ;; 460e 98
+                 lda _pky_lengths-1,x                     ; get key size ;; 460f 98
+                 beq lstest                               ; skip if key not defined ;; 4612 98
+                 sta keysiz                               ; save size ;; 4614 98
+                 stx z_p_temp_1                           ; save key number ;; 4616 98
+ ;; 4618 98
+                 phy                                       ;; 4618 98
+                 ldx #3                                    ;; 4619 98
+_local_1097_20   lda preamb,x                             ; print key preamble: ;; 461b 98
+                 jsr _bsout                                ;; 461e 98
+                 dex                                      ; 'KEY ' ;; 4621 98
+                 bpl _local_1097_20                        ;; 4622 98
+                 ldx z_p_temp_1                           ; key number ;; 4624 98
+                 lda #0                                    ;; 4626 98
+                 jsr linprt                                ;; 4628 98
+                 lda #','                                  ;; 462b 98
+                 jsr _bsout                               ; comma ;; 462d 98
+ ;; 4630 98
+                 ply                                       ;; 4630 98
+                 ldx #7                                   ; (length of 'keydat' string) ;; 4631 98

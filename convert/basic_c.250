@@ -1,0 +1,47 @@
+optzer           ldx #0                                   ; optional byte, with default=0 ;; 7924 250
+ ;; 7926 250
+optbyt           jsr chrgot                                ;; 7926 250
+                 beq optw99                               ; EOL: clc/rts ;; 7929 250
+                 jsr chkcom                                ;; 792b 250
+                 cmp #','                                  ;; 792e 250
+                 beq optw99                               ; Comma: clc/rts ;; 7930 250
+                 jsr getbyt                                ;; 7932 250
+                 sec                                       ;; 7935 250
+                 rts                                       ;; 7936 250
+ ;; 7937 250
+; .page ;; 7937 250
+prtdec                                                     ;; 7937 250
+                 phy                                       ;; 7937 250
+                 phx                                       ;; 7938 250
+                 tax                                      ; prints decimal value of chr in .a ;; 7939 250
+                 lda #0                                    ;; 793a 250
+                 jsr linprt                                ;; 793c 250
+                 plx                                       ;; 793f 250
+                 ply                                       ;; 7940 250
+                 rts                                       ;; 7941 250
+ ;; 7942 250
+ ;; 7942 250
+ ;; 7942 250
+retpat                                                    ; f.bowen ;; 7942 250
+                 dey                                      ; [910828] ;; 7942 250
+                 lda (fndpnt),y                           ; restore pointers ;; 7943 250
+                 sta txtptr+1                              ;; 7945 250
+                 dey                                       ;; 7947 250
+                 lda (fndpnt),y                            ;; 7948 250
+                 sta txtptr                                ;; 794a 250
+                 dey                                       ;; 794c 250
+                 lda (fndpnt),y                            ;; 794d 250
+ ;; 794f 250
+                 sta curlin+1                             ; fixes a problem when RETURNing to a GOSUB in direct mode ;; 794f 250
+                 dey                                      ; or LOOPing to a DO in direct mode. 'curlin+1' must not be ;; 7951 250
+                 tax                                      ; restored to $ff without also resetting 'runmod' ;; 7952 250
+                 inx                                       ;; 7953 250
+                 bne _local_1249_10                       ; branch if GOSUB or DO was from a program ;; 7954 250
+                 lda #%11000000                            ;; 7956 250
+                 trb runmod                               ; else force return to direct mode ;; 7958 250
+ ;; 795a 250
+_local_1249_10   lda (fndpnt),y                            ;; 795a 250
+                 sta curlin                                ;; 795c 250
+                 rts                                       ;; 795e 250
+ ;; 795f 250
+ ;; 795f 250

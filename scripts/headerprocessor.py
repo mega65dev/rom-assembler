@@ -45,7 +45,7 @@ class HeaderProcessor(BaseProcessor):
 
 if __name__ == "__main__":
 	print("Converting basic.header to ACME")
-	tgt = open("convert/basic.header","w")
+	tgt = open("convert/basic_c.header","w")
 	hp = HeaderProcessor()
 	for l in open("parts/basic.header").readlines():		
 		p = hp.process(l)

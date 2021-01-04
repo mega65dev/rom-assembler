@@ -1,0 +1,21 @@
+slr1             dex                                      ; .x = ptr to temp. string descriptor ;; 5d50 167
+                 lda 0,x                                  ; msb of ptr to string ;; 5d51 167
+                 sta tempf2+1                              ;; 5d53 167
+                 dex                                       ;; 5d55 167
+                 lda 0,x                                  ; lsb of ptr to string ;; 5d56 167
+                 sta tempf2                                ;; 5d58 167
+                 dex                                       ;; 5d5a 167
+                 lda 0,x                                  ; string length ;; 5d5b 167
+                 pha                                      ; save for later test ;; 5d5d 167
+                 clc                                       ;; 5d5e 167
+                 adc tempf2                               ; want ptr to string's backpointer ;; 5d5f 167
+                 sta tempf2                                ;; 5d61 167
+                 bcc _local_1166_1                         ;; 5d63 167
+                 inc tempf2+1                              ;; 5d65 167
+_local_1166_1    pla   ;.a=len & set z flag               ; .x=next desc. ptr ;; 5d67 167
+                 rts                                       ;; 5d68 167
+ ;; 5d69 167
+;.end ;; 5d69 167
+; .page ;; 5d69 167
+; .subttl  Floating Point Math Package (CODE17) ;; 5d69 167
+ ;; 5d69 167

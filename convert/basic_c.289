@@ -1,0 +1,52 @@
+movspr_normal                                             ; [910122] ;; b644 289
+                 sty xdest+2                              ; save second coordinate (y,a) ;; b644 289
+                 sta xdest+3                               ;; b647 289
+; ldx #xdest-vwork ;; b64a 289
+; jsr scalxy  ;scale the coordinates ;; b64a 289
+ ;; b64a 289
+ ;; b64a 289
+movspr_position                                            ;; b64a 289
+                 sei                                      ; [910123] ;; b64a 289
+                 lda z_p_temp_1                           ; get sprite number ;; b64b 289
+                 tax                                      ; use as an index ;; b64d 289
+                 asl a                                     ;; b64e 289
+                 tay                                      ; get sprite-number * 2 as another index ;; b64f 289
+ ;; b650 289
+                 bbr7 op,_local_1288_10                    ;; b650 289
+                 rts                                      ; >>>exit here if movspr_to call   [910808] ;; b653 289
+ ;; b654 289
+_local_1288_10   lda xdest+2                              ; get y-coordinate ;; b654 289
+                 asl numcnt                               ; test if relative ;; b657 289
+                 bcc _local_1288_80                       ; skip if absolute ;; b65a 289
+                 clc                                       ;; b65c 289
+                 bpl _local_1288_75                       ; skip if normal coordinates ;; b65d 289
+                 eor #$ff                                  ;; b65f 289
+                 sec                                      ; invert to subtract if angular ;; b661 289
+_local_1288_75   adc vic+1,y                              ; add to current sprite y-value  ???vic_save ;; b662 289
+ ;; b665 289
+_local_1288_80   sta vic+1,y                              ; save new sprite y-position  ???vic_save ;; b665 289
+                 lda xdest                                ; get low byte of x-coordinate ;; b668 289
+                 asl numcnt                               ; test if relative ;; b66b 289
+                 bpl _local_1288_95                       ; skip if absolute ;; b66e 289
+                 clc                                       ;; b670 289
+                 adc vic,y                                ; add current sprite x-position  ???vic_save ;; b671 289
+                 sta vic,y                                ; save sprite x-position   ???vic_save ;; b674 289
+                 bcs _local_1288_90                       ; skip if carry ;; b677 289
+                 inc xdest+1                              ; invert lsb ;; b679 289
+ ;; b67c 289
+_local_1288_90   lda vic+16                               ; get x-position msb bits  ???vic_save ;; b67c 289
+                 bra _local_1288_98                       ; test if need to invert msb bit ;; b67f 289
+ ;; b681 289
+_local_1288_95   sta vic,y                                ; save new sprite x-position  ???vic_save ;; b681 289
+                 lda vic+16                               ; ???vic_save ;; b684 289
+                 ora sbits,x                              ; set x-position msb bit ;; b687 289
+ ;; b68a 289
+_local_1288_98   lsr xdest+1                              ; match to lsb of x-coordinate high byte ;; b68a 289
+                 bcs _local_1288_100                      ; skip if should be set ;; b68d 289
+                 eor sbits,x                              ; reset bit ;; b68f 289
+ ;; b692 289
+_local_1288_100  sta vic+16                               ; save position msb bits   ???vic_save ;; b692 289
+; cli ;; b695 289
+;1_local_1288_10 rts   ; mouse or movspr_to ;; b695 289
+ ;; b695 289
+; .page ;; b695 289

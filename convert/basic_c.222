@@ -1,0 +1,40 @@
+too_many_files                                             ;; 712b 222
+                 ldx #errtmf                              ; too many files open ;; 712b 222
+                 bra error                                 ;; 712d 222
+ ;; 7130 222
+; .page ;; 7130 222
+; Close disk file ;; 7130 222
+ ;; 7130 222
+dclose           lda #$f3                                 ; set error flags ;; 7130 222
+                 jsr dosprs                               ; parse the line ;; 7132 222
+                 jsr Clear_DS                              ;; 7135 222
+                 bbr2 parsts,dclall                       ; any la given?  branch if not ;; 7138 222
+                 lda dosla                                 ;; 713b 222
+                 bra close_out                             ;; 713e 222
+ ;; 7141 222
+dclall           lda dosfa                                ; get disk # ;; 7141 222
+; jsr put_io_in_map ;; 7144 222
+                 jmp _close_all                           ; close all channels ;; 7144 222
+ ;; 7147 222
+ ;; 7147 222
+ ;; 7147 222
+; DSAVE dfn ;; 7147 222
+ ;; 7147 222
+dsave            bbr4 runmod,_local_1221_10               ; PROGRAM or EDIT mode?    [910620] ;; 7147 222
+                 bra edit_save                            ; edit ;; 714a 222
+ ;; 714d 222
+_local_1221_10   lda #$66                                 ; set error flags ;; 714d 222
+                 jsr dosprs                               ; parse the line ;; 714f 222
+                 jsr chk2                                 ; check required parameters ;; 7152 222
+                 ldy #fopn                                ; table offset ;; 7155 222
+                 lda #4                                   ; ..length, ;; 7157 222
+                 jsr sendp                                 ;; 7159 222
+ ;; 715c 222
+                 lda text_bank                            ; default to text bank set up banks???? [910620] ;; 715c 222
+                 ldx #sys_bank                            ; fname is in system space, bank0 ;; 715e 222
+                 jsr _setbank                              ;; 7160 222
+                 bra savenp                                ;; 7163 222
+ ;; 7166 222
+; .page ;; 7166 222
+; DVERIFY ;; 7166 222
+ ;; 7166 222

@@ -1,0 +1,139 @@
+fload            jsr restore$1                            ; reset pointer for DATA statements ;; 3506 43
+ ;; 3509 43
+; .page ;; 3509 43
+; INIT_STACK Routine (formerly STKINI) ;; 3509 43
+; ;; 3509 43
+;   Init_Stack resets the stack pointer.  String temporaries are freed up, ;; 3509 43
+;   SUBFLG is reset, continuing is prohibited. ;; 3509 43
+ ;; 3509 43
+init_stack                                                 ;; 3509 43
+                 ply                                      ; pop return address ;; 3509 43
+                 pla                                       ;; 350a 43
+                 ldx #stkend-257                          ; reset system stack pointer ;; 350b 43
+                 txs                                       ;; 350d 43
+                 pha                                      ; push return address ;; 350e 43
+                 phy                                       ;; 350f 43
+                 ldx #tempst                              ; reset string temporaries ;; 3510 43
+                 stx temppt                                ;; 3512 43
+                 lda #0                                    ;; 3514 43
+                 sta subflg                               ; allow subscripted & integer vars ;; 3516 43
+                 sta oldtxt+1                             ; disallow continuing ;; 3518 43
+                 sta bits                                 ; reset math bit/byte flag ;; 351b 43
+ ;; 351e 43
+stkrts           rts                                       ;; 351e 43
+ ;; 351f 43
+ ;; 351f 43
+ ;; 351f 43
+reset_txtptr                                               ;; 351f 43
+                 clc                                      ; load (txtptr) with (txttab)-1 ;; 351f 43
+                 lda txttab                                ;; 3520 43
+                 adc #$ff                                  ;; 3522 43
+                 sta txtptr                                ;; 3524 43
+                 lda txttab+1                              ;; 3526 43
+                 adc #$ff                                  ;; 3528 43
+                 sta txtptr+1                             ; set up text pointers ;; 352a 43
+                 rts                                       ;; 352c 43
+ ;; 352d 43
+;.end ;; 352d 43
+; .page ;; 352d 43
+; .subttl RETURN ;; 352d 43
+;********************************************************************* ;; 352d 43
+; RETURN Routine ;; 352d 43
+; ;; 352d 43
+; Restores the line number and text pointer from the stack, and ;; 352d 43
+; eliminates all the FOR entries in front of the GOSUB entry. ;; 352d 43
+; ;; 352d 43
+;********************************************************************* ;; 352d 43
+ ;; 352d 43
+return                                                     ;; 352d 43
+ ;; 352d 43
+; Ok, pay attention: we got here by a pseudo-jsr which left a return to NEWSTT ;; 352d 43
+; on the stack for us to return to.  There is also a return to NEWSTT left on ;; 352d 43
+; the stack from the GOSUB we are returning from.  This is true UNLESS we got ;; 352d 43
+; here on a sprite collision, in which case we still have the NEWSUB return ;; 352d 43
+; recently left by our current call, but the second return goes back to the ;; 352d 43
+; trapping mechanism.  The bottom line is: we have an extra return address on ;; 352d 43
+; the stack, which we have to get rid of before leaving. ;; 352d 43
+ ;; 352d 43
+                 pla                                      ; mea culpa, mea culpa, mea culpa ;; 352d 43
+                 pla                                       ;; 352e 43
+                 lda #gosub_token                          ;; 352f 43
+                 jsr search                               ; look for GOSUB on runtime stack ;; 3531 43
+                 beq ret010                               ; found ;; 3534 43
+                 ldx #errrg                               ; else error ;; 3536 43
+                 bra error                                 ;; 3538 43
+ ;; 353b 43
+ret010           jsr movfnd                               ; (fndpnt) => (tos) ;; 353b 43
+                 ldy #lengos                               ;; 353e 43
+                 jsr rlsstk                               ; effectivly pop GOSUB off run-time stack ;; 3540 43
+; dey ;; 3543 43
+; lda (fndpnt),y ;; 3543 43
+; sta txtptr+1 ;; 3543 43
+; dey ;; 3543 43
+; lda (fndpnt),y ;; 3543 43
+; sta txtptr ;; 3543 43
+; dey ;; 3543 43
+; lda (fndpnt),y ;; 3543 43
+                 jsr retpat                               ; 01/18/84 patch: correct RETURN to GOSUB from direct mode ;; 3543 43
+; lda (fndpnt),y ;; 3546 43
+; sta curlin ;jump to DATA to waste rest of stmt (in case of ON..GOSUB) ;; 3546 43
+                 bra data                                  ;; 3546 43
+ ;; 3548 43
+;.end ;; 3548 43
+; .page ;; 3548 43
+; .subttl DATA ;; 3548 43
+ ;; 3548 43
+data                                                       ;; 3548 43
+                 jsr datan                                ; skip to end of statement- offset in .y ;; 3548 43
+addon            tya                                       ;; 354b 43
+                 clc                                       ;; 354c 43
+                 adc txtptr                               ; add offset to end to txtptr ;; 354d 43
+                 sta txtptr                                ;; 354f 43
+                 bcc remrts                                ;; 3551 43
+                 inc txtptr+1                              ;; 3553 43
+remrts           rts                                      ; NEWSTT rts addr is still there ;; 3555 43
+ ;; 3556 43
+ ;; 3556 43
+ ;; 3556 43
+rem              jsr remn                                 ; skip rest of statement ;; 3556 43
+                 bra addon                                ; will always branch ;; 3559 43
+ ;; 355b 43
+ ;; 355b 43
+datan            ldx #':'                                 ; DATA terminates on ":" and null ;; 355b 43
+                 !byte $2c                                 ;; 355d 43
+ ;; 355e 43
+remn             ldx #0                                   ; REM terminates on null only ;; 355e 43
+                 stx charac                               ; preserve terminator ;; 3560 43
+                 ldy #0                                   ; this makes charac=0 after swap ;; 3562 43
+                 sty endchr                                ;; 3564 43
+ ;; 3566 43
+_local_1042_10   lda endchr                                ;; 3566 43
+                 ldx charac                                ;; 3568 43
+                 sta charac                                ;; 356a 43
+                 stx endchr                                ;; 356c 43
+_local_1042_20   jsr indtxt                                ;; 356e 43
+                 beq remrts                               ; null always terminates ;; 3571 43
+                 cmp endchr                               ; is it some another terminator? ;; 3573 43
+                 beq remrts                               ; yes, it's finished ;; 3575 43
+                 iny                                      ; progress to next character ;; 3577 43
+                 cmp #'"'                                 ; is it a quote? ;; 3578 43
+                 bne _local_1042_20                       ; no, just continue ;; 357a 43
+                 beq _local_1042_10                       ; yes, time to change ;; 357c 43
+ ;; 357e 43
+;.end ;; 357e 43
+; .page ;; 357e 43
+; .subttl IF  THEN  ELSE ;; 357e 43
+ ;; 357e 43
+;**************************************************************** ;; 357e 43
+;* ;; 357e 43
+;* IF Statment ;; 357e 43
+;* ;; 357e 43
+;* IF exp {GOTO line#  | THEN {line# | statements | b-block} } ;; 357e 43
+;*  [:ELSE {line# | statements | b-block} ] ;; 357e 43
+;* ;; 357e 43
+;* B-block ;; 357e 43
+;* ;; 357e 43
+;* BEGIN : [statement(s) on one or more lines] : BEND ;; 357e 43
+;* ;; 357e 43
+;**************************************************************** ;; 357e 43
+ ;; 357e 43

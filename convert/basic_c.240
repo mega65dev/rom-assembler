@@ -1,0 +1,232 @@
+lenchk           pla                                      ; [901115] ;; 7661 240
+                 txa                                      ; Check filename length ;; 7662 240
+                 beq err_mfn                              ; too small, missing filename  [901115] ;; 7663 240
+; cmp #17  ;  ???? (problem if name has ',P') ;; 7665 240
+; bcs errlen ; too long ;; 7665 240
+                 ldx index1                                ;; 7665 240
+                 ldy index1+1                             ; ok- return pointer to filename ;; 7667 240
+                 rts                                       ;; 7669 240
+ ;; 766a 240
+ ;; 766a 240
+err_mfn          ldx #err_missing_fname                    ;; 766a 240
+                 !byte $2c                                 ;; 766c 240
+ ;; 766d 240
+err_ild          ldx #err_illegal_device                   ;; 766d 240
+                 !byte $2c                                 ;; 766f 240
+ ;; 7670 240
+errlen           ldx #errls                               ; string or filename too long ;; 7670 240
+                 bra error                                 ;; 7672 240
+ ;; 7675 240
+ ;; 7675 240
+ ;; 7675 240
+; Get next value routine (use gtbytc instead!) ;; 7675 240
+ ;; 7675 240
+;getval jsr chrget ;get nxt chr ;; 7675 240
+; beq snerr ;if end of statement ;; 7675 240
+; bra getbyt ;       [911024] ;; 7675 240
+ ;; 7675 240
+; bcc getbyt ;can be numeric, go evaluate it  why this crap ???? ;; 7675 240
+; jsr chkopn ;or a "(" ;; 7675 240
+; jsr getbyt ;anything else is an error ;; 7675 240
+; bra chkcls ;need closing ")" ;; 7675 240
+ ;; 7675 240
+ ;; 7675 240
+ ;; 7675 240
+; Get next 2-byte expression.  Exit: .a,.y (high,low) value ;; 7675 240
+ ;; 7675 240
+getoff           jsr chrget                               ; get nxt chr ;; 7675 240
+                 beq snerr                                ; if end of statement ;; 7678 240
+                 bcc getwrd                               ; can be num. const, go evaluate it ;; 767b 240
+                 jsr chkopn                               ; or a "(" ;; 767e 240
+                 jsr getwrd                               ; expr ;; 7681 240
+                 jsr chkcls                               ; need closing ")" ;; 7684 240
+                 ldy poker                                 ;; 7687 240
+                 lda poker+1                               ;; 7689 240
+                 rts                                       ;; 768b 240
+ ;; 768c 240
+ ;; 768c 240
+ ;; 768c 240
+; Prmrpt checks for a repeated parameter. ;; 768c 240
+; ;; 768c 240
+; Entry: .a contains parsts flag to check ;; 768c 240
+ ;; 768c 240
+ ;; 768c 240
+prmrpt           and parsts                               ; compare mask with status ;; 768c 240
+                 bne snerr                                ; error if bit previously set ;; 768e 240
+                 rts                                       ;; 7691 240
+ ;; 7692 240
+ ;; 7692 240
+ ;; 7692 240
+; Prxrpt checks for a repeated parameter. ;; 7692 240
+; ;; 7692 240
+; Entry: .a contains parstx flag to check ;; 7692 240
+ ;; 7692 240
+ ;; 7692 240
+prxrpt           and parstx                               ; and with parstx ;; 7692 240
+                 bne snerr                                ; if bit previously set ;; 7694 240
+                 rts                                       ;; 7697 240
+ ;; 7698 240
+;.end ;; 7698 240
+; .page ;; 7698 240
+; .subttl  DOS 3 ;; 7698 240
+ ;; 7698 240
+; CBM-2001 BASIC-4 disk verb processors.  -- rsr 7-24-79 -- ;; 7698 240
+; ;; 7698 240
+; Token Table Definitions ;; 7698 240
+ ;; 7698 240
+xsca             =$c2                                     ; send dossca ;; 7698 240
+xid              =$d0                                     ; sends disk id ;; 7698 240
+xd1              =$d1                                     ; sends dosds1 ;; 7698 240
+xd2              =$d2                                     ; sends dosds2 ;; 7698 240
+xrec             =$e0                                     ; sends S for SEQ, or dosrcl ;; 7698 240
+xwrt             =$e1                                     ; sends W or L ;; 7698 240
+xrcl             =$e2                                     ; send low ((poker)) ;; 7698 240
+xfat             =$f0                                     ; sends "@" or "/" if specified ;; 7698 240
+xfn1             =$f1                                     ; sends filename1 ;; 7698 240
+xfn2             =$f2                                     ; sends filename2 ;; 7698 240
+ ;; 7698 240
+ ;; 7698 240
+; Tabld - used to build disk command strings ;; 7698 240
+ ;; 7698 240
+tabld                                                      ;; 7698 240
+finit            = $ff                                    ; Dclear ;; 7698 240
+                 !byte "I",xd1                             ;; 7698 240
+ ;; 769a 240
+fdir             = *-tabld-1                              ; Dir ;; 769a 240
+                 !byte "$",xd1,":",xfn1                    ;; 769a 240
+ ;; 769e 240
+fdirr            = *-tabld-1                              ; Recover Dir  [901024] ;; 769e 240
+                 !byte "_",xd1,":",xfn1                   ; ('_'=CBM backarrow, $5F) ;; 769e 240
+ ;; 76a2 240
+fopn             = *-tabld-1                              ; Dopen ;; 76a2 240
+                 !byte xfat,xd1,":",xfn1,",",xwrt,",",xrec  ;; 76a2 240
+ ;; 76aa 240
+fopnseq          = *-tabld-1                              ; Type   [900801] ;; 76aa 240
+                 !byte xfat,xd1,":",xfn1,",S"              ;; 76aa 240
+ ;; 76b0 240
+fsavseq          = *-tabld-1                              ; EDIT_SAVE  [910620] ;; 76b0 240
+                 !byte xfat,xd1,":",xfn1,",S,W"            ;; 76b0 240
+ ;; 76b8 240
+fconc            = *-tabld-1                              ; Concat ;; 76b8 240
+                 !byte "C",xd2,":",xfn2,"=",xd2,":",xfn2,","  ;; 76b8 240
+ ;; 76c1 240
+fapn             = *-tabld-1                              ; Append ;; 76c1 240
+                 !byte xd1,":",xfn1,",A"                   ;; 76c1 240
+ ;; 76c6 240
+fhed             = *-tabld-1                              ; Header ;; 76c6 240
+                 !byte "N",xd1,":",xfn1,",",xid            ;; 76c6 240
+ ;; 76cc 240
+fcoll            = *-tabld-1                              ; Collect ;; 76cc 240
+                 !byte "V",xd1                             ;; 76cc 240
+ ;; 76ce 240
+fbak             = *-tabld-1                              ; Backup ;; 76ce 240
+                 !byte "D",xd2,"=",xd1                     ;; 76ce 240
+ ;; 76d2 240
+fcopy            = *-tabld-1                              ; Copy ;; 76d2 240
+                 !byte "C",xd2,":",xfn2,"=",xd1,":",xfn1   ;; 76d2 240
+ ;; 76da 240
+fren             = *-tabld-1                              ; Rename ;; 76da 240
+                 !byte "R",xd1,":",xfn2,"=",xd1,":",xfn1   ;; 76da 240
+ ;; 76e2 240
+fscr             = *-tabld-1                              ; Scratch ;; 76e2 240
+                 !byte "S",xd1,":",xfn1                    ;; 76e2 240
+ ;; 76e6 240
+frscr            = *-tabld-1                              ; Recover Del  [901024] ;; 76e6 240
+                 !byte "F-R",xd1,":",xfn1                  ;; 76e6 240
+ ;; 76ec 240
+fdisk            = *-tabld-1                              ; Disk command  [910123] ;; 76ec 240
+                 !byte xfat,xfn1                          ; pass '/' [911030] ;; 76ec 240
+ ;; 76ee 240
+frec             = *-tabld-1                              ; Record ;; 76ee 240
+                 !byte "P",xsca,xrcl,xrec                  ;; 76ee 240
+ ;; 76f2 240
+; .page ;; 76f2 240
+; Send parameters to device ;; 76f2 240
+; ;; 76f2 240
+; Entry: .a = number of bytes in format ;; 76f2 240
+;  .y = pointer to TABLD entry ;; 76f2 240
+ ;; 76f2 240
+sendp            sta xcnt                                 ; save number of string bytes ;; 76f2 240
+                 phy                                       ;; 76f5 240
+                 jsr Clear_DS                             ; clear old status ;; 76f6 240
+ ;; 76f9 240
+                 ldx #0                                    ;; 76f9 240
+sdp1             pla                                       ;; 76fb 240
+                 dec xcnt                                  ;; 76fc 240
+                 bmi tranr                                 ;; 76ff 240
+                 tay                                       ;; 7701 240
+                 iny                                      ; move down table ;; 7702 240
+                 phy                                       ;; 7703 240
+                 lda tabld,y                              ; get next entry ;; 7704 240
+                 bpl sdp5                                 ; if not escape code ;; 7707 240
+                 cmp #xsca                                ; if not secondary address ;; 7709 240
+                 beq rsca                                  ;; 770b 240
+                 cmp #xid                                  ;; 770d 240
+                 beq rid                                  ; if disk id ;; 770f 240
+                 cmp #xrcl                                 ;; 7711 240
+                 beq rdcn                                 ; if record number ;; 7713 240
+                 cmp #xwrt                                 ;; 7716 240
+                 beq rwrt                                 ; if W or L ;; 7718 240
+                 cmp #xfat                                 ;; 771a 240
+                 beq rfat                                 ; if "@" symbol request ;; 771c 240
+                 cmp #xfn1                                 ;; 771e 240
+                 beq rsfn                                 ; if filename 1 ;; 7720 240
+                 cmp #xfn2                                 ;; 7723 240
+                 beq rdfn                                 ; if filename 2 ;; 7725 240
+                 cmp #xrec                                 ;; 7728 240
+                 bne sdp2                                 ; if not record type ;; 772a 240
+                 lda dosrcl                               ; get rec # ;; 772c 240
+                 cmp #1                                   ; kludge to allow DOPEN#lf,"relfile",L  [911024] ;; 772f 240
+                 bne sdp5                                 ; (note RECORD byte 0 = byte 1 anyhow) ;; 7731 240
+                 dec a                                     ;; 7733 240
+                 bra sdp5                                 ; always branch ;; 7734 240
+ ;; 7736 240
+sdp2             cmp #xd1                                  ;; 7736 240
+                 bne sdp3                                 ; if not drive 1 ;; 7738 240
+                 lda dosds1                                ;; 773a 240
+                 bra sdp4                                 ; always branch ;; 773d 240
+ ;; 773f 240
+sdp3             cmp #xd2                                  ;; 773f 240
+                 bne sdp1                                 ; if not drive 2, continue ;; 7741 240
+                 lda dosds2                                ;; 7743 240
+sdp4             ora #'0'                                 ; change # to PETSCII ;; 7746 240
+ ;; 7748 240
+sdp5             sta dosstr,x                             ; else into buffer ;; 7748 240
+                 inx                                       ;; 774b 240
+                 bra sdp1                                 ; always ;; 774c 240
+ ;; 774e 240
+ ;; 774e 240
+tranr            txa                                      ; length to a ;; 774e 240
+                 pha                                       ;; 774f 240
+                 ldx #<dosstr                             ; set filename ;; 7750 240
+                 ldy #>dosstr                              ;; 7752 240
+                 jsr _setnam                               ;; 7754 240
+ ;; 7757 240
+                 lda dosla                                ; set channel ;; 7757 240
+                 ldx dosfa                                 ;; 775a 240
+                 ldy dossa                                 ;; 775d 240
+                 jsr _setlfs                               ;; 7760 240
+ ;; 7763 240
+                 pla                                       ;; 7763 240
+                 rts                                       ;; 7764 240
+ ;; 7765 240
+ ;; 7765 240
+ ;; 7765 240
+ ;; 7765 240
+rsca             lda dossa_temp                           ; secondary address (record) ;; 7765 240
+                 bra sdp5                                 ; always ;; 7768 240
+ ;; 776a 240
+ ;; 776a 240
+rfat             bbr7 parsts,_local_1239_10               ; if "@" not encountered ;; 776a 240
+                 lda #'@'                                  ;; 776d 240
+                 bra sdp5                                 ; always ;; 776f 240
+ ;; 7771 240
+_local_1239_10   lda dosflags                              ;; 7771 240
+                 lsr a                                     ;; 7774 240
+                 bcc sdp1                                 ; if "/" not encountered ;; 7775 240
+                 lda #'/'                                  ;; 7777 240
+                 bra sdp5                                  ;; 7779 240
+ ;; 777b 240
+ ;; 777b 240
+; ID subroutine ;; 777b 240
+ ;; 777b 240

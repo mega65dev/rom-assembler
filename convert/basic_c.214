@@ -1,0 +1,150 @@
+isp              cmp #'+'                                 ; plus? ;; 6e2a 214
+                 bne chom                                 ; no... ;; 6e2c 214
+                 lda sno                                  ; sign neg? ;; 6e2e 214
+                 bpl spos                                 ; yes... ;; 6e31 214
+                 lda #'+'                                  ;; 6e33 214
+                 sta sno                                   ;; 6e35 214
+ ;; 6e38 214
+spos             lda posp                                 ; + or - already? ;; 6e38 214
+                 bne ero                                   ;; 6e3b 214
+                 ror posp                                 ; make posp neg/clc ;; 6e3d 214
+                 sty endfd                                ; end field pointer ;; 6e40 214
+                 inc cform                                ; correct counter ;; 6e43 214
+trts             rts                                       ;; 6e46 214
+ ;; 6e47 214
+ ;; 6e47 214
+chom             cmp #'-'                                 ; minus? ;; 6e47 214
+                 beq spos                                 ; yes... ;; 6e49 214
+                 sec                                       ;; 6e4b 214
+efo              sty endfd                                ; end field pointer ;; 6e4c 214
+                 dec endfd                                 ;; 6e4f 214
+                 rts                                       ;; 6e52 214
+ ;; 6e53 214
+ ;; 6e53 214
+; Using- comp: compare .a with symbols ;; 6e53 214
+ ;; 6e53 214
+comp             cmp #'+'                                  ;; 6e53 214
+                 beq rt                                    ;; 6e55 214
+                 cmp #'-'                                  ;; 6e57 214
+                 beq rt                                    ;; 6e59 214
+ ;; 6e5b 214
+com1             cmp #'.'                                  ;; 6e5b 214
+                 beq rt                                    ;; 6e5d 214
+ ;; 6e5f 214
+com2             cmp #'='                                  ;; 6e5f 214
+                 beq rt                                    ;; 6e61 214
+                 cmp #'>'                                  ;; 6e63 214
+                 beq rt                                    ;; 6e65 214
+                 cmp #'#'                                  ;; 6e67 214
+                 bne rt                                    ;; 6e69 214
+                 clc                                       ;; 6e6b 214
+rt               rts                                       ;; 6e6c 214
+ ;; 6e6d 214
+;.end ;; 6e6d 214
+; .page ;; 6e6d 214
+; .subttl  INSTR() ;; 6e6d 214
+ ;; 6e6d 214
+;  INSTRing - Find position of str1 in str2 at or after position n ;; 6e6d 214
+; ;; 6e6d 214
+; Usage: INSTR(a$,b${,n}) ;; 6e6d 214
+ ;; 6e6d 214
+instr            lda facmo                                ; save pointer to temporary descriptors ;; 6e6d 214
+                 sta tmpdes                                ;; 6e6f 214
+                 lda facmo+1                               ;; 6e72 214
+                 sta tmpdes+1                              ;; 6e74 214
+ ;; 6e77 214
+                 jsr frmevl                               ; get next arg ;; 6e77 214
+                 jsr chkstr                               ; must be string ;; 6e7a 214
+                 lda facmo                                 ;; 6e7d 214
+                 sta tmpdes+2                              ;; 6e7f 214
+                 lda facmo+1                               ;; 6e82 214
+                 sta tmpdes+3                              ;; 6e84 214
+ ;; 6e87 214
+                 ldx #1                                   ; default starting position ;; 6e87 214
+                 stx faclo                                 ;; 6e89 214
+                 jsr chrgot                                ;; 6e8b 214
+                 cmp #')'                                 ; any length argument? ;; 6e8e 214
+                 beq _local_1213_1                        ; branch if not ;; 6e90 214
+                 jsr combyt                               ; else go get a one byte argument ;; 6e92 214
+ ;; 6e95 214
+_local_1213_1    jsr chkcls                               ; look for ) ;; 6e95 214
+                 ldx faclo                                 ;; 6e98 214
+                 beq fcerr                                ; starting position can't be 0 ;; 6e9a 214
+                 dex                                       ;; 6e9d 214
+                 stx positn                                ;; 6e9e 214
+ ;; 6ea0 214
+                 ldx #3                                   ; copy 'pointers to temp descriptors' to zero page ;; 6ea0 214
+_local_1213_3    lda tmpdes,x                              ;; 6ea2 214
+                 sta ptarg1,x                              ;; 6ea5 214
+                 dex                                       ;; 6ea7 214
+                 bpl _local_1213_3                         ;; 6ea8 214
+ ;; 6eaa 214
+                 ldy #2                                   ; now get the descriptors ;; 6eaa 214
+_local_1213_4    lda #ptarg1                               ;; 6eac 214
+                 jsr lda_far_ram1                         ; lda (ptarg1),y ;; 6eae 214
+                 sta str1,y                                ;; 6eb1 214
+                 lda #ptarg2                               ;; 6eb4 214
+                 jsr lda_far_ram1                         ; lda (ptarg2),y ;; 6eb6 214
+                 sta str2,y                                ;; 6eb9 214
+                 dey                                       ;; 6ebc 214
+                 bpl _local_1213_4                         ;; 6ebd 214
+ ;; 6ebf 214
+                 lda str2                                 ; check if string 2 is null ;; 6ebf 214
+                 beq _local_1213_50                       ; if so, return 0 ;; 6ec1 214
+ ;; 6ec3 214
+_local_1213_10   lda #0                                    ;; 6ec3 214
+                 sta match                                 ;; 6ec5 214
+                 clc                                       ;; 6ec7 214
+                 lda str2                                 ; length of string 2 ;; 6ec8 214
+                 adc positn                                ;; 6eca 214
+                 bcs _local_1213_50                       ; too long, not found ;; 6ecc 214
+                 cmp str1                                 ; see if > length of string 1 ;; 6ece 214
+                 bcc _local_1213_20                       ; < len string 1 ;; 6ed0 214
+                 bne _local_1213_50                       ; must be >, not found ;; 6ed2 214
+ ;; 6ed4 214
+_local_1213_20   ldy match                                 ;; 6ed4 214
+                 cpy str2                                 ; if match len = str len, then found ;; 6ed6 214
+                 beq _local_1213_40                        ;; 6ed8 214
+                 tya                                       ;; 6eda 214
+                 clc                                       ;; 6edb 214
+                 adc positn                               ; compare str1(s+p+m) with str2(m) ;; 6edc 214
+                 tay                                       ;; 6ede 214
+                 lda #str1+1                               ;; 6edf 214
+                 jsr lda_far_ram1                         ; lda (str1+1),y ;; 6ee1 214
+                 sta syntmp                                ;; 6ee4 214
+                 ldy match                                 ;; 6ee6 214
+                 lda #str2+1                               ;; 6ee8 214
+                 jsr lda_far_ram1                         ; lda (str2+1),y ;; 6eea 214
+                 cmp syntmp                                ;; 6eed 214
+                 beq _local_1213_30                        ;; 6eef 214
+                 inc positn                               ; not the same, start over from next positn ;; 6ef1 214
+                 bra _local_1213_10                       ; always ;; 6ef3 214
+ ;; 6ef5 214
+_local_1213_30   inc match                                ; count characters that match ;; 6ef5 214
+                 bra _local_1213_20                       ; always ;; 6ef7 214
+ ;; 6ef9 214
+ ;; 6ef9 214
+_local_1213_40   inc positn                               ; found ;; 6ef9 214
+                 lda positn                                ;; 6efb 214
+                 !byte $2c                                 ;; 6efd 214
+ ;; 6efe 214
+_local_1213_50   lda #0                                   ; not found ;; 6efe 214
+; sta sw_rom_ram0 ;???? ;; 6f00 214
+                 pha                                       ;; 6f00 214
+                 lda tmpdes+2                             ; free temp descriptors ;; 6f01 214
+                 ldy tmpdes+3                              ;; 6f04 214
+                 jsr fretmp                                ;; 6f07 214
+; sta sw_rom_ram0 ;???? ;; 6f0a 214
+                 lda tmpdes                                ;; 6f0a 214
+                 ldy tmpdes+1                              ;; 6f0d 214
+                 jsr fretmp                                ;; 6f10 214
+                 ply                                       ;; 6f13 214
+                 bra sngflt                               ; float 1 byte in .y ;; 6f14 214
+ ;; 6f17 214
+;.end ;; 6f17 214
+; .page ;; 6f17 214
+; .subttl  TYPE ;; 6f17 214
+ ;; 6f17 214
+; TYPE  types a given disk (SEQ) file to output channel ;; 6f17 214
+; ;; 6f17 214
+ ;; 6f17 214

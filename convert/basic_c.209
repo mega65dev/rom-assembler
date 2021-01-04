@@ -1,0 +1,49 @@
+afrm             jsr indfrm                                ;; 6cde 209
+                 iny                                       ;; 6ce1 209
+                 cmp #','                                 ; comma? ;; 6ce2 209
+                 bne punt                                 ; no... ;; 6ce4 209
+                 bit flag                                 ; comma flag on? ;; 6ce6 209
+                 bmi bout                                 ; yes, do a fill char ;; 6ce9 209
+; sta sw_rom_ram0 ;???? ;; 6ceb 209
+                 lda pucoma                                ;; 6ceb 209
+                 bra out                                  ; no,...output a comma char ;; 6cee 209
+ ;; 6cf0 209
+ ;; 6cf0 209
+bout             lda blfd                                  ;; 6cf0 209
+                 bra out                                   ;; 6cf3 209
+ ;; 6cf5 209
+ ;; 6cf5 209
+punt             cmp #'.'                                 ; decimal point? ;; 6cf5 209
+                 bne afplus                                ;; 6cf7 209
+; sta sw_rom_ram0 ;???? ;; 6cf9 209
+                 lda pudot                                ; yes... ;; 6cf9 209
+                 bra out                                   ;; 6cfc 209
+ ;; 6cfe 209
+ ;; 6cfe 209
+afplus           cmp #'+'                                 ; plus? ;; 6cfe 209
+                 beq ispl                                 ; yes... ;; 6d00 209
+                 cmp #'-'                                 ; minus? ;; 6d02 209
+                 beq ispl1                                ; yes... ;; 6d04 209
+                 cmp #'^'                                 ; up arrow? ;; 6d06 209
+                 bne pndd                                 ; no... ;; 6d08 209
+                 lda #'E'                                  ;; 6d0a 209
+                 jsr cdout                                 ;; 6d0c 209
+                 ldy uexp                                  ;; 6d0f 209
+                 jsr cmo                                  ; first dig of exp zero? ;; 6d12 209
+                 bne _local_1208_10                       ; no... ;; 6d15 209
+                 iny                                       ;; 6d17 209
+                 jsr cmo                                  ; second digit? ;; 6d18 209
+                 beq _local_1208_20                       ; yes ;; 6d1b 209
+ ;; 6d1d 209
+_local_1208_10   lda #'-'                                  ;; 6d1d 209
+                 bit usgn                                  ;; 6d1f 209
+                 bmi _local_1208_30                        ;; 6d22 209
+ ;; 6d24 209
+_local_1208_20   lda #'+'                                  ;; 6d24 209
+_local_1208_30   jsr cdout                                ; output sign exp ;; 6d26 209
+                 ldx uexp                                  ;; 6d29 209
+                 lda fbuffr,x                              ;; 6d2c 209
+                 jsr cdout                                ; output first dig exp ;; 6d2f 209
+                 ldy endfd                                 ;; 6d32 209
+                 bra telx                                  ;; 6d35 209
+ ;; 6d37 209

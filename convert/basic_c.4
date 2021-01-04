@@ -1,0 +1,62 @@
+init_vectors                                               ;; 225f 4
+                 ldx #_local_1003_3-_local_1003_2-1        ;; 225f 4
+_local_1003_1    lda _local_1003_2,x                       ;; 2261 4
+                 sta vectors_begin,x                       ;; 2264 4
+                 dex                                       ;; 2267 4
+                 bpl _local_1003_1                         ;; 2268 4
+ ;; 226a 4
+                 rts                                       ;; 226a 4
+ ;; 226b 4
+ ;; 226b 4
+_local_1003_2    !word  AutoScroll                        ; autoscroll vector ;; 226b 4
+                 !word  n_esc_fn_vec                      ; escape function vector ;; 226d 4
+                 !word  graphic_kernel                    ; graphic extension vector ;; 226f 4
+                 !word  nerror,nmain,ncrnch,nqplop,ngone,neval ; traditional vectors ;; 2271 4
+                 !word  nesclk,nescpr,nescex              ; escape command vectors ;; 227d 4
+_local_1003_3                                              ;; 2283 4
+ ;; 2283 4
+; .page ;; 2283 4
+;; CHRGET/CHRGOT code.  It is downloaded to RAM. ;; 2283 4
+;; ;; 2283 4
+;chrget_pattern ;; 2283 4
+; inw txtptr ;CHRGET entry ;; 2283 4
+; phz  ;CHRGOT entry (chrget+2) ;; 2283 4
+; phx ;; 2283 4
+; lda #0 ;; 2283 4
+; ldx #$f0 ;; 2283 4
+; ldy #0 ;; 2283 4
+; ldz #$f0 ;; 2283 4
+; map ;; 2283 4
+; ldy #0 ;; 2283 4
+; lda (txtptr),y ;; 2283 4
+; phy ;; 2283 4
+; pha ;; 2283 4
+; jsr _restore_sys ;; 2283 4
+; nop  ;unmap ;; 2283 4
+; pla ;; 2283 4
+; ply ;; 2283 4
+; plx ;; 2283 4
+; plz ;; 2283 4
+; ;; 2283 4
+; cmp #':' ;QNUM entry (chrget+27) ;; 2283 4
+; bcs _local_1003_2 ;; 2283 4
+; cmp #' ' ;; 2283 4
+; beq chrget_pattern ;; 2283 4
+; sec ;; 2283 4
+; sbc #'0' ;; 2283 4
+; sec ;; 2283 4
+; sbc #$d0 ;; 2283 4
+;_local_1003_2 rts  ;(42 bytes to here) ;; 2283 4
+; ;; 2283 4
+; ;; 2283 4
+; ;; 2283 4
+;; Constants which must be moved to RAM ;; 2283 4
+; ;; 2283 4
+; .byte   0,0,0 ;zero, of course! ;; 2283 4
+; ;; 2283 4
+;endmov   ;(45 bytes to here) ;; 2283 4
+ ;; 2283 4
+; .page ;; 2283 4
+; CHRGET/CHRGOT code. ;; 2283 4
+; ;; 2283 4
+ ;; 2283 4

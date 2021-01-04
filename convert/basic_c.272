@@ -1,0 +1,47 @@
+set_palette                                                ;; b070 272
+                 jsr combyt                               ; get red & fgbg ;; b070 272
+                 cpx #32                                  ; [910520] ;; b073 272
+                 bcs fcerr                                 ;; b075 272
+                 stx GKI__parm3                            ;; b078 272
+ ;; b07b 272
+                 jsr getcomnyb                            ; get green ;; b07b 272
+; cpx #16 ;; b07e 272
+; bcs 10$ ;; b07e 272
+                 stx GKI__parm4                            ;; b07e 272
+ ;; b081 272
+                 jsr getcomnyb                            ; get blue ;; b081 272
+; cpx #16 ;; b084 272
+; bcs fcerr  ; illegal quantity error ;; b084 272
+                 stx GKI__parm5                            ;; b084 272
+ ;; b087 272
+                 lda GKI__parm1                           ; logical or physical color register? ;; b087 272
+                 bpl _local_1271_40                       ; logical ;; b08a 272
+                 ldx GKI__parm2                            ;; b08c 272
+                 lda GKI__parm3                           ; physical ;; b08f 272
+                 sta _red,x                                ;; b092 272
+                 lda GKI__parm4                            ;; b095 272
+                 sta _green,x                              ;; b098 272
+                 lda GKI__parm5                            ;; b09b 272
+                 sta _blue,x                               ;; b09e 272
+                 bra _local_1271_50                        ;; b0a1 272
+ ;; b0a3 272
+_local_1271_40   jsr ($8012)                              ; go set screen palette ;; b0a3 272
+                 bcs NoGraphicArea                        ; illegal screen# or color#  [910917] ;; b0a6 272
+ ;; b0a9 272
+_local_1271_50   jsr optbyt                               ; get another color reg # ? ;; b0a9 272
+                 stx GKI__parm2                            ;; b0ac 272
+                 bcs set_palette                          ; yes- loop ;; b0af 272
+                 rts                                       ;; b0b1 272
+ ;; b0b2 272
+; .page ;; b0b2 272
+;***************************************************************** ;; b0b2 272
+;* LINE  draw a dot, a line or a stick shape ;; b0b2 272
+;* ;; b0b2 272
+;*  Syntax : LINE  x0, y0 [,[x1] [,y1]]... ;; b0b2 272
+;* ;; b0b2 272
+;* parm1,2 = x0 (lo/hi) ;; b0b2 272
+;* parm3,4 = y0 ;; b0b2 272
+;* parm5,6 = x1 (x1,y1)=(x0,y0) if not specified ;; b0b2 272
+;* parm7,8 = y1 ;; b0b2 272
+;***************************************************************** ;; b0b2 272
+ ;; b0b2 272

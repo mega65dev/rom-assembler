@@ -1,0 +1,74 @@
+envelope                                                   ;; 4aa4 113
+                 jsr getbyt                               ; get envelope number ;; 4aa4 113
+                 cpx #10                                   ;; 4aa7 113
+                 bcs fcerr                                ; exit - invalid tone number ;; 4aa9 113
+                 stx tonnum                               ; save number ;; 4aac 113
+                 lda atktab,x                             ; get attack/decay rates ;; 4aaf 113
+                 sta tonval                                ;; 4ab2 113
+                 lda sustab,x                             ; get sustain/release rates ;; 4ab5 113
+                 sta tonval+1                              ;; 4ab8 113
+                 lda wavtab,x                             ; get waveform and filter ;; 4abb 113
+                 sta tonval+2                              ;; 4abe 113
+ ;; 4ac1 113
+                 ldx #0                                    ;; 4ac1 113
+_local_1112_20   stx parcnt                                ;; 4ac3 113
+                 jsr optbyt                               ; get parameter - attack or sustain ;; 4ac6 113
+                 bcc _local_1112_30                       ; skip if no input ;; 4ac9 113
+                 txa                                       ;; 4acb 113
+                 asl a                                     ;; 4acc 113
+                 asl a                                    ; shift to upper nibble ;; 4acd 113
+                 asl a                                     ;; 4ace 113
+                 asl a                                     ;; 4acf 113
+                 sta nibble                               ; save it ;; 4ad0 113
+                 ldx parcnt                                ;; 4ad3 113
+                 lda tonval,x                             ; get current value ;; 4ad6 113
+                 and #$0f                                 ; mask it out ;; 4ad9 113
+                 ora nibble                               ; add new value ;; 4adb 113
+                 sta tonval,x                             ; save it ;; 4ade 113
+ ;; 4ae1 113
+_local_1112_30   jsr optbyt                               ; get decay or release rate ;; 4ae1 113
+                 bcc _local_1112_40                       ; skip if no input ;; 4ae4 113
+                 txa                                       ;; 4ae6 113
+                 and #$0f                                 ; use only lower nibble ;; 4ae7 113
+                 sta nibble                               ; save it ;; 4ae9 113
+                 ldx parcnt                                ;; 4aec 113
+                 lda tonval,x                             ; get current value ;; 4aef 113
+                 and #$f0                                 ; mask it out ;; 4af2 113
+                 ora nibble                               ; add new value ;; 4af4 113
+                 sta tonval,x                             ; save it ;; 4af7 113
+ ;; 4afa 113
+_local_1112_40   ldx parcnt                                ;; 4afa 113
+                 inx                                       ;; 4afd 113
+                 cpx #1                                    ;; 4afe 113
+                 beq _local_1112_20                       ; loop to do sustain/release rates ;; 4b00 113
+                 jsr optbyt                               ; get waveform ;; 4b02 113
+                 bcc _local_1112_90                       ; skip if no value ;; 4b05 113
+                 lda #$15                                 ; assume ring modulation ;; 4b07 113
+                 cpx #4                                    ;; 4b09 113
+                 beq _local_1112_80                       ; skip if correct ;; 4b0b 113
+                 bcs fcerr                                ; error if >4 ;; 4b0d 113
+                 lda sbits+4,x                            ; get waveform bit ;; 4b10 113
+                 ora #1                                   ; set gate bit ;; 4b13 113
+ ;; 4b15 113
+_local_1112_80   sta tonval+2                             ; save waveform ;; 4b15 113
+ ;; 4b18 113
+_local_1112_90   jsr optwrd                               ; is there a pulse width arg? ;; 4b18 113
+                 bcc _local_1112_110                      ; nope, done ;; 4b1b 113
+ ;; 4b1d 113
+                 tax                                      ; save msb ;; 4b1d 113
+                 lda tonval+2                             ; get waveform ;; 4b1e 113
+                 and #$40                                  ;; 4b21 113
+                 beq _local_1112_110                      ; skip if not pulse waveform ;; 4b23 113
+                 txa                                       ;; 4b25 113
+                 ldx tonnum                               ; get envelope number ;; 4b26 113
+                 sta pulshi,x                             ; save high byte of pulse width ;; 4b29 113
+                 tya                                       ;; 4b2c 113
+                 sta pulslw,x                             ; save low byte ;; 4b2d 113
+ ;; 4b30 113
+_local_1112_110  ldx tonnum                                ;; 4b30 113
+                 lda tonval                               ; set inputted values ;; 4b33 113
+                 sta atktab,x                              ;; 4b36 113
+                 lda tonval+1                              ;; 4b39 113
+                 sta sustab,x                              ;; 4b3c 113
+                 lda tonval+2                              ;; 4b3f 113
+                 sta wavtab,x                              ;; 4b42 113

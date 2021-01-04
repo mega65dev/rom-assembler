@@ -1,0 +1,8 @@
+movaf            jsr round                                 ;; 62a3 174
+ ;; 62a6 174
+movef            ldx #6                                    ;; 62a6 174
+_local_1173_1    lda facexp-1,x                            ;; 62a8 174
+                 sta argexp-1,x                            ;; 62aa 174
+                 dex                                       ;; 62ac 174
+                 bne _local_1173_1                         ;; 62ad 174
+                 stx facov                                ; zero it since rounded ;; 62af 174

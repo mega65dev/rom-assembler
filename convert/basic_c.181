@@ -1,0 +1,95 @@
+inprt            jsr _primm                                ;; 6473 181
+                 !byte " IN ",0                            ;; 6476 181
+ ;; 647b 181
+curprt           lda curlin+1                              ;; 647b 181
+                 ldx curlin                                ;; 647d 181
+ ;; 647f 181
+linprt           sta facho                                 ;; 647f 181
+                 stx facho+1                               ;; 6481 181
+                 ldx #$90                                 ; exponent of 16 ;; 6483 181
+                 sec                                      ; number is positive ;; 6485 181
+                 jsr floatc                                ;; 6486 181
+                 jsr foutc                                 ;; 6489 181
+                 bra strout                               ; print and return ;; 648c 181
+ ;; 648f 181
+ ;; 648f 181
+fout             ldy #1                                    ;; 648f 181
+foutc            lda #' '                                 ; if positive, print space ;; 6491 181
+                 bbr7 facsgn,_local_1180_10                ;; 6493 181
+                 lda #'-'                                 ; if neg ;; 6496 181
+_local_1180_10   sta fbuffr-1,y                           ; store the character ;; 6498 181
+                 sta facsgn                               ; make FAC pos for QINT ;; 649b 181
+                 sty fbufpt                               ; save for later ;; 649d 181
+                 iny                                       ;; 649f 181
+                 lda #'0'                                 ; get zero to type if FAC=0 ;; 64a0 181
+                 ldx facexp                                ;; 64a2 181
+                 beq fout19                                ;; 64a4 181
+ ;; 64a7 181
+                 lda #0                                    ;; 64a7 181
+                 cpx #$80                                 ; is number < 1? ;; 64a9 181
+                 beq _local_1180_20                       ; no ;; 64ab 181
+                 bcs _local_1180_30                        ;; 64ad 181
+ ;; 64af 181
+_local_1180_20   lda #<nmil                               ; mult by 10~6 ;; 64af 181
+                 ldy #>nmil                                ;; 64b1 181
+                 jsr rommlt                                ;; 64b3 181
+                 lda #$f7                                  ;; 64b6 181
+_local_1180_30   sta deccnt                               ; save count or zero it ;; 64b8 181
+ ;; 64ba 181
+_local_1180_40   lda #<n9999                               ;; 64ba 181
+                 ldy #>n9999                               ;; 64bc 181
+                 jsr fcomp                                ; is number > 999999.499 or 999999999.5? ;; 64be 181
+                 beq _local_1180_100                      ; go to biggies ;; 64c1 181
+                 bpl _local_1180_70                       ; yes, make it smaller ;; 64c3 181
+ ;; 64c5 181
+_local_1180_50   lda #<n0999                               ;; 64c5 181
+                 ldy #>n0999                               ;; 64c7 181
+                 jsr fcomp                                ; is number > 99999.9499 or 99999999.90625? ;; 64c9 181
+                 beq _local_1180_60                        ;; 64cc 181
+                 bpl _local_1180_80                       ; yes. done multiplying ;; 64ce 181
+ ;; 64d0 181
+_local_1180_60   jsr mul10                                ; make it bigger ;; 64d0 181
+                 dec deccnt                                ;; 64d3 181
+                 bne _local_1180_50                       ; see if that does it (this always goes) ;; 64d5 181
+ ;; 64d7 181
+_local_1180_70   jsr div10                                ; make it smaller ;; 64d7 181
+                 inc deccnt                                ;; 64da 181
+                 bne _local_1180_40                       ; see if that does it (this always goes) ;; 64dc 181
+ ;; 64de 181
+_local_1180_80   jsr faddh                                ; add a half to round up ;; 64de 181
+ ;; 64e1 181
+ ;; 64e1 181
+_local_1180_100  jsr qint                                 ; biggies. ;; 64e1 181
+                 ldx #1                                   ; decimal point count ;; 64e4 181
+                 lda deccnt                                ;; 64e6 181
+                 clc                                       ;; 64e8 181
+                 adc #$0a                                 ; should number be printed in E notation?  (ie, is number .lt. .01?) ;; 64e9 181
+                 bmi _local_1180_110                      ; yes ;; 64eb 181
+                 cmp #$0b                                 ; is it > 999999 or 9999999999? ;; 64ed 181
+                 bcs 1_local_1180_20                      ; yes, use E notation ;; 64ef 181
+                 adc #$ff                                 ; number of places before decimal point ;; 64f1 181
+                 tax                                      ; put into accx ;; 64f3 181
+                 lda #2                                   ; no E notation ;; 64f4 181
+_local_1180_110  sec                                       ;; 64f6 181
+ ;; 64f7 181
+1_local_1180_20  sbc #2                                   ; effectively add 5 to orig exp ;; 64f7 181
+                 sta tenexp                               ; that is the exponent to print ;; 64f9 181
+                 stx deccnt                               ; number of decimal places ;; 64fb 181
+                 txa                                       ;; 64fd 181
+                 beq 1_local_1180_30                       ;; 64fe 181
+                 bpl 1_local_1180_50                      ; some places before dec pnt ;; 6500 181
+ ;; 6502 181
+1_local_1180_30  ldy fbufpt                               ; get pointer to output ;; 6502 181
+                 lda #'.'                                 ; put in "." ;; 6504 181
+                 iny                                       ;; 6506 181
+                 sta fbuffr-1,y                            ;; 6507 181
+                 txa                                       ;; 650a 181
+                 beq 1_local_1180_40                       ;; 650b 181
+                 lda #'0'                                 ; get the ensuing zero ;; 650d 181
+                 iny                                       ;; 650f 181
+                 sta fbuffr-1,y                            ;; 6510 181
+ ;; 6513 181
+1_local_1180_40  sty fbufpt                               ; save it for later ;; 6513 181
+ ;; 6515 181
+1_local_1180_50  ldy #0                                    ;; 6515 181
+ ;; 6517 181

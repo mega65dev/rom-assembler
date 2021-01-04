@@ -1,0 +1,39 @@
+resend           ldx tmptrp                               ; restore trap line to allow traps again ;; 44d6 95
+                 stx trapno+1                              ;; 44d9 95
+error_clear                                                ;; 44dc 95
+                 ldx #$ff                                  ;; 44dc 95
+                 stx errnum                               ; reset error status- he's saying he's fixed it ;; 44de 95
+                 stx errlin                                ;; 44e1 95
+                 stx errlin+1                             ; flag 'no further resumes until next error' ;; 44e4 95
+                 rts                                       ;; 44e7 95
+ ;; 44e8 95
+ ;; 44e8 95
+rescnt           ldx #errcr                                ;; 44e8 95
+                 bra error                                 ;; 44ea 95
+ ;; 44ed 95
+;.end ;; 44ed 95
+; .page ;; 44ed 95
+; .subttl  DO  LOOP  UNTIL  WHILE  EXIT ;; 44ed 95
+ ;; 44ed 95
+do               ldy #1                                    ;; 44ed 95
+_local_1094_1    lda txtptr,y                             ; save current pointers for stack entry ;; 44ef 95
+                 sta tmptxt,y                              ;; 44f2 95
+                 lda curlin,y                              ;; 44f5 95
+                 sta tmplin,y                              ;; 44f8 95
+                 dey                                       ;; 44fb 95
+                 bpl _local_1094_1                         ;; 44fc 95
+ ;; 44fe 95
+                 jsr chrgot                               ; look for 'while' or 'until' ;; 44fe 95
+                 beq doyes                                ; unconditional ;; 4501 95
+                 cmp #until_token                          ;; 4503 95
+                 beq do10                                  ;; 4505 95
+                 cmp #while_token                          ;; 4507 95
+                 bne snrjmp                                ;; 4509 95
+ ;; 450b 95
+ ;; 450b 95
+;  Here for WHILE ;; 450b 95
+ ;; 450b 95
+                 jsr frmjmp                                ;; 450b 95
+                 lda facexp                                ;; 450e 95
+                 bne doyes                                ; conditional evaluated true ;; 4510 95
+ ;; 4512 95

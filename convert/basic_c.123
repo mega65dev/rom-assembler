@@ -1,0 +1,75 @@
+aryva2           lda arypnt                                ;; 5080 123
+                 ldx arypnt+1                              ;; 5082 123
+ ;; 5084 123
+aryva3           cpx strend+1                             ; end of arrays? ;; 5084 123
+                 bne aryvgo                                ;; 5086 123
+                 cmp strend                                ;; 5088 123
+                 beq arydon                               ; ...finished ;; 508a 123
+ ;; 508c 123
+ ;; 508c 123
+aryvgo           sta index1                                ;; 508c 123
+                 stx index1+1                              ;; 508e 123
+                 ldy #0                                    ;; 5090 123
+                 jsr indin1_ram1                          ; look at array name ;; 5092 123
+                 tax                                       ;; 5095 123
+                 iny                                       ;; 5096 123
+                 jsr indin1_ram1                          ; name 2nd char ;; 5097 123
+                 php                                      ; save status reg ;; 509a 123
+                 iny                                       ;; 509b 123
+                 jsr indin1_ram1                          ; point to offset to next array ;; 509c 123
+                 adc arypnt                                ;; 509f 123
+                 sta arypnt                               ; save start of next array in arypnt ;; 50a1 123
+                 iny                                       ;; 50a3 123
+                 jsr indin1_ram1                           ;; 50a4 123
+                 adc arypnt+1                              ;; 50a7 123
+                 sta arypnt+1                              ;; 50a9 123
+                 plp                                      ; restore status ;; 50ab 123
+                 bpl aryva2                               ; not a string type ;; 50ac 123
+                 txa                                       ;; 50ae 123
+                 bmi aryva2                               ; not a string array ;; 50af 123
+                 iny                                      ; ok we have a string array ;; 50b1 123
+                 jsr indin1_ram1                          ; get number of dimensions ;; 50b2 123
+                 ldy #0                                    ;; 50b5 123
+                 asl a                                    ; move index to ptr to 1st string (add 2*number of dims + 5) ;; 50b7 123
+                 adc #5                                    ;; 50b8 123
+                 adc index1                                ;; 50ba 123
+                 sta index1                                ;; 50bc 123
+                 bcc aryget                                ;; 50be 123
+                 inc index1+1                              ;; 50c0 123
+ ;; 50c2 123
+aryget           ldx index1+1                              ;; 50c2 123
+                 cpx arypnt+1                             ; done with this array? ;; 50c4 123
+                 bne _local_1122_10                        ;; 50c6 123
+                 cmp arypnt                                ;; 50c8 123
+                 beq aryva3                               ; yes ;; 50ca 123
+ ;; 50cc 123
+_local_1122_10   ldy #0                                   ; process string pointer ;; 50cc 123
+                 jsr indin1_ram1                          ; get length of string ;; 50ce 123
+                 beq dvarts                               ; skip if null string ;; 50d1 123
+                 sta syntmp                                ;; 50d3 123
+                 iny                                       ;; 50d5 123
+                 jsr indin1_ram1                          ; get lo byte of string ptr ;; 50d6 123
+                 clc                                       ;; 50d9 123
+                 adc syntmp                               ; and add string length ;; 50da 123
+                 sta hightr                                ;; 50dc 123
+                 iny                                       ;; 50de 123
+                 jsr indin1_ram1                          ; get hi byte of string ptr ;; 50df 123
+                 adc #0                                   ; adjust high byte ;; 50e2 123
+                 sta hightr+1                              ;; 50e4 123
+ ;; 50e6 123
+; Fix backwards pointer by adding move length to it. ;; 50e6 123
+ ;; 50e6 123
+                 phx                                       ;; 50e6 123
+                 ldx #hightr                               ;; 50e7 123
+                 ldy #0                                    ;; 50e9 123
+                 jsr indhtr_ram1                          ; lda (hightr),y ;; 50eb 123
+                 adc #7                                   ; carry clear (careful!) ;; 50ee 123
+                 jsr sta_far_ram1                         ; sta (hightr),y ;; 50f0 123
+                 iny                                       ;; 50f3 123
+                 jsr indhtr_ram1                          ; lda (hightr),y ;; 50f4 123
+                 adc #0                                    ;; 50f7 123
+                 jsr sta_far_ram1                         ; sta (hightr),y ;; 50f9 123
+                 plx                                      ; done with this string ;; 50fc 123
+ ;; 50fd 123
+; Fix the next string in the array ;; 50fd 123
+ ;; 50fd 123

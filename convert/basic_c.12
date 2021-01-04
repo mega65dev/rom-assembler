@@ -1,0 +1,41 @@
+xeqcm            jmp (igone)                               ;; 2bc2 12
+ ;; 2bc5 12
+; Check if there is an interrupt from VIC that needs to be serviced ;; 2bc5 12
+ ;; 2bc5 12
+ngone            bbr7 runmod,_local_1011_30               ; get off here if we are in direct mode ;; 2bc5 12
+                 lda intval                               ; check if there is an interrupt already in progress ;; 2bc8 12
+                 bmi _local_1011_30                       ; yes, don't go any further ;; 2bcb 12
+ ;; 2bcd 12
+                 ldx #2                                   ; check for 3 types of interrupts: s/s, s/b, & lp ;; 2bcd 12
+_local_1011_10   lda int_trip_flag,x                       ;; 2bcf 12
+                 beq _local_1011_20                       ; this wasn't set, go check next ;; 2bd2 12
+ ;; 2bd4 12
+                 lda #0                                    ;; 2bd4 12
+                 sta int_trip_flag,x                      ; reset this flag to show 'serviced' ;; 2bd6 12
+                 lda int_adr_lo,x                         ; install the trap address as linnum ;; 2bd9 12
+                 sta linnum                                ;; 2bdc 12
+                 lda int_adr_hi,x                          ;; 2bde 12
+                 sta linnum+1                              ;; 2be1 12
+                 phx                                      ; save counter & text pointer ;; 2be3 12
+                 phw txtptr                                ;; 2be4 12
+                 lda #$80                                 ; flag 'no other interrupt traps, please' ;; 2be7 12
+                 tsb intval                                ;; 2be9 12
+ ;; 2bec 12
+                 jsr chrget                               ; skip over 2nd byte of line number ;; 2bec 12
+                 jsr gosub_sub                            ; fake a 'gosub' from here, so trap rx can do a RETURN ;; 2bef 12
+                 jsr goto_1                                ;; 2bf2 12
+                 jsr newstt                                ;; 2bf5 12
+ ;; 2bf8 12
+                 lda #$80                                  ;; 2bf8 12
+                 trb intval                                ;; 2bfa 12
+                 pla                                       ;; 2bfd 12
+                 sta txtptr+1                              ;; 2bfe 12
+                 pla                                       ;; 2c00 12
+                 sta txtptr                                ;; 2c01 12
+                 plx                                       ;; 2c03 12
+ ;; 2c04 12
+_local_1011_20   dex                                       ;; 2c04 12
+                 bpl _local_1011_10                        ;; 2c05 12
+ ;; 2c07 12
+ ;; 2c07 12
+_local_1011_30   jsr chrget                               ; get statement type ;; 2c07 12

@@ -1,0 +1,21 @@
+hop_1            jsr chrget                               ; got a 'go', look for 'to' ;; 3f61 77
+                 beq next_line                            ; end of line, abort ;; 3f64 77
+                 cmp #to_token                             ;; 3f66 77
+                 beq iline_10                             ; got it! go to fix number routine ;; 3f68 77
+                 bra next_char                            ; no 'to', keep looking ;; 3f6a 77
+ ;; 3f6c 77
+; Look for 'COLLISION'.  This is an escape command. *c128 fix* ????????? ;; 3f6c 77
+ ;; 3f6c 77
+chk_escape                                                 ;; 3f6c 77
+                 cmp #esc_command_token                    ;; 3f6c 77
+                 bne next_char                             ;; 3f6e 77
+                 jsr chrget                                ;; 3f70 77
+                 beq hop_1                                ; end of line ,abort ;; 3f73 77
+                 cmp #collision_token                      ;; 3f75 77
+                 bne next_char                             ;; 3f77 77
+_local_1076_40   jsr chrget                               ; got it! skip over first argument ;; 3f79 77
+                 beq hop_1                                ; end of line, abort ;; 3f7c 77
+                 cmp #','                                  ;; 3f7e 77
+                 bne _local_1076_40                       ; not there yet ;; 3f80 77
+ ;; 3f82 77
+ ;; 3f82 77

@@ -1,0 +1,29 @@
+dir              ldx #doslfn                               ;; 6ff9 217
+                 jsr _chkin                                ;; 6ffb 217
+                 bcs dcat11                               ; if problem?? ;; 6ffe 217
+                 jsr _readst                              ; check status ;; 7000 217
+                 bne dcat11                               ; exit if bad status ;; 7003 217
+                 jsr crdo                                 ; output new line ;; 7005 217
+                 ldy #3                                   ; loop counter ;; 7008 217
+ ;; 700a 217
+dcat3            sty t3                                   ; save counter ;; 700a 217
+ ;; 700d 217
+_local_1216_10   jsr _basin                               ; get char ;; 700d 217
+                 sta t4                                    ;; 7010 217
+                 jsr _basin                               ; get char ;; 7013 217
+                 sta t4+1                                  ;; 7016 217
+                 jsr _readst                              ; check status ;; 7019 217
+                 bne dcat11                               ; exit if eof or bad status ;; 701c 217
+                 dec t3                                    ;; 701e 217
+                 bne _local_1216_10                       ; if not done ;; 7021 217
+ ;; 7023 217
+; Output blocks number ;; 7023 217
+ ;; 7023 217
+                 ldx t4                                    ;; 7023 217
+                 lda t4+1                                  ;; 7026 217
+                 jsr linprt                               ; output number ;; 7029 217
+                 lda #' '                                  ;; 702c 217
+                 jsr _bsout                               ; output a space ;; 702e 217
+ ;; 7031 217
+; Get name & output it ;; 7031 217
+ ;; 7031 217

@@ -89,7 +89,8 @@ class CodeProcessor(BaseProcessor):
 		assert addr >= 0x2000
 		if addr < 0x8000:
 			return self.romImage[addr-0x2000]
-		assert False
+		assert addr >= 0xAF00
+		return self.romImage[addr-0x2000]
 	#
 	#		Process Byte.
 	#
@@ -133,7 +134,6 @@ class CodeProcessor(BaseProcessor):
 	#
 	def processWord(self):
 		wordCount = len(self.body[5:].split(","))
-		print(self.body,wordCount)
 		self.body = "!word"+self.body[5:]
 		self.currentPC += (wordCount * 2)
 	#
@@ -152,12 +152,15 @@ class CodeProcessor(BaseProcessor):
 
 if __name__ == "__main__":
 	hp = CodeProcessor()
-	for page in range(1,74):
+	print("Converting segments.")
+	for page in range(1,319):
+		tgt = open("convert/basic_c."+str(page),"w")
 		for l in PartLoader().load(page):
 			#print("====== "+l+" ========================",hp.currentPC)
 			startPC = 0 if hp.currentPC is None else hp.currentPC 
 			p = hp.process(l)
 			if p is not None:
-				print("{2:3} : {0:04x} {1}".format(startPC,p,page))
+				tgt.write("{0} ;; {1:04x} {2}\n".format(p,startPC,page))
 			else:
 				assert False,"Couldn't fathom {"+l+"}"
+		tgt.close()

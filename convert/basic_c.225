@@ -1,0 +1,71 @@
+bverify          lda #1                                   ; flag 'verify' ;; 71df 225
+                 !byte $2c                                 ;; 71e1 225
+ ;; 71e2 225
+ ;; 71e2 225
+; BLOAD dfn ;; 71e2 225
+ ;; 71e2 225
+bload            lda #0                                   ; flag 'load' ;; 71e2 225
+                 sta verck                                ; eventually the 'load' routine will look here ;; 71e4 225
+ ;; 71e6 225
+                 lda #$e6                                 ; std error flag ;; 71e6 225
+                 ldx #$fc                                 ; aux error flag (allow bank & load address) ;; 71e8 225
+                 jsr dosprx                               ; parse options ;; 71ea 225
+ ;; 71ed 225
+bload_boot                                                ; <<<<<<<<<<<<<<<<<<<<<< entry for BOOT'filename' ;; 71ed 225
+                 jsr chk2                                 ; check required parameters ;; 71ed 225
+                 ldx dosofl                               ; get starting address high ;; 71f0 225
+                 ldy dosofl+1                             ; ..and lo ;; 71f3 225
+                 lda #0                                   ; assume x & y not both=ff (means real add., not def) ;; 71f6 225
+                 cpx #$ff                                  ;; 71f8 225
+                 bne _local_1224_5                         ;; 71fa 225
+                 cpy #$ff                                  ;; 71fc 225
+                 bne _local_1224_5                         ;; 71fe 225
+                 lda #$ff                                 ; use defaults ;; 7200 225
+_local_1224_5    sta dossa                                 ;; 7202 225
+ ;; 7205 225
+                 ldy #fopn                                ; table offset ;; 7205 225
+                 lda #4                                   ; ..length, ;; 7207 225
+                 jsr sendp                                ; ...and go send parameters ;; 7209 225
+ ;; 720c 225
+                 lda dosbnk                                ;; 720c 225
+                 ldx #sys_bank                             ;; 720f 225
+                 jsr _setbank                              ;; 7211 225
+ ;; 7214 225
+                 lda verck                                ; flag LOAD or VERIFY ;; 7214 225
+                 ldx dosofl                               ; get starting address high ;; 7216 225
+                 ldy dosofl+1                             ; ..and lo (in case this isn't a 'default' load) ;; 7219 225
+                 jsr _loadsp                              ; load it ;; 721c 225
+ ;; 721f 225
+; Any changes to the following code must be duplicated at: ;; 721f 225
+;  load (load_file) ;; 721f 225
+;  save (exit_disk_op) ;; 721f 225
+ ;; 721f 225
+                 php                                      ; save kernel load status (.c) ;; 721f 225
+                 pha                                      ; save kernel error # (.a) ;; 7220 225
+                 jsr _readst                              ; save I/O status byte ;; 7221 225
+                 sta parsts                                ;; 7224 225
+                 jsr print_dos_error                      ; report DOS problems ;; 7226 225
+                 pla                                      ; restore error stuff ;; 7229 225
+                 plp                                       ;; 722a 225
+                 bcc _local_1224_30                       ; branch if no error (rts) ;; 722b 225
+                 bbs7 runmod,_local_1224_20               ; branch if run mode (erexit) ;; 722d 225
+                 cmp #errfnf                              ; is it 'file not found' catch-all? ;; 7230 225
+                 bne _local_1224_10                       ; no  (erexit) ;; 7232 225
+                 sta errnum                               ; yes- save error # for 'er' ;; 7234 225
+                 ora #$80                                 ; but no errdis ;; 7237 225
+_local_1224_10   sec                                       ;; 7239 225
+_local_1224_20   bcs erexit                               ; exit if kernel problem (rts) ;; 723a 225
+ ;; 723d 225
+_local_1224_30   lda verck                                ; load or verify operation? ;; 723d 225
+                 bne verify_check                         ; verify ;; 723f 225
+ ;; 7242 225
+; jsr _readst  ;  read status ;; 7242 225
+                 lda parsts                               ; load ;; 7242 225
+                 and #%10111111                           ; EOI is okay, so mask it ;; 7244 225
+                 bne load_error                           ; load error ;; 7246 225
+                 clc                                       ;; 7249 225
+                 rts                                       ;; 724a 225
+ ;; 724b 225
+; .page ;; 724b 225
+; HEADER nddn [,id]  (alias: FORMAT) ;; 724b 225
+ ;; 724b 225

@@ -1,0 +1,17 @@
+else             cmp #esc_command_token                   ; is this of the form "ELSE b-block"? ;; 3643 49
+                 bne _local_1048_10                       ; no, must be an escape command ;; 3645 49
+                 iny                                      ; might be, look at escape token ;; 3647 49
+                 jsr indtxt                                ;; 3648 49
+                 cmp #begin_token                          ;; 364b 49
+                 bne _local_1048_10                       ; no, justa plain-old "ELSE statement" ;; 364d 49
+                 jsr find_bend                            ; yes, it is a b-block. skip over the b-block. ;; 364f 49
+_local_1048_10   bra rem                                   ;; 3652 49
+ ;; 3655 49
+ ;; 3655 49
+;.end ;; 3655 49
+; .page ;; 3655 49
+; .subttl ON...GOTO  ON...GOSUB ;; 3655 49
+ ;; 3655 49
+;********************************************************* ;; 3655 49
+;* ON expression {GOTO | GOSUB} line_number ;; 3655 49
+;********************************************************* ;; 3655 49

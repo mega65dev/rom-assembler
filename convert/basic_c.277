@@ -1,0 +1,97 @@
+verify_cmd       !byte "U0>V"                             ; Verify on/off command ;; b2ec 277
+ ;; b2f0 277
+;.end ;; b2f0 277
+; .page ;; b2f0 277
+; .subttl  CHAR ;; b2f0 277
+ ;; b2f0 277
+;***************************************************************** ;; b2f0 277
+;* CHAR   draw a character string ;; b2f0 277
+;* ;; b2f0 277
+;*  Syntax : CHAR column, row, height, width, direction, "string" [,charsetadr [,bank]] ;; b2f0 277
+;* ;; b2f0 277
+;* parm1  = column# ;; b2f0 277
+;* parm2  = row lo ;; b2f0 277
+;* parm3  = row hi ;; b2f0 277
+;* parm4  = height ;; b2f0 277
+;* parm5  = width ;; b2f0 277
+;* parm6  = direction ;; b2f0 277
+;* parm7  = len of string ;; b2f0 277
+;* parm8  = lo addr of string ;; b2f0 277
+;* parm9  = hi addr of string ;; b2f0 277
+;* parm10 = lo addr of character set $29800 default ;; b2f0 277
+;* parm11 = hi addr of character set ;; b2f0 277
+;* parm12 = bank of character set   [910912] ;; b2f0 277
+;**************************************************************** ;; b2f0 277
+ ;; b2f0 277
+c65.char                                                   ;; b2f0 277
+                 jsr CheckGraphicMode                      ;; b2f0 277
+                 jsr getbyt                               ; get column ;; b2f3 277
+                 stx GKI__parm1                            ;; b2f6 277
+ ;; b2f9 277
+                 jsr comsad                               ; get row ;; b2f9 277
+                 sty GKI__parm2                            ;; b2fc 277
+                 sta GKI__parm3                            ;; b2ff 277
+ ;; b302 277
+                 jsr combyt                               ; get height ;; b302 277
+                 stx GKI__parm4                            ;; b305 277
+ ;; b308 277
+                 jsr combyt                               ; get width ;; b308 277
+                 stx GKI__parm5                            ;; b30b 277
+ ;; b30e 277
+                 jsr combyt                               ; get direction ;; b30e 277
+                 stx GKI__parm6                            ;; b311 277
+ ;; b314 277
+                 jsr chkcom                                ;; b314 277
+                 jsr frmevl                               ; evaluate the string ;; b317 277
+                 jsr chkstr                               ; type mismatch error if not string ;; b31a 277
+                 ldy #0                                    ;; b31d 277
+                 jsr indfmo                               ; pointer to string descriptor is left in the fac by frmevl ;; b31f 277
+                 sta GKI__parm7                           ; length  ???? check for null string ???? ;; b322 277
+                 pha                                       ;; b325 277
+                 iny                                       ;; b326 277
+                 jsr indfmo                                ;; b327 277
+                 sta GKI__parm8                           ; adrlo ;; b32a 277
+                 iny                                       ;; b32d 277
+                 jsr indfmo                                ;; b32e 277
+                 sta GKI__parm9                           ; adrhi ;; b331 277
+                 jsr frefac                               ; [910917] ;; b334 277
+                 pla                                       ;; b337 277
+                 jsr getspa                                ;; b338 277
+ ;; b33b 277
+                 jsr optwrd                               ; get charset address (????bank) ;; b33b 277
+                 bcs _local_1276_10                       ; given ;; b33e 277
+                 ldy #<$9800                              ; not given- use ROM as default   [910207] FAB ;; b340 277
+                 lda #>$9800                              ; ???? uc/lc or graphic set ???? ;; b342 277
+_local_1276_10   sty GKI__parm10                          ; lo ;; b344 277
+                 sta GKI__parm11                          ; hi ;; b347 277
+                 ldx #2                                   ; default to ROM bank 2    [910912] FAB ;; b34a 277
+                 jsr optbyt                                ;; b34c 277
+                 stx GKI__parm12                           ;; b34f 277
+ ;; b352 277
+                 lda GKI__parm7                           ; ???? check for null string ???? ;; b352 277
+                 beq _local_1276_40                        ;; b355 277
+                 jmp ($802c)                              ; bra kg65.char ;; b357 277
+ ;; b35a 277
+_local_1276_40   rts                                       ;; b35a 277
+ ;; b35b 277
+; .page ;; b35b 277
+; .subttl  PAINT ;; b35b 277
+ ;; b35b 277
+;***************************************************************** ;; b35b 277
+;* PAINT   fill a graphic area with color ;; b35b 277
+;* ;; b35b 277
+;*  Syntax : PAINT x, y [,mode [,color]] ;; b35b 277
+;* ;; b35b 277
+;* parm1  = x lo ;; b35b 277
+;* parm2  = x lo ;; b35b 277
+;* parm3  = y lo ;; b35b 277
+;* parm4  = y hi ;; b35b 277
+;* parm5  = mode ;; b35b 277
+;* parm6  = color ;; b35b 277
+;* ;; b35b 277
+;* fill color is pen-A ;; b35b 277
+; mode 0: fill region defined by color at x,y (default) new modes [910916] FAB ;; b35b 277
+; mode 1: fill region using given color as boundary ;; b35b 277
+; mode 2: fill connected region ;; b35b 277
+;**************************************************************** ;; b35b 277
+ ;; b35b 277

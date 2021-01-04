@@ -1,0 +1,125 @@
+CheckGraphicMode                                           ;; af1c 267
+                 bit $1f4b                                ; Check draw screen allocation   [910711] ;; af1c 267
+                 bmi NoGraphicArea                         ;; af1f 267
+                 rts                                      ; ok ;; af21 267
+ ;; af22 267
+ ;; af22 267
+NoGraphicArea                                              ;; af22 267
+                 ldx #errng                               ; bad- no graphic area???? ;; af22 267
+                 bra error                                 ;; af24 267
+ ;; af27 267
+ ;; af27 267
+RestoreTextScreen                                          ; [910404] ;; af27 267
+                 lda #$ff                                 ; [910930] ;; af27 267
+                 sta GKI__parm1                           ; leave drawscreen as is ;; af29 267
+                 sta GKI__parm2                           ; set viewscreen to text ;; af2c 267
+                 jmp ($800e)                              ; kg65.screen ;; af2f 267
+ ;; af32 267
+; lda vic+49  ;Check graphic screen allocation ;; af32 267
+; and #%00010000 ;; af32 267
+; beq 99$   ; we're in text mode ;; af32 267
+;; bit $1f43 ;; af32 267
+;; bmi NoGraphicArea ;; af32 267
+; ;; af32 267
+; sei ;; af32 267
+; lda #$80 ;; af32 267
+; bit _mode  ;40/80 mode, 0=80 128=40 ;; af32 267
+; bmi _local_1266_10 ;; af32 267
+; ;; af32 267
+; tsb vic+49  ; 80 ;; af32 267
+; lda #1 ;; af32 267
+; trb vic+22  ;  fix x-scroll register ;; af32 267
+; bra 99$ ;; af32 267
+; ;; af32 267
+;_local_1266_10 trb vic+49  ; 40 ;; af32 267
+; lda #1 ;; af32 267
+; tsb vic+22  ;  fix x-scroll register ;; af32 267
+; ;; af32 267
+;99$ cli ;; af32 267
+;; lda #0 ;; af32 267
+;; sta _graphm  ;text mode???? ;; af32 267
+; rts ;; af32 267
+ ;; af32 267
+; .page ;; af32 267
+;***************************************************************** ;; af32 267
+; SCNCLR  clear a text or graphic screen ;; af32 267
+; ;; af32 267
+;  Syntax : SCNCLR  [ColorReg] ;; af32 267
+; ;; af32 267
+; if [ColorReg] not specified, clears text screen ;; af32 267
+; else clears the graphic screen with given value. ;; af32 267
+;***************************************************************** ;; af32 267
+ ;; af32 267
+ScreenClr                                                  ;; af32 267
+                 jsr chrget                               ; eat token & fall into SCNCLR ;; af32 267
+ ;; af35 267
+scnclr                                                     ;; af35 267
+                 bne c65.screenclear                      ; have a parameter, go clear graphic screen ;; af35 267
+ ;; af37 267
+                 lda #$93                                  ;; af37 267
+                 jmp _bsout                               ; no parameter, clear text screen ;; af39 267
+; rts ;; af3c 267
+ ;; af3c 267
+ ;; af3c 267
+ ;; af3c 267
+;***************************************************************** ;; af3c 267
+;* SCREEN CLR  clear a graphic screen ;; af3c 267
+;* ;; af3c 267
+;*  Syntax : SCREEN CLR  color_reg# ;; af3c 267
+;* ;; af3c 267
+;*           parm1 = color reg#  0-255 ;; af3c 267
+;***************************************************************** ;; af3c 267
+ ;; af3c 267
+c65.screenclear                                            ;; af3c 267
+                 jsr getbyt                               ; get color register # (range 0-255)????? ;; af3c 267
+;limit to range allowed by current screen def? ;; af3f 267
+                 stx GKI__parm1                            ;; af3f 267
+                 jsr CheckGraphicMode                      ;; af42 267
+                 jmp ($800c)                              ; bra screenclear ;; af45 267
+ ;; af48 267
+; .page ;; af48 267
+;***************************************************************** ;; af48 267
+;* SCREEN SET  specify draw & view screens ;; af48 267
+;* ;; af48 267
+;*  Syntax : SCREEN SET  [DrawScreen] [,ViewScreen] ;; af48 267
+;* ;; af48 267
+;*           parm1 = draw screen # 0-3, 255=don't change    [910711] ;; af48 267
+;*           parm2 = view screen # 0-3, 255=text ;; af48 267
+;***************************************************************** ;; af48 267
+ ;; af48 267
+ScreenSet                                                  ;; af48 267
+                 jsr chrget                               ; advance past token ;; af48 267
+ ;; af4b 267
+c65.screen                                                 ;; af4b 267
+; beq snerr  ;missing args??      [911017] ;; af4b 267
+                 ldx #255                                 ; [911028] ;; af4b 267
+                 cmp #','                                  ;; af4d 267
+                 beq _local_1266_10                       ; options byte only ;; af4f 267
+ ;; af51 267
+                 jsr getbyt                               ; get draw screen# in .x ;; af51 267
+; cpx #4   ;       [910711] ;; af54 267
+; bcs 20$   ;  out of range error???? (255=leave alone)  [910930] ;; af54 267
+_local_1266_10   stx GKI__parm1                            ;; af54 267
+ ;; af57 267
+                 ldx $1f69                                ; current viewscreen     [911017] ;; af57 267
+                 jsr optbyt                               ; eat a comma, get view screen# in .x ;; af5a 267
+; cpx #4   ; ;; af5d 267
+;20$ bcs fcerr  ;  out of range error???? (255=text)   [910930] ;; af5d 267
+                 stx GKI__parm2                            ;; af5d 267
+ ;; af60 267
+                 jsr ($800e)                              ; kg65.screen ;; af60 267
+                 bcs NoGraphicArea                         ;; af63 267
+                 rts                                       ;; af65 267
+ ;; af66 267
+; .page ;; af66 267
+;***************************************************************** ;; af66 267
+;* SCREEN DEF  define a graphic screen ;; af66 267
+;* ;; af66 267
+;*  Syntax : SCREEN DEF  screen#, width, height, depth ;; af66 267
+;* ;; af66 267
+;*           parm1 = screen#           0-3    [910711] ;; af66 267
+;*           parm2 = width             0=320, 1=640, 2=1280 ;; af66 267
+;*           parm3 = height            0=200, 1=400 ;; af66 267
+;*           parm4 = depth             1-8 bitplanes (2-256 colors) ;; af66 267
+;***************************************************************** ;; af66 267
+ ;; af66 267

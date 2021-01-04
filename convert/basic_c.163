@@ -1,0 +1,84 @@
+gloop            jsr chkgrb                               ; check garbage string ;; 5c64 163
+                 bne _local_1162_2                        ; if not garbage ;; 5c67 163
+ ;; 5c69 163
+_local_1162_1    dey                                      ; back up to length ;; 5c69 163
+                 jsr indgrb                                ;; 5c6a 163
+                 jsr movpnt                               ; move grbpnt to next ;; 5c6d 163
+                 sec                                       ;; 5c70 163
+                 ror highds                               ; indicate garbage string found ;; 5c71 163
+                 bra gloop                                ; always ;; 5c73 163
+ ;; 5c75 163
+_local_1162_2    bit highds                                ;; 5c75 163
+                 bpl _local_1162_30                       ; if garbage string not found ;; 5c77 163
+                 ldx #0                                    ;; 5c79 163
+                 stx highds                               ; clear indicator ;; 5c7b 163
+ ;; 5c7d 163
+                 lda #2                                   ; skip pointers past ;; 5c7d 163
+ ;; 5c7f 163
+; Move a string over garbage ;; 5c7f 163
+ ;; 5c7f 163
+_local_1162_5    phx                                       ;; 5c7f 163
+                 ldx #grbtop                               ;; 5c80 163
+                 ldy #1                                   ; move the link bytes ;; 5c82 163
+                 jsr indgrb                                ;; 5c84 163
+                 jsr sta_far_ram1                         ; sta (grbtop),y ;; 5c87 163
+                 dey                                       ;; 5c8a 163
+                 jsr indgrb                                ;; 5c8b 163
+                 jsr sta_far_ram1                         ; sta (grbtop),y ;; 5c8e 163
+                 plx                                       ;; 5c91 163
+ ;; 5c92 163
+                 jsr indin1_ram1                           ;; 5c92 163
+                 tax                                       ;; 5c95 163
+                 jsr movtop                               ; move top pointer ;; 5c96 163
+                 sta frespc                               ; save in frespc ;; 5c99 163
+                 sty frespc+1                              ;; 5c9b 163
+                 txa                                       ;; 5c9d 163
+                 jsr movpnt                               ; move grbpnt ;; 5c9e 163
+                 txa                                      ; put length-1 in .y ;; 5ca1 163
+                 tay                                       ;; 5ca2 163
+ ;; 5ca3 163
+_local_1162_10   dey                                       ;; 5ca3 163
+                 jsr indgrb                                ;; 5ca4 163
+                 phx                                       ;; 5ca7 163
+                 ldx #grbtop                               ;; 5ca8 163
+                 jsr sta_far_ram1                         ; sta (grbtop),y ;; 5caa 163
+                 plx                                       ;; 5cad 163
+                 dex                                       ;; 5cae 163
+                 bne _local_1162_10                        ;; 5caf 163
+ ;; 5cb1 163
+                 ldy #2                                   ; fix the descriptor ;; 5cb1 163
+                 phx                                       ;; 5cb3 163
+                 ldx #index1                               ;; 5cb4 163
+_local_1162_20   lda grbtop-1,y                            ;; 5cb6 163
+                 jsr sta_far_ram1                         ; sta (index1),y ;; 5cb9 163
+                 dey                                       ;; 5cbc 163
+                 bne _local_1162_20                        ;; 5cbd 163
+                 plx                                       ;; 5cbf 163
+ ;; 5cc0 163
+                 lda grbpnt                               ; check pointer ;; 5cc0 163
+                 ldy grbpnt+1                              ;; 5cc2 163
+                 jsr chkgrb                               ; check garbage string ;; 5cc4 163
+                 beq _local_1162_1                        ; if garbage found ;; 5cc7 163
+                 bne _local_1162_5                        ; always ;; 5cc9 163
+ ;; 5ccb 163
+_local_1162_30   ldy #0                                   ; skip over good strings ;; 5ccb 163
+                 jsr indin1_ram1                           ;; 5ccd 163
+                 tax                                       ;; 5cd0 163
+                 jsr movtop                                ;; 5cd1 163
+                 sta frespc                                ;; 5cd4 163
+                 sty frespc+1                              ;; 5cd6 163
+                 txa                                       ;; 5cd8 163
+                 jsr movpnt                                ;; 5cd9 163
+                 bra gloop                                 ;; 5cdc 163
+ ;; 5cde 163
+; .page ;; 5cde 163
+; Subroutines used for garbage collection. ;; 5cde 163
+; ;; 5cde 163
+;  Compare for (y,a) = fretop. ;; 5cde 163
+; Entry  (y,a) = address of current string descriptor. ;; 5cde 163
+; Exits to caller if (y,a) = fretop, else z flag set if garbage string. ;; 5cde 163
+;      z flag clear if not garbage string. ;; 5cde 163
+; In either case pointers are setup for next loop and string movement. ;; 5cde 163
+; If carry clear (y,a) <= fretop ;; 5cde 163
+ ;; 5cde 163
+ ;; 5cde 163

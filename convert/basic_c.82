@@ -1,0 +1,95 @@
+for              lda #$80                                  ;; 415d 82
+                 sta subflg                               ; no arrays(), no integers% ;; 415f 82
+                 jsr let                                  ; get & set FOR variables ;; 4161 82
+                 lda #for_token                           ; set up for call to see if ;; 4164 82
+                 jsr search                               ; ..this 'for' variable is unique ;; 4166 82
+                 beq _local_1081_10                       ; branch if not ;; 4169 82
+ ;; 416b 82
+; If the variable is not unique, (fndpnt) will point to last occurance ;; 416b 82
+; in stack, and we will reset the stack to that point.  Otherwise we ;; 416b 82
+; will adjust the pointer by 'lenfor' and start from that point. ;; 416b 82
+ ;; 416b 82
+                 lda #lenfor                               ;; 416b 82
+                 jsr getstk                               ; updates stack pointer, error if overflow ;; 416d 82
+                 jsr movtos                               ; (tos) => (fndpnt) ;; 4170 82
+ ;; 4173 82
+_local_1081_10   jsr movfnd                               ; (fndpnt) => (tos)   (redundant for new entries) ;; 4173 82
+                 jsr datan                                ; find address of next statement ;; 4176 82
+                 tya                                      ; offset from (txtptr) in y ;; 4179 82
+                 ldy #lenfor-1                             ;; 417a 82
+ ;; 417c 82
+                 clc                                      ; Push address of next statement on stack ;; 417c 82
+                 adc txtptr                                ;; 417d 82
+                 sta (tos),y                              ; (common area) ;; 417f 82
+                 lda txtptr+1                              ;; 4181 82
+                 adc #0                                    ;; 4183 82
+                 dey                                       ;; 4185 82
+                 sta (tos),y                              ; (common area) ;; 4186 82
+ ;; 4188 82
+                 lda curlin+1                             ; Push current line number on stack ;; 4188 82
+                 dey                                       ;; 418a 82
+                 sta (tos),y                              ; (common area) ;; 418b 82
+                 lda curlin                                ;; 418d 82
+                 dey                                       ;; 418f 82
+                 sta (tos),y                              ; (common area) ;; 4190 82
+ ;; 4192 82
+                 lda #to_token                            ; Look for TO, must appear ;; 4192 82
+                 jsr synchr                                ;; 4194 82
+                 jsr chknum                               ; get TO value ;; 4197 82
+                 jsr frmnum                                ;; 419a 82
+                 lda facsgn                                ;; 419d 82
+                 ora #$7f                                  ;; 419f 82
+                 and facho                                 ;; 41a1 82
+                 sta facho                                 ;; 41a3 82
+ ;; 41a5 82
+                 ldx #4                                    ;; 41a5 82
+                 ldy #lenfor-5                             ;; 41a7 82
+_local_1081_20   lda facexp,x                             ; Push faclo,mo,moh,ho,exp ;; 41a9 82
+                 sta (tos),y                              ; (common area) ;; 41ab 82
+                 dex                                       ;; 41ad 82
+                 dey                                       ;; 41ae 82
+                 bpl _local_1081_20                        ;; 41af 82
+ ;; 41b1 82
+                 lda #<fone                               ; Push STEP value ;; 41b1 82
+                 ldy #>fone                               ; (point to default 'one' in ROM) ;; 41b3 82
+                 jsr movfm                                 ;; 41b5 82
+                 jsr chrgot                                ;; 41b8 82
+                 cmp #step_token                           ;; 41bb 82
+                 bne _local_1081_30                       ; branch if no step given ;; 41bd 82
+                 jsr chrget                                ;; 41bf 82
+                 jsr frmnum                                ;; 41c2 82
+ ;; 41c5 82
+_local_1081_30   jsr sign                                  ;; 41c5 82
+                 pha                                      ; save sign for a moment ;; 41c8 82
+                 jsr round                                 ;; 41c9 82
+                 pla                                       ;; 41cc 82
+ ;; 41cd 82
+                 ldy #lenfor-10                            ;; 41cd 82
+                 ldx #5                                    ;; 41cf 82
+_local_1081_40   sta (tos),y                              ; (common area) ;; 41d1 82
+                 lda facexp-1,x                            ;; 41d3 82
+                 dey                                       ;; 41d5 82
+                 dex                                       ;; 41d6 82
+                 bpl _local_1081_40                        ;; 41d7 82
+ ;; 41d9 82
+                 lda forpnt+1                             ; Finally push pointer to 'for' variable, & 'for' token ;; 41d9 82
+                 sta (tos),y                              ; (common area) ;; 41db 82
+                 lda forpnt                                ;; 41dd 82
+                 dey                                       ;; 41df 82
+                 sta (tos),y                              ; (common area) ;; 41e0 82
+                 lda #for_token                            ;; 41e2 82
+                 dey                                       ;; 41e4 82
+                 sta (tos),y                              ; (common area) ;; 41e5 82
+                 rts                                       ;; 41e7 82
+ ;; 41e8 82
+;.end ;; 41e8 82
+; .page ;; 41e8 82
+; .subttl  DELETE ;; 41e8 82
+ ;; 41e8 82
+; Delete a range of source   -or-   Delete a disk file ;; 41e8 82
+; ;; 41e8 82
+; Syntax: DELETE from# - to# (same range parameters as LIST) ;; 41e8 82
+;  DELETE "filename" (same parameters as SCRATCH) ;; 41e8 82
+ ;; 41e8 82
+; Determine which form of DELETE we have... ;; 41e8 82
+ ;; 41e8 82

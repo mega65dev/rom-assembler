@@ -1,0 +1,30 @@
+cont             bne cont_rts                             ; make sure there is a terminator ;; 3d7a 72
+                 bbs4 runmod,edit_err                     ; [910620] ;; 3d7c 72
+                 bbs7 runmod,cont_rts                     ; if in run-mode just rts ;; 3d7f 72
+ ;; 3d82 72
+                 ldx #errcn                               ; continue error. ;; 3d82 72
+                 ldy oldtxt+1                             ; a stored txtptr of zero set up by INIT_STACK ;; 3d84 72
+                 beq error                                ; indicates there is nothing to continue ;; 3d87 72
+ ;; 3d8a 72
+                 lda oldtxt                               ; STOP, END, typing crlf to INPUT, and STOP key ;; 3d8a 72
+                 sta txtptr                                ;; 3d8d 72
+                 sty txtptr+1                              ;; 3d8f 72
+                 lda oldlin                                ;; 3d91 72
+                 ldy oldlin+1                              ;; 3d94 72
+                 sta curlin                                ;; 3d97 72
+                 sty curlin+1                              ;; 3d99 72
+ ;; 3d9b 72
+setexc           smb7 runmod                              ; set up run mode ;; 3d9b 72
+                 lda #0                                    ;; 3d9d 72
+                 sta autinc                               ; turn auto increment off ;; 3d9f 72
+                 sta autinc+1                              ;; 3da1 72
+                 sta intval                               ; enable & reset collision-trapping mechanism ;; 3da3 72
+                 sta _autoinsert                          ; disable auto-insert mode ????? ;; 3da6 72
+ ;; 3da8 72
+                 ldx #2                                   ; turn off all interrupt trip flags ;; 3da8 72
+_local_1071_10   sta int_trip_flag,x                       ;; 3daa 72
+                 dex                                       ;; 3dad 72
+                 bpl _local_1071_10                        ;; 3dae 72
+ ;; 3db0 72
+                 jsr _setmsg                              ; turn kernel messages off & rts ;; 3db0 72
+ ;; 3db3 72

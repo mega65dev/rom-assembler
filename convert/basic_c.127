@@ -1,0 +1,109 @@
+bltlp            jsr indhtr_ram1                          ; lda (hightr),y ;; 5164 127
+                 phx                                       ;; 5167 127
+                 ldx #highds                               ;; 5168 127
+                 jsr sta_far_ram1                         ; sta (highds),y ;; 516a 127
+                 plx                                       ;; 516d 127
+ ;; 516e 127
+moren1           dey                                       ;; 516e 127
+                 bne bltlp                                 ;; 516f 127
+                 jsr indhtr_ram1                          ; lda (hightr),y ;; 5171 127
+                 phx                                       ;; 5174 127
+                 ldx #highds                               ;; 5175 127
+                 jsr sta_far_ram1                         ; sta (highds),y ;; 5177 127
+                 plx                                       ;; 517a 127
+ ;; 517b 127
+decblt           dec hightr+1                              ;; 517b 127
+                 dec highds+1                              ;; 517d 127
+                 dex                                       ;; 517f 127
+                 bne moren1                                ;; 5180 127
+                 rts                                       ;; 5182 127
+ ;; 5183 127
+;.end ;; 5183 127
+; .page ;; 5183 127
+; .subttl Array Routines ;; 5183 127
+ ;; 5183 127
+; The format of arrays in core: ;; 5183 127
+; ;; 5183 127
+; Descriptor: low  byte = first character ;; 5183 127
+;   high byte = second character (msb is string flag) ;; 5183 127
+; Length of array in memory in bytes (includes everything). ;; 5183 127
+; Number of dimensions. ;; 5183 127
+; For each dimension starting with the first a list (2 bytes each) ;; 5183 127
+; of the max indice+1. ;; 5183 127
+; The values. ;; 5183 127
+ ;; 5183 127
+ ;; 5183 127
+is_array                                                   ;; 5183 127
+                 lda dimflg                                ;; 5183 127
+                 ora intflg                                ;; 5185 127
+                 pha                                      ; save DIMFLG for recursion ;; 5187 127
+                 lda valtyp                                ;; 5188 127
+                 pha                                      ; save VALTYP for recursion ;; 518a 127
+                 ldy #0                                   ; set number of dimensions to zero ;; 518b 127
+ ;; 518d 127
+_local_1126_10   phy                                      ; save number of dims ;; 518d 127
+                 lda varnam+1                              ;; 518e 127
+                 pha                                       ;; 5190 127
+                 lda varnam                                ;; 5191 127
+                 pha                                      ; save looks ;; 5193 127
+                 jsr intidx                               ; evaluate indice into facmo&lo ;; 5194 127
+                 pla                                       ;; 5197 127
+                 sta varnam                                ;; 5198 127
+                 pla                                       ;; 519a 127
+                 sta varnam+1                             ; get back all...we're home ;; 519b 127
+                 ply                                      ; (# of units) ;; 519d 127
+                 tsx                                       ;; 519e 127
+                 lda 258,x                                 ;; 519f 127
+                 pha                                      ; push DIMFLG and VALTYP further ;; 51a2 127
+                 lda 257,x                                 ;; 51a3 127
+                 pha                                       ;; 51a6 127
+                 lda indice                               ; put indice onto stack ;; 51a7 127
+                 sta 258,x                                ; under DIMFLG and VALTYP ;; 51a9 127
+                 lda indice+1                              ;; 51ac 127
+                 sta 257,x                                 ;; 51ae 127
+                 iny                                      ; y counts # of subscripts ;; 51b1 127
+                 sty count                                ; protect y from chrget ;; 51b2 127
+                 jsr chrgot                               ; get terminating character ;; 51b4 127
+                 ldy count                                 ;; 51b7 127
+                 cmp #','                                 ; more subscripts? ;; 51b9 127
+                 beq _local_1126_10                       ; yes ;; 51bb 127
+ ;; 51bd 127
+ ;; 51bd 127
+                 jsr chkcls                               ; must be closed paren ;; 51bd 127
+                 pla                                       ;; 51c0 127
+                 sta valtyp                               ; get VALTYP and ;; 51c1 127
+                 pla                                       ;; 51c3 127
+                 sta intflg                                ;; 51c4 127
+                 and #$7f                                  ;; 51c6 127
+                 sta dimflg                               ; DIMFLG off stack ;; 51c8 127
+                 ldx arytab                               ; place to start search ;; 51ca 127
+                 lda arytab+1                              ;; 51cc 127
+ ;; 51ce 127
+ ;; 51ce 127
+_local_1126_20   stx lowtr                                 ;; 51ce 127
+                 sta lowtr+1                               ;; 51d0 127
+                 cmp strend+1                             ; end of arrays? ;; 51d2 127
+                 bne _local_1126_30                        ;; 51d4 127
+                 cpx strend                                ;; 51d6 127
+                 beq notfdd                               ; a fine thing! no array! ;; 51d8 127
+ ;; 51da 127
+_local_1126_30   ldy #0                                    ;; 51da 127
+                 jsr indlow_ram1                          ; get high of name from array bank (ram1) ;; 51dc 127
+                 iny                                       ;; 51df 127
+                 cmp varnam                               ; compare high orders. ;; 51e0 127
+                 bne _local_1126_40                       ; no way is it this. get the bite outta here ;; 51e2 127
+                 jsr indlow_ram1                           ;; 51e4 127
+                 cmp varnam+1                             ; low orders? ;; 51e7 127
+                 beq gotary                               ; well here it is ;; 51e9 127
+ ;; 51eb 127
+_local_1126_40   iny                                       ;; 51eb 127
+                 jsr indlow_ram1                          ; get length ;; 51ec 127
+                 clc                                       ;; 51ef 127
+                 adc lowtr                                 ;; 51f0 127
+                 tax                                       ;; 51f2 127
+                 iny                                       ;; 51f3 127
+                 jsr indlow_ram1                           ;; 51f4 127
+                 adc lowtr+1                               ;; 51f7 127
+                 bcc _local_1126_20                       ; always branches ;; 51f9 127
+ ;; 51fb 127
+ ;; 51fb 127

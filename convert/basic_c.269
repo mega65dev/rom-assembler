@@ -1,0 +1,114 @@
+ScreenOpen                                                 ;; af96 269
+                 jsr chrget                               ; advance past Open token ;; af96 269
+ ;; af99 269
+c65.screenopen                                             ;; af99 269
+                 jsr getbyt                               ; get screen# in .x ;; af99 269
+                 cpx #4                                   ; range 0-3   [910711] ;; af9c 269
+                 bcs fcerr                                ; branch if out of range ;; af9e 269
+ ;; afa1 269
+                 stx GKI__parm1                            ;; afa1 269
+                 jmp ($8008)                              ; screenopen    [910826] ;; afa4 269
+ ;; afa7 269
+; bcs NoGraphicArea ; bad ???? let user catch via RGRAPHIC ;; afa7 269
+; rts ;; afa7 269
+ ;; afa7 269
+; .page ;; afa7 269
+;***************************************************************** ;; afa7 269
+;* SCREEN CLOSE  close a graphic screen ;; afa7 269
+;* ;; afa7 269
+;*  Syntax : SCREEN CLOSE screen# ;; afa7 269
+;* ;; afa7 269
+;*           parm1 = screen#  0-3    [910711] ;; afa7 269
+;***************************************************************** ;; afa7 269
+ ;; afa7 269
+ ;; afa7 269
+ScreenClose                                                ;; afa7 269
+                 jsr chrget                               ; advance past Close token ;; afa7 269
+ ;; afaa 269
+c65.screenclose                                            ;; afaa 269
+                 jsr getbyt                               ; get screen# ;; afaa 269
+                 cpx #4                                   ; range 0-3   [910711] ;; afad 269
+                 bcs fcerr                                ; branch if out of range ;; afaf 269
+                 stx GKI__parm1                            ;; afb2 269
+ ;; afb5 269
+                 jmp ($800a)                              ; bra screenclose ;; afb5 269
+ ;; afb8 269
+; .page ;; afb8 269
+;***************************************************************** ;; afb8 269
+;* PEN ;; afb8 269
+;* ;; afb8 269
+;*  Syntax : PEN  Pen#, ColorReg ;; afb8 269
+;* ;; afb8 269
+;*           parm1 = pen#  0-2 ;; afb8 269
+;*           parm2 = color reg#  0-255 ;; afb8 269
+;***************************************************************** ;; afb8 269
+ ;; afb8 269
+c65.setpen                                                 ;; afb8 269
+                 jsr getbyt                               ; get pen# ;; afb8 269
+                 cpx #3                                   ; range 0-2 ;; afbb 269
+                 bcs fcerr                                ; branch if out of range ;; afbd 269
+                 stx GKI__parm1                            ;; afc0 269
+ ;; afc3 269
+                 jsr combyt                               ; get color reg# ;; afc3 269
+;???? error check for max color allowed ;; afc6 269
+; for the current screen. ;; afc6 269
+                 stx GKI__parm2                            ;; afc6 269
+ ;; afc9 269
+                 jmp ($8010)                              ; bra setpen ;; afc9 269
+ ;; afcc 269
+; .page ;; afcc 269
+;***************************************************************** ;; afcc 269
+;* DMODE   Set Draw Mode ;; afcc 269
+;* ;; afcc 269
+;*  Syntax : DMODE  jam, complement, stencil, style, thickness ;; afcc 269
+;* ;; afcc 269
+;*         parm1 = jam           0-1 ;; afcc 269
+;*         parm2 = complement (XOR) 0-1 ;; afcc 269
+;*         parm3 = stencil       0-1  <<< not implemented  [911003] ;; afcc 269
+;*         parm4 = style         0-3  <<< only 0-1 implemented [911003] ;; afcc 269
+;*         parm5 = thickness     1-8  <<< not implemented  [911003] ;; afcc 269
+;******************************************************************* ;; afcc 269
+ ;; afcc 269
+c65.setdmode                                               ;; afcc 269
+                 jsr getbyt                               ; jam mode ;; afcc 269
+                 cpx #2                                    ;; afcf 269
+                 bcs _local_1268_10                        ;; afd1 269
+                 stx GKI__parm1                            ;; afd3 269
+ ;; afd6 269
+                 jsr combyt                               ; complement (xor) mode ;; afd6 269
+                 cpx #2                                   ; (ignores jam mode if set) ;; afd9 269
+                 bcs _local_1268_10                        ;; afdb 269
+                 stx GKI__parm2                            ;; afdd 269
+ ;; afe0 269
+                 jsr combyt                               ; stencil mode (not implemented) ;; afe0 269
+                 cpx #2                                    ;; afe3 269
+                 bcs _local_1268_10                        ;; afe5 269
+                 stx GKI__parm3                            ;; afe7 269
+ ;; afea 269
+                 jsr combyt                               ; style mode ;; afea 269
+                 cpx #4                                   ; 0=solid, 1=pattern, 2=tile (not implemented), 3=reserved ;; afed 269
+                 bcs _local_1268_10                        ;; afef 269
+                 stx GKI__parm4                            ;; aff1 269
+ ;; aff4 269
+                 jsr combyt                               ; thickness mode (not implemented) ;; aff4 269
+; dex   ; adjust to 0-7     [911003] ;; aff7 269
+                 cpx #8+1                                  ;; aff7 269
+_local_1268_10   bcs fcerr                                ; illegal quantity error ;; aff9 269
+                 stx GKI__parm5                            ;; affc 269
+ ;; afff 269
+                 jmp ($8014)                              ; bra setdmode ;; afff 269
+ ;; b002 269
+; .page ;; b002 269
+;***************************************************************** ;; b002 269
+;* DPAT   set draw pattern ;; b002 269
+;* ;; b002 269
+;*  Syntax : DPAT  type [, # bytes, byte1, byte2, byte3, byte4] ;; b002 269
+;* ;; b002 269
+;*           parm1 = type        0-63  <<< only 0-4 implemented [911003] ;; b002 269
+;*           parm2 = # bytes     1-4 ;; b002 269
+;*           parm3 = byte1       0-255 ;; b002 269
+;*           parm4 = byte2       0-255 ;; b002 269
+;*           parm5 = byte3       0-255 ;; b002 269
+;*           parm6 = byte4       0-255 ;; b002 269
+;***************************************************************** ;; b002 269
+ ;; b002 269

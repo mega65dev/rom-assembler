@@ -1,0 +1,58 @@
+c65.line                                                   ;; b0b2 273
+                 cmp #input_token                         ; special check for 'line input#'  [910103] ;; b0b2 273
+                 beq linputn                              ; yes ;; b0b4 273
+                 cmp #input_token+1                       ; special check for 'line input' ;; b0b7 273
+                 beq linput                               ; yes ;; b0b9 273
+ ;; b0bc 273
+                 jsr CheckGraphicMode                      ;; b0bc 273
+                 jsr sadwrd                               ; get x0 ;; b0bf 273
+                 sty GKI__parm1                            ;; b0c2 273
+                 sta GKI__parm2                            ;; b0c5 273
+                 sty GKI__parm5                           ; [910228] ;; b0c8 273
+                 sta GKI__parm6                            ;; b0cb 273
+ ;; b0ce 273
+                 jsr comsad                               ; get y0 ;; b0ce 273
+                 sty GKI__parm3                            ;; b0d1 273
+                 sta GKI__parm4                            ;; b0d4 273
+                 sty GKI__parm7                           ; [910228] ;; b0d7 273
+                 sta GKI__parm8                            ;; b0da 273
+ ;; b0dd 273
+                 jsr optsad                               ; get x1     [910228] ;; b0dd 273
+                 bcc _local_1272_10                       ; use x0 ;; b0e0 273
+_local_1272_1    sty GKI__parm5                            ;; b0e2 273
+                 sta GKI__parm6                            ;; b0e5 273
+ ;; b0e8 273
+_local_1272_10   jsr optsad                               ; get y1     [910228] ;; b0e8 273
+                 bcc _local_1272_20                       ; use y0 ;; b0eb 273
+                 sty GKI__parm7                            ;; b0ed 273
+                 sta GKI__parm8                            ;; b0f0 273
+ ;; b0f3 273
+_local_1272_20   jsr ($8018)                              ; draw a line from x0,y0 to x1,y1 ;; b0f3 273
+ ;; b0f6 273
+                 ldx #3                                    ;; b0f6 273
+_local_1272_30   lda GKI__parm5,x                         ; copy x1,y1 to x0,y0 ;; b0f8 273
+                 sta GKI__parm1,x                          ;; b0fb 273
+                 dex                                       ;; b0fe 273
+                 bpl _local_1272_30                        ;; b0ff 273
+ ;; b101 273
+                 jsr optsad                               ; more? ;; b101 273
+                 bcs _local_1272_1                        ; yes, continue ;; b104 273
+                 rts                                       ;; b106 273
+ ;; b107 273
+; .page ;; b107 273
+;***************************************************************** ;; b107 273
+;* BOX   draw a 4-sided figure ;; b107 273
+;* ;; b107 273
+;*  Syntax :  BOX x0,y0, x1,y1, x2,y2, x3,y3 [,solid flag] ;; b107 273
+;* ;; b107 273
+;* parm1,2   = x0  (lo/hi) ;; b107 273
+;* parm3,4   = y0 ;; b107 273
+;* parm5,6   = x1 ;; b107 273
+;* parm7,8   = y1 ;; b107 273
+;* parm9,10  = x2 ;; b107 273
+;* parm11,12 = y2 ;; b107 273
+;* parm13,14 = x3 ;; b107 273
+;* parm15,16 = y3 ;; b107 273
+;* parm17    = solid flag ;; b107 273
+;***************************************************************** ;; b107 273
+ ;; b107 273

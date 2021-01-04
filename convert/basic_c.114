@@ -1,0 +1,91 @@
+volrts                                                     ;; 4b45 114
+                 rts                                       ;; 4b45 114
+ ;; 4b46 114
+;.end ;; 4b46 114
+; .page ;; 4b46 114
+; .subttl  VOLUME ;; 4b46 114
+ ;; 4b46 114
+;*************************************************************** ;; 4b46 114
+;* ;; 4b46 114
+;*  VOLUME - set volume of SID chips ;; 4b46 114
+;* ;; 4b46 114
+;* Syntax : VOLUME [right] [,left] ;; 4b46 114
+;* ;; 4b46 114
+;* Where  : vol in 0..15 ;; 4b46 114
+;* ;; 4b46 114
+;*************************************************************** ;; 4b46 114
+ ;; 4b46 114
+volume           beq snerr                                ; stereo parameters    [910612] ;; 4b46 114
+                 cmp #','                                  ;; 4b49 114
+                 beq _local_1113_10                       ; left volume only ;; 4b4b 114
+; jsr getbyt  ;right volume in .x ;; 4b4d 114
+; cpx #16 ;; 4b4d 114
+; bcs fcerr  ;too large ;; 4b4d 114
+                 jsr getnyb                               ; [910930] ;; 4b4d 114
+                 stx z_p_temp_1                           ; a temp (sorry fred) ;; 4b50 114
+ ;; 4b52 114
+; The way this is done must work with 'PLAY' without too much conflict. ;; 4b52 114
+; So, along with setting the SID 'volume' reg, we'll also set up PLAY's ;; 4b52 114
+; record of current volume as well. ;; 4b52 114
+ ;; 4b52 114
+                 lda filters1+3                            ;; 4b52 114
+                 and #$f0                                  ;; 4b55 114
+                 ora z_p_temp_1                            ;; 4b57 114
+                 sta filters1+3                            ;; 4b59 114
+ ;; 4b5c 114
+; lda filters1+4  ;???? why     [910612] ;; 4b5c 114
+; and #$f0 ;; 4b5c 114
+; ora z_p_temp_1 ;; 4b5c 114
+; sta filters1+4 ;; 4b5c 114
+ ;; 4b5c 114
+; jsr put_io_in_map ;; 4b5c 114
+; jsr go_slow  ;      [910716] 4567R7A ;; 4b5c 114
+                 sta sid1+24                               ;; 4b5c 114
+; jsr go_fast  ;      [910716] 4567R7A ;; 4b5f 114
+                 jsr chrgot                                ;; 4b5f 114
+                 beq volrts                                ;; 4b62 114
+ ;; 4b64 114
+_local_1113_10   jsr optbyt                               ; get optional left parameter   [910612] ;; 4b64 114
+                 bcc snerr                                ; comma but no value not given?? ;; 4b67 114
+                 jsr chknyb                               ; [910930] ;; 4b6a 114
+; cpx #16 ;; 4b6d 114
+; bcs fcerr  ;too large ;; 4b6d 114
+                 stx z_p_temp_1                           ; a temp (sorry fred) ;; 4b6d 114
+ ;; 4b6f 114
+                 lda filters2+3                            ;; 4b6f 114
+                 and #$f0                                  ;; 4b72 114
+                 ora z_p_temp_1                            ;; 4b74 114
+                 sta filters2+3                            ;; 4b76 114
+ ;; 4b79 114
+; lda filters2+4  ;???? why     [910612] ;; 4b79 114
+; and #$f0 ;; 4b79 114
+; ora z_p_temp_1 ;; 4b79 114
+; sta filters2+4 ;; 4b79 114
+ ;; 4b79 114
+; jsr put_io_in_map ;; 4b79 114
+; jsr go_slow  ;      [910716] 4567R7A ;; 4b79 114
+                 sta sid2+24                               ;; 4b79 114
+; jsr go_fast  ;      [910716] 4567R7A ;; 4b7c 114
+                 rts                                       ;; 4b7c 114
+ ;; 4b7d 114
+;.end ;; 4b7d 114
+; .page ;; 4b7d 114
+; .subttl  SOUND ;; 4b7d 114
+ ;; 4b7d 114
+;***************************************************************************** ;; 4b7d 114
+;* ;; 4b7d 114
+;*  SOUND - Produce sound effects ;; 4b7d 114
+;* ;; 4b7d 114
+;* Syntax : SOUND v, f, d [,[dir] [,[m] [,[s] [,[w] [,p] ]]]] ;; 4b7d 114
+;* ;; 4b7d 114
+;* Where : v   = voice    (1..6) ;; 4b7d 114
+;*  f   = frequency    (0..65535) ;; 4b7d 114
+;*  d   = duration    (0..32767 jiffys) ;; 4b7d 114
+;*  dir = step direction  (0(up) ,1(down) or 2(oscillate)) default=0 ;; 4b7d 114
+;*  m   = minimum frequency  (if sweep is used) (0..65535) default=0 ;; 4b7d 114
+;*  s   = step value for effects  (0..32767) default=0 ;; 4b7d 114
+;*  w   = waveform  (0=triangle,1=saw,2=square,3=noise) default=2 ;; 4b7d 114
+;*  p   = pulse width  (0..4095) default=2048 (50% duty cycle) ;; 4b7d 114
+;* ;; 4b7d 114
+;***************************************************************************** ;; 4b7d 114
+ ;; 4b7d 114

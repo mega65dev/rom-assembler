@@ -38,6 +38,8 @@ class BaseProcessor(object):
 		#
 		if st == ".page" or st[:7] == ".subttl" or st[:4] == ".nam" or st[:6] == ".STORE" or st[:6] == ".blist":
 			return "; "+st
+		if st[:5] == ".ifgt" or st[:6] == ".messg" or st == ".endif" or st == ".end":
+			return "; "+st
 		#
 		#		Split into the relevant parts.
 		#

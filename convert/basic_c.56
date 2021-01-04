@@ -1,0 +1,22 @@
+notqti           jsr errdir                               ; use common routine since def direct ;; 38e9 56
+                 lda #','                                 ; get comma ;; 38ec 56
+                 sta buf_txtptr                           ; (data reader expects buffer to start with terminator) ;; 38ee 56
+ ;; 38f1 56
+getagn           jsr PromptedInput                        ; type "?" and input a line of text ;; 38f1 56
+getagn1          lda channl                                ;; 38f4 56
+                 beq _local_1055_10                        ;; 38f6 56
+                 jsr _readst                              ; get status byte ;; 38f8 56
+; and #2   ; (assumes serial bus????)  [910618] eoi ok ;; 38fb 56
+                 and #%10000111                           ; serial: err if dnp, r/w timeout errors ;; 38fb 56
+                 beq _local_1055_10                       ; a-ok rs232: err if brk, ovr, frm, par errors ;; 38fd 56
+                 jsr release_channels                     ; bad, close channel ;; 38ff 56
+                 bra data                                 ; skip rest of input ;; 3902 56
+ ;; 3905 56
+_local_1055_10   lda buf                                  ; bufful. get anything? ;; 3905 56
+                 bne inpcon                               ; yes- process input ;; 3908 56
+; lda channl  ;didn't get anything.  is this keyboard? [901212] ;; 390a 56
+; bne getagn  ; no- keep looking for data ???? ;; 390a 56
+                 jsr datan                                ; skip to end of statement ;; 390a 56
+                 bra addon                                 ;; 390d 56
+ ;; 3910 56
+; .page ;; 3910 56

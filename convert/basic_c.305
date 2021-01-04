@@ -1,0 +1,93 @@
+bump             jsr chkcls                                ;; ba9c 305
+                 jsr conint                               ; get arg in .X ;; ba9f 305
+                 dex                                      ; adjust [1..2] to [0..1] ;; baa2 305
+                 cpx #2                                    ;; baa3 305
+                 bcs fcerr                                ; value error ;; baa5 305
+ ;; baa8 305
+                 sei                                       ;; baa8 305
+                 ldy collisions,x                         ; get recorded collisions ;; baa9 305
+                 lda #0                                   ; reset them ;; baac 305
+                 sta collisions,x                          ;; baae 305
+                 cli                                       ;; bab1 305
+                 bra sngflt                               ; float 1 byte arg in .Y ;; bab2 305
+ ;; bab5 305
+;.end ;; bab5 305
+; .page ;; bab5 305
+; .subttl Sprite Support Routines ;; bab5 305
+ ;; bab5 305
+; GRAPHIC3.SRC ;; bab5 305
+;**************************************************************** ;; bab5 305
+;  getang  -  set cosine & sine values ;; bab5 305
+;             results in sinval & cosval based as a fraction ;; bab5 305
+;             - over 65536 ;; bab5 305
+;             angsgn = angle phase (0-3) ;; bab5 305
+;    on input vwork+y = 2 byte angle ;; bab5 305
+;*************************************************************** ;; bab5 305
+ ;; bab5 305
+getang                                                     ;; bab5 305
+                 jsr settwo                               ; move angle value into y/a ;; bab5 305
+ ;; bab8 305
+gtang1           ldx #0                                   ; init count of phase ;; bab8 305
+ ;; baba 305
+_local_1304_10   inx                                       ;; baba 305
+                 sec                                       ;; babb 305
+                 sbc #90                                  ; subtract 90 until less than 0 ;; babc 305
+                 bcs _local_1304_10                        ;; babe 305
+                 dey                                       ;; bac0 305
+                 bpl _local_1304_10                        ;; bac1 305
+                 stx angsgn                               ; save phase (here it is 1-4) ;; bac3 305
+                 pha                                       ;; bac6 305
+                 adc #90                                  ; make positive ;; bac7 305
+                 jsr _local_1304_20                       ; do division by 10 ;; bac9 305
+                 pla                                      ; get 2's comp of angle ;; bacc 305
+                 clc                                       ;; bacd 305
+                 eor #$ff                                  ;; bace 305
+                 adc #1                                   ; make positive ;; bad0 305
+                 dec angsgn                               ; correct phase ;; bad2 305
+ ;; bad5 305
+_local_1304_20   ldx #$ff                                  ;; bad5 305
+_local_1304_30   inx                                      ; do division by 10 ;; bad7 305
+                 sec                                       ;; bad8 305
+                 sbc #10                                   ;; bad9 305
+                 bcs _local_1304_30                        ;; badb 305
+                 adc #10                                  ; make positive ;; badd 305
+                 sta vtemp1                               ; save remainder ;; badf 305
+                 txa                                       ;; bae2 305
+                 asl a                                    ; get quotient*2 as index ;; bae3 305
+                 tax                                       ;; bae4 305
+                 lda angval+1,x                           ; get low byte base ;; bae5 305
+                 ldy angval,x                             ; get high byte value ;; bae8 305
+ ;; baeb 305
+_local_1304_40   clc                                       ;; baeb 305
+                 dec vtemp1                                ;; baec 305
+                 bmi _local_1304_50                       ; done - remainder = 0 ;; baef 305
+                 adc incval+1,x                           ; add low byte increment ;; baf1 305
+                 pha                                       ;; baf4 305
+                 tya                                       ;; baf5 305
+                 adc incval,x                             ; add high byte increment ;; baf6 305
+                 tay                                       ;; baf9 305
+                 pla                                       ;; bafa 305
+                 bcc _local_1304_40                       ; ...always ;; bafb 305
+ ;; bafd 305
+_local_1304_50   pha                                      ; save low byte of result ;; bafd 305
+                 ldx #0                                   ; point to sinval ;; bafe 305
+                 lda angsgn                                ;; bb00 305
+                 lsr a                                     ;; bb03 305
+                 bcs _local_1304_60                       ; skip if sine value ;; bb04 305
+                 ldx #2                                   ; point to cosval ;; bb06 305
+ ;; bb08 305
+_local_1304_60   pla                                       ;; bb08 305
+                 sta sinval,x                             ; save low byte result ;; bb09 305
+                 tya                                       ;; bb0c 305
+                 sta sinval+1,x                           ; save high byte result ;; bb0d 305
+                 rts                                       ;; bb10 305
+ ;; bb11 305
+; .page ;; bb11 305
+;************************************************************* ;; bb11 305
+;  angmlt  -  multiple 2-byte integer times angle ;; bb11 305
+;       carry set/reset = cosine/sine ;; bb11 305
+; ;; bb11 305
+;       vwork+x = 2-byte integer ;; bb11 305
+;       result left in y/a ;; bb11 305
+;************************************************************* ;; bb11 305
+ ;; bb11 305

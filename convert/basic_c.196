@@ -1,0 +1,85 @@
+plsv                                                       ;; 6925 196
+                 lda #0                                   ; set default filename (none) ;; 6925 196
+                 jsr _setnam                               ;; 6927 196
+                 ldx _default_drive                       ; set default device # (dosffn) ;; 692a 196
+                 ldy #0                                   ; command 0 ;; 692d 196
+                 jsr _setlfs                               ;; 692f 196
+                 lda text_bank                            ; all loads to   bank 0 ???? set default memory banks ;; 6932 196
+                 ldx var_bank                             ; all names from bank 1 ????   [910620] ;; 6934 196
+                 jsr _setbank                              ;; 6936 196
+ ;; 6939 196
+                 jsr paoc20                               ; by-pass junk ;; 6939 196
+                 jsr paoc15                               ; get/set file name ;; 693c 196
+                 jsr paoc20                               ; by-pass junk ;; 693f 196
+                 jsr plsv7                                ; get ',fa' ;; 6942 196
+                 ldy #0                                   ; command 0 ;; 6945 196
+                 stx andmsk                                ;; 6947 196
+                 jsr _setlfs                               ;; 6949 196
+                 jsr paoc20                               ; by-pass junk ;; 694c 196
+                 jsr plsv7                                ; get ',sa' ;; 694f 196
+                 txa                                      ; new command ;; 6952 196
+                 tay                                       ;; 6953 196
+                 ldx andmsk                               ; device # ;; 6954 196
+                 jsr _setlfs                               ;; 6956 196
+                 bra dschk                                ; make dosfa current   [900801] ;; 6959 196
+ ;; 695b 196
+ ;; 695b 196
+ ;; 695b 196
+; Look for comma followed by byte ;; 695b 196
+ ;; 695b 196
+plsv7            jsr paoc30                                ;; 695b 196
+                 bra getbyt                                ;; 695e 196
+ ;; 6961 196
+ ;; 6961 196
+ ;; 6961 196
+; Skip return if next char is end ;; 6961 196
+ ;; 6961 196
+paoc20           jsr chrgot                                ;; 6961 196
+                 bne paocx                                 ;; 6964 196
+                 pla                                       ;; 6966 196
+                 pla                                       ;; 6967 196
+paocx            rts                                       ;; 6968 196
+ ;; 6969 196
+ ;; 6969 196
+ ;; 6969 196
+; Check for comma and good stuff ;; 6969 196
+ ;; 6969 196
+paoc30           jsr chkcom                               ; check comma ;; 6969 196
+ ;; 696c 196
+paoc32           jsr chrgot                               ; get current character ;; 696c 196
+                 bne paocx                                ; is okay ;; 696f 196
+                 bra snerr                                ; bad...end of line ;; 6971 196
+ ;; 6974 196
+ ;; 6974 196
+; Parse OPEN/CLOSE ;; 6974 196
+ ;; 6974 196
+paoc             lda #sys_bank                            ; ????      [910620] ;; 6974 196
+                 ldx var_bank                             ;  ;; 6976 196
+                 jsr _setbank                             ; filename bank     (string bank)???? ;; 6978 196
+                 jsr _setnam                              ; default file name (null) ;; 697b 196
+                 jsr paoc32                               ; must get something ;; 697e 196
+                 jsr getbyt                               ; get la ;; 6981 196
+                 stx andmsk                                ;; 6984 196
+                 txa                                       ;; 6986 196
+                 ldx _default_drive                       ; default device ;; 6987 196
+                 ldy #0                                   ; default command ;; 698a 196
+                 jsr _setlfs                              ; store it ;; 698c 196
+                 jsr paoc20                               ; skip junk ;; 698f 196
+                 jsr plsv7                                 ;; 6992 196
+                 stx eormsk                                ;; 6995 196
+                 ldy #0                                   ; default sa (command) ;; 6997 196
+                 lda andmsk                               ; get la ;; 6999 196
+                 cpx #3                                    ;; 699b 196
+                 bcc _local_1195_10                        ;; 699d 196
+                 dey                                      ; if sa not given and fa=serial bus, default to $ff ;; 699f 196
+_local_1195_10   jsr _setlfs                              ; store them ;; 69a0 196
+                 jsr paoc20                               ; skip junk ;; 69a3 196
+                 jsr plsv7                                ; get sa ;; 69a6 196
+                 txa                                       ;; 69a9 196
+                 tay                                       ;; 69aa 196
+                 ldx eormsk                                ;; 69ab 196
+                 lda andmsk                                ;; 69ad 196
+                 jsr _setlfs                              ; set up real everything ;; 69af 196
+                 jsr paoc20                                ;; 69b2 196
+                 jsr paoc30                                ;; 69b5 196
+ ;; 69b8 196

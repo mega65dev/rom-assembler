@@ -1,0 +1,94 @@
+dcat4            jsr _readst                              ; get status ;; 7031 218
+                 bne dcat10                               ; if bad status ;; 7034 218
+                 jsr _basin                               ; get char ;; 7036 218
+                 beq dcat5                                ; if eol ;; 7039 218
+                 jsr _bsout                               ; echo char ;; 703b 218
+                 bra dcat4                                ; continue to process name until eol or err ;; 703e 218
+ ;; 7040 218
+; Here on end of name ;; 7040 218
+ ;; 7040 218
+dcat5            jsr crdo                                 ; output new line ;; 7040 218
+                 jsr _stop                                ; check stop key ;; 7043 218
+                 beq dcat11                               ; exit if stop request ;; 7046 218
+ ;; 7048 218
+; Process next ;; 7048 218
+ ;; 7048 218
+                 ldy #2                                   ; perform 2 times ;; 7048 218
+                 bra dcat3                                 ;; 704a 218
+ ;; 704c 218
+ ;; 704c 218
+; Exit directory ;; 704c 218
+ ;; 704c 218
+dcat10           jsr crdo                                 ; flush current line ;; 704c 218
+dcat11           jsr release_channels                     ; release cmd channel, restore terminal ;; 704f 218
+                 lda #doslfn                               ;; 7052 218
+                 bra close_out                            ; [900725] ;; 7054 218
+ ;; 7057 218
+; .page ;; 7057 218
+; LDIR  same as DIR, except it buffers each line to reduce ;; 7057 218
+;       talker/listener turnaround time.  Even so, it is still ;; 7057 218
+; unacceptably slow for normal screen output, which is ;; 7057 218
+; why it was split out from the original DIRECTORY routine. ;; 7057 218
+; ;; 7057 218
+ ;; 7057 218
+; Read block count ;; 7057 218
+ ;; 7057 218
+ldir                                                       ;; 7057 218
+                 lda #$c0                                 ; serial bus kludge for open4,4:cmd4:dir ???? ;; 7057 218
+                 and $d609                                 ;; 7059 218
+                 trb $d609                                ; disable fast serial bus ;; 705c 218
+                 sta sid_speed_flag                       ; but save enables so we can restore them ;; 705f 218
+ ;; 7061 218
+                 ldy #3                                   ; loop counter (3=skip fake load adr & link bytes) ;; 7061 218
+_local_1217_1    sty t3                                   ; save counter ;; 7063 218
+                 ldx #doslfn                               ;; 7066 218
+                 jsr _chkin                                ;; 7068 218
+                 bcs ldir_end                             ; problem?? ;; 706b 218
+ ;; 706d 218
+_local_1217_10   jsr _readst                              ; check status ;; 706d 218
+                 bne ldir_end                             ; exit if bad status ;; 7070 218
+                 jsr _basin                               ; get block count ;; 7072 218
+                 sta dosstr                               ; buffer it ;; 7075 218
+                 jsr _basin                                ;; 7078 218
+                 sta dosstr+1                              ;; 707b 218
+                 dec t3                                    ;; 707e 218
+                 bne _local_1217_10                       ; continue eating bytes until we have block count ;; 7081 218
+ ;; 7083 218
+; Read filename ;; 7083 218
+ ;; 7083 218
+                 ldx #1                                   ; buffer index-1 ;; 7083 218
+_local_1217_20   inx                                       ;; 7085 218
+                 jsr _readst                              ; check status ;; 7086 218
+                 bne ldir_end                             ; exit if eof or bad status ;; 7089 218
+                 jsr _basin                               ; buffer next character ;; 708b 218
+                 sta dosstr,x                              ;; 708e 218
+                 bne _local_1217_20                       ; loop until eol (null terminator) ;; 7091 218
+ ;; 7093 218
+; Print one line of directory ;; 7093 218
+ ;; 7093 218
+                 jsr dcato                                ; get output channel ;; 7093 218
+                 ldx dosstr                                ;; 7096 218
+                 lda dosstr+1                              ;; 7099 218
+                 jsr linprt                               ; print blocks ;; 709c 218
+ ;; 709f 218
+                 lda #' '                                  ;; 709f 218
+                 jsr _bsout                               ; print space ;; 70a1 218
+ ;; 70a4 218
+                 ldx #2                                    ;; 70a4 218
+_local_1217_30   lda dosstr,x                              ;; 70a6 218
+                 beq _local_1217_40                        ;; 70a9 218
+                 jsr _bsout                               ; print filename (null terminated) ;; 70ab 218
+                 inx                                       ;; 70ae 218
+                 bne _local_1217_30                        ;; 70af 218
+ ;; 70b1 218
+_local_1217_40   jsr crdo                                 ; print return ;; 70b1 218
+                 jsr _clrch                                ;; 70b4 218
+                 jsr _stop                                ; check stop key ;; 70b7 218
+                 beq ldir_end                             ; exit if stop request ;; 70ba 218
+ ;; 70bc 218
+; Continue with next line ;; 70bc 218
+ ;; 70bc 218
+                 ldy #2                                   ; set to skip fake link bytes ;; 70bc 218
+                 bra _local_1217_1                        ; loop ;; 70be 218
+ ;; 70c0 218
+ ;; 70c0 218

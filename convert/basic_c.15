@@ -1,0 +1,27 @@
+xeqmid                                                    ; handle special case of MID$= (what we call a kludge) ;; 2ca2 15
+                 lda #>midwrk                             ; midd2-1 ;; 2ca2 15
+                 pha                                       ;; 2ca4 15
+                 lda #<midwrk                              ;; 2ca5 15
+                 pha                                       ;; 2ca7 15
+xeqchr                                                     ;; 2ca8 15
+                 jmp chrget                                ;; 2ca8 15
+ ;; 2cab 15
+ ;; 2cab 15
+ ;; 2cab 15
+ ;; 2cab 15
+xeqesc                                                    ; execute escape token ;; 2cab 15
+                 jsr chrget                               ; let's have us a look at the second char ;; 2cab 15
+                 beq snerr1                               ; oops, there wasn't any! ;; 2cae 15
+                 cmp #first_esc_command_token             ; is it one of our esc tokens? ;; 2cb0 15
+                 bcc _local_1014_1                        ; no, foreign. ;; 2cb2 15
+                 cmp #last_esc_command_token+1             ;; 2cb4 15
+                 bcs _local_1014_1                        ; foreign ;; 2cb6 15
+ ;; 2cb8 15
+; It's one of our own.  Convert to index into command dispatch table ;; 2cb8 15
+ ;; 2cb8 15
+                 adc #monitor_token-else_token+new_token-end_token-first_esc_command_token+2  ;; 2cb8 15
+                 bra xeqcm5                               ; always ;; 2cba 15
+ ;; 2cbc 15
+_local_1014_1    sec                                      ; set up flag for a trip into the users code ;; 2cbc 15
+                 jmp (iescex)                              ;; 2cbd 15
+ ;; 2cc0 15

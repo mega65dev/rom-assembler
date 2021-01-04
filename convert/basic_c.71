@@ -1,0 +1,101 @@
+gosub            bbs4 runmod,edit_err                     ; [910620] ;; 3cec 71
+                 jsr gosub_sub                             ;; 3cef 71
+                 jsr chrgot                               ; get character and set carry for linget ;; 3cf2 71
+                 jsr goto                                  ;; 3cf5 71
+                 bra newstt                                ;; 3cf8 71
+ ;; 3cfb 71
+; .page ;; 3cfb 71
+goto             bbs4 runmod,edit_err                     ; [910620] ;; 3cfb 71
+                 jsr linget                               ; pick up the line number in LINNUM ;; 3cfe 71
+                 lda endchr                               ; test if linget found any number ;; 3d01 71
+                 beq snerr                                ; no number error ;; 3d03 71
+ ;; 3d06 71
+goto_1           jsr remn                                 ; jump to end of line (entry for interrupt code) ;; 3d06 71
+                 sec                                       ;; 3d09 71
+                 lda curlin                                ;; 3d0a 71
+                 sbc linnum                                ;; 3d0c 71
+                 lda curlin+1                              ;; 3d0e 71
+                 sbc linnum+1                              ;; 3d10 71
+                 bcs luk4it                                ;; 3d12 71
+                 tya                                       ;; 3d14 71
+                 sec                                       ;; 3d15 71
+                 adc txtptr                                ;; 3d16 71
+                 ldx txtptr+1                              ;; 3d18 71
+                 bcc lukall                                ;; 3d1a 71
+                 inx                                       ;; 3d1c 71
+                 bra lukall                               ; always goes ;; 3d1d 71
+ ;; 3d1f 71
+ ;; 3d1f 71
+luk4it           lda txttab                                ;; 3d1f 71
+                 ldx txttab+1                              ;; 3d21 71
+ ;; 3d23 71
+lukall           jsr FindLink                             ; (a,x) are all set up ;; 3d23 71
+                 bcc userr                                ; undefined statement error ;; 3d26 71
+                 lda lowtr                                 ;; 3d29 71
+                 sbc #1                                    ;; 3d2b 71
+                 sta txtptr                                ;; 3d2d 71
+                 lda lowtr+1                               ;; 3d2f 71
+                 sbc #0                                    ;; 3d31 71
+                 sta txtptr+1                              ;; 3d33 71
+                 bbr7 runmod,setexc                       ; branch if in direct mode ;; 3d35 71
+                 rts                                       ;; 3d38 71
+ ;; 3d39 71
+ ;; 3d39 71
+ ;; 3d39 71
+gosub_sub                                                  ;; 3d39 71
+                 lda #lengos                              ; free up necessary space on stack ;; 3d39 71
+                 jsr getstk                               ; make sure there is room ;; 3d3b 71
+                 ldy #lengos-1                             ;; 3d3e 71
+                 lda txtptr+1                             ; push on the text pointer ;; 3d40 71
+                 sta (tos),y                              ; (common area) ;; 3d42 71
+                 dey                                       ;; 3d44 71
+                 lda txtptr                                ;; 3d45 71
+                 sta (tos),y                              ; (common area) ;; 3d47 71
+                 dey                                       ;; 3d49 71
+                 lda curlin+1                             ; push on the current line number ;; 3d4a 71
+                 sta (tos),y                              ; (common area) ;; 3d4c 71
+                 dey                                       ;; 3d4e 71
+                 lda curlin                                ;; 3d4f 71
+                 sta (tos),y                              ; (common area) ;; 3d51 71
+                 dey                                       ;; 3d53 71
+                 lda #gosub_token                         ; (a) was smashed by GETSTK ;; 3d54 71
+                 sta (tos),y                              ; (common area) ;; 3d56 71
+                 rts                                       ;; 3d58 71
+ ;; 3d59 71
+ ;; 3d59 71
+edit_err                                                   ;; 3d59 71
+                 ldx #edit_mode_error                     ; [910620] ;; 3d59 71
+                 bra error                                 ;; 3d5b 71
+ ;; 3d5e 71
+;.end ;; 3d5e 71
+; .page ;; 3d5e 71
+; .subttl  GO  GO64 ;; 3d5e 71
+ ;; 3d5e 71
+go_without_to                                              ;; 3d5e 71
+                 jsr chrget                               ; what is next character? ;; 3d5e 71
+                 cmp #to_token                            ; ..is it GO TO? ;; 3d61 71
+                 bne _local_1070_1                         ;; 3d63 71
+                 jsr chrget                               ; ..yes, set up for goto ;; 3d65 71
+                 bra goto                                 ; ..bye! ;; 3d68 71
+ ;; 3d6a 71
+_local_1070_1    jsr getbyt                               ; is it GO 64? ;; 3d6a 71
+                 cpx #64                                   ;; 3d6d 71
+                 bne snerr                                ; ...no, error ;; 3d6f 71
+ ;; 3d72 71
+; The user wants to go to C64 mode. ;; 3d72 71
+ ;; 3d72 71
+_local_1070_2    jsr are_you_sure                          ;; 3d72 71
+                 bne cont_rts                             ; must have had second thoughts. never mind ;; 3d75 71
+; jsr put_io_in_map ;; 3d77 71
+                 jmp _go_64                                ;; 3d77 71
+ ;; 3d7a 71
+ ;; 3d7a 71
+;.end ;; 3d7a 71
+; .page ;; 3d7a 71
+; .subttl  CONTINUE ;; 3d7a 71
+;********************************************************** ;; 3d7a 71
+;* ;; 3d7a 71
+;* CONTINUE Execution after STOP/END ;; 3d7a 71
+;* ;; 3d7a 71
+;********************************************************** ;; 3d7a 71
+ ;; 3d7a 71

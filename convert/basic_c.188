@@ -1,0 +1,48 @@
+atn              lda facsgn                               ; what is sign? ;; 671f 188
+                 pha                                      ; save for later ;; 6721 188
+                 bpl _local_1187_10                        ;; 6722 188
+                 jsr negop                                ; if negative, negate FAC ;; 6724 188
+;use arctan(x)=-arctan(-x) ;; 6727 188
+_local_1187_10   lda facexp                                ;; 6727 188
+                 pha                                      ; save this too for later ;; 6729 188
+                 cmp #$81                                 ; see if FAC >= 1.0 ;; 672a 188
+                 bcc _local_1187_20                       ; it is less than 1 ;; 672c 188
+                 lda #<fone                               ; get pntr to 1.0 ;; 672e 188
+                 ldy #>fone                                ;; 6730 188
+                 jsr romdiv                               ; compute reciprocal ;; 6732 188
+;use aectan(x)=pi/2-arctan(1/x) ;; 6735 188
+_local_1187_20   lda #<atncon                             ; pointer to arctan constants ;; 6735 188
+                 ldy #>atncon                              ;; 6737 188
+                 jsr polyx                                 ;; 6739 188
+                 pla                                       ;; 673c 188
+                 cmp #$81                                 ; was original argument < 1? ;; 673d 188
+                 bcc _local_1187_30                       ; yes ;; 673f 188
+                 lda #<pi2                                 ;; 6741 188
+                 ldy #>pi2                                 ;; 6743 188
+                 jsr romsub                               ; subtract arctan from pi/2 ;; 6745 188
+ ;; 6748 188
+_local_1187_30   pla                                      ; was original aurgument positive? ;; 6748 188
+                 bpl _local_1187_40                       ; yes ;; 6749 188
+                 bra negop                                ; if negative, negate result ;; 674b 188
+ ;; 674e 188
+_local_1187_40   rts                                      ; all done ;; 674e 188
+ ;; 674f 188
+;.end ;; 674f 188
+; .page ;; 674f 188
+; .subttl  BOOT ;; 674f 188
+ ;; 674f 188
+;**************************************************************************** ;; 674f 188
+; BOOT  Boot has three modes of operation... ;; 674f 188
+; ;; 674f 188
+;   1. *B*LOAD a given binary file and SYS to its load address. ;; 674f 188
+;   2. *D*LOAD a BASIC file named AUTOBOOT.C65* and RUN it. ;; 674f 188
+;   3. BOOT SYS loads the home sector to $0400 and JMPs to it. ;; 674f 188
+; ;; 674f 188
+; For modes 1 & 2, syntax is the same as BLOAD.  Differentiate ;; 674f 188
+; between the two modes via the presence of a filename.  All other ;; 674f 188
+; parameters, such as drive and device numbers, are utilized in the ;; 674f 188
+; normal manner.  For mode 3 there are no options.  It's intended ;; 674f 188
+; to boot a new OS.  BASIC is turned off if it's successful.  If it ;; 674f 188
+; fails, the run time stack & sprites might be corrupted. ;; 674f 188
+;**************************************************************************** ;; 674f 188
+ ;; 674f 188

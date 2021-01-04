@@ -1,0 +1,60 @@
+FindLine                                                   ;; 31fa 33
+                 lda txttab                               ; init pointer to beginning of program ;; 31fa 33
+                 ldx txttab+1                              ;; 31fc 33
+ ;; 31fe 33
+FindLink                                                   ;; 31fe 33
+                 sta lowtr                                ; current position in program ;; 31fe 33
+                 stx lowtr+1                               ;; 3200 33
+                 ldy #1                                    ;; 3202 33
+                 jsr indlow                               ; end of program (null link)? ;; 3204 33
+                 beq _local_1032_3                        ; yes, exit with .c=0 (not found) ;; 3207 33
+                 iny                                       ;; 3209 33
+                 iny                                       ;; 320a 33
+                 jsr indlow                               ; get line number of this line (high byte first) ;; 320b 33
+; sta syntmp ;; 320e 33
+; lda linnum+1 ;is this the line we're looking for? ;; 320e 33
+; cmp syntmp ;; 320e 33
+; bcc _local_1032_4  ; no- too high, so the line does not exist, exit ;; 320e 33
+; beq _local_1032_1 ;; 320e 33
+; dey  ; no- too low, so get link to next line ;; 320e 33
+; bra _local_1032_2 ;; 320e 33
+                 cmp linnum+1                             ; is this the line we're looking for?   [910925] ;; 320e 33
+                 beq _local_1032_1                        ; maybe ;; 3210 33
+                 bcs _local_1032_3                        ; no- too high, so the line does not exist, exit with .c=0 ;; 3212 33
+                 dey                                      ; no- too low, so get link to next line ;; 3214 33
+                 bra _local_1032_2                         ;; 3215 33
+ ;; 3217 33
+_local_1032_1    dey                                      ; maybe- have to check low byte ;; 3217 33
+                 jsr indlow                                ;; 3218 33
+; sta syntmp ;; 321b 33
+; lda linnum ;; 321b 33
+; cmp syntmp ;; 321b 33
+; bcc _local_1032_4  ; no- too high, exit ;; 321b 33
+; beq _local_1032_4  ; yes- got it, exit ;; 321b 33
+                 cmp linnum                               ; is this the line we're looking for?   [910925] ;; 321b 33
+                 beq _local_1032_4                        ; yes- got it, exit with .c=1 ;; 321d 33
+                 bcs _local_1032_3                        ; no- too high, so the line does not exist, exit with .c=0 ;; 321f 33
+ ;; 3221 33
+_local_1032_2    dey                                      ; get link to next line ;; 3221 33
+                 jsr indlow                                ;; 3222 33
+                 tax                                       ;; 3225 33
+                 dey                                       ;; 3226 33
+                 jsr indlow                                ;; 3227 33
+                 bra FindLink                             ; continue looking ;; 322a 33
+ ;; 322c 33
+ ;; 322c 33
+_local_1032_3    clc                                      ; exit, line not found (.c=0) ;; 322c 33
+_local_1032_4    rts                                      ; exit, line found (.c=1) ;; 322d 33
+ ;; 322e 33
+;.end ;; 322e 33
+; .page ;; 322e 33
+; .subttl LinGet ;; 322e 33
+ ;; 322e 33
+; LINGET  Reads a line # from the current txtptr position ;; 322e 33
+;   and stores it in linnum  (valid range is 0-63999). ;; 322e 33
+; ;; 322e 33
+;   On exit txtptr is pointing to the terminating char ;; 322e 33
+;   which is in .a with condition codes set. ;; 322e 33
+;   Endchr will be =0 if no digit input, else >0.  Use it ;; 322e 33
+;   to distinguish between line # 0 & null input. ;; 322e 33
+ ;; 322e 33

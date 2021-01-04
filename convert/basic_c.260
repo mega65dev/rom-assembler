@@ -1,0 +1,99 @@
+rmouse           lda #0                                   ; Init ;; 7c8d 260
+                 sta count                                ; variable count = 0 ;; 7c8f 260
+                 dec a                                     ;; 7c91 260
+                 ldx #6-1                                  ;; 7c92 260
+_local_1259_10   sta grapnt,x                             ; positions/buttons = -1 ;; 7c94 260
+                 dex                                       ;; 7c96 260
+                 bpl _local_1259_10                        ;; 7c97 260
+ ;; 7c99 260
+                 lda _mouse_enable                        ; Is there a mouse in the house? ;; 7c99 260
+                 and #%11000000                            ;; 7c9c 260
+                 beq _local_1259_50                       ; no, exit ;; 7c9e 260
+                 pha                                      ; yes, save port assigns for later ;; 7ca0 260
+                 sei                                       ;; 7ca1 260
+                 ldy _mouse_pointer                       ; Where is it?  Get pointer to sprite ;; 7ca2 260
+                 lda vic,y                                ; Get X position    ???vic_save ;; 7ca5 260
+                 sta grapnt                               ; lsb ;; 7ca8 260
+                 lda sbits,y                               ;; 7caa 260
+                 and vic+16                               ; msb    ???vic_save ;; 7cad 260
+                 beq _local_1259_20                        ;; 7cb0 260
+                 lda #1                                   ; convert to 0 or 1 ;; 7cb2 260
+_local_1259_20   sta grapnt+1                              ;; 7cb4 260
+                 iny                                      ; Get Y position ;; 7cb6 260
+                 lda vic,y                                ; lsb    ???vic_save ;; 7cb7 260
+                 sta grapnt+2                              ;; 7cba 260
+                 lda #0                                   ; msb (fake it) ;; 7cbc 260
+                 sta grapnt+3                              ;; 7cbe 260
+ ;; 7cc0 260
+                 sta grapnt+4                             ; Init button status ;; 7cc0 260
+                 sta grapnt+5                              ;; 7cc2 260
+                 ldz d1pra                                ; Set up port & read buttons ;; 7cc4 260
+                 lda #$ff                                 ; save kybd output lines (IRQ already disabled) ;; 7cc7 260
+                 sta d1pra                                ; set to not read any kybd inputs ;; 7cc9 260
+ ;; 7ccc 260
+                 ldy #0                                   ; which port? ;; 7ccc 260
+                 plx                                      ; recall port assignments ;; 7cce 260
+_local_1259_30   txa                                       ;; 7ccf 260
+                 asl a                                    ; .c=1 if this one ;; 7cd0 260
+                 tax                                       ;; 7cd1 260
+                 bcc _local_1259_40                       ; not this one ;; 7cd2 260
+                 lda d1pra,y                              ; read it (logical port is opposite physical port) ;; 7cd4 260
+                 and #%00010001                           ; want left, right buttons only ;; 7cd7 260
+                 eor #%00010001                           ; (invert, since low means button down) ;; 7cd9 260
+                 tsb grapnt+4                              ;; 7cdb 260
+                 and #%00010000                           ; shift left button to msb ;; 7cdd 260
+                 beq _local_1259_40                        ;; 7cdf 260
+                 smb7 grapnt+4                             ;; 7ce1 260
+_local_1259_40   iny                                      ; next port ;; 7ce3 260
+                 cpy #2                                    ;; 7ce4 260
+                 bcc _local_1259_30                        ;; 7ce6 260
+ ;; 7ce8 260
+                 lda #%01111110                           ; clean up ;; 7ce8 260
+                 trb grapnt+4                             ; fix button register ;; 7cea 260
+                 stz d1pra                                ; restore port for Kernel ;; 7cec 260
+                 cli                                       ;; 7cef 260
+ ;; 7cf0 260
+; At this point, we have snapshot the current mouse status. ;; 7cf0 260
+; Now pass requested info along in a manner very similar to RREG... ;; 7cf0 260
+ ;; 7cf0 260
+_local_1259_50   jsr chrgot                               ; Get a variable name from variable list ;; 7cf0 260
+                 beq _local_1259_90                       ; eol- exit ;; 7cf3 260
+                 cmp #','                                 ;  ;; 7cf5 260
+                 beq _local_1259_70                       ; null- skip this arg ;; 7cf7 260
+                 jsr ptrget                               ; Get pointer to target variable ;; 7cf9 260
+                 sta forpnt                               ; set up so we can share LET code ;; 7cfc 260
+                 sty forpnt+1                              ;; 7cfe 260
+                 lda valtyp                               ; what kind of variable name did ptrget find? ;; 7d00 260
+                 bne chkerr                               ; string- type mismatch error ;; 7d02 260
+ ;; 7d05 260
+_local_1259_60   ldx count                                ; Make assignment ;; 7d05 260
+                 ldy grapnt,x                             ; low byte ;; 7d07 260
+                 lda grapnt+1,x                           ; high byte ;; 7d09 260
+                 jsr givayf                               ; float it ;; 7d0b 260
+                 lda intflg                               ; set flags for type of var (int/float) ;; 7d0e 260
+                 jsr qintgr                               ; use part of LET to do the work ;; 7d10 260
+ ;; 7d13 260
+_local_1259_70   inc count                                ; Next assignment ;; 7d13 260
+                 inc count                                 ;; 7d15 260
+                 ldx count                                 ;; 7d17 260
+                 cpx #6                                   ; there are 3 possible ;; 7d19 260
+                 bcs _local_1259_90                       ; done all 3, exit ;; 7d1b 260
+                 jsr chrgot                               ; check terminator ;; 7d1d 260
+                 beq _local_1259_90                       ; eol- exit ;; 7d20 260
+                 jsr chkcom                               ; check delimiter ;; 7d22 260
+                 bra _local_1259_50                       ; loop until done ;; 7d25 260
+ ;; 7d27 260
+_local_1259_90   rts                                       ;; 7d27 260
+ ;; 7d28 260
+;.end ;; 7d28 260
+; .page ;; 7d28 260
+; .subttl   CURSOR ;; 7d28 260
+ ;; 7d28 260
+;***************************************************************** ;; 7d28 260
+;*   CURSOR [ON|OFF,] [column] [,row [,style] ] ;; 7d28 260
+;* ;; 7d28 260
+;*   where: column,row = x,y logical screen position ;; 7d28 260
+;*  style      = flashing (0) or solid (1) ;; 7d28 260
+;*  ON,OFF     = to turn the cursor on or off ;; 7d28 260
+;***************************************************************** ;; 7d28 260
+ ;; 7d28 260

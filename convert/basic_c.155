@@ -1,0 +1,54 @@
+pream            jsr chkcls                               ; param list should end ;; 5a3e 155
+                 ply                                       ;; 5a41 155
+                 pla                                       ;; 5a42 155
+                 sta jmper+1                              ; get return address ;; 5a43 155
+                 pla                                      ; get rid of fingo's jsr ret addr ;; 5a45 155
+                 pla                                       ;; 5a46 155
+                 plx                                      ; get length ;; 5a47 155
+                 pla                                       ;; 5a48 155
+                 sta dscpnt                                ;; 5a49 155
+                 pla                                       ;; 5a4b 155
+                 sta dscpnt+1                              ;; 5a4c 155
+                 lda jmper+1                               ;; 5a4e 155
+                 pha                                       ;; 5a50 155
+                 phy                                       ;; 5a51 155
+                 ldy #0                                    ;; 5a52 155
+                 txa                                       ;; 5a54 155
+                 rts                                       ;; 5a55 155
+ ;; 5a56 155
+ ;; 5a56 155
+ ;; 5a56 155
+; The function LEN$() returns the length of the string passed as an argument. ;; 5a56 155
+ ;; 5a56 155
+len              bsr len1                                  ;; 5a56 155
+                 bra sngflt                                ;; 5a59 155
+ ;; 5a5c 155
+len1             jsr frestr                               ; free up string ;; 5a5c 155
+                 ldx #0                                    ;; 5a5f 155
+                 stx valtyp                               ; force numeric ;; 5a61 155
+                 tay                                      ; set condition codes ;; 5a63 155
+                 rts                                      ; done ;; 5a64 155
+ ;; 5a65 155
+ ;; 5a65 155
+ ;; 5a65 155
+ ;; 5a65 155
+ ;; 5a65 155
+; The following is the ASC$() function.  It returns an integer which is the ;; 5a65 155
+; decimal equivalent of the PETSCII string argument. ;; 5a65 155
+ ;; 5a65 155
+asc              jsr len1                                  ;; 5a65 155
+                 beq _local_1154_1                        ; it was null (zero length) ;; 5a68 155
+                 ldy #0                                    ;; 5a6a 155
+                 jsr indin1_ram1                          ; get 1st character ;; 5a6c 155
+                 tay                                       ;; 5a6f 155
+_local_1154_1    bra sngflt                                ;; 5a70 155
+ ;; 5a73 155
+;.end ;; 5a73 155
+; .page ;; 5a73 155
+; .subttl String Routines ;; 5a73 155
+ ;; 5a73 155
+ ;; 5a73 155
+ ;; 5a73 155
+; STRINI gets string space for the creation of a string and creates ;; 5a73 155
+; a descriptor for it in DSCTMP. ;; 5a73 155
+ ;; 5a73 155

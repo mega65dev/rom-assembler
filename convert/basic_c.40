@@ -1,0 +1,77 @@
+p1l070                                                    ; found text for this token ;; 33f5 40
+                 bbr4 helper,p1l072                       ; branch if not highlighting tokens ;; 33f5 40
+                 lda (index1),y                           ; peek at first character ;; 33f8 40
+                 bmi p1l010                               ; branch if operator (1-byte, msb=1) ;; 33fa 40
+                 smb0 helper                              ; else begin highlight ;; 33fc 40
+p1l071           jsr highlight_text                        ;; 33fe 40
+ ;; 3401 40
+p1l072           lda (index1),y                           ; get char from ROM table ;; 3401 40
+                 bmi p1l010                               ; msb=1=last char this token, contine line ;; 3403 40
+                 jsr outch                                ; else print it ;; 3405 40
+                 iny                                       ;; 3408 40
+                 bra p1l072                                ;; 3409 40
+ ;; 340b 40
+; .page ;; 340b 40
+; Print Escape Command ;; 340b 40
+ ;; 340b 40
+print_esc_cmd                                              ;; 340b 40
+                 tax                                      ; save type (cmd) in case it is a foreign esc token ;; 340b 40
+                 iny                                       ;; 340c 40
+                 jsr indlow                               ; look at second token ;; 340d 40
+                 beq p1l015                               ; none?  print funny character ;; 3410 40
+                 sty lstpnt                                ;; 3413 40
+                 cmp #first_esc_command_token             ; is this one of ours? ;; 3415 40
+                 bcc print_foreign_esc                    ; nope ;; 3417 40
+                 cmp #last_esc_command_token+1             ;; 3419 40
+                 bcs print_foreign_esc                    ; nope ;; 341b 40
+                 adc #$80-first_esc_command_token         ; yes- make a pointer p1l will be proud of ;; 341d 40
+                 tax                                       ;; 341f 40
+                 ldy #<esc_command_list                    ;; 3420 40
+                 lda #>esc_command_list                    ;; 3422 40
+                 bra p1l026                               ; go scan list and print it ;; 3424 40
+ ;; 3426 40
+ ;; 3426 40
+ ;; 3426 40
+; Print Escape Function ;; 3426 40
+ ;; 3426 40
+print_esc_fn                                               ;; 3426 40
+                 tax                                      ; save type (function) in case it's a foreign esc token ;; 3426 40
+                 iny                                       ;; 3427 40
+                 jsr indlow                               ; look at second token ;; 3428 40
+                 beq p1l015                               ; none?  print funny character ;; 342b 40
+                 sty lstpnt                                ;; 342e 40
+                 cmp #first_esc_function_token            ; is this one of ours? ;; 3430 40
+                 bcc print_foreign_esc                    ; nope ;; 3432 40
+                 cmp #last_esc_function_token+1            ;; 3434 40
+                 bcs print_foreign_esc                    ; nope ;; 3436 40
+                 adc #$80-first_esc_function_token        ; yes- make a pointer p1l will be proud of ;; 3438 40
+                 tax                                       ;; 343a 40
+                 ldy #<esc_function_list                   ;; 343b 40
+                 lda #>esc_function_list                   ;; 343d 40
+                 bra p1l026                               ; go scan list and print it ;; 343f 40
+ ;; 3441 40
+; .page ;; 3441 40
+; The token to be printed is an escape token which is NOT recognized by BASIC. ;; 3441 40
+; We will jump through the indirect chain and see if anyone claims this token. ;; 3441 40
+; ;; 3441 40
+; At this point: ;; 3441 40
+; .C = 1 to signal 'unclaimed' ;; 3441 40
+; .X = type (0==>command, ff==>function) ;; 3441 40
+; .A = second token character ;; 3441 40
+; ;; 3441 40
+; If anyone claims this token, they should: ;; 3441 40
+; ;; 3441 40
+; > Clear .C to flag 'taken' ;; 3441 40
+; > Point (INDEX1) at the string to be printed (with msb of last char set) ;; 3441 40
+; > Note: string to print MUST be in RAM-0! ;; 3441 40
+ ;; 3441 40
+print_foreign_esc                                           ;; 3441 40
+                 cpx #esc_command_token                    ;; 3441 40
+                 bne _local_1039_1                         ;; 3443 40
+                 ldx #0                                    ;; 3445 40
+                 !byte $2c                                 ;; 3447 40
+ ;; 3448 40
+_local_1039_1    ldx #$ff                                  ;; 3448 40
+                 sec                                       ;; 344a 40
+                 jmp (iescpr)                              ;; 344b 40
+ ;; 344e 40

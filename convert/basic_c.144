@@ -1,0 +1,38 @@
+joy              jsr conint                               ; get 1 byte arg in x ;; 56ae 144
+                 dex                                       ;; 56b1 144
+                 cpx #2                                   ; make sure arg. is valid ;; 56b2 144
+                 bcs fcerr                                ; >1, error ;; 56b4 144
+ ;; 56b7 144
+                 txa                                       ;; 56b7 144
+                 eor #1                                   ; invert to match legends on case ;; 56b8 144
+                 tax                                       ;; 56ba 144
+                 php                                      ; save status ;; 56bb 144
+ ;; 56bc 144
+; jsr put_io_in_map ;; 56bc 144
+                 sei                                      ; disable IRQ to inhibit kybd ;; 56bc 144
+                 lda d1pra                                 ;; 56bd 144
+                 pha                                      ; save kybd output lines ;; 56c0 144
+                 ldy #$ff                                  ;; 56c1 144
+                 sty d1pra                                ; set to not read any kybd inputs ;; 56c3 144
+ ;; 56c6 144
+_local_1143_10   lda d1pra,x                              ; read joystick values ;; 56c6 144
+                 cmp d1pra,x                              ; debounce ;; 56c9 144
+                 bne _local_1143_10                        ;; 56cc 144
+ ;; 56ce 144
+                 tax                                      ; save joystick values ;; 56ce 144
+                 pla                                       ;; 56cf 144
+                 sta d1pra                                ; reset kybd output lines ;; 56d0 144
+                 txa                                      ; restore joystick values ;; 56d3 144
+                 plp                                      ; restore status ;; 56d4 144
+                 and #$0f                                 ; test which direction ;; 56d5 144
+                 tay                                       ;; 56d7 144
+                 lda joytab-5,y                           ; get direction indicator ;; 56d8 144
+                 tay                                      ; save direction : 0-8 ;; 56db 144
+                 txa                                      ; restore joystick value ;; 56dc 144
+                 and #$10                                 ; test if button triggered ;; 56dd 144
+                 bne _local_1143_20                       ; skip if not ;; 56df 144
+                 tya                                       ;; 56e1 144
+                 ora #$80                                 ; show trigger depressed ;; 56e2 144
+                 tay                                       ;; 56e4 144
+_local_1143_20   bra sngflt                               ; float 1 byte arg in y. ;; 56e5 144
+ ;; 56e8 144

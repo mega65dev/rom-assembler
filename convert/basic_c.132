@@ -1,0 +1,21 @@
+GetTimeDigit                                               ;; 53d4 132
+                 lda #0                                   ; default to '0' ;; 53d4 132
+                 cpy count                                 ;; 53d6 132
+                 bcs _local_1131_10                       ; exit if at end of string (carry set) ;; 53d8 132
+ ;; 53da 132
+                 jsr indin1_ram1                          ; else get a character from string ;; 53da 132
+                 iny                                      ; point to next character ;; 53dd 132
+                 cmp #'.'                                 ; [910103] ;; 53de 132
+                 beq _local_1131_10                       ; terminator (period) (carry set) ;; 53e0 132
+                 cmp #'0'                                 ; check character, only 0-9 allowed ;; 53e2 132
+                 bcc fcerr                                ; too small ;; 53e4 132
+                 cmp #':'                                  ;; 53e7 132
+                 bcc _local_1131_10                       ; just right  (carry clear) ;; 53e9 132
+                 bne fcerr                                ; too big ;; 53eb 132
+; falls through if colon (carry set) ;; 53ee 132
+ ;; 53ee 132
+_local_1131_10   and #$0f                                 ; make BCD ;; 53ee 132
+                 rts                                       ;; 53f0 132
+ ;; 53f1 132
+ ;; 53f1 132
+ ;; 53f1 132

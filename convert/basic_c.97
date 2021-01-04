@@ -1,0 +1,105 @@
+loop             beq popngo                               ; no conditionals, just do it ;; 458f 97
+                 cmp #while_token                          ;; 4591 97
+                 beq loop10                                ;; 4593 97
+                 cmp #until_token                          ;; 4595 97
+                 bne snrjmp                                ;; 4597 97
+ ;; 4599 97
+;  Here for UNTIL ;; 4599 97
+ ;; 4599 97
+                 jsr frmjmp                                ;; 4599 97
+                 lda facexp                                ;; 459c 97
+                 beq popngo                               ; false, do it again! ;; 459e 97
+ ;; 45a0 97
+popdgo           lda #do_token                            ; pop, but don't go ;; 45a0 97
+                 jsr search                                ;; 45a2 97
+                 bne poperr                               ; branch if not found ;; 45a5 97
+                 jsr movfnd                                ;; 45a7 97
+                 ldy #5                                    ;; 45aa 97
+                 bra rlsstk                                ;; 45ac 97
+ ;; 45af 97
+ ;; 45af 97
+fnderr                                                     ;; 45af 97
+                 lda tmplin                               ; loop not found error: must make curlin match oldtxt ;; 45af 97
+                 ldx tmplin+1                              ;; 45b2 97
+                 sta curlin                                ;; 45b5 97
+                 stx curlin+1                              ;; 45b7 97
+ ;; 45b9 97
+                 ldx #errlnf                               ;; 45b9 97
+                 !byte $2c                                 ;; 45bb 97
+poperr                                                     ;; 45bc 97
+                 ldx #errlwd                              ; loop without do ;; 45bc 97
+                 bra error                                 ;; 45be 97
+ ;; 45c1 97
+ ;; 45c1 97
+ ;; 45c1 97
+;  Here for WHILE ;; 45c1 97
+ ;; 45c1 97
+loop10                                                     ;; 45c1 97
+                 jsr frmjmp                                ;; 45c1 97
+                 beq popdgo                               ; false, exit ;; 45c4 97
+popngo                                                     ;; 45c6 97
+                 bsr popdgo                                ;; 45c6 97
+; dey ;; 45c9 97
+; lda (fndpnt),y ;restore pointers ;; 45c9 97
+; sta txtptr+1 ;; 45c9 97
+; dey ;; 45c9 97
+; lda (fndpnt),y ;; 45c9 97
+; sta txtptr ;; 45c9 97
+; dey ;; 45c9 97
+; lda (fndpnt),y ;; 45c9 97
+                 jsr retpat                               ; (** 01/18/84 fixes 'loop' to a direct mode 'do') ;; 45c9 97
+; lda (fndpnt),y ;; 45cc 97
+; sta curlin ;; 45cc 97
+                 bra do                                    ;; 45cc 97
+ ;; 45cf 97
+frmjmp                                                     ;; 45cf 97
+                 jsr chrget                                ;; 45cf 97
+                 bra frmevl                                ;; 45d2 97
+ ;; 45d5 97
+;.end ;; 45d5 97
+; .page ;; 45d5 97
+; .subttl  KEY ;; 45d5 97
+ ;; 45d5 97
+;************************************************************** ;; 45d5 97
+; ;; 45d5 97
+;   KEY  Programmable Key Functions    [900725] ;; 45d5 97
+; ;; 45d5 97
+;************************************************************** ;; 45d5 97
+ ;; 45d5 97
+key              beq Key_List                             ; KEY ? yes- no args ;; 45d5 97
+ ;; 45d7 97
+_local_1096_1    ldx _kyndx                               ; is function key buffered? ;; 45d7 97
+                 bne _local_1096_1                        ; yes- hang until IRQ finishes processing it ???? ;; 45d9 97
+ ;; 45db 97
+                 cmp #on_token                            ; KEY ON ? ;; 45db 97
+                 bne _local_1096_10                        ;; 45dd 97
+                 rmb5 _locks                              ; yes- reset Editor's lock bit ;; 45df 97
+                 bra _local_1096_30                       ; exit ;; 45e1 97
+ ;; 45e3 97
+_local_1096_10   cmp #load_token                          ; KEY LOAD <filename>[,D#,U#] ;; 45e3 97
+                 beq Key_load                              ;; 45e5 97
+ ;; 45e8 97
+                 cmp #save_token                          ; KEY SAVE <filename>[,D#,U#] ;; 45e8 97
+                 beq Key_Save                              ;; 45ea 97
+ ;; 45ed 97
+                 cmp #restore_token                       ; KEY RESTORE ?      [910925] ;; 45ed 97
+                 bne _local_1096_20                       ; no ;; 45ef 97
+                 rmb5 _locks                              ; yes- reset Editor's lock bit (enable keys) ;; 45f1 97
+                 jsr key_restore                          ; init key definitions ;; 45f3 97
+                 bra _local_1096_30                       ; exit ;; 45f6 97
+ ;; 45f8 97
+_local_1096_20   cmp #esc_command_token                   ; KEY OFF ? ;; 45f8 97
+                 bne Key_Change                           ; no- must be new key definition ;; 45fa 97
+                 jsr chrget                                ;; 45fd 97
+                 cmp #off_token                            ;; 4600 97
+                 bne snerr                                ; no- bad syntax ;; 4602 97
+                 smb5 _locks                              ; yes- set Editor's lock bit ;; 4605 97
+_local_1096_30   bra chrget                               ; exit ;; 4607 97
+ ;; 460a 97
+; .page ;; 460a 97
+;************************************************************** ;; 460a 97
+; ;; 460a 97
+;   Key_List  List all function key definitions ;; 460a 97
+; ;; 460a 97
+;************************************************************** ;; 460a 97
+ ;; 460a 97

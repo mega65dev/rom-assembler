@@ -1,0 +1,68 @@
+datbk            stx txtptr                               ; set for CHRGET ;; 3965 59
+                 sty txtptr+1                              ;; 3967 59
+ ;; 3969 59
+datbk1           bbr7 op,_local_1058_1                    ; no chrgot if LINPUT (want leading spaces) [910513] ;; 3969 59
+                 jsr chargt                                ;; 396c 59
+                 jsr chrtst                                ;; 396f 59
+                 bra _local_1058_2                         ;; 3972 59
+ ;; 3974 59
+_local_1058_1    jsr chrget                               ; get next data byte ;; 3974 59
+_local_1058_2    bbr7 valtyp,_local_1058_50               ; get value type, input a number if numeric ;; 3977 59
+                 bbr6 input_flag,_local_1058_10           ; branch if not get, set quote ;; 397a 59
+                 inx                                       ;; 397d 59
+                 stx txtptr                                ;; 397e 59
+_local_1058_5    lda #0                                   ; [901212] ;; 3980 59
+                 sta charac                                ;; 3982 59
+                 bra _local_1058_20                        ;; 3984 59
+ ;; 3986 59
+_local_1058_10   bbs7 op,_local_1058_5                    ; no terminators if LINPUT or LREAD  [901212] ;; 3986 59
+                 sta charac                               ; setqut.  assume quoted string ;; 3989 59
+                 cmp #'"'                                 ; terminators ok? ;; 398b 59
+                 beq _local_1058_30                       ; yes (sets .c) ;; 398d 59
+                 lda #':'                                 ; set terminators to ":" and... ;; 398f 59
+                 sta charac                                ;; 3991 59
+                 lda #','                                 ; ...comma ;; 3993 59
+ ;; 3995 59
+_local_1058_20   clc                                      ; resetc ;; 3995 59
+_local_1058_30   sta endchr                               ; nowget ;; 3996 59
+                 lda txtptr                                ;; 3998 59
+                 ldy txtptr+1                              ;; 399a 59
+                 adc #0                                   ; .c is set properly above ;; 399c 59
+                 bcc _local_1058_40                        ;; 399e 59
+                 iny                                       ;; 39a0 59
+_local_1058_40   jsr strlt2                               ; make a string descriptor for the value & copy if needed ;; 39a1 59
+                 jsr st2txt                               ; copy strng2 to txtptr (st-2-txt... get it?) ;; 39a4 59
+                 jsr inpcom                               ; do assignment ;; 39a7 59
+                 bra _local_1058_60                        ;; 39aa 59
+ ;; 39ac 59
+_local_1058_50   bbs7 op,_local_1058_100                  ; error if LINPUT (string input only)  [901212] ;; 39ac 59
+                 ldx #0                                   ; numins. flag 'text bank' (0) ;; 39af 59
+                 jsr fin                                   ;; 39b1 59
+                 lda intflg                               ; set codes on flags ;; 39b4 59
+                 jsr qintgr                               ; go decide on float ;; 39b6 59
+ ;; 39b9 59
+_local_1058_60   jsr chrgot                               ; strdn2. read last character ;; 39b9 59
+                 beq trmok                                ; ":" or EOL is ok ;; 39bc 59
+                 cmp #','                                 ; a comma? ;; 39be 59
+                 beq trmok                                 ;; 39c0 59
+ ;; 39c2 59
+                 lda input_flag                           ; is this get, read, or input? ;; 39c2 59
+                 beq _local_1058_110                      ; input ;; 39c4 59
+                 bmi _local_1058_100                      ; read ;; 39c6 59
+                 ldx channl                               ; get. if not kbd, go use 'bad file data error' ;; 39c8 59
+                 bne 1_local_1058_20                       ;; 39ca 59
+ ;; 39cc 59
+_local_1058_100  ldx #errtm                               ; tmerr. 'get from kbd' or 'read' saw a bad type ;; 39cc 59
+                 bra 1_local_1058_30                      ; always ;; 39ce 59
+ ;; 39d0 59
+_local_1058_110  lda channl                                ;; 39d0 59
+                 beq _local_1058_200                      ; do again if keybd input ;; 39d2 59
+1_local_1058_20  ldx #errbd                               ; input saw bad file data ;; 39d4 59
+1_local_1058_30  bra error                                 ;; 39d6 59
+ ;; 39d9 59
+ ;; 39d9 59
+_local_1058_200  jsr highlight_text                       ; [911119] ;; 39d9 59
+                 jsr _primm                                ;; 39dc 59
+                 !byte "?REDO FROM START",cr,0             ;; 39df 59
+                 jsr highlight_done                       ; [911119] ;; 39f1 59
+ ;; 39f4 59

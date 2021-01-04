@@ -1,0 +1,48 @@
+del1             tsb parsts                                ;; 757b 237
+ ;; 757d 237
+delim1           jsr chrgot                                ;; 757d 237
+delim2           bne nxxx                                  ;; 7580 237
+                 bra done                                 ; <cr>/<> => done ;; 7582 237
+ ;; 7585 237
+ ;; 7585 237
+next6            cmp #on_token                             ;; 7585 237
+                 beq on1                                   ;; 7587 237
+                 cmp #to_token                            ; "to" token ;; 758a 237
+                 bne snerr                                ; syntax error ;; 758c 237
+ ;; 758f 237
+;  If "to" is not followed by an offset param, then do file2 params. ;; 758f 237
+;  Otherwise, do high offset and continue with file0 options. ;; 758f 237
+ ;; 758f 237
+                 jsr chrget                                ;; 758f 237
+                 cmp #'P'                                  ;; 7592 237
+                 bne pars22                                ;; 7594 237
+                 beq doffh                                 ;; 7596 237
+ ;; 7598 237
+ ;; 7598 237
+nxxx             cmp #','                                  ;; 7598 237
+                 bne next6                                 ;; 759a 237
+                 jsr chrget                                ;; 759c 237
+                 bra parse1                                ;; 759f 237
+ ;; 75a2 237
+ ;; 75a2 237
+parse2           jsr chrget                                ;; 75a2 237
+pars22           cmp #'D'                                  ;; 75a5 237
+                 beq _local_1236_10                        ;; 75a7 237
+                 cmp #on_token                            ; "on" token ;; 75a9 237
+                 beq on2                                   ;; 75ab 237
+                 cmp #'U'                                  ;; 75ad 237
+                 beq unit2                                 ;; 75af 237
+                 cmp #'"'                                  ;; 75b1 237
+                 beq name2                                 ;; 75b3 237
+                 cmp #'('                                  ;; 75b5 237
+                 beq name2                                 ;; 75b7 237
+ ;; 75b9 237
+_local_1236_10   lda #$20                                  ;; 75b9 237
+                 jsr prmrpt                               ; check for repeated parameter ;; 75bb 237
+                 jsr gtbytc                               ; getval ;; 75be 237
+                 cpx #10                                   ;; 75c1 237
+                 bcs fcerr                                ; illegal drive #  [allow 0: to 9: ????] ;; 75c3 237
+                 stx dosds2                                ;; 75c6 237
+                 lda #$20                                  ;; 75c9 237
+                 bra del2                                  ;; 75cb 237
+ ;; 75cd 237

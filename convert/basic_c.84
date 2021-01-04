@@ -1,0 +1,20 @@
+fix_links                                                 ; <<<<<<<<<<<<<<<<<<<<<<<<<<< entry from renumber ;; 423e 84
+ ;; 423e 84
+                 jsr link_program                         ; relink program ;; 423e 84
+                 lda index1                                ;; 4241 84
+                 ldx index1+1                              ;; 4243 84
+                 clc                                       ;; 4245 84
+                 adc #2                                    ;; 4246 84
+                 bcc _local_1083_10                        ;; 4248 84
+                 inx                                       ;; 424a 84
+_local_1083_10   sta text_top                             ; set eot pointer ;; 424b 84
+                 stx text_top+1                            ;; 424d 84
+                 rts                                      ; C128-04 fix: was 'jmp ready' (FAB) ;; 424f 84
+ ;; 4250 84
+; .page ;; 4250 84
+;******************************** ;; 4250 84
+;* ;; 4250 84
+;*    Input Range Parameters ;; 4250 84
+;* ;; 4250 84
+;******************************** ;; 4250 84
+ ;; 4250 84

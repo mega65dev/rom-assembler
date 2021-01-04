@@ -1,0 +1,16 @@
+puctrl           jsr frmstr                               ; do frmevl,frestr. return with a=len, index=~string ;; 4442 91
+                 tay                                       ;; 4445 91
+                 dey                                       ;; 4446 91
+                 cpy #4                                    ;; 4447 91
+                 bcs fcerr                                ; len > 4 is illegal value error ;; 4449 91
+ ;; 444c 91
+_local_1090_1    jsr indin1_ram1                          ; lda (index),y ;; 444c 91
+                 sta puchrs,y                              ;; 444f 91
+                 dey                                       ;; 4452 91
+                 bpl _local_1090_1                         ;; 4453 91
+                 rts                                       ;; 4455 91
+ ;; 4456 91
+;.end ;; 4456 91
+; .page ;; 4456 91
+; .subttl  TRAP ;; 4456 91
+ ;; 4456 91

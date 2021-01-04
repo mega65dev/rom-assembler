@@ -1,0 +1,24 @@
+vbits            !byte $01,$02,$04,$01,$02,$04            ; for stereo filter, volume bit setting ;; 795f 251
+sbits            !byte $01,$02,$04,$08,$10,$20,$40,$80     ;; 7965 251
+rbits            !byte $80,$40,$20,$10,$08,$04,$02,$01     ;; 796d 251
+ ;; 7975 251
+;.end ;; 7975 251
+; .page ;; 7975 251
+; .subttl BASIC IRQ Handler ;; 7975 251
+ ;; 7975 251
+basic_irq                                                  ;; 7975 251
+; lda _vicIRQ  ;a VIC raster interrupt? ;; 7975 251
+; and #%10000001  ; (used to update moving sprites & sound stuff) ;; 7975 251
+; cmp #%10000001 ;; 7975 251
+; bne collision_irq ; no, go check other VIC interrupts ;; 7975 251
+ ;; 7975 251
+                 lda irq_wrap_flag                        ; filter out wrapped IRQ calls (allows interruptable code) ;; 7975 251
+                 beq _local_1250_1                        ; it's ok ;; 7978 251
+                 rts                                      ; exit- we're already handling one interrupt ;; 797a 251
+ ;; 797b 251
+_local_1250_1    inc irq_wrap_flag                        ; shut the door ;; 797b 251
+                 cli                                      ; but leave the window open ;; 797e 251
+ ;; 797f 251
+; .page ;; 797f 251
+; Test if there was a VIC collision/light pen interrupt ;; 797f 251
+ ;; 797f 251

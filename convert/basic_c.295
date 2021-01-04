@@ -1,0 +1,58 @@
+sprsav           jsr savinp                               ; evaluate 1st expression ;; b81c 295
+                 bcs _local_1294_20                       ; skip if source is a string ;; b81f 295
+                 sta forpnt                                ;; b821 295
+                 sty forpnt+1                             ; save sprite address ;; b823 295
+                 ldy #62                                   ;; b825 295
+ ;; b827 295
+_local_1294_10   lda (forpnt),y                           ; move sprite def to save area ;; b827 295
+                 sta savram,y                              ;; b829 295
+                 dey                                       ;; b82c 295
+                 bpl _local_1294_10                        ;; b82d 295
+ ;; b82f 295
+                 iny                                      ; (0) ;; b82f 295
+                 sty savram+64                            ; save sprite column length ;; b830 295
+                 sty savram+66                            ; save sprite row length ;; b833 295
+                 lda #23                                   ;; b836 295
+                 sta savram+63                             ;; b838 295
+                 lda #20                                   ;; b83b 295
+                 sta savram+65                             ;; b83d 295
+                 ldx #<savram                             ; set ptr to start of sprite def ;; b840 295
+                 ldy #>savram                              ;; b842 295
+                 stx strng1                               ; ** ;; b844 295
+                 sty strng1+1                             ; ** ;; b846 295
+ ;; b848 295
+                 lda #67                                  ; set sprite length including lengths ;; b848 295
+                 jsr strlit_1                             ; **get string space, copy savram to it ;; b84a 295
+                 jsr desc_free                            ; **free up temp descriptor ;; b84d 295
+ ;; b850 295
+_local_1294_20   stx savsiz                               ; save source length ;; b850 295
+                 sta savsiz+1                              ;; b853 295
+                 sty savsiz+2                             ; save source start address ;; b856 295
+ ;; b859 295
+                 jsr chkcom                               ; check for a comma ;; b859 295
+                 lda txtptr                               ; save basic text pointer ;; b85c 295
+                 sta sprtmp_1                              ;; b85e 295
+                 lda txtptr+1                              ;; b861 295
+                 sta sprtmp_2                              ;; b863 295
+                 jsr savinp                               ; get next destination parameter ;; b866 295
+                 bcs savs50                               ; skip if string ;; b869 295
+ ;; b86b 295
+                 sta grapnt                                ;; b86b 295
+                 sty grapnt+1                             ; save sprite address ;; b86d 295
+                 lda savsiz+1                              ;; b86f 295
+                 sta forpnt                               ; get source address ;; b872 295
+                 lda savsiz+2                              ;; b874 295
+                 sta forpnt+1                              ;; b877 295
+                 ldy #0                                    ;; b879 295
+_local_1294_40   cpy savsiz                               ; test index vs source length ;; b87b 295
+                 beq _local_1294_45                       ; exit if source depleted ;; b87e 295
+                 lda #forpnt                              ; move source byte to sprite ;; b880 295
+                 jsr lda_far_ram1                         ; (from ram bank 1) ;; b882 295
+; sta sw_rom_ram0 ;; b885 295
+                 sta (grapnt),y                           ; (to sprite area in bank 0)???? ;; b885 295
+                 iny                                       ;; b887 295
+                 cpy #63                                   ;; b888 295
+                 bne _local_1294_40                        ;; b88a 295
+_local_1294_45   rts                                       ;; b88c 295
+ ;; b88d 295
+ ;; b88d 295

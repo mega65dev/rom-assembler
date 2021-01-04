@@ -1,0 +1,27 @@
+movspr_angle                                               ;; b626 288
+; jsr swapxy  ;swap y and a (eventually) : y ==> x ;; b626 288
+; tay   ;        a ==> y ;; b626 288
+; txa   ;        x ==> a ;; b626 288
+                 pha                                       ;; b626 288
+                 tya                                       ;; b627 288
+                 ply                                       ;; b628 288
+ ;; b629 288
+                 jsr gtang1                               ; get angle values ;; b629 288
+; ldx #xdest-vwork ;; b62c 288
+; jsr scalxy  ;scale lengths ;; b62c 288
+                 ldx #xdest-vwork                          ;; b62c 288
+                 clc                                       ;; b62e 288
+ ;; b62f 288
+_local_1287_60   jsr angmlt                               ; multiply lengths*angles for x and y ;; b62f 288
+                 sta vwork,x                               ;; b632 288
+                 tya                                       ;; b635 288
+                 sta vwork+1,x                             ;; b636 288
+                 inx                                       ;; b639 288
+                 inx                                       ;; b63a 288
+                 cpx #ydest-vwork                          ;; b63b 288
+                 beq _local_1287_60                       ; loop to do y-position ;; b63d 288
+ ;; b63f 288
+                 ror numcnt                               ; shift in carry to set msb ;; b63f 288
+                 bra movspr_position                      ; go place sprite ;; b642 288
+ ;; b644 288
+ ;; b644 288

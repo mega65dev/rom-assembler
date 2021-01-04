@@ -1,0 +1,24 @@
+dvarts           lda #strsiz                               ;; 50fd 124
+                 clc                                       ;; 50ff 124
+                 adc index1                                ;; 5100 124
+                 sta index1                                ;; 5102 124
+                 bcc aryget                                ;; 5104 124
+                 inc index1+1                              ;; 5106 124
+                 bra aryget                               ; branch always ;; 5108 124
+ ;; 510a 124
+ ;; 510a 124
+arydon           phx                                       ;; 510a 124
+                 ldx #lowtr                                ;; 510b 124
+                 ldy #0                                    ;; 510d 124
+                 lda varnam                                ;; 510f 124
+                 jsr sta_far_ram1                         ; sta (lowtr),y ;; 5111 124
+                 iny                                      ; .y=1 ;; 5114 124
+                 lda varnam+1                              ;; 5115 124
+                 jsr sta_far_ram1                         ; sta (lowtr),y ;; 5117 124
+                 lda #0                                    ;; 511a 124
+_local_1123_10   iny                                       ;; 511c 124
+                 jsr sta_far_ram1                         ; sta (lowtr),y ;; 511d 124
+                 cpy #6                                    ;; 5120 124
+                 bne _local_1123_10                        ;; 5122 124
+                 plx                                       ;; 5124 124
+ ;; 5125 124

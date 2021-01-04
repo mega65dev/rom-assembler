@@ -1,0 +1,73 @@
+c65.copy                                                   ;; b450 282
+c65.cut                                                    ;; b450 282
+c65.paste                                                  ;; b450 282
+                 jmp bad_command                           ;; b450 282
+ ;; b453 282
+; .page ;; b453 282
+; .subttl  GENLOCK ;; b453 282
+ ;; b453 282
+;***************************************************************** ;; b453 282
+;* GENLOCK  set/reset genlock mode & color registers ;; b453 282
+;* ;; b453 282
+;*  Syntax: GENLOCK <ON[,color#[,...]] | OFF[,color#,R,G,B]> ;; b453 282
+;***************************************************************** ;; b453 282
+ ;; b453 282
+genlock          sta GKI__parm1                           ; save token as flag for set palette   [910107] ;; b453 282
+                 cmp #on_token                             ;; b456 282
+                 beq _local_1281_20                        ;; b458 282
+                 jsr chkesc                                ;; b45a 282
+                 cmp #off_token                            ;; b45d 282
+                 bne snerr                                 ;; b45f 282
+;TURN GENLOCK OFF ;; b462 282
+                 lda vic+49                               ; any interlaced bitplanes on? ;; b462 282
+                 and #%00011001                            ;; b465 282
+                 cmp #%00011001                            ;; b467 282
+                 beq _local_1281_10                       ; yes, leave interlace mode on ;; b469 282
+ ;; b46b 282
+                 lda #%00000001                            ;; b46b 282
+                 trb vic+49                               ; no, turn interlace off ;; b46d 282
+_local_1281_10   lda #%00000010                            ;; b470 282
+                 trb vic+48                               ; reset external sync mode ;; b472 282
+; beq _local_1281_12   ;       [910114] ;; b475 282
+; lda vic+63  ;       [910111] ;; b475 282
+; inc a   ;  adjust vert. position (chip bug ????) ;; b475 282
+; inc a   ;  (to be handled by a custom C65 genlock board) ;; b475 282
+; inc a ;; b475 282
+; sta vic+63 ;; b475 282
+ ;; b475 282
+_local_1281_12   jsr chrget                               ; eat token ;; b475 282
+                 jsr optbyt                               ; get (optional) color reg# in .X ;; b478 282
+                 stx GKI__parm2                           ; save it ;; b47b 282
+                 bcs set_palette                          ; if present, go do it & exit ;; b47e 282
+_local_1281_15   rts                                      ; if not present (eol), exit ;; b481 282
+ ;; b482 282
+ ;; b482 282
+_local_1281_20   lda #%00000001                           ; TURN GENLOCK ON ;; b482 282
+                 tsb vic+49                               ; set interlace mode ;; b484 282
+                 asl a                                     ;; b487 282
+                 tsb vic+48                               ; set external sync mode ;; b488 282
+; bne _local_1281_22   ;       [910114] ;; b48b 282
+; lda vic+63  ;       [910111] ;; b48b 282
+; dec a   ;  adjust vert. position (chip bug ????) ;; b48b 282
+; dec a   ;  (to be handled by a custom C65 genlock board) ;; b48b 282
+; dec a ;; b48b 282
+; sta vic+63 ;; b48b 282
+ ;; b48b 282
+_local_1281_22   jsr chrget                               ; eat token ;; b48b 282
+_local_1281_25   jsr optbyt                               ; get (optional) color reg# in .X ;; b48e 282
+                 bcc _local_1281_15                       ; if not present (eol), exit ;; b491 282
+                 lda #%00010000                           ; if present, set FGBG bit in red palette ;; b493 282
+                 sta _red,x                                ;; b495 282
+                 bra _local_1281_25                       ; loop ;; b498 282
+ ;; b49a 282
+; .page ;; b49a 282
+; .subttl  COLOR Control ;; b49a 282
+ ;; b49a 282
+;***************************************************************** ;; b49a 282
+;* COLOR       <ON | OFF> Enable|Disable SW & HW color ;; b49a 282
+;* FOREGROUND  color# Set Foreground color (text) ;; b49a 282
+;* HIGHLIGHT   color# Set Highlight color (text) ;; b49a 282
+;* BACKGROUND  color# Set VIC Background color ;; b49a 282
+;* BORDER      color# Set VIC Border color ;; b49a 282
+;***************************************************************** ;; b49a 282
+ ;; b49a 282

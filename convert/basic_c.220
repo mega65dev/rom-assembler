@@ -1,0 +1,56 @@
+dopen            lda #$22                                 ; set error flag ;; 70d2 220
+                 jsr dosprs                               ; parse the line ;; 70d4 220
+                 jsr chk6                                 ; check required parameters ;; 70d7 220
+                 jsr find_sa                              ; find unused secondary address ;; 70da 220
+                 ldy #fopn                                ; fcb format pointer ;; 70dd 220
+                 ldx #4                                   ; normal length ;; 70df 220
+                 bbr6 parsts,open_it                      ; relative record? branch if not relative ;; 70e1 220
+                 ldx #8                                   ; random access length ;; 70e4 220
+                 bra open_it                              ; [910925] ;; 70e6 220
+ ;; 70e8 220
+;_local_1219_10 jsr open_file  ;open it ;; 70e8 220
+; bra exit_disk_op ;report any DOS errors, & return to main [910404] ;; 70e8 220
+ ;; 70e8 220
+ ;; 70e8 220
+ ;; 70e8 220
+; APPEND ;; 70e8 220
+ ;; 70e8 220
+append           lda #$e2                                 ; set error flags ;; 70e8 220
+                 jsr dosprs                               ; parse the line ;; 70ea 220
+                 jsr chk6                                 ; check required parameters ;; 70ed 220
+                 jsr find_sa                              ; find secondary address ;; 70f0 220
+                 ldy #fapn                                ; tabld index ;; 70f3 220
+                 ldx #5                                   ; length ;; 70f5 220
+open_it                                                    ;; 70f7 220
+                 jsr open_file                            ; open it ;; 70f7 220
+                 bra exit_disk_op                         ; report any DOS errors, & return to main [910404] ;; 70fa 220
+ ;; 70fd 220
+ ;; 70fd 220
+ ;; 70fd 220
+open_file                                                 ; dop2. ;; 70fd 220
+                 txa                                      ; set length into a ;; 70fd 220
+                 jsr sendp                                 ;; 70fe 220
+                 jsr _clrch                                ;; 7101 220
+                 ldx #sys_bank                            ; fname is in system space, bank0  [910620] ;; 7104 220
+                 txa                                      ; (load bank not req'd)???? ;; 7106 220
+                 jsr _setbank                              ;; 7107 220
+                 jmp _open                                 ;; 710a 220
+ ;; 710d 220
+; .page ;; 710d 220
+; Find an available secondary address ;; 710d 220
+ ;; 710d 220
+find_sa                                                    ;; 710d 220
+                 ldy #$61                                 ; 2-14 possible ;; 710d 220
+ ;; 710f 220
+_local_1219_10   iny                                       ;; 710f 220
+                 cpy #$6f                                  ;; 7110 220
+                 beq too_many_files                       ; if none available error ;; 7112 220
+                 jsr _lkupsa                              ; kernel will lookup this sa in its tables ;; 7114 220
+                 bcc _local_1219_10                       ; if used keep looking ;; 7117 220
+                 sty dossa                                ; save secondary address ;; 7119 220
+                 rts                                      ; return .y = sa ;; 711c 220
+ ;; 711d 220
+ ;; 711d 220
+ ;; 711d 220
+; Find an available logical address ;; 711d 220
+ ;; 711d 220

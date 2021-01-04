@@ -1,0 +1,92 @@
+foutim           ldx #$80                                 ; first pass through, accb has msb set ;; 6517 182
+fout2            lda faclo                                 ;; 6519 182
+                 clc                                       ;; 651b 182
+                 adc foutbl+3,y                            ;; 651c 182
+                 sta faclo                                 ;; 651f 182
+                 lda facmo                                 ;; 6521 182
+                 adc foutbl+2,y                            ;; 6523 182
+                 sta facmo                                 ;; 6526 182
+                 lda facmoh                                ;; 6528 182
+                 adc foutbl+1,y                            ;; 652a 182
+                 sta facmoh                                ;; 652d 182
+                 lda facho                                 ;; 652f 182
+                 adc foutbl,y                              ;; 6531 182
+                 sta facho                                 ;; 6534 182
+                 inx                                      ; it was done yet another time ;; 6536 182
+                 bcs _local_1181_20                        ;; 6537 182
+                 bpl fout2                                 ;; 6539 182
+                 bmi _local_1181_30                        ;; 653b 182
+ ;; 653d 182
+_local_1181_20   bmi fout2                                 ;; 653d 182
+_local_1181_30   txa                                       ;; 653f 182
+                 bcc _local_1181_40                       ; can use (a) as is ;; 6540 182
+                 eor #$ff                                 ; find 11.(a) ;; 6542 182
+                 adc #10                                  ; c is still on to complete negation, and will always be on after ;; 6544 182
+ ;; 6546 182
+_local_1181_40   adc #'0'-1                               ; get a character to print ;; 6546 182
+                 iny                                       ;; 6548 182
+                 iny                                       ;; 6549 182
+                 iny                                       ;; 654a 182
+                 iny                                       ;; 654b 182
+                 sty fdecpt                                ;; 654c 182
+                 ldy fbufpt                                ;; 654e 182
+                 iny                                      ; point to place to store output ;; 6550 182
+                 tax                                       ;; 6551 182
+                 and #$7f                                 ; get rid of msb ;; 6552 182
+                 sta fbuffr-1,y                            ;; 6554 182
+                 dec deccnt                                ;; 6557 182
+                 bne _local_1181_50                       ; not time for dp yet ;; 6559 182
+                 lda #'.'                                  ;; 655b 182
+                 iny                                       ;; 655d 182
+                 sta fbuffr-1,y                           ; store dp ;; 655e 182
+ ;; 6561 182
+_local_1181_50   sty fbufpt                               ; store pointer for later ;; 6561 182
+                 ldy fdecpt                                ;; 6563 182
+                 txa                                      ; complement accb ;; 6565 182
+                 eor #$ff                                 ; complement acca ;; 6566 182
+                 and #$80                                 ; save only msb ;; 6568 182
+                 tax                                       ;; 656a 182
+                 cpy #fdcend-foutbl                        ;; 656b 182
+; beq _local_1181_60  ;for time converter ????   removed [901014] ;; 656d 182
+; cpy #timend-foutbl ;; 656d 182
+                 bne fout2                                ; continue with output ;; 656d 182
+ ;; 656f 182
+_local_1181_60   ldy fbufpt                               ; get back output pointer ;; 656f 182
+_local_1181_70   lda fbuffr-1,y                           ; remove trailing blanks ;; 6571 182
+                 dey                                       ;; 6574 182
+                 cmp #'0'                                  ;; 6575 182
+                 beq _local_1181_70                        ;; 6577 182
+                 cmp #'.'                                  ;; 6579 182
+                 beq _local_1181_80                       ; ran into dp,  stop ;; 657b 182
+                 iny                                      ; something else, save it ;; 657d 182
+ ;; 657e 182
+_local_1181_80   lda #'+'                                  ;; 657e 182
+                 ldx tenexp                                ;; 6580 182
+                 beq fout17                               ; no exponent to output ;; 6582 182
+                 bpl _local_1181_90                        ;; 6584 182
+                 lda #0                                    ;; 6586 182
+                 sec                                       ;; 6588 182
+                 sbc tenexp                                ;; 6589 182
+                 tax                                       ;; 658b 182
+                 lda #'-'                                 ; exponent is negative ;; 658c 182
+ ;; 658e 182
+_local_1181_90   sta fbuffr+1,y                           ; store sign of exponent ;; 658e 182
+                 lda #'E'                                  ;; 6591 182
+                 sta fbuffr,y                             ; store the 'E' character ;; 6593 182
+                 txa                                       ;; 6596 182
+ ;; 6597 182
+                 ldx #'0'-1                                ;; 6597 182
+                 sec                                       ;; 6599 182
+_local_1181_100  inx                                      ; move closer to output value ;; 659a 182
+                 sbc #10                                  ; subtract 10 ;; 659b 182
+                 bcs _local_1181_100                      ; not negative yet ;; 659d 182
+ ;; 659f 182
+                 adc #'9'+1                               ; get second output character ;; 659f 182
+                 sta fbuffr+3,y                           ; store high digit ;; 65a1 182
+                 txa                                       ;; 65a4 182
+                 sta fbuffr+2,y                           ; store low digit ;; 65a5 182
+                 lda #0                                   ; put in terminator ;; 65a8 182
+                 sta fbuffr+4,y                            ;; 65aa 182
+                 bra fout20                               ; return ;; 65ad 182
+ ;; 65af 182
+ ;; 65af 182

@@ -1,0 +1,32 @@
+c65.Viewport                                               ;; b415 281
+                 pha                                      ; save secondary command ;; b415 281
+                 jsr chrget                               ; advance past it ;; b416 281
+                 jsr CheckGraphicMode                     ; make sure a screen is open ;; b419 281
+ ;; b41c 281
+                 jsr sadwrd                               ; get x0 ;; b41c 281
+                 sty GKI__parm1                            ;; b41f 281
+                 sta GKI__parm2                            ;; b422 281
+ ;; b425 281
+                 jsr comsad                               ; get y0 ;; b425 281
+                 sty GKI__parm3                            ;; b428 281
+                 sta GKI__parm4                            ;; b42b 281
+ ;; b42e 281
+                 jsr comsad                               ; get width (delta-x) ;; b42e 281
+                 sty GKI__parm5                            ;; b431 281
+                 sta GKI__parm6                            ;; b434 281
+ ;; b437 281
+                 jsr comsad                               ; get height (delta-y) ;; b437 281
+                 sty GKI__parm7                            ;; b43a 281
+                 sta GKI__parm8                            ;; b43d 281
+ ;; b440 281
+                 pla                                      ; dispatch per secondary token... ;; b440 281
+                 cmp #clr_token                            ;; b441 281
+                 beq _local_1280_10                        ;; b443 281
+                 cmp #def_token                            ;; b445 281
+                 bne snerr                                ; error ;; b447 281
+ ;; b44a 281
+                 jmp ($8030)                              ; define viewport & return ;; b44a 281
+ ;; b44d 281
+_local_1280_10   jmp ($8022)                              ; clear viewport (???? make this a box command) ;; b44d 281
+ ;; b450 281
+; .page ;; b450 281

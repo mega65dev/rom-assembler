@@ -1,0 +1,36 @@
+find                                                       ;; 4289 86
+                 rmb7 op                                  ; FIND flag ;; 4289 86
+                 !byte $2c                                 ;; 428b 86
+ ;; 428c 86
+change                                                     ;; 428c 86
+                 smb7 op                                  ; CHANGE flag ;; 428c 86
+                 rmb6 op                                  ; reset change-all mode ;; 428e 86
+                 jsr errind                               ; report error if not in direct mode ;; 4290 86
+ ;; 4293 86
+                 jsr chrgot                               ; get delimeter ;; 4293 86
+                 ldx #0                                   ; evaluate string args ;; 4296 86
+                 jsr delimit_string                       ; string1 ;; 4298 86
+                 lda fstr1+2                               ;; 429b 86
+                 beq fcerr                                ; error if string1 null ;; 429d 86
+                 bbr7 op,_local_1085_10                   ; branch if no string2 ;; 42a0 86
+                 jsr chrget                               ; pick up required 'to' token ;; 42a3 86
+                 cmp #to_token                             ;; 42a6 86
+                 bne snerr                                ; error if missing ;; 42a8 86
+                 jsr chrget                                ;; 42ab 86
+                 beq snerr                                ; error if eol ;; 42ae 86
+                 ldx #3                                    ;; 42b1 86
+                 jsr delimit_string                       ; string2 ;; 42b3 86
+ ;; 42b6 86
+_local_1085_10   jsr chrget                               ; line number range given? ;; 42b6 86
+                 beq _local_1085_20                       ; no, eol ;; 42b9 86
+                 jsr chkcom                               ; yes, pick up required comma ;; 42bb 86
+_local_1085_20   jsr range                                ; set up line number range (lowtr,linnum) ;; 42be 86
+                 jsr tto                                  ; save txtptr for restoration when done ;; 42c1 86
+                 rmb7 helper                              ; clear 'help' flag for 'p1line' ;; 42c4 86
+                 lda helper                                ;; 42c6 86
+                 pha                                       ;; 42c8 86
+                 rmb4 helper                              ; temporarily disable token highlighting ;; 42c9 86
+                 smb5 helper                              ; set   'find' flag for 'p1line' ;; 42cb 86
+                 bra find_loop_1                          ; begin ;; 42cd 86
+ ;; 42cf 86
+; .page ;; 42cf 86

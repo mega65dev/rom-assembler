@@ -1,0 +1,21 @@
+strlit_1                                                  ; //// entry from SPRSAV ;; 5ab7 157
+                 jsr strini                                ;; 5ab7 157
+                 tay                                       ;; 5aba 157
+                 beq putnew                               ; length=0, don't bother copying ;; 5abb 157
+                 pha                                      ; save length ;; 5abd 157
+                 phx                                       ;; 5abe 157
+                 ldx #frespc                               ;; 5abf 157
+_local_1156_10   dey                                       ;; 5ac1 157
+                 jsr indst1                               ; lda (strng1),y in bank 0 ;; 5ac2 157
+                 jsr sta_far_ram1                         ; sta (frespc),y in bank 1 ;; 5ac5 157
+                 tya                                       ;; 5ac8 157
+                 bne _local_1156_10                        ;; 5ac9 157
+                 plx                                       ;; 5acb 157
+                 pla                                      ; restore length ;; 5acc 157
+                 jsr mvdone                               ; finish up by updating frespc ;; 5acd 157
+ ;; 5ad0 157
+; .page ;; 5ad0 157
+; Some string function is returning a result in DSCTMP.  Set up a temp ;; 5ad0 157
+; descriptor with DSCTMP in it.  Put a pointer to the descriptor in FACMO&LO ;; 5ad0 157
+; and flag the result as a string type. ;; 5ad0 157
+ ;; 5ad0 157

@@ -1,0 +1,22 @@
+cdout            jsr outch ;outdo                         ; char out ;; 6d9a 212
+                 dec cform                                ; count it ;; 6d9d 212
+                 rts                                       ;; 6da0 212
+ ;; 6da1 212
+; .page ;; 6da1 212
+; Using- anaf: analyze format ;; 6da1 212
+ ;; 6da1 212
+anaf             ldy endfd                                ; format pointer ;; 6da1 212
+gfor             jsr ansub                                 ;; 6da4 212
+                 jsr comp                                 ; check special chars ;; 6da7 212
+                 bne pchar                                ; no match... ;; 6daa 212
+                 sty begfd                                ; save beginning of field ;; 6dac 212
+                 bcc ffoun                                ; # was found ;; 6daf 212
+                 tax                                      ; save char ;; 6db1 212
+ ;; 6db2 212
+sfur             jsr ansub                                ; get next format char ;; 6db2 212
+                 bcs _local_1211_10                       ; stop on wrap-around ;; 6db5 212
+                 jsr com1                                 ; compare specials ;; 6db7 212
+                 beq foun1                                ; found some... ;; 6dba 212
+ ;; 6dbc 212
+_local_1211_10   ldy begfd                                 ;; 6dbc 212
+                 txa                                       ;; 6dbf 212

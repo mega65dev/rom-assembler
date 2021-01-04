@@ -1,0 +1,23 @@
+lsloop           lda _pky_buffer,y                        ; print key definition ;; 4633 99
+                 iny                                       ;; 4636 99
+                 pha                                      ; save character ;; 4637 99
+                 phx                                      ; save position in output string ;; 4638 99
+ ;; 4639 99
+                 ldx #4                                   ; check for special (non-printable) characters ;; 4639 99
+_local_1098_50   cmp keychr-1,x                            ;; 463b 99
+                 beq list_special                         ; yes, display it as 'CHR$(...)' ;; 463e 99
+                 dex                                       ;; 4640 99
+                 bne _local_1098_50                        ;; 4641 99
+ ;; 4643 99
+                 plx                                      ; restore position ;; 4643 99
+                 cpx #8                                    ;; 4644 99
+                 bcc _local_1098_60                       ; 1st time thru- display leading quote ;; 4646 99
+                 bne _local_1098_70                       ; previous was a character- no additions needed ;; 4648 99
+                 lda #'+'                                 ; add since previous was quote or return ;; 464a 99
+                 jsr _bsout                                ;; 464c 99
+_local_1098_60   lda #'"'                                  ;; 464f 99
+                 jsr _bsout                               ; add leading quote ;; 4651 99
+_local_1098_70   pla                                      ; restore character ;; 4654 99
+                 jsr _bsout                               ; display it ;; 4655 99
+                 ldx #9                                   ; mark normal character ;; 4658 99
+ ;; 465a 99

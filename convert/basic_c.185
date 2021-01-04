@@ -1,0 +1,55 @@
+polyx            sta polypt                               ; retain polynomial pointer for later ;; 665a 185
+                 sty polypt+1                              ;; 665c 185
+                 jsr mov1f                                ; save FAC in factmp (y=0 upon return) ;; 665e 185
+                 lda #tempf1                               ;; 6661 185
+                 jsr fmult                                ; compute x^2. ;; 6663 185
+                 jsr poly1                                ; compute p(x^2). ;; 6666 185
+                 lda #<tempf1                              ;; 6669 185
+                 ldy #>tempf1                              ;; 666b 185
+                 bra fmult                                ; multiply by FAC again ;; 666d 185
+ ;; 6670 185
+ ;; 6670 185
+; Polynomial Evaluator ;; 6670 185
+; ;; 6670 185
+; Pointer to degree is in (a,y). ;; 6670 185
+; Compute:  c0+c1*x+c2*x^2+c3*x^3+c4*x^4...+c(n-1)*x^(n-1)+c(n)*x^n ;; 6670 185
+;  which is roughly (LOG(2)^n)/LOG(EXP(1))/n! ;; 6670 185
+ ;; 6670 185
+ ;; 6670 185
+poly             sta polypt                                ;; 6670 185
+                 sty polypt+1                              ;; 6672 185
+ ;; 6674 185
+poly1            jsr mov2f                                ; save FAC (rounds, .y=0) ;; 6674 185
+                 lda (polypt),y                            ;; 6677 185
+                 sta degree                                ;; 6679 185
+                 inw polypt                                ;; 667b 185
+                 lda polypt                                ;; 667d 185
+                 ldy polypt+1                              ;; 667f 185
+ ;; 6681 185
+_local_1184_10   jsr rommlt                                ;; 6681 185
+                 lda polypt                               ; get current pointer ;; 6684 185
+                 ldy polypt+1                              ;; 6686 185
+                 clc                                       ;; 6688 185
+                 adc #5                                    ;; 6689 185
+                 bcc _local_1184_20                        ;; 668b 185
+                 iny                                       ;; 668d 185
+_local_1184_20   sta polypt                                ;; 668e 185
+                 sty polypt+1                              ;; 6690 185
+                 jsr romadd                               ; add in constant ;; 6692 185
+                 lda #<tempf2                             ; multiply the original FAC ;; 6695 185
+                 ldy #>tempf2                              ;; 6697 185
+                 dec degree                               ; done? ;; 6699 185
+                 bne _local_1184_10                        ;; 669b 185
+                 rts                                      ; yes ;; 669d 185
+ ;; 669e 185
+;.end ;; 669e 185
+; .page ;; 669e 185
+; .subttl Floating Point Math Package (TRIG) ;; 669e 185
+ ;; 669e 185
+; Sine, Cosine, and Tangent Functions. ;; 669e 185
+ ;; 669e 185
+ ;; 669e 185
+ ;; 669e 185
+; Cosine function cos(x)=sin(x+pi/2) ;; 669e 185
+ ;; 669e 185
+ ;; 669e 185

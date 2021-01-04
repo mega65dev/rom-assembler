@@ -1,0 +1,9 @@
+notfns           tsx                                      ; check who's calling???? ;; 500c 121
+                 lda $102,x                               ; sniff processor stack ;; 500d 121
+                 cmp #>pointer_ret                         ;; 5010 121
+                 beq ldzr                                 ; special case if called by pointer function ;; 5012 121
+ ;; 5014 121
+_local_1120_20   = isvret-1                                ;; 5014 121
+                 cmp #>_local_1120_20                     ; is eval calling???? ;; 5014 121
+                 bne notevl                               ; no, carry on ;; 5016 121
+ ;; 5018 121

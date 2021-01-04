@@ -1,0 +1,47 @@
+boot             cmp #sys_token                           ; BOOTSYS?      [910111] ;; 674f 189
+                 bne _local_1188_1                        ; no ;; 6751 189
+                 jsr chrget                               ; yes- eat token ;; 6753 189
+                 jsr _bootsys                             ; attempt to boot a new OS ;; 6756 189
+                 bcc _local_1188_15                       ; returned to us after successful install ;; 6759 189
+                 ldx #errbdk                              ; bootsys failed, report 'bad disk'???? ;; 675b 189
+                 bra error                                 ;; 675d 189
+ ;; 6760 189
+_local_1188_1    bbr4 runmod,_local_1188_2                ; Error if in Edit mode     [910620] ;; 6760 189
+                 bra edit_err                              ;; 6763 189
+ ;; 6766 189
+_local_1188_2    lda #0                                   ; BOOT "filename"     [910417] ;; 6766 189
+                 sta verck                                ; want 'load', not 'verify' ;; 6768 189
+                 lda #$e6                                 ; set up parameters for DOS parser like BLOAD ;; 676a 189
+                 ldx #$fc                                  ;; 676c 189
+                 jsr dosprx                               ; parse the command ;; 676e 189
+                 bbr0 parsts,_local_1188_20               ; was there a filename?  branch if not ;; 6771 189
+                 jsr bload_boot                           ; yes- bload it ;; 6774 189
+                 bcs erexit                               ; load error ;; 6777 189
+ ;; 677a 189
+; ldx current_bank ;assume no B(ank) arg was given    [910114] ;; 677a 189
+; bbr0 parstx,_local_1188_10  ; correct, use current setup ;; 677a 189
+                 ldx dosbnk                               ; else use given bank number ;; 677a 189
+_local_1188_10   stx _bank                                 ;; 677d 189
+                 lda _starting_addr                       ; set up address BLOAD loaded to ;; 677f 189
+                 sta _pclo                                 ;; 6781 189
+                 lda _starting_addr+1                      ;; 6783 189
+                 sta _pchi                                 ;; 6785 189
+                 jsr _jsr_far                             ; call it ;; 6787 189
+_local_1188_15   rts                                       ;; 678a 189
+ ;; 678b 189
+_local_1188_20   ldy #$ff                                  ;; 678b 189
+_local_1188_30   iny                                      ; Copy default filename from ROM into buffer ;; 678d 189
+                 lda autoboot_filename,y                   ;; 678e 189
+                 sta savram,y                              ;; 6791 189
+                 bne _local_1188_30                       ; null terminated ;; 6794 189
+ ;; 6796 189
+                 sty dosf1l                               ; length not counting terminator ;; 6796 189
+                 smb6 runmod                              ; set flag for load not to go to ready ;; 6799 189
+                 jsr dload_boot                           ; Load it ;; 679b 189
+                 bcs erexit                               ; error if problems ;; 679e 189
+                 bra run_a_program                        ; else go run it ;; 67a1 189
+ ;; 67a4 189
+; .page ;; 67a4 189
+; AUTOBOOT_CSG Runs a system diagnostic if PB0 is low after initialization. ;; 67a4 189
+;  Diagnostic is copied to RAM-0 from ROM-2 and jumped to. ;; 67a4 189
+ ;; 67a4 189

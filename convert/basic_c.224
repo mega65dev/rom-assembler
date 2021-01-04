@@ -1,0 +1,56 @@
+dload_boot                                                ; <<<<<<<<<<<<<<<<<< entry for BOOT'AUTOBOOT.C65' ;; 717b 224
+                 lda #0                                    ;; 717b 224
+                 sta dossa                                ; set relocate flag ;; 717d 224
+                 ldy #fopn                                ; table offset ;; 7180 224
+                 lda #4                                   ; ..length ;; 7182 224
+                 jsr sendp                                 ;; 7184 224
+ ;; 7187 224
+                 lda text_bank                            ; set up banks ???? want text_bank ????  [910620] ;; 7187 224
+                 ldx #sys_bank                            ; fname is in system space, bank0 ;; 7189 224
+                 jsr _setbank                              ;; 718b 224
+ ;; 718e 224
+                 bra cld10                                ; finish load, using 'LOAD' code. ;; 718e 224
+ ;; 7191 224
+; .page ;; 7191 224
+; BSAVE ;; 7191 224
+ ;; 7191 224
+bsave            lda #$66                                 ; std error flag ;; 7191 224
+                 ldx #$f8                                 ; auxiliary error flag (allow bank, start & end address) ;; 7193 224
+                 jsr dosprx                               ; parse options ;; 7195 224
+                 jsr chk2                                 ; check required parameters ;; 7198 224
+ ;; 719b 224
+                 lda parstx                               ; check for starting & ending addresses ;; 719b 224
+                 and #6                                    ;; 719d 224
+                 cmp #6                                    ;; 719f 224
+                 bne snerr                                ; ..if not present, syntax error ;; 71a1 224
+ ;; 71a4 224
+                 lda dosofh+1                             ; check that ea>sa ;; 71a4 224
+                 cmp dosofl+1                              ;; 71a7 224
+                 bcc fcerr                                ; ...error ;; 71aa 224
+                 bne _local_1223_20                        ;; 71ad 224
+                 lda dosofh                                ;; 71af 224
+                 cmp dosofl                                ;; 71b2 224
+                 bcc fcerr                                ; ...error ;; 71b5 224
+                 beq fcerr                                 ;; 71b8 224
+ ;; 71bb 224
+_local_1223_20   ldy #fopn                                ; table offset ;; 71bb 224
+                 lda #4                                   ; ..length ;; 71bd 224
+                 jsr sendp                                 ;; 71bf 224
+ ;; 71c2 224
+                 lda dosbnk                               ; get requested bank ;; 71c2 224
+                 ldx #sys_bank                            ; ..and name will be in system bank ;; 71c5 224
+                 jsr _setbank                             ; ..and go set up bank ;; 71c7 224
+ ;; 71ca 224
+                 ldx dosofl                               ; start addr ;; 71ca 224
+                 ldy dosofl+1                              ;; 71cd 224
+                 lda #highds                              ; ..and a pointer to start address ;; 71d0 224
+                 stx highds                                ;; 71d2 224
+                 sty highds+1                              ;; 71d4 224
+                 ldx dosofh                               ; end addr ;; 71d6 224
+                 ldy dosofh+1                              ;; 71d9 224
+                 bra savenb                                ;; 71dc 224
+ ;; 71df 224
+ ;; 71df 224
+; .page ;; 71df 224
+; DVERIFY ;; 71df 224
+ ;; 71df 224
