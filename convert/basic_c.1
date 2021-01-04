@@ -45,7 +45,7 @@ go_ready
                  cli                                      ; enable IRQ
                  +lbra ready                              
 
-; .page
+
 init_storage                                              
                  lda #76                                  ; 'jmp' opcode
                  sta jmper                                
@@ -183,4 +183,4 @@ l1_4             sta sprite_data,x
 
                  +lbra init_text                          ; go to 'new'
 
-; .page
+

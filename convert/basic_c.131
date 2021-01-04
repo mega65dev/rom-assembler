@@ -50,7 +50,7 @@ l131_5           ldz time                                 ; tenths  0-9
                  ldy time+3                               ; hours  0-23
                  jmp _SetTime                             ; Go set time & exit
 
-; .page
+
 ; Get an ASCII digit, make sure it's in range 0-9 or a colon.
 ; if no digit to get, default to '0'
 ;

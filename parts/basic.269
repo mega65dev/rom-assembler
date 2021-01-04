@@ -33,6 +33,7 @@ C65__screenclose
  
  jmp ($800a)  ;bra screenclose 
  
+;[[command.pen]] 
  .page 
 ;***************************************************************** 
 ;* PEN 
@@ -55,6 +56,8 @@ C65__setpen
  stx GKI__parm2 
  
  jmp ($8010)  ;bra setpen 
+ 
+;[[command.dmode]] 
  
  .page 
 ;***************************************************************** 
@@ -97,6 +100,8 @@ C65__setdmode
  stx GKI__parm5 
  
  jmp ($8014)  ;bra setdmode 
+ 
+;[[command.dpat]] 
  
  .page 
 ;***************************************************************** 

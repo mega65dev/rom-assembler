@@ -83,6 +83,7 @@ for lda #$80
  rts 
  
 ;.end 
+;[[command.delete]] 
  .page 
  .subttl  DELETE 
  

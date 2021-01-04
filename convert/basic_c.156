@@ -10,7 +10,7 @@ strspa           jsr getspa                               ; get string space
                  sta dsctmp                               ; save length
                  rts                                      ; done
 
-; .page
+
 ; STRLT2 takes the string literal whose first character is pointed to by
 ; (xreg)+1 and builds a descriptor for it.  The descriptor is initially
 ; built in DSCTMP, but PUTNEW transfers it into a temporary and leaves a
@@ -53,4 +53,4 @@ l156_3           sty dsctmp                               ; no, back up. retain 
 l156_4           stx strng2+1                             
                  tya                                      
 
-; .page
+

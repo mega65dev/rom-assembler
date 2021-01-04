@@ -20,8 +20,9 @@ l146_1           +lbra nosflt                             ; float it (y,a)
 
 
 ;.end
-; .page
-; .subttl  POINTER
+;[[function.pointer]]
+
+
 
 ;******************************************************************
 ;

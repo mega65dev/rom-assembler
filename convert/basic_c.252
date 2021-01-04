@@ -31,7 +31,7 @@ l252_3           pla
 l252_4           dey                                      
                  bpl l252_1                               
 
-; .page
+
 ; Check light pen latch
 
                  lsr                                      
@@ -53,6 +53,6 @@ l252_4           dey
                  sta int_trip_flag+2                      ; yes- let BASIC know we caught one
 
 l252_5                                                    
-; .page
+
 ; Update moving sprites
 

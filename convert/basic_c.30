@@ -13,6 +13,6 @@ l30_1            sty tos+1
                  +lbcc omerr                              
 l30_2            rts                                      
 
-; .page
+
 ; (a,y) is a certain address.  REASON makes sure it is less than (fretop).
 

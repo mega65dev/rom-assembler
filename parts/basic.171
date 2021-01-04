@@ -9,6 +9,7 @@ shftrt clc  ;clear output of FACOV
  rts 
  
 ;.end 
+;[[math.const]] 
  .page 
  .subttl Floating Point Math Package (CODE19) 
  
@@ -90,6 +91,7 @@ atncon .byte 11   ;degree-1
  .byte @177,@252,@252,@252,@023 
  .byte @201,@000,@000,@000,@000 
  
+;[[math.log]] 
  .page 
 ; Natural Log Function 
 ; 
@@ -144,6 +146,7 @@ romsub jsr romupk
 romdiv jsr romupk 
  bra fdivt 
  
+;[[math.multiply]] 
  .page 
 ; Multiplication        FAC = ARG*FAC 
  

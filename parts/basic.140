@@ -3,6 +3,7 @@ decbad
  
 ;.end 
  .page 
+;[[command.peekpoke]] 
  .subttl  PEEK  POKE 
  
  

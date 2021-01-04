@@ -24,6 +24,7 @@ datlop jsr datan ;skip some text
  
  
 ;.end 
+;[[command.next]] 
  .page 
  .subttl NEXT 
  

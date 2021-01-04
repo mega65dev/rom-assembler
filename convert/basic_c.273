@@ -39,7 +39,8 @@ l273_4           lda GKI__parm5,x                         ; copy x1,y1 to x0,y0
                  bcs l273_1                               ; yes, continue
                  rts                                      
 
-; .page
+;[[command.box]]
+
 ;*****************************************************************
 ;* BOX   draw a 4-sided figure
 ;*

@@ -20,6 +20,7 @@ lpen jsr chkcls  ;look for closing parens
  
  
 ;.end 
+;[[function.pointer]] 
  .page 
  .subttl  POINTER 
  

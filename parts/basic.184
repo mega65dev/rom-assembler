@@ -7,6 +7,7 @@ negop   ;/// entry point
 negrts rts 
  
 ;.end 
+;[[math.ext6]] 
  .page 
  .subttl Floating Point Math Package (CODE24) 
  
@@ -77,6 +78,8 @@ exp lda #<logeb2 ;multiply by LOG(e) base 2
  pla  ;recall scale factor 
  jsr mldexp ;modify facexp and check for overflow 
  rts  ; (has to do jsr due to pla's in muldiv) 
+ 
+;[[math.polyeval]] 
  
  .page 
 ; Polynomial Evaluator and the Random Number Generator. 

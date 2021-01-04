@@ -51,6 +51,7 @@ window jsr getbyt  ;get u.l. col
 98$ bra fcerr  ;illegal value error 
  
 ;.end 
+;[[command.fastslow]] 
  .page 
  .subttl  FAST  SLOW 
  

@@ -7,6 +7,7 @@ concat jsr dospar  ;parse the line
  
  
  
+;[[command.rename]] 
  
 ; RENAME rdddfn=sdsfn 
  
@@ -39,6 +40,7 @@ backup lda #$c7  ;set error flags
  jsr trans  ;send command 
  bra print_dos_error ;if any 
  
+;[[command.trans]] 
  
  .page 
 ; Trans subroutine 

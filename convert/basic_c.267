@@ -40,7 +40,7 @@ RestoreTextScreen                                          ; [910404]
 ;; sta _graphm  ;text mode????
 ; rts
 
-; .page
+
 ;*****************************************************************
 ; SCNCLR  clear a text or graphic screen
 ;
@@ -77,7 +77,7 @@ C65__screenclear
                  jsr CheckGraphicMode                     
                  jmp ($800c)                              ; bra screenclear
 
-; .page
+
 ;*****************************************************************
 ;* SCREEN SET  specify draw & view screens
 ;*
@@ -111,7 +111,7 @@ l267_1           stx GKI__parm1
                  bcs NoGraphicArea                        
                  rts                                      
 
-; .page
+
 ;*****************************************************************
 ;* SCREEN DEF  define a graphic screen
 ;*

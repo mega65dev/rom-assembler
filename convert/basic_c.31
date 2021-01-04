@@ -28,7 +28,7 @@ l31_3            pla
                  +lbcs omerr                              
 l31_4            rts                                      
 
-; .page
+
 
 ;  Utilities involved in the operation of the BASIC run-time stack.
 

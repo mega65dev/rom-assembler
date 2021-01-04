@@ -25,8 +25,9 @@ l149_3           tay
                  +lbra sngflt                             ; float 1 byte arg in .Y
 
 ;.end
-; .page
-; .subttl  RND
+;[[function.rnd]]
+
+
 
 ;    Random Number Function  RND(x)
 ;

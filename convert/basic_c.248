@@ -3,8 +3,8 @@ response_fake
                  rts                                      
 
 ;.end
-; .page
-; .subttl  General Purpose Subroutines
+
+
 
 ;*****************************************************************
 ;  OPTWRD - get an optional, unsigned 2-byte value in y,a.

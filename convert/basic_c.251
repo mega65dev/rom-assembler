@@ -3,8 +3,9 @@ sbits            !text $01,$02,$04,$08,$10,$20,$40,$80
 rbits            !text $80,$40,$20,$10,$08,$04,$02,$01    
 
 ;.end
-; .page
-; .subttl BASIC IRQ Handler
+;[[handler.irq]]
+
+
 
 basic_irq                                                 
 ; lda _vicIRQ  ;a VIC raster interrupt?
@@ -19,6 +20,6 @@ basic_irq
 l251_1           inc irq_wrap_flag                        ; shut the door
                  cli                                      ; but leave the window open
 
-; .page
+
 ; Test if there was a VIC collision/light pen interrupt
 

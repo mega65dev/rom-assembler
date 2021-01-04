@@ -71,4 +71,5 @@ l315_7           ldx #0
                  plp                                      
                  rts                                      
 
-; .page
+;[[initialise.sprites]]
+

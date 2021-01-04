@@ -37,7 +37,7 @@ l160_1           sta index
                  cpx fretop                               
                  bne frerts                               
 
-; .page
+
 ; The string was the last one put into string space.  Save garbage
 ; collection some time by freeing up. (length + 2)
 

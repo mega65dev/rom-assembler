@@ -61,7 +61,7 @@ l29_5            txa
 l29_6            ldy #1                                   ; clear z flag
 l29_7            rts                                      
 
-; .page
+
 ; GETSTK
 ;
 ; Add (.A) elements to top of run-time stack.  Error if result exceeds tos.

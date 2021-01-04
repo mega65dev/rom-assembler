@@ -12,7 +12,7 @@ qint1            tay                                      ; put count in counter
                  rts                                      
 
 
-; .page
+
 ; Greatest Integer Function
 
 int              lda facexp                               
@@ -39,7 +39,9 @@ clrfac           sta facho                                ; make it really zero
                  tay                                      
 intrts           rts                                      
 
-; .page
+;[[math.fpin]]
+
+
 ; Floating Point Input Routine.
 ;
 ; Number input is left in FAC.  At entry (TXTPTR) points to the first character
@@ -64,4 +66,4 @@ l177_1           sty deccnt,x                             ; zero mo and lo
                  stx sgnflg                               ; it's negative. (x=@377)
                  bra finc                                 ; always branches
 
-; .page
+

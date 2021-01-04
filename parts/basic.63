@@ -7,6 +7,7 @@ dim tax  ;make .x non-zero (.a must be non-zero to work correctly)
  rts 
  
 ;.end 
+;[[command.sys]] 
  .page 
  .subttl SYS 
  
@@ -42,6 +43,7 @@ sys jsr getwrd ;convert arg to integer value
    ;If returns, Kernel will update _reg's for us 
  
 ;.end 
+;[[command.dma]] 
  .page 
  .subttl DMA 
  

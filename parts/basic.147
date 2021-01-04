@@ -18,6 +18,7 @@ pointer_ret=*-1
 10$ bra nosflt 
  
 ;.end 
+;[[operator.xor]] 
  .page 
  .subttl  XOR 
  

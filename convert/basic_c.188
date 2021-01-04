@@ -28,8 +28,9 @@ l188_3           pla                                      ; was original aurgume
 l188_4           rts                                      ; all done
 
 ;.end
-; .page
-; .subttl  BOOT
+;[[boot]]
+
+
 
 ;****************************************************************************
 ; BOOT  Boot has three modes of operation...

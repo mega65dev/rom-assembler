@@ -85,8 +85,8 @@ l62_6
 l62_7            rts                                      
 
 ;.end
-; .page
-; .subttl DIM
+;[[command.dim]] .page
+
 
 ; The DIMension code sets DIMFLG and then falls into the variable search
 ; routine, which looks at DIMFLG at 3 different points:

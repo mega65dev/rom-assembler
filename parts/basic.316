@@ -29,6 +29,7 @@ Sprite_CLR_1
 ; rts 
  
 ;.end 
+;[[handler.nmi]] 
  .page 
  .subttl BASIC NMI Handler 
  

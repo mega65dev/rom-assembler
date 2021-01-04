@@ -24,8 +24,9 @@ l137_3           lda (poker),y
                  rts                                      ; got a nonzero
 
 ;.end
-; .page
-; .subttl  FRE
+;[[function.fre]]
+
+
 
 ;*****************************************************************************
 ; FRE(n) Function

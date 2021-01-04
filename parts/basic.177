@@ -39,6 +39,8 @@ clrfac sta facho ;make it really zero
  tay 
 intrts rts 
  
+;[[math.fpin]] 
+ 
  .page 
 ; Floating Point Input Routine. 
 ; 

@@ -1,8 +1,8 @@
 autoboot_filename                                          
                  !text "AUTOBOOT.C65*",0                  
 
-; .page
-; .subttl  SAVE  LOAD  VERIFY  OPEN  CLOSE
+
+
 
 erexit           tax                                      ; set termination flags
                  +lbne error                              ; normal error
@@ -42,7 +42,7 @@ cgetl
                  +lbcs break_exit                         ; 'stop' key was pressed
                  rts                                      
 
-; .page
+
 save             jsr plsv                                 ; parse parameters, dschk
 
 
@@ -77,4 +77,4 @@ l192_1           sec
 l192_2           bcs erexit                               ; exit if kernel problem (rts)
 l192_3           rts                                      
 
-; .page
+

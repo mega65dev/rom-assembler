@@ -34,6 +34,6 @@ l255_4           tya                                      ; restore y to sprite 
                  tay                                      
                  rts                                      
 
-; .page
+
 ; Play music, if in progress
 

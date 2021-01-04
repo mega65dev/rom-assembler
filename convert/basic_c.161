@@ -9,8 +9,9 @@ fretms           cpy lastpt+1                             ; last entry to temp?
 frerts           rts                                      ; all done
 
 ;.end
-; .page
-; .subttl Garbage Collection
+;[[string.garbage]]
+
+
 
 ;  Get space for a string, perhaps forcing garbage collection.
 ;
@@ -45,4 +46,4 @@ l161_2           cpy strend+1
                  cmp strend                               
                  bcc garbag                               ; clean up
 
-; .page
+

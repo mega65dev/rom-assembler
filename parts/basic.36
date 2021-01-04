@@ -50,6 +50,8 @@ list_memory
  sta lowtr+1 
  bra 10$ 
  
+;[[command.list.basic]] 
+ 
  .page 
 ;****************************************************** 
 ; P1LINE Print 1 line of BASIC text 

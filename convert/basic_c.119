@@ -1,6 +1,6 @@
 ds_rts           rts                                      
 
-; .page
+
 is_numeric                                                
                  bbr7 intflg,is_floating                  ; branch if not an integer
                  ldy #0                                   
@@ -24,7 +24,7 @@ is_floating
                  cmp #<zero                               
                  bne gomovf                               ; not TI, etc.
 
-; .page
+
 ; The pointer does point to the ROM zero.  Now it is necessary to
 ; examine the actual variable name case by case.
 
@@ -83,7 +83,7 @@ qerlin           cpx #'E'                                 ; ER or EL?
 qnumer           lda errnum                               ; want ER (number of last error)
                  +lbra float                              
 
-; .page
+
 gomovf           lda facmo                                
                  ldy facmo+1                              
 
@@ -115,8 +115,8 @@ movfrm           sta index1                               ; move value from RAM
                  rts                                      
 
 ;.end
-; .page
-; .subttl Variable Search
+
+
 
 ;  Read the variable name at the current text position and put a pointer
 ;  to its value in VARPNT.   TXTPTR points to the terminating character.

@@ -33,6 +33,8 @@ C65__setdpat
  
 20$ jmp ($8016)  ;bra setdpat 
  
+;[[command.palette]] 
+ 
  .page 
 ;***************************************************************** 
 ;* PALETTE   set palette colors 

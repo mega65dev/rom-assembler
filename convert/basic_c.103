@@ -7,7 +7,7 @@ LoadEOF
                  clc                                      
                  +lbra list_err                           ; release channel, close file, return to main
 
-; .page
+
 ;************************************************************************
 ;   Key_Save  Save function key definitions (from disk)   [900725]
 ;************************************************************************
@@ -42,8 +42,9 @@ GetSaveChannel                                            ; Used by KeySave and 
                  jmp _setbank                             
 
 ;.end
-; .page
-; .subttl  BANK
+
+;[[command.bank]]
+
 
 ;************************************************************************
 ;*  Set Memory Bank for PEEK,POKE,WAIT,BLOAD,BSAVE and SYS,BOOT Commands
@@ -69,8 +70,9 @@ bank             jsr getbyt                               ; get bank number in .
 
 
 ;.end
-; .page
-; .subttl  PLAY
+;[[command.play]]
+
+
 
 ; C65 Music Interpreter
 ;

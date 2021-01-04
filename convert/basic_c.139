@@ -29,8 +29,9 @@ val_1            clc                                      ; ///jump table entry.
                  rts                                      
 
 ;.end
-; .page
-; .subttl  DEC
+;[[function.dec]]
+
+
 
 ; DEC convert a hex string representing a 2-byte integer into decimal.
 

@@ -9,8 +9,9 @@ troff                                                     ; trace mode off
 
 
 ;.end
-; .page
-; .subttl  RREG
+;[[command.sys.returnreg]]
+
+
 
 ; RREG - Return values of 6502 registers following a SYS call.
 ;
@@ -53,8 +54,9 @@ l65_3            inc count                                ; 5 registers to do
 l65_4            rts                                      
 
 ;.end
-; .page
-; .subttl MID$
+;[[command.midstring]]
+
+
 
 ; Alternate use of the MID$ function, as the target of an assignment.
 ;

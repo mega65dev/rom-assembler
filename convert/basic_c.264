@@ -40,4 +40,4 @@ l264_3           sta index                                ; pointer to link byte
                  stx lowtr+1                              
 ; bra AutoScrollprint ; print the line & exit
 
-; .page
+

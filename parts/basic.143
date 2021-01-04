@@ -35,6 +35,7 @@ dohex and #$0f
  rts 
  
 ;.end 
+;[[function.joy]] 
  .page 
  .subttl  JOY 
  

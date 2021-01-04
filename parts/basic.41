@@ -4,6 +4,8 @@ nescpr bcs p1l015  ;no takers, print a funny graphic character
  
  
 ;.end 
+;[[command.newclr]] 
+ 
  .page 
  .subttl NEW  CLR 
 ; 

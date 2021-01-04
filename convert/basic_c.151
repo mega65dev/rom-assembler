@@ -2,8 +2,9 @@ rmulc            !text 152,53,68,122,0
 raddc            !text 104,40,177,70,0                    
 
 ;.end
-; .page
-; .subttl Math Package (CODE12)
+
+;[[math]]
+
 
 n32768           !text $90,$80,0,0,0                      
 
@@ -32,7 +33,7 @@ ayint            lda facexp
 
 nonono           +lbne fcerr                              ; no, FAC is too big
 qintgo           +lbra qint                               ; go shove it
-; .page
+
 
 ; Float an unsigned double byte integer
 ; Entry:  MSB in (a), LSB in (y)
@@ -76,8 +77,9 @@ errind           bbr7 runmod,storts                       ; goto error if not in
                  +lbra error                              
 
 ;.end
-; .page
-; .subttl User Defined Function
+
+;[[function.userdef]]
+
 
 ; User Defined Function Code
 ;
@@ -116,7 +118,7 @@ def              jsr getfnm                               ; get a pointer to the
                  jsr data                                 
                  bra deffin                               
 
-; .page
+
 ; Subroutine to get a pointer to a function name
 
 getfnm           lda #fn_token                            ; must start with fn
@@ -150,7 +152,7 @@ fndoer           jsr getfnm                               ; get the function's n
                  sta varpnt+1                             
                  iny                                      ; since def uses only 4
 
-; .page
+
 defstf           lda #varpnt                              
                  jsr lda_far_ram1                         
                  pha                                      ; push it all on the stack, since we might be recursing
@@ -197,8 +199,10 @@ l151_1           pla                                      ; get old arg value of
                  rts                                      
 
 ;.end
-; .page
-; .subttl MID$  LEFT$  RIGHT$  ASC  STR$  LEN
+;[[function.stringmisc]]
+
+
+
 
 ; The STR$() function takes a number and gives a string with
 ; the characters the output of the number would have given.

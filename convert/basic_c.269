@@ -12,7 +12,7 @@ C65__screenopen
 ; bcs NoGraphicArea ; bad ???? let user catch via RGRAPHIC
 ; rts
 
-; .page
+
 ;*****************************************************************
 ;* SCREEN CLOSE  close a graphic screen
 ;*
@@ -33,7 +33,8 @@ C65__screenclose
 
                  jmp ($800a)                              ; bra screenclose
 
-; .page
+;[[command.pen]]
+
 ;*****************************************************************
 ;* PEN
 ;*
@@ -56,7 +57,9 @@ C65__setpen
 
                  jmp ($8010)                              ; bra setpen
 
-; .page
+;[[command.dmode]]
+
+
 ;*****************************************************************
 ;* DMODE   Set Draw Mode
 ;*
@@ -98,7 +101,9 @@ l269_1           +lbcs fcerr                              ; illegal quantity err
 
                  jmp ($8014)                              ; bra setdmode
 
-; .page
+;[[command.dpat]]
+
+
 ;*****************************************************************
 ;* DPAT   set draw pattern
 ;*

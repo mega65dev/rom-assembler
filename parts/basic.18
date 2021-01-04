@@ -8,6 +8,7 @@ break jsr release_channels ;make sure we're in text mode????  [910909]
 do_rts rts 
  
 ;.end 
+;[[functions]] 
  .page 
  .subttl Function Handler 
  

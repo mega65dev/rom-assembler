@@ -41,7 +41,7 @@ l189_6           iny                                      ; Copy default filenam
                  +lbcs erexit                             ; error if problems
                  +lbra run_a_program                      ; else go run it
 
-; .page
+
 ; AUTOBOOT_CSG Runs a system diagnostic if PB0 is low after initialization.
 ;  Diagnostic is copied to RAM-0 from ROM-2 and jumped to.
 

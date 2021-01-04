@@ -15,7 +15,7 @@ fingo
 ;string functions remove this ret addr
                  +lbra chknum                             ; check for "numeric-ness" and return
 
-; .page
+
 ; Escape Function handler
 
 do_esc_fn                                                 

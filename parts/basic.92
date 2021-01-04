@@ -11,6 +11,7 @@ trap
  rts 
  
 ;.end 
+;[[command.resume]] 
  
  .page 
  .subttl  RESUME 

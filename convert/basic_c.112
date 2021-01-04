@@ -12,7 +12,7 @@ tempo            jsr getbyt                               ; duration of whole no
                  stx tempo_rate                           
                  rts                                      
 
-; .page
+
 times2           !text 0,2,4,6,8,10                       ; [910612] stereo
 
 notes            !text "WHQIS"                            ; sixteenth,eigth,quarter,half,and whole notes
@@ -66,8 +66,9 @@ filter_offset
 voltab           !text 0,1,3,5,7,8,10,12,14,15            
 
 ;.end
-; .page
-; .subttl  FILTER
+;[[command.filter]]
+
+
 
 ;******************************************************************
 ;
@@ -161,8 +162,9 @@ l112_8           lda fltsav,y                             ; copy new filter para
                  rts                                      
 
 ;.end
-; .page
-; .subttl  ENVELOPE
+
+;[[command.envelope]]
+
 
 ;****************************************************************
 ;

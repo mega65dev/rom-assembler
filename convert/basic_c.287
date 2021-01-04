@@ -7,8 +7,9 @@ get_sprite_number
                  rts                                      
 
 ;.end
-; .page
-; .subttl MOVSPR Command
+;[[command.movspr]]
+
+
 
 ;****************************************************************
 ; Move Sprite.  Position sprite and optionally animate it.

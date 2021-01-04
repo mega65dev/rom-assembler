@@ -6,7 +6,7 @@ zeremv           pla                                      ; get addr off stack
                  pla                                      
                  +lbra zerofc                             ; underflow
 
-; .page
+
 ; Multiply FAC by 10
 
 mul10            jsr movaf                                ; copy FAC into ARG
@@ -24,7 +24,7 @@ finml6           ldx #0
 
 mul10r           rts                                      
 
-; .page
+
 div10            jsr movaf                                ; move FAC to ARG
                  lda #<tenc                               
                  ldy #>tenc                               ; point to constant of 10.0
@@ -54,7 +54,7 @@ fdivt            +lbeq doverr                             ; can't divide by zero
                  ldx #$fc                                 ; set up procedure
                  lda #1                                   
 
-; .page
+
 divide                                                    ; this is the best code in the whole pile
                  ldy argho                                ; see what relation holds
                  cpy facho                                
@@ -88,7 +88,7 @@ shfarg           asl arglo                                ; shift ARG one place 
                  bmi divide                               ; if msb on, go decide whether to sub
                  bpl savquo                               
 
-; .page
+
 divsub           tay                                      ; notice c must be on here
                  lda arglo                                
                  sbc faclo                                
@@ -122,7 +122,7 @@ divnrm           asl                                      ; get last two bits in
                  plp                                      
 
 
-; .page
+
 movfr            lda resho                                ; move result to FAC
                  sta facho                                
                  lda resmoh                               
@@ -157,7 +157,7 @@ movfm            sta index1                               ; move memory into FAC
                  sty facov                                
                  rts                                      
 
-; .page
+
 ; Move number from FAC to memory
 
 mov2f            ldx #tempf2                              ; move from FAC to temp FAC2
@@ -189,7 +189,7 @@ movmf            jsr round
                  sty facov                                ; zero it since rounded
                  rts                                      ; (y)=0
 
-; .page
+
 movmf_ram1                                                
                  jsr round                                
                  stx index1                               
@@ -217,7 +217,7 @@ movmf_ram1
                  plx                                      
                  rts                                      ; (y)=0
 
-; .page
+
 movfa            lda argsgn                               
 
 movfa1           sta facsgn                               

@@ -181,6 +181,7 @@ twobyt
 ;illval 
 ; jmp fcerr  ;illegal value 
  
+ 
  .page 
 ;****************************************************************** 
 ;  INCORD  ---  Get X,Y coordinate from input stream into vwork+x 

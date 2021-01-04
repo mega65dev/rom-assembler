@@ -186,6 +186,7 @@ moveup
  
 ;.end 
  .page 
+;[[command.for]] 
  .subttl  FOR 
 ; FOR 
 ; 

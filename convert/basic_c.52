@@ -34,7 +34,7 @@ copyc            sta dscpnt
                  sty index+1                              
                  jsr fretms                               
 
-; .page
+
 ;   Fix the strings by flagging the old string as garbage and the new
 ;   string by pointing it to its new descriptor.
 
@@ -78,7 +78,7 @@ l52_3            lda #dscpnt
                  plx                                      
                  rts                                      
 
-; .page
+
 ;   STRADJ takes the pointer index which points to a descriptor and
 ;   indexes to the desciptor's string data.  If the string is not in
 ;   string space (no action to take) we return with carry clear, else

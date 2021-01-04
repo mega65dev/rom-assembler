@@ -6,7 +6,7 @@ play_flat
                  sta sharp                                
                  rts                                      
 
-; .page
+
 play_note_1                                               ; play a note
                  sta pitch+1                              
                  lda #0                                   ; flag 'not rest'
@@ -55,4 +55,4 @@ l111_2           pla                                      ; test if this is a re
 ; jsr go_fast  ;      [910716] 4567R7A
 l111_3           cli                                      
 
-; .page
+

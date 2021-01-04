@@ -7,8 +7,9 @@ dim              tax                                      ; make .x non-zero (.a
                  rts                                      
 
 ;.end
-; .page
-; .subttl SYS
+;[[command.sys]]
+
+
 
 sys              jsr getwrd                               ; convert arg to integer value
                  lda linnum                               ; set up arg's for call to 'long jsr'
@@ -42,8 +43,9 @@ l63_5            jmp _jsr_far                             ; far, far away
 ;If returns, Kernel will update _reg's for us
 
 ;.end
-; .page
-; .subttl DMA
+;[[command.dma]]
+
+
 
 ; DMA - Set up for DMA operation (FETCH/STASH/SWAP)
 ;

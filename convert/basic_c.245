@@ -18,7 +18,7 @@ Clear_DS                                                  ; oldclr.
 
 l245_1           rts                                      
 
-; .page
+
 ; Read DOS error message, but don't care what it is.  Want to stop disk LED blink.
 ;
 

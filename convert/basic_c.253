@@ -44,4 +44,4 @@ l253_4           dec sprite_data+1,x
 l253_5           dey                                      ; check next sprite
                  bpl l253_1                               ; loop until done moving all sprites
                  +lbra music_irq                          ; then continue with next IRQ task
-; .page
+

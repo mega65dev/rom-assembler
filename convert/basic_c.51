@@ -46,7 +46,7 @@ inpcom           ldy forpnt+1                             ; TI$?
                  +lbeq Set_TI_String                      ; yes
                  bra getspt                               ; no
 
-; .page
+
 dskx1            pla                                      
                  iny                                      
 
@@ -70,4 +70,4 @@ l51_2            lda facmo                                ; dntcpy
                  ldy facmo+1                              
                  bra copyc                                
 
-; .page
+

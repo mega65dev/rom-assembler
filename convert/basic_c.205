@@ -18,7 +18,7 @@ tag3             lda fbuffr,x                             ; get digit of exp
                  cmp #'9'                                 ; overflow
                  rts                                      ; return .z set
 
-; .page
+
 ; Using- ansub: load format field char in .a
 
 ansub            clc                                      

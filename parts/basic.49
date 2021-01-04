@@ -9,6 +9,7 @@ else cmp #esc_command_token ;is this of the form "ELSE b-block"?
  
  
 ;.end 
+;[[command.on]] 
  .page 
  .subttl ON...GOTO  ON...GOSUB 
  

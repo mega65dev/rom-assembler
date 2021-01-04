@@ -47,4 +47,4 @@ l57_4            sta buf
                  ldy #>buf_txtptr                         
                  bra datbk                                
 
-; .page
+

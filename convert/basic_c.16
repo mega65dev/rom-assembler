@@ -6,7 +6,8 @@ morsts           cmp #':'
                  +lbeq xeqcm                              ; if ':', continue statement
                  bra snerr1                               
 
-; .page
+
+;[[command.set1]]
 ; STOP, STOP KEY, and END handlers
 ;
 

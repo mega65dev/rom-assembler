@@ -29,6 +29,7 @@ rspcolor
  bra sngflt ;float 1 byte arg in .Y 
  
 ;.end 
+;[[function.rsppos]] 
  .page 
  .subttl RSPPOS Function 
  
@@ -93,6 +94,7 @@ rsppos jsr conint ;get first arg, sprite #, in .X
  bra nosflt ;..and go float 2 byte value in y,a 
  
 ;.end 
+;[[function.bump]] 
  .page 
  .subttl BUMP Function 
  

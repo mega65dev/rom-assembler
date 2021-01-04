@@ -56,6 +56,7 @@ open_SEQ_file
 ; jsr _close 
 ; bra errlen  ;buffer overflow: report 'string too long' 
  
+;[[command.disk]] 
  .page 
  .subttl  DISK command 
  

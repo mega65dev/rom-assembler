@@ -67,8 +67,8 @@ prxrpt           and parstx                               ; and with parstx
                  rts                                      
 
 ;.end
-; .page
-; .subttl  DOS 3
+
+
 
 ; CBM-2001 BASIC-4 disk verb processors.  -- rsr 7-24-79 --
 ;
@@ -140,7 +140,8 @@ fdisk            = *-tabld-1                              ; Disk command  [91012
 frec             = *-tabld-1                              ; Record
                  !text "P",xsca,xrcl,xrec                 
 
-; .page
+
+;[[dos.sendparam]]
 ; Send parameters to device
 ;
 ; Entry: .a = number of bytes in format

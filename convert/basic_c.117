@@ -21,8 +21,8 @@ slow
                  rts                                      
 
 ;.end
-; .page
-; .subttl Check Value Types
+
+
 
 ; These routines check for certain VALTYP.   (c) is not preserved.
 
@@ -51,8 +51,9 @@ sterr            ldx #errst
                  +lbra error                              
 
 ;.end
-; .page
-; .subttl Formula Evaluator
+
+;[[evaluate]]
+
 
 ; Formula Evaluator Routine
 ;
@@ -98,7 +99,7 @@ loprel           sec                                      ; prepare to subtract
                  jsr chrget                               
                  bra loprel                               ; get the next candidate
 
-; .page
+
 endrel           ldx opmask                               ; were there any?
                  bne finrel                               ; yes, handle as special op
                  +lbcs qop                                ; not an operator
@@ -128,7 +129,7 @@ negprc           jsr dopre1                               ; save a return for op
                  beq qopgo                                ; done!
                  bra pulstk                               
 
-; .page
+
 finrel           lsr valtyp                               ; get value type into (c)
                  txa                                      
                  rol                                      ; put VALTYP into low order bit of mask
@@ -152,7 +153,7 @@ dopre1           lda optab+2,y
                  lda opmask                               ; (a) may be mask for rel
                  bra lpoper                               
 
-; .page
+
 pushf1                                                    ; save FAC on stack unpacked
                  pla                                      ; first grab return address off stack
                  sta index1                               
@@ -200,7 +201,7 @@ pullf1                                                    ; retrieve FAC from st
                  sta facsgn                               
                  jmp (index1)                             ; return
 
-; .page
+
 qop              ldy #255                                 
                  pla                                      ; get high precedence of last op
 qopgo            beq qoprts                               ; done!
@@ -230,7 +231,7 @@ pulstk           pla                                      ; get mask for rel op 
 
 qoprts           lda facexp                               ; get it and set codes
                  rts                                      ; return
-; .page
+
 eval             jmp (ieval)                              
 
 neval            lda #0                                   ; assume numeric
@@ -273,7 +274,7 @@ st2txt           ldx strng2
                  sty txtptr+1                             
                  rts                                      
 
-; .page
+
 eval3            cmp #not_token                           ; not?
                  bne eval4                                
                  ldy #24                                  
@@ -297,7 +298,7 @@ eval4            cmp #fn_token                            ; user defined functio
                  +lbcs isfun                              ; yes
 ; (functions are the highest numbered
 ; tokens so no need to check further)
-; .page
+
 parchk           jsr chkopn                               ; only thing left is formula in parens
                  jsr frmevl                               ; a formula in parens
 

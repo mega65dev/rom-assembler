@@ -57,7 +57,7 @@ chargt
                  inw txtptr                               
                  +lbra indtxt                             
 
-; .page
+
 ;***********************************************************************
 ;************************* MEMORY MOVE ROUTINES ************************
 ;***********************************************************************
@@ -84,7 +84,7 @@ move_init
 
                  rts                                      
 
-; .page
+
 ;****************************** MOVEDOWN *******************************
 
 ; Move block of BASIC text from INDEX1+COUNT to INDEX2 down to INDEX1.
@@ -133,7 +133,7 @@ execute_DMA1                                              ; [910620] Edit
                  sta dma_ctlr                             ; dma_list lo & trigger
                  rts                                      
 
-; .page
+
 ;******************************* MOVEUP ********************************
 
 ; Move block of BASIC text from INDEX1 to INDEX2 up to INDEX2+COUNT.
@@ -185,8 +185,9 @@ l81_2            sta dma1_src_bank                        ; banks
                  rts                                      
 
 ;.end
-; .page
-; .subttl  FOR
+
+;[[command.for]]
+
 ; FOR
 ;
 ; Push the following information on the run-time stack:

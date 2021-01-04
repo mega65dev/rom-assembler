@@ -56,7 +56,7 @@ l313_4           lda #1                                   ; install fake line li
                  bcc l313_5                               
                  inc linnum+1                             
 
-; .page
+
 l313_5           iny                                      ; bump buffer pointer
                  cpy #buflen                              ; check buffer (160 max. input buffer size to edit)
                  beq l313_8                               ; split long lines into two????
@@ -103,4 +103,4 @@ l313_12          +lbra list_exit                          ; release channel, clo
 ; jsr verify_ok  ;if Verify, report 'ok'
 ;40$ lda #0   ;exit directly to main????
 ; bra end
-; .page
+

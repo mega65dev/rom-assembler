@@ -71,6 +71,7 @@ gloop jsr chkgrb  ;check garbage string
  jsr movpnt 
  bra gloop 
  
+;[[string.garbage.utils]] 
  .page 
 ; Subroutines used for garbage collection. 
 ; 

@@ -28,7 +28,7 @@ garbag           lda garbfl
                  bra tryag2                               ; always branches
 
 
-; .page
+
 ; Routine looks for and squashes out any unused string space it finds, thus
 ; returning the space for future use by the string routines.  GARBA2 is called
 ; only when BASIC needs space or the FRE() function is used.
@@ -63,6 +63,6 @@ l162_2           ldy #0                                   ; set up flag
                  sty frespc+1                             
                  txa                                      
 
-; .page
+
 ; do while (grbpnt <= fretop)
 

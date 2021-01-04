@@ -13,5 +13,6 @@ dcato jsr _clrch
 10$ rts 
  
  .page 
+;[[function.dopen]] 
 ; DOPEN dfn(,t(,r)) 
  

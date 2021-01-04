@@ -37,8 +37,9 @@ getsad                                                    ; get a signed 2-byte 
                  rts                                      ; it's all done
 
 ;.end
-; .page
-; .subttl Floating Point Math Package (CODE18)
+;[[math.ext3]]
+
+
 
 ; Floating Point Math Package configuration:
 ;
@@ -86,7 +87,7 @@ getsad                                                    ; get a signed 2-byte 
 ; It is only when something is stored away that it is packed to four bytes,
 ; the unpacked format has a sn byte reflecting the sign of the ho turned on.
 ; The exp is the same as stored format. This is done for speed of operation.
-; .page
+
 
 fsub             jsr conupk                               
 

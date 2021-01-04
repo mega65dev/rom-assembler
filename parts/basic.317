@@ -13,6 +13,7 @@ basic_nmi   ;     removed [910826]
  .messg ***ROM OVERFLOW: $C000 
  .endif 
 ;.end 
+;[[jumptable]] 
  .page 
  .subttl C65 BASIC Jump Table 
  

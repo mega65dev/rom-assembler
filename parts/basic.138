@@ -29,6 +29,7 @@ fre jsr conint ;get integer argument in .x
 40$ bra nosflt ; go float the number (y,a)=(lo,hi) 
  
 ;.end 
+;[[function.val]] 
  .page 
  .subttl  VAL 
  

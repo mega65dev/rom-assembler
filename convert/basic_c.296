@@ -11,7 +11,7 @@ savs50           lda sprtmp_1                             ; restore basic text p
                  sta facmo+1                              
                  +lbra inpcom                             ; move source to dest, do rts (snerr if not eol)
 
-; .page
+
 savinp           jsr frmevl                               ; evaluate expression
                  bbs7 valtyp,desc_free                    ; exit if a string
                  jsr conint                               ; get one byte integer in .X

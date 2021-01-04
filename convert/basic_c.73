@@ -2,8 +2,9 @@ cont_rts
                  rts                                      
 
 ;.end
-; .page
-; .subttl  RUN
+;[[command.run]]
+
+
 ;***********************************************************
 ;*
 ;* RUN Command
@@ -50,8 +51,9 @@ run__20          jsr clearc                               ; first trash all vari
                  +lbra newstt                             ; ..otherwise it's business as usual
 
 ;.end
-; .page
-; .subttl  RESTORE
+;[[command.restore]]
+
+
 ;*********************************************************************
 ;*
 ;* RESTORE Command
@@ -89,8 +91,9 @@ l73_1            sta datptr
                  rts                                      
 
 ;.end
-; .page
-; .subttl  RENUMBER
+;[[command.renumber]]
+
+
 ;***********************************************************************
 ;
 ; RENUMBER Command

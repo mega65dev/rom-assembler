@@ -8,7 +8,7 @@ n_esc_fn_vec
 go_foreign_esc_fn                                          
                  jmp (esc_fn_vec)                         
 
-; .page
+
 orop             ldy #255                                 ; must always complement
                  !text $2c                                
 
@@ -35,6 +35,7 @@ andop            ldy #0
                  +lbra givayf                             ; float (a,y) and return to user
 
 
+;[[relational]]
 
 ; Time to perform a relational operator.
 ; (domask) contains the bits as to which relational operator it was.
@@ -53,7 +54,7 @@ dorel            jsr chkval                               ; check for match
                  tax                                      
                  bra qcomp                                
 
-; .page
+
 strcmp           lda #0                                   
                  sta valtyp                               
                  dec opmask                               
@@ -86,7 +87,7 @@ qcomp            bmi docmp                                ; c is always set then
                  clc                                      
                  bra docmp                                ; always branch
 
-; .page
+
 getcmp           lda #argmo                               
                  jsr lda_far_ram1                         ; lda (argmo),y from RAM1
                  pha                                      
@@ -113,6 +114,7 @@ l20_1            +lbra float                              ; float the one-byte r
 
 
 ;.end
-; .page
-; .subttl  Ready, Error, Main (CODE 0)
+
+;[[readyerror]]
+
 

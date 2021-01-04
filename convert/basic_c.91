@@ -11,6 +11,7 @@ l91_1            jsr indin1_ram1                          ; lda (index),y
                  rts                                      
 
 ;.end
-; .page
-; .subttl  TRAP
+
+;[[command.trap]]
+
 

@@ -2,7 +2,7 @@ too_many_files
                  ldx #errtmf                              ; too many files open
                  +lbra error                              
 
-; .page
+
 ; Close disk file
 
 dclose           lda #$f3                                 ; set error flags
@@ -35,6 +35,6 @@ l222_1           lda #$66                                 ; set error flags
                  jsr _setbank                             
                  +lbra savenp                             
 
-; .page
+
 ; DVERIFY
 

@@ -2,6 +2,8 @@ bverify lda #1   ;flag 'verify'
    .byte $2c 
  
  
+;[[command.bload]] 
+ 
 ; BLOAD dfn 
  
 bload lda #0   ;flag 'load' 
@@ -65,6 +67,8 @@ bload_boot   ;<<<<<<<<<<<<<<<<<<<<<< entry for BOOT'filename'
  bne load_error  ;  load error 
  clc 
  rts 
+ 
+;[[command.header]] 
  
  .page 
 ; HEADER nddn [,id]  (alias: FORMAT) 

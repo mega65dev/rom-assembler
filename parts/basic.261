@@ -48,6 +48,8 @@ cursor cmp #on_token  ;Check for ON | OFF
  
 30$ rts   ; eol 
  
+;[[function.rcursor]] 
+ 
  .page 
 ;************************************************************************ 
 ;*   RCURSOR Returns in variable list current cursor position * 

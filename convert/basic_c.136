@@ -3,8 +3,9 @@ TimeFactor
                  !word 600                                ; per minute  (max   59*600 =  35400 ($08A48)
                  !word 36000                              ; per hour    (max 23*36000 = 828000 ($CA260)
 
-; .page
-; .subttl  SLEEP
+;[[command.sleep]]
+
+
 
 ;*******************************************************************************
 ;*
@@ -71,7 +72,7 @@ sleep            jsr getwrd                               ; get argument in (y,a
 ; sta _sleep_counter+2
 ; rts
 
-; .page
+
 ; SLEEP is now based upon the system hardware TOD clock (same one used by TI$).  This
 ; makes it accurate, something it was not when it was based upon the frame rate.
 
@@ -98,8 +99,9 @@ l136_3           jsr _ReadTime                            ; Wait for tenths to i
                  rts                                      
 
 ;.end
-; .page
-; .subttl  WAIT
+;[[command.wait]]
+
+
 
 ; WAIT<location>,<mask1>[,<mask2>] statement waits until the contents of
 ; <location> is nonzero when XORed with mask2 and then ANDed with mask1.

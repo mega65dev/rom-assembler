@@ -10,7 +10,7 @@ faddt_c65                                                 ; [910402]
                  ldx facexp                               ; set signs on thing to add
                  +lbra faddt                              ; add together and return
 
-; .page
+
 ; Pack in the next digit of the exponent.
 ; Multiply the old exp by 10 and add in the next digit.
 ; (note: does not check for exp overflow)
@@ -43,7 +43,7 @@ l179_3           adc syntmp
 l179_4           sta tenexp                               ; save result
                  +lbra finec                              
 
-; .page
+
 ; Get a character from either text or string area, and set the flags
 ; in the manner performed by CHRGET.
 

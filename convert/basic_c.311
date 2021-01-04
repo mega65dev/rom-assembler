@@ -25,8 +25,9 @@ incval
                  !text $00,$63                            ; 81 - 89 degrees -  .00179
 
 ;.end
-; .page
-; .subttl  EDIT Mode
+
+;[[edit.mode]]
+
 
 ; Edit mode is simply a poor man's word processor.  Text is entered normally
 ; as if the user were typing in a program, but tokenization is turned off.

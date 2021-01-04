@@ -43,7 +43,7 @@ l80_4            jsr chargt
 l80_5            jsr line_add                             ; scan to end of line
                  bra find_it                              ; always
 
-; .page
+
 ;*************************** N1_RESET **********************************
 
 ; Copies n1 (new renumber origin) into facho & sets (txtptr) = (txttab)-1

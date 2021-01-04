@@ -14,7 +14,7 @@ list_err
                  plp                                      
                  +lbra exit_disk_op                       
 
-; .page
+
 ; LIST command is of the form  LIST [range]
 
 list_memory                                               
@@ -50,7 +50,9 @@ l36_4            jsr p1line                               ; print line #, space,
                  sta lowtr+1                              
                  bra l36_1                                
 
-; .page
+;[[command.list.basic]]
+
+
 ;******************************************************
 ; P1LINE Print 1 line of BASIC text
 ;

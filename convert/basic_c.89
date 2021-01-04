@@ -10,7 +10,7 @@ print_line
                  jsr p1line                               ; print #, space, and the line of code
                  bbr7 op,find_loop_2                      ; Find op? branch if so and continue search
 
-; .page
+
 ; Change operation
 ; Query the user and replace string1 with string2 if he wants to.
 ; Options are  'Y' (yes),  '*' (do all),  'CR' (quit),  anything else means no.
@@ -118,4 +118,4 @@ l89_8            jsr link_program                         ; relink program
                  sta fndpnt                               
                  +lbra find_loop_2                        ; and resume searching
 
-; .page
+

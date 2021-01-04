@@ -57,8 +57,9 @@ frmjmp
                  +lbra frmevl                             
 
 ;.end
-; .page
-; .subttl  KEY
+;[[command.key]]
+
+
 
 ;**************************************************************
 ;
@@ -96,7 +97,7 @@ l97_3            cmp #esc_command_token                   ; KEY OFF ?
                  smb5 _locks                              ; yes- set Editor's lock bit
 l97_4            +lbra chrget                             ; exit
 
-; .page
+
 ;**************************************************************
 ;
 ;   Key_List  List all function key definitions

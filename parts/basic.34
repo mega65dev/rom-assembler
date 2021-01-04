@@ -53,5 +53,7 @@ linget ldx #0   ;enter with CHRGET flags set
  
 ;.end 
  .page 
+;[[command.list]] 
+ 
  .subttl LIST 
  

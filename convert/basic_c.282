@@ -3,8 +3,9 @@ C65__cut
 C65__paste                                                
                  jmp bad_command                          
 
-; .page
-; .subttl  GENLOCK
+;[[command.genlock]]
+
+
 
 ;*****************************************************************
 ;* GENLOCK  set/reset genlock mode & color registers
@@ -60,8 +61,10 @@ l282_6           jsr optbyt                               ; get (optional) color
                  sta _red,x                               
                  bra l282_6                               ; loop
 
-; .page
-; .subttl  COLOR Control
+;[[command.color]]
+
+
+
 
 ;*****************************************************************
 ;* COLOR       <ON | OFF> Enable|Disable SW & HW color

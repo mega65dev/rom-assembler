@@ -9,7 +9,7 @@ optbyt           jsr chrgot
                  sec                                      
                  rts                                      
 
-; .page
+
 prtdec                                                    
                  phy                                      
                  phx                                      

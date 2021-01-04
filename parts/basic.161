@@ -9,6 +9,7 @@ fretms cpy lastpt+1  ;last entry to temp?
 frerts rts   ;all done 
  
 ;.end 
+;[[string.garbage]] 
  .page 
  .subttl Garbage Collection 
  

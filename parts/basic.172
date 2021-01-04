@@ -1,6 +1,7 @@
 multrt rts 
  
  .page 
+;[[math.unpack]] 
 ; Unpack a ROM constant into the FAC 
  
 romupk sta index1 

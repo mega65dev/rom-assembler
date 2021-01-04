@@ -15,7 +15,8 @@ pixel            jsr CheckGraphicMode                     ; verify screen open
                  jsr PopParms                             ; restore graphics parameters
                  rts                                      
 
-; .page
+;[[function.rpen]]
+
 ; Return the color of a drawscreen's PEN      [910820]
 ;  RPEN (pen#) where pen# = 0,1,2
 
@@ -35,7 +36,8 @@ l299_1           +lbcs fcerr                              ; drawscreen not set o
                  jsr PopParms                             ; restore graphics parameters
                  rts                                      
 
-; .page
+
+;[[function.rpalette]]
 ; Return the R,G, or B component of a color     [910820]
 ; RPALETTE (screen#, color#, rgb)
 

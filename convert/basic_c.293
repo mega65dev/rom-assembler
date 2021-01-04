@@ -1,7 +1,7 @@
 sadwrd           jsr frmnum                               ; get number     label [910307]
                  +lbra getsad                             ; get signed 2 byte coordinate,do rts
 
-; .page
+
 ;*************************************************************
 ; CHKCOM_1  --  Check for a comma
 ;

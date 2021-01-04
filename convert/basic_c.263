@@ -35,7 +35,7 @@ AutoScrollyes
                  smb1 helper                              ; set flag for LINGET not to go to error if it has problems
                  bbs7 form,AutoScrolldn                   ; branch according to direction of scroll...
 
-; .page
+
 AutoScrollup                                              ; wanting to scroll up
                  sec                                      
                  lda _screen_bottom                       ; put cursor at bottom of screen
@@ -67,4 +67,4 @@ l263_2           jsr crdo                                 ; get a blank line to 
                  jsr crdo                                 ; and add an extra newline
                  bra l263_2                               
 
-; .page
+

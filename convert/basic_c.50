@@ -19,8 +19,9 @@ l50_2            jsr chrget                               ; advance and set code
                  rts                                      ; either end of line or syntax error
 
 ;.end
-; .page
-; .subttl LET
+;[[command.let]]
+
+
 
 ;****************************************************************
 ;*

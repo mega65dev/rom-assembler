@@ -3,6 +3,7 @@ C65__cut
 C65__paste 
  jmp bad_command 
  
+;[[command.genlock]] 
  .page 
  .subttl  GENLOCK 
  
@@ -59,6 +60,8 @@ genlock sta GKI__parm1  ;save token as flag for set palette   [910107]
  lda #%00010000  ; if present, set FGBG bit in red palette 
  sta _red,x 
  bra 25$   ; loop 
+ 
+;[[command.color]] 
  
  .page 
  .subttl  COLOR Control 

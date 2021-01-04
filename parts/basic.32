@@ -25,6 +25,8 @@ rlsstk tya
 10$ rts 
  
 ;.end 
+;[[linesearch]] 
+ 
  .page 
  .subttl FindLine 
  

@@ -7,8 +7,9 @@ negop                                                     ; /// entry point
 negrts           rts                                      
 
 ;.end
-; .page
-; .subttl Floating Point Math Package (CODE24)
+;[[math.ext6]]
+
+
 
 ; Exponentation Function
 ;
@@ -78,7 +79,9 @@ l184_4           lda argexp,x
                  jsr mldexp                               ; modify facexp and check for overflow
                  rts                                      ; (has to do jsr due to pla's in muldiv)
 
-; .page
+;[[math.polyeval]]
+
+
 ; Polynomial Evaluator and the Random Number Generator.
 ;
 ; Evaluate  p(x^2)*x

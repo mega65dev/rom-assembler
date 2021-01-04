@@ -1,8 +1,9 @@
 sproff           !text 0,11,22,33,44,55,66,77             ; sprite offsets into speed table
 
 ;.end
-; .page
-; .subttl SPRCOLOR Command
+;[[command.sprcolor]]
+
+
 
 ;**************************************************************
 ;*
@@ -29,8 +30,8 @@ l294_1           jsr optbyt                               ; get (optional) 1 byt
 l294_2           rts                                      
 
 ;.end
-; .page
-; .subttl SPRSAV Command
+
+
 
 ;***************************************************************
 ;  SPRSAV ( n1 / s1$ ) , ( n2 / s2$ )

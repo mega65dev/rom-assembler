@@ -9,8 +9,9 @@ shftrt           clc                                      ; clear output of FACO
                  rts                                      
 
 ;.end
-; .page
-; .subttl Floating Point Math Package (CODE19)
+;[[math.const]]
+
+
 
 ; Constants used by LOG, EXP, TRIG, and others.
 
@@ -90,7 +91,8 @@ atncon           !text 11                                 ; degree-1
                  !text 127,170,170,170,19                 
                  !text 129,0,0,0,0                        
 
-; .page
+;[[math.log]]
+
 ; Natural Log Function
 ;
 ; Calculation is by   LN(f*2^n) = (n+LOG2(f))*LN(2)
@@ -144,7 +146,8 @@ romsub           jsr romupk
 romdiv           jsr romupk                               
                  +lbra fdivt                              
 
-; .page
+;[[math.multiply]]
+
 ; Multiplication        FAC = ARG*FAC
 
 fmultt_c65                                                ; [910402]
@@ -175,7 +178,7 @@ fmultt           beq multrt                               ; if FAC=0, return.  F
                  jsr mltpl1                               
                  +lbra movfr                              ; move result into FAC
 
-; .page
+
 mltply           +lbeq mulshf                             ; normalize result and return. shift result right 1 byte.  exits with .c=0
 mltpl1           lsr                                      
                  ora #$80                                 ; will flag end of shifting

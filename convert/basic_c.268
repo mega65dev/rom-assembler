@@ -25,7 +25,7 @@ l268_1           +lbcs fcerr                              ; illegal quantity err
 
                  jmp ($8006)                              ; bra screendef
 
-; .page
+
 ;*****************************************************************
 ;* SCREEN OPEN  open a graphic screen for viewing or drawing
 ;*

@@ -1,6 +1,7 @@
 verify_cmd .byte 'U0>V' ;Verify on/off command 
  
 ;.end 
+;[[command.char]] 
  .page 
  .subttl  CHAR 
  
@@ -74,6 +75,7 @@ C65__char
  
 40$ rts 
  
+;[[command.paint]] 
  .page 
  .subttl  PAINT 
  

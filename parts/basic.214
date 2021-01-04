@@ -43,6 +43,7 @@ rt rts
 ;.end 
  .page 
  .subttl  INSTR() 
+;[[function.instr]] 
  
 ;  INSTRing - Find position of str1 in str2 at or after position n 
 ; 
@@ -144,6 +145,8 @@ instr lda facmo ;save pointer to temporary descriptors
 ;.end 
  .page 
  .subttl  TYPE 
+ 
+;[[function.type]] 
  
 ; TYPE  types a given disk (SEQ) file to output channel 
 ; 

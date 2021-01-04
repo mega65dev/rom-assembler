@@ -43,8 +43,9 @@ l185_2           sta polypt
                  rts                                      ; yes
 
 ;.end
-; .page
-; .subttl Floating Point Math Package (TRIG)
+;[[math.ext7]]
+
+
 
 ; Sine, Cosine, and Tangent Functions.
 

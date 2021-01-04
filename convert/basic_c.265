@@ -55,12 +55,13 @@ l265_4           lda #$ff                                 ; no line found, fake 
                  sta linnum+1                             
                  rts                                      
 
-; .ifgt *-$7f00
-; .messg ***ROM OVERFLOW: $7F00
-; .endif
+
+
+
 ;.end
-; .page
-; .subttl  GRAPHIC Interface
+;[[command.screen]]
+
+
 
                  * = $af00                                ; [911001]
 

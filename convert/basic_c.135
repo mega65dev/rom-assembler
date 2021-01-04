@@ -7,7 +7,7 @@ ReadSystemClock
                  sty time+3                               ; hours  0-59
                  rts                                      
 
-; .page
+
 ; Unsigned Integer Multiply: Time * Factor  -> Tenths_of_Seconds
 ;     A   *  (B,C)  ->      (D,E,F)
 

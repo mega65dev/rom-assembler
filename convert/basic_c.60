@@ -40,7 +40,7 @@ l60_3            ldy #0                                   ; last data chr could 
 
 l60_4            rts                                      ; do next statement
 
-; .page
+
 ; DATLOP Routine Subroutine to find data.
 ;
 ; The search is made by using the execution code for data to skip over

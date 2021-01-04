@@ -3,6 +3,7 @@ TimeFactor
  .word 600  ; per minute  (max   59*600 =  35400 ($08A48) 
  .word 36000  ; per hour    (max 23*36000 = 828000 ($CA260) 
  
+;[[command.sleep]] 
  .page 
  .subttl  SLEEP 
  
@@ -98,6 +99,7 @@ sleep jsr getwrd ;get argument in (y,a)
  rts 
  
 ;.end 
+;[[command.wait]] 
  .page 
  .subttl  WAIT 
  

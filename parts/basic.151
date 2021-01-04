@@ -3,6 +3,7 @@ raddc  .byte @150,@50,@261,@106,0
  
 ;.end 
  .page 
+;[[math]] 
  .subttl Math Package (CODE12) 
  
 n32768 .byte $90,$80,0,0,0 
@@ -77,6 +78,7 @@ errind bbr7 runmod,storts ;goto error if not in direct mode
  
 ;.end 
  .page 
+;[[function.userdef]] 
  .subttl User Defined Function 
  
 ; User Defined Function Code 
@@ -197,6 +199,8 @@ deffin ldy #0
  rts 
  
 ;.end 
+;[[function.stringmisc]] 
+ 
  .page 
  .subttl MID$  LEFT$  RIGHT$  ASC  STR$  LEN 
  

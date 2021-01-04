@@ -70,9 +70,9 @@ l66_6            phx
 l66_7            +lbra frefac                             ; free up temp. string, rts
 
 ;.end
+;[[command.auto]]
 
-; .page
-; .subttl  AUTO
+
 
 ; AUTO Increment
 ;   Syntax :    auto {line-number} (line-number = 0 means turn off)

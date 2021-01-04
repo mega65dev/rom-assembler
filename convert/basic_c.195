@@ -40,7 +40,7 @@ cld70            jsr reset_txtptr
                  jsr link_program                         
                  +lbra fload                              
 
-; .page
+
 open             jsr paoc                                 ; parse statement
                  jsr _open                                ; open it
                  bra close_out_1                          
@@ -71,6 +71,6 @@ l195_1           pla                                      ; something else
                  +lbcs erexit                             
                  rts                                      
 
-; .page
+
 ; Parse LOAD, SAVE, & VERIFY commands
 

@@ -37,7 +37,8 @@ C65__box
 
                  jmp ($801a)                              ; bra box
 
-; .page
+;[[command.circle]]
+
 ;*****************************************************************
 ;* CIRCLE   draw a Circle
 ;*
@@ -73,8 +74,9 @@ C65__circle
 
                  jmp ($801c)                              ; bra circle
 
-; .page
-; .subttl  ELLIPSE
+
+;[[command.ellipse]]
+
 
 ;*****************************************************************
 ;* ELLIPSE   draw an Ellipse
@@ -117,8 +119,9 @@ C65__ellipse
 
                  jmp ($8020)                              ; bra ellipse
 
-; .page
-; .subttl  POLYGON
+;[[command.polygon]]
+
+
 
 ;*****************************************************************
 ;* POLYGON   draw a regular n-sided Polygon
@@ -191,8 +194,9 @@ l274_2           +lbcc fcerr
 
                  jmp ($801e)                              ; bra polygon
 
-; .page
-; .subttl  SET multipurpose command
+;[[command.set]]
+
+
 
 ;  SET  A multipurpose command initiator
 

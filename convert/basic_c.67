@@ -8,8 +8,8 @@ auto
                  rts                                      
 
 ;.end
-; .page
-; .subttl  HELP
+
+
 
 help             ldx errnum                               ; check for error status
                  inx                                      

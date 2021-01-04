@@ -54,4 +54,5 @@ l21_2            ldy trapno+1                             ; is trap set?
                  jsr luk4it                               
                  +lbra newstt                             
 
-; .page
+
+;[[error.handler]]

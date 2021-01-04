@@ -9,12 +9,13 @@ basic_nmi                                                 ; removed [910826]
 ; dec nmi_wrap_flag ;open the door to NMI
                  rts                                      
 
-; .ifgt *-$c000
-; .messg ***ROM OVERFLOW: $C000
-; .endif
+
+
+
 ;.end
-; .page
-; .subttl C65 BASIC Jump Table
+;[[jumptable]]
+
+
 
                  * = $7f00                                
 
@@ -101,7 +102,7 @@ basic_nmi                                                 ; removed [910826]
                  +lbra sta_far_ram0                       ; sta (.x),y to   BASIC text bank [910716]
                  +lbra sta_far_ram1                       ; sta (.x),y to   BASIC variable bank [910716]
 
-; .page
+
 ; Graphic Kernel Call. (Temporary for C65 development ????)
 ;
 ;  syntax:  GRAPHIC command# [,args]

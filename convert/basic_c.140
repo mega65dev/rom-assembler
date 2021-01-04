@@ -2,8 +2,9 @@ decbad
                  +lbra fcerr                              ; illegal qty error
 
 ;.end
-; .page
-; .subttl  PEEK  POKE
+
+;[[command.peekpoke]]
+
 
 
 peek             phw poker                                ; ..also happens to be LINNUM!   [910911]
@@ -28,4 +29,4 @@ l140_1           lda (poker),y
                  sta poker                                
                  +lbra sngflt                             ; float it
 
-; .page
+

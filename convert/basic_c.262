@@ -34,6 +34,6 @@ l262_3           inc count                                ; Next assignment
 l262_4           rts                                      
 
 ;.end
-; .page
-; .subttl  AutoScroll
+
+
 

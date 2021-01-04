@@ -45,6 +45,7 @@ sprsub pha   ;save angle phase
 30$ rts 
  
 ;.end 
+;[[command.mouse]] 
  .page 
  .subttl  MOUSE 
  

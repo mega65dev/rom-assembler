@@ -1,7 +1,7 @@
 optw99           clc                                      
                  rts                                      
 
-; .page
+
 comsad           jsr chkcom                               ; get a comma & signed 2-byte arg in y,a   [910307]
                  +lbra sadwrd                             
 
@@ -21,7 +21,7 @@ l249_1           lda #0                                   ; default optional arg
                  clc                                      
                  rts                                      
 
-; .page
+
 ;*****************************************************************
 ;  OPTBYT - get an optional 1 byte value in x.
 ;

@@ -21,7 +21,7 @@ Sprite_Load
                  jsr LoadBlockNext                        ; load second block
                  +lbra list_err                           ; release channel, close file, return to main
 
-; .page
+
 ;  Set or clear a bit in a VIC register
 ;
 ; .X = 1 to set, 0 to clear

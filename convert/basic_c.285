@@ -10,7 +10,7 @@ border
                  stx vic+32                               
                  rts                                      
 
-; .page
+
 getcomnyb                                                 
                  jsr chkcom                               ; check for comma
 getnyb                                                    
@@ -38,8 +38,9 @@ chkeos                                                    ; Check for next byte 
 
 
 ;.end
-; .page
-; .subttl SPRITE Commands and Functions
+;[[command.sprite]]
+
+
 
 ;************************************************************************************
 ; SPRITE CLR
@@ -98,4 +99,4 @@ l285_5           jsr optbyt                               ; look for (optional) 
 
 l285_6           rts                                      
 
-; .page
+

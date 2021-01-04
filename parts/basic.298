@@ -20,6 +20,7 @@ rcolor jsr conint       ;evaluate integer argument, put in .X
 color_source 
  .word  vic+33,_color,highlight_color,vic+32 
  
+;[[function.rgraphic]] 
  .page 
  .subttl Graphic Functions 
  
@@ -91,6 +92,7 @@ rgraphic
  jsr PopParms  ;restore Graphics parameters & LINNUM 
  rts 
  
+;[[function.pixel]] 
  .page 
 ; Return the color of a given X,Y pixel location on the drawscreen  [910801] 
 ;  PIXEL (x,y) 

@@ -1,6 +1,6 @@
 rrts             rts                                      
 
-; .page
+
 ; Using- alg: delete leading zeros of no
 
 alg              ldy point                                ; start with a .?

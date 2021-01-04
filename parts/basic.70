@@ -8,6 +8,7 @@ highlight_text   ;nasty kludge to colorize error or found text
 10$ rts 
  
 ;.end 
+;[[command.gotosub]] 
  .page 
  .subttl  GOSUB  GOTO 
  

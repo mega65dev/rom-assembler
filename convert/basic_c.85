@@ -30,8 +30,9 @@ l85_3            rts
 l85_4            +lbra snerr                              ; syntax error
 
 ;.end
-; .page
-; .subttl  FIND  CHANGE
+;[[command.findchange]]
+
+
 
 ; FIND   "string"                    [,line_range]
 ; CHANGE "oldstring" TO "newstring"  [,line_range]

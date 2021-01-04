@@ -13,6 +13,6 @@ l206_1           sta swe,x                                ; init working registe
                  tay                                      
                  rts                                      
 
-; .page
+
 ; Using- round number
 

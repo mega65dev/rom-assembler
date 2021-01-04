@@ -57,6 +57,7 @@ frmjmp
  bra frmevl 
  
 ;.end 
+;[[command.key]] 
  .page 
  .subttl  KEY 
  

@@ -27,7 +27,7 @@ rnd_0            bmi l150_2                               ; /// entry from jump 
                  sta facho                                
                  bra l150_3                               
 
-; .page
+
 l150_1           lda #<rndx                               ; get last one into FAC
                  ldy #>rndx                               
                  jsr movfm                                

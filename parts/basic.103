@@ -43,6 +43,7 @@ GetSaveChannel   ;Used by KeySave and SpriteSave    [910930]
  
 ;.end 
  .page 
+;[[command.bank]] 
  .subttl  BANK 
  
 ;************************************************************************ 
@@ -69,6 +70,7 @@ bank jsr getbyt ;get bank number in .x
  
  
 ;.end 
+;[[command.play]] 
  .page 
  .subttl  PLAY 
  

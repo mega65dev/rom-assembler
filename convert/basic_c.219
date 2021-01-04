@@ -12,6 +12,7 @@ dcato            jsr _clrch
 
 l219_1           rts                                      
 
-; .page
+
+;[[function.dopen]]
 ; DOPEN dfn(,t(,r))
 

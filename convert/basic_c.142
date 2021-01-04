@@ -57,6 +57,7 @@ l142_7           +lbra chrd1                              ; pla,pla,jmp putnew
 
 
 ;.end
-; .page
-; .subttl  HEX$
+;[[function.hexstr]]
+
+
 

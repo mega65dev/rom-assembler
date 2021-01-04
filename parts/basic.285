@@ -38,6 +38,7 @@ chkeos    ;Check for next byte = end of statement, error if not
  
  
 ;.end 
+;[[command.sprite]] 
  .page 
  .subttl SPRITE Commands and Functions 
  

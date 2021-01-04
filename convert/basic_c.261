@@ -48,7 +48,9 @@ l261_3           jsr _cursor                              ; Turn cursor ON or OF
 
 l261_4           rts                                      ; eol
 
-; .page
+;[[function.rcursor]]
+
+
 ;************************************************************************
 ;*   RCURSOR Returns in variable list current cursor position *
 ;*         *

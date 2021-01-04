@@ -2,6 +2,7 @@ cont_rts
  rts 
  
 ;.end 
+;[[command.run]] 
  .page 
  .subttl  RUN 
 ;*********************************************************** 
@@ -50,6 +51,7 @@ run$20 jsr clearc  ;first trash all variables
  bra newstt  ;..otherwise it's business as usual 
  
 ;.end 
+;[[command.restore]] 
  .page 
  .subttl  RESTORE 
 ;********************************************************************* 
@@ -89,6 +91,7 @@ restore$2
  rts 
  
 ;.end 
+;[[command.renumber]] 
  .page 
  .subttl  RENUMBER 
 ;*********************************************************************** 

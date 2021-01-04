@@ -141,6 +141,7 @@ frec = *-tabld-1     ;Record
  .byte 'P',xsca,xrcl,xrec 
  
  .page 
+;[[dos.sendparam]] 
 ; Send parameters to device 
 ; 
 ; Entry: .a = number of bytes in format 

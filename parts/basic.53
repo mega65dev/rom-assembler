@@ -41,6 +41,7 @@ stradj ldy #0
  rts 
  
 ;.end 
+;[[command.printcmd]] 
  .page 
  .subttl PRINT  PRINT#  CMD 
  

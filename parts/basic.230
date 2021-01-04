@@ -5,9 +5,7 @@ dclear jsr dospar  ;parse the line
  jsr print_dos_error ;if any 
  bra dclall 
  
- 
- 
- 
+;[[command.collect]] 
 ; COLLECT v<drive#> 
  
 collect jsr dospar  ;parse the line 
@@ -21,6 +19,7 @@ collect jsr dospar  ;parse the line
  bra print_dos_error ;if any 
  
  
+;[[command.copy]] 
  .page 
 ; COPY cdddfn=sdsfn 
  

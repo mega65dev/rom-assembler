@@ -54,7 +54,7 @@ l290_4           phy
                  beq l290_5                               
                  inc xpos+1                               
 l290_5                                                    
-; .page
+
 ;******************************************************************
 ;  MOVSPR n, p1 TO p2 - move a sprite along line from p1 to p2
 ;

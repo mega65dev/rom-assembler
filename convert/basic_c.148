@@ -21,8 +21,9 @@ xor              phw poker                                ; protect the poker va
                  rts                                      
 
 ;.end
-; .page
-; .subttl  MOD
+;[[operator.mod]]
+
+
 
 ;**************************************************************
 ;*
@@ -64,8 +65,9 @@ l148_1           lda facexp,x
 
 
 ;.end
-; .page
-; .subttl  RWINDOW
+
+;[[function.rwindow]]
+
 
 ;******************************************************************************
 ;

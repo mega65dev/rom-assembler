@@ -71,7 +71,8 @@ l163_6           ldy #0                                   ; skip over good strin
                  jsr movpnt                               
                  bra gloop                                
 
-; .page
+;[[string.garbage.utils]]
+
 ; Subroutines used for garbage collection.
 ;
 ;  Compare for (y,a) = fretop.

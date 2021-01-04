@@ -12,7 +12,9 @@ reay             jsr chrgot                               ; get old character
                  +lbne crdo                               ; end of print using
                  jmp chrget                               ; branch if yes
 
-; .page
+;[[command.fform]]
+
+
 ;  FFORM - output a number to format
 ;
 ;  Number is in fbuffr,  format checked by anaf

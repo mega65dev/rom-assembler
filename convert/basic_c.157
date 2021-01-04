@@ -14,7 +14,7 @@ l157_1           dey
                  pla                                      ; restore length
                  jsr mvdone                               ; finish up by updating frespc
 
-; .page
+
 ; Some string function is returning a result in DSCTMP.  Set up a temp
 ; descriptor with DSCTMP in it.  Put a pointer to the descriptor in FACMO&LO
 ; and flag the result as a string type.

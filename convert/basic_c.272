@@ -33,7 +33,8 @@ l272_2           jsr optbyt                               ; get another color re
                  bcs set_palette                          ; yes- loop
                  rts                                      
 
-; .page
+;[[command.line]]
+
 ;*****************************************************************
 ;* LINE  draw a dot, a line or a stick shape
 ;*

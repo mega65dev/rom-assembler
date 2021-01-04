@@ -12,6 +12,8 @@ reay jsr chrgot ;get old character
  bne crdo ;end of print using 
  jmp chrget ;branch if yes 
  
+;[[command.fform]] 
+ 
  .page 
 ;  FFORM - output a number to format 
 ; 

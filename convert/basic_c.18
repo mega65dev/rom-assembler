@@ -8,8 +8,9 @@ break            jsr release_channels                     ; make sure we're in t
 do_rts           rts                                      
 
 ;.end
-; .page
-; .subttl Function Handler
+;[[functions]]
+
+
 
 ; At this point, eval has determined that the token in a has to be a
 ; function.  It must therefor be in the range SGN...MID$ (old BASIC),

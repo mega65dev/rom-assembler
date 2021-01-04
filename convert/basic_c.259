@@ -36,7 +36,7 @@ l259_1           jsr chrget                               ; eat token
                  ror                                      
                  jsr _mouse                               ; do it (???? do after coord error check)
 
-; .page
+
                  jsr optbyt                               ; get (optional) hotspot, x  new [910307]
                  bcc l259_2                               ; not given
                  cpx #24                                  
@@ -86,7 +86,9 @@ l259_3           jsr chrgot                               ; get (optional) posit
 l259_4           rts                                      
 
 ;.end
-; .page
+;[[function.rmouse]]
+
+
 ;************************************************************************
 ;*   RMOUSE Returns in variable list current status of mouse *
 ;*         *

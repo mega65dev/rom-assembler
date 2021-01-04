@@ -33,7 +33,9 @@ l270_1           +lbcs fcerr                              ; if out of range
 
 l270_2           jmp ($8016)                              ; bra setdpat
 
-; .page
+;[[command.palette]]
+
+
 ;*****************************************************************
 ;* PALETTE   set palette colors
 ;*

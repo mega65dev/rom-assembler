@@ -86,8 +86,9 @@ l260_7           inc count                                ; Next assignment
 l260_8           rts                                      
 
 ;.end
-; .page
-; .subttl   CURSOR
+;[[command.cursor]]
+
+
 
 ;*****************************************************************
 ;*   CURSOR [ON|OFF,] [column] [,row [,style] ]

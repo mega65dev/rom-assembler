@@ -25,8 +25,10 @@ rlsstk           tya
 l32_1            rts                                      
 
 ;.end
-; .page
-; .subttl FindLine
+;[[linesearch]]
+
+
+
 
 ; FindLine
 ; Searches the program text for the line whose number is passed in "linnum".

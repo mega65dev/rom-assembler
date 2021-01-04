@@ -7,7 +7,7 @@ done             pla                                      ; get aux error flag
                  ldx parstx                               
                  rts                                      
 
-; .page
+
 ; Parse given parameters.  what it is  example
 ;     -------------------- ---------
 parse1           cmp #'"'                                 
@@ -37,7 +37,7 @@ parse1           cmp #'"'
 
                  +lbne snerr                              ; none of these, syntax error
 
-; .page
+
 on1              jsr on                                   
                  +lbra del1                               
 

@@ -1,8 +1,9 @@
 joytab           !text 4,2,3,0,6,8,7,0,5,1,0              
 
 ;.end
-; .page
-; .subttl  POT  LPEN
+
+;[[function.potpen]]
+
 
 ;***********************************************************
 ; POT(n)  --  Read paddles
@@ -70,7 +71,7 @@ l145_5           pla
                  plp                                      ; restore status
                  +lbra nosflt                             ; output 2-byte result
 
-; .page
+
 ;*************************************************************
 ;  LPEN(n)  --  Read light pen
 ;

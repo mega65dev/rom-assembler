@@ -9,6 +9,7 @@ troff   ;trace mode off
  
  
 ;.end 
+;[[command.sys.returnreg]] 
  .page 
  .subttl  RREG 
  
@@ -53,6 +54,7 @@ rreg lda #0
 50$ rts 
  
 ;.end 
+;[[command.midstring]] 
  .page 
  .subttl MID$ 
  

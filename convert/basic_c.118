@@ -3,8 +3,8 @@ gonprc           pla                                      ; get rid of rts addr.
                  +lbra negprc                             ; do negation
 
 ;.end
-; .page
-; .subttl Variable Assignment
+
+
 
 is_variable                                               
                  jsr ptrget                               ; parse variable name, put name in varnam
@@ -37,7 +37,7 @@ isvret           sta facmo                                ; save pointer to vari
                  bne ds_rts                               
                  +lbra Get_TI_String                      ; the one and only TI$
 
-; .page
+
 isvds            cpx #'D'                                 ; is this DS$?
                  bne ds_rts                               ; no
                  cpy #'S'+$80                             ; shifted S?

@@ -13,6 +13,7 @@ rescnt ldx #errcr
  
 ;.end 
  .page 
+;[[command.loops]] 
  .subttl  DO  LOOP  UNTIL  WHILE  EXIT 
  
 do ldy #1 

@@ -57,6 +57,7 @@ errd jsr sign  ;get sign
  
  
 ;.end 
+;[[function.hexstr]] 
  .page 
  .subttl  HEX$ 
  

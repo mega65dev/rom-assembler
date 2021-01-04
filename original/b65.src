@@ -1,3 +1,4 @@
+;[[header]]
 	.nam C65 Development BASIC 10.0 (C)1991 CBM
 	.subttl *** Copyright (C) 1991  by  Commodore Business Machines, Inc. ***
 
@@ -106,6 +107,7 @@
 	.page
 	.subttl C65 BASIC 10.0 Declarations
 
+;[[constants]]
 ; General assignments and equates
 
 doslfn		= 0		;DOS' private logical file number
@@ -154,6 +156,7 @@ dma_ctlr	= $d700		;DMA Controller
 
 	.page
 ;  BASIC base page storage
+;[[data.zeropage]]
 
 		* = $0000
 
@@ -323,6 +326,8 @@ srow
 fstr1		*=*+3		;
 fstr2		*=*+3		;
 
+
+;[[stackdata]]
 	.page
 		* = $00ff
 
@@ -365,6 +370,8 @@ dma2_mod_hi	*=*+1
 
 sysstk				;bottom of system stack
 stkend		= $1fb		;top of system stack
+
+;[[data]]
 
 	.page
 		* = $0200
@@ -817,7 +824,7 @@ GKI.temp17	*=*+1
 ;.end
 	.page
 	.subttl C65 Kernal Entry Points
-
+;[[kernal]]
 ; Addresses of OS parameters referenced by BASIC:
 
 _6510_data_reg	= $01
@@ -927,6 +934,7 @@ _plot		= $fff0
 	.page
 	.subttl C65 BASIC 10.0 Initilaization
 
+;[[initialise]]
 	* = $2000
 
 basic
@@ -1302,6 +1310,7 @@ chrtst	cmp #':'		;						[910513]
 
 
 ;.end
+;[[indirection]]
 	.page
 ; C65 BASIC Indirect Load Subroutines
 
@@ -1446,6 +1455,7 @@ indcmp_in1		;							[910620]
 	.page
 	.subttl Crunch - Tokenization Routine
 
+;[[tokeniser]]
 ;        CRUNCH
 ;
 ;  Entry:  TXTPTR points to start of text to crunch
@@ -1697,6 +1707,8 @@ reser	sta index1+1
 	.page
 	.subttl Non-Escape Keyword List
 
+;[[tokeniser.keywords]]
+
 keyword_list
 	.byte 'EN','D'+$80		;$80
 	.byte 'FO','R'+$80		;$81
@@ -1833,6 +1845,7 @@ keyword_list
 	.page
 	.subttl Escape Tokens and Keywords
 
+;[[tokeniser.keyword.esc]]
 ; Escape Command Tokens
 
 esc_command_list
@@ -1926,6 +1939,7 @@ esc_function_list
 	.byte 0
 
 ;.end
+;[[tokeniser.vectors]]
 	.page
 	.subttl Jump Table For Dispatch Routine
 stmdsp
@@ -2161,6 +2175,7 @@ ptdorl	.byte   100
 
 ;.end
 	.page
+;[[tokeniser.const]]
 	.subttl  Keyword Equates
 
 end_token		= $80	;v2 commands
@@ -2234,6 +2249,7 @@ pointer_token		= $0a
 last_esc_function_token	= $0d				;			[910820]
 
 	.page
+;[[errors]]	
 	.subttl Error Messages
 
 ok_error_message
@@ -2285,6 +2301,7 @@ error_message_list
 
 	.page
 	.subttl  Error Message Numbers
+;[[errors/constants]]
 
 errtmf			= 1
 errfno			= 3
@@ -2328,6 +2345,7 @@ last_error_message	= 42	;# of last error msg
 
 ;.end
 	.page
+;[[error.handler]]
 	.subttl Error message output
 
 ; Routine to translate error message # in .a
@@ -2352,6 +2370,7 @@ erstup	tax			;error set up
 4$	rts
 
 ;.end
+;[[dispatcher]]
 	.page
 	.subttl Execute Dispatcher
 
@@ -2536,6 +2555,7 @@ morsts	cmp #':'
 	bra snerr1
 
 	.page
+;[[command.set1]]	
 ; STOP, STOP KEY, and END handlers
 ;
 
@@ -2582,6 +2602,7 @@ break	jsr release_channels	;make sure we're in text mode????		[910909]
 do_rts	rts
 
 ;.end
+;[[functions]]
 	.page
 	.subttl Function Handler
 
@@ -2724,6 +2745,7 @@ andop	ldy #0
 	bra givayf	;float (a,y) and return to user
 
 
+;[[relational]]
 
 ; Time to perform a relational operator.
 ; (domask) contains the bits as to which relational operator it was.
@@ -2803,6 +2825,7 @@ docmp
 
 ;.end
 	.page
+;[[readyerror]]
 	.subttl  Ready, Error, Main (CODE 0)
 
 bad_command
@@ -2862,6 +2885,7 @@ nerror	txa
 	bra newstt
 
 	.page
+;[[error.handler]]
 errisd	dex
 	txa
 	jsr erstup		;set up address of error msg in .a in index2
@@ -2898,6 +2922,8 @@ errfin	ldy curlin+1		;direct mode?
 	jsr inprt
 10$	jsr highlight_done	;restore normal text color????				[910624]
 
+;[[interface]]
+
 	.page
 ready_1
 	lda #%10000000
@@ -2921,6 +2947,8 @@ nmain	ldx #$ff		;set direct mode flag
 	stx curlin+1
 	jsr InputLine		;get a line of input & buffer it
 
+;[[execute]]
+
 execute_a_line			;EXECUTE PLAIN TEXT IN BUFFER
 	stx txtptr		;init buffer pointer
 	sty txtptr+1
@@ -2931,6 +2959,7 @@ execute_a_line			;EXECUTE PLAIN TEXT IN BUFFER
 	jsr crunch		;	got text- tokenize buffer,
 	jsr chrgot		;		get first command (token),
 	bra xeqdir		;		and execute it
+
 
 				;ADD or DELETE NEW LINE
 10$	jsr linget		;evaluate line number, put into into linnum
@@ -2943,6 +2972,7 @@ execute_a_line			;EXECUTE PLAIN TEXT IN BUFFER
 	jsr FindLine		;locate line in program
 	bcc nodel		;	not found, go insert line into program
 				;	else delete current line and insert this one
+;[[edit.shift]]
 	.page
 ; Test: IF new line is longer than the line it replaces,
 ;		THEN IF there isn't enough room in memory to add this new line,
@@ -3218,6 +3248,7 @@ nodel	jsr init_stack		;'clearc' removed since text changes don't require trashin
 
 120$	bra main
 
+;[[linkprogram]]
 
 	.page
 link_program
@@ -3266,6 +3297,8 @@ link_error			;					[910103]
 
 lnkrts	rts
 
+;[[command.input.handler]]
+
 	.page
 ; Function to get a line one character at a time from the input
 ; channel and build it in the input buffer.
@@ -3303,6 +3336,8 @@ InputLine			;inlin.
 
 ;.end
 	.page
+;[[stack]]
+
 	.subttl Runtime Stack Routines
 
 ; Find a specific token in the run-time stack. token to be found is in srchtk.
@@ -3474,6 +3509,8 @@ rlsstk	tya
 10$	rts
 
 ;.end
+;[[linesearch]]
+
 	.page
 	.subttl FindLine
 
@@ -3537,6 +3574,8 @@ FindLink
 4$	rts		;exit, line found	(.c=1)
 
 ;.end
+;[[command.line.get]]
+
 	.page
 	.subttl LinGet
 
@@ -3603,6 +3642,8 @@ linget	ldx #0			;enter with CHRGET flags set
 
 ;.end
 	.page
+;[[command.list]]
+
 	.subttl LIST
 
 list	rmb7 helper		;clear 'help' flag for p1line
@@ -3730,6 +3771,8 @@ list_memory
 	stx lowtr
 	sta lowtr+1
 	bra 10$
+
+;[[command.list.basic]]
 
 	.page
 ;******************************************************
@@ -3903,8 +3946,10 @@ nescpr	bcs p1l015		;no takers, print a funny graphic character
 
 
 ;.end
+;[[command.newclr]]
+
 	.page
-	.subttl NEW  CLR
+	.subttl NEW  CLR	
 ;
 ; The NEW command clears the program text as well as variable space.
 ;
@@ -4026,6 +4071,8 @@ clearc	jsr _clall		;close all files
 fload	jsr restore$1		;reset pointer for DATA statements
 
 	.page
+;[[stack.init]]
+
 ; INIT_STACK Routine	(formerly STKINI)
 ;
 ;   Init_Stack resets the stack pointer.  String temporaries are freed up,
@@ -4060,6 +4107,8 @@ reset_txtptr
 	rts
 
 ;.end
+;[[command.return]]
+
 	.page
 	.subttl RETURN
 ;*********************************************************************
@@ -4105,6 +4154,8 @@ ret010	jsr movfnd	;(fndpnt) => (tos)
 	bra data
 
 ;.end
+;[[command.data]]
+
 	.page
 	.subttl DATA
 
@@ -4146,6 +4197,7 @@ remn	ldx #0		;REM terminates on null only
 	beq 10$		;	yes, time to change
 
 ;.end
+;[[command.ifthenelse]]
 	.page
 	.subttl IF  THEN  ELSE
 
@@ -4291,6 +4343,7 @@ else	cmp #esc_command_token	;is this of the form "ELSE b-block"?
 
 
 ;.end
+;[[command.on]]
 	.page
 	.subttl ON...GOTO  ON...GOSUB
 
@@ -4318,6 +4371,7 @@ ongoto
 	rts			;either end of line or syntax error
 
 ;.end
+;[[command.let]]
 	.page
 	.subttl LET
 
@@ -4530,6 +4584,7 @@ stradj	ldy #0
 	rts
 
 ;.end
+;[[command.printcmd]]
 	.page
 	.subttl PRINT  PRINT#  CMD
 
@@ -4674,6 +4729,7 @@ outqst	lda #'?'
 
 ;.end
 	.page
+;[[command.inputs]]
 	.subttl INPUT  GET  READ  LINPUT
 
 get	jsr errdir		;direct mode illegal
@@ -4975,6 +5031,7 @@ datlop	jsr datan	;skip some text
 
 
 ;.end
+;[[command.next]]
 	.page
 	.subttl NEXT
 
@@ -5081,7 +5138,7 @@ next	bne 10$		;hop if 'next' variable given
 45$	rts
 
 ;.end
-	.page
+;[[command.dim]]	.page
 	.subttl DIM
 
 ;	The DIMension code sets DIMFLG and then falls into the variable search
@@ -5105,6 +5162,7 @@ dim	tax		;make .x non-zero (.a must be non-zero to work correctly)
 	rts
 
 ;.end
+;[[command.sys]]
 	.page
 	.subttl SYS
 
@@ -5140,6 +5198,7 @@ sys	jsr getwrd	;convert arg to integer value
 			;If returns, Kernel will update _reg's for us
 
 ;.end
+;[[command.dma]]
 	.page
 	.subttl DMA
 
@@ -5205,6 +5264,7 @@ dma				;params are not longer optional-		[910520] F018A
 90$	rts
 
 ;.end
+;[[command.trace]]
 	.page
 	.subttl  TRON  TROFF
 
@@ -5220,6 +5280,7 @@ troff			;trace mode off
 
 
 ;.end
+;[[command.sys.returnreg]]	
 	.page
 	.subttl  RREG
 
@@ -5264,6 +5325,7 @@ rreg	lda #0
 50$	rts
 
 ;.end
+;[[command.midstring]]
 	.page
 	.subttl MID$
 
@@ -5343,7 +5405,7 @@ midwrk	=midd2-1
 80$	bra frefac		;free up temp. string, rts
 
 ;.end
-
+;[[command.auto]]
 	.page
 	.subttl  AUTO
 
@@ -5440,6 +5502,7 @@ highlight_text			;nasty kludge to colorize error or found text
 10$	rts
 
 ;.end
+;[[command.gotosub]]
 	.page
 	.subttl  GOSUB  GOTO
 
@@ -5551,6 +5614,7 @@ go_without_to
 
 
 ;.end
+;[[command.continue]]
 	.page
 	.subttl  CONTINUE
 ;**********************************************************
@@ -5593,6 +5657,7 @@ cont_rts
 	rts
 
 ;.end
+;[[command.run]]
 	.page
 	.subttl  RUN
 ;***********************************************************
@@ -5641,6 +5706,7 @@ run$20	jsr clearc		;first trash all variables
 	bra newstt		;..otherwise it's business as usual
 
 ;.end
+;[[command.restore]]
 	.page
 	.subttl  RESTORE
 ;*********************************************************************
@@ -5680,6 +5746,7 @@ restore$2
 	rts
 
 ;.end
+;[[command.renumber]]
 	.page
 	.subttl  RENUMBER
 ;***********************************************************************
@@ -6337,6 +6404,7 @@ moveup
 
 ;.end
 	.page
+;[[command.for]]
 	.subttl  FOR
 ;	FOR
 ;
@@ -6456,6 +6524,7 @@ for	lda #$80
 	rts
 
 ;.end
+;[[command.delete]]
 	.page
 	.subttl  DELETE
 
@@ -6569,6 +6638,7 @@ range	beq 10$			;a terminator from chrgot?
 40$	bra snerr		;syntax error
 
 ;.end
+;[[command.findchange]]
 	.page
 	.subttl  FIND  CHANGE
 
@@ -6864,6 +6934,7 @@ puctrl	jsr frmstr		;do frmevl,frestr. return with a=len, index=~string
 
 ;.end
 	.page
+;[[command.trap]]
 	.subttl  TRAP
 
 trap
@@ -6879,6 +6950,7 @@ trap
 	rts
 
 ;.end
+;[[command.resume]]
 
 	.page
 	.subttl  RESUME
@@ -6970,6 +7042,7 @@ rescnt	ldx #errcr
 
 ;.end
 	.page
+;[[command.loops]]
 	.subttl  DO  LOOP  UNTIL  WHILE  EXIT
 
 do	ldy #1
@@ -7131,6 +7204,7 @@ frmjmp
 	bra frmevl
 
 ;.end
+;[[command.key]]
 	.page
 	.subttl  KEY
 
@@ -7388,6 +7462,7 @@ GetSaveChannel			;Used by KeySave and SpriteSave				[910930]
 
 ;.end
 	.page
+;[[command.bank]]
 	.subttl  BANK
 
 ;************************************************************************
@@ -7414,6 +7489,7 @@ bank	jsr getbyt	;get bank number in .x
 
 
 ;.end
+;[[command.play]]
 	.page
 	.subttl  PLAY
 
@@ -7870,6 +7946,7 @@ filter_offset
 voltab	.byte 0,1,3,5,7,8,10,12,14,15
 
 ;.end
+;[[command.filter]]
 	.page
 	.subttl  FILTER
 
@@ -7966,6 +8043,7 @@ filter	jsr getbyt		;get left/right SID				[910612]
 
 ;.end
 	.page
+;[[command.envelope]]
 	.subttl  ENVELOPE
 
 ;****************************************************************
@@ -8061,6 +8139,7 @@ volrts
 
 ;.end
 	.page
+;[[command.volume]]
 	.subttl  VOLUME
 
 ;***************************************************************
@@ -8127,6 +8206,7 @@ volume	beq snerr		;stereo parameters				[910612]
 	rts
 
 ;.end
+;[[command.sound]]
 	.page
 	.subttl  SOUND
 
@@ -8300,6 +8380,7 @@ sound	cmp #clr_token		;SOUND CLR:	init sound/music environment	[910717]
 	rts
 
 ;.end
+;[[command.window]]
 	.page
 	.subttl  WINDOW
 
@@ -8369,6 +8450,7 @@ window	jsr getbyt		;get u.l. col
 98$	bra fcerr		;illegal value error
 
 ;.end
+;[[command.fastslow]]
 	.page
 	.subttl  FAST  SLOW
 
@@ -8432,6 +8514,7 @@ sterr	ldx #errst
 
 ;.end
 	.page
+;[[evaluate]]
 	.subttl Formula Evaluator
 
 ; Formula Evaluator Routine
@@ -9244,6 +9327,7 @@ decblt	dec hightr+1
 	rts
 
 ;.end
+;[[arrays]]
 	.page
 	.subttl Array Routines
 
@@ -9617,6 +9701,7 @@ fmaptr	lda count
 	rts
 
 ;.end
+;[[command.time]]
 	.page
 	.subttl  TIME functions
 
@@ -9763,6 +9848,7 @@ Get_TI_String
 	bra putnew		;make descriptor in dsctmp real
 
 	.page
+;[[time]]
 ; TI.	Convert 24-hour TOD into tenths of seconds.		901010 F.Bowen
 
 Get_TI
@@ -9854,6 +9940,7 @@ TimeFactor
 	.word 600		;	per minute  (max   59*600 =  35400 ($08A48)
 	.word 36000		;	per hour    (max 23*36000 = 828000 ($CA260)
 
+;[[command.sleep]]
 	.page
 	.subttl  SLEEP
 
@@ -9949,6 +10036,7 @@ sleep	jsr getwrd	;get argument in (y,a)
 	rts
 
 ;.end
+;[[command.wait]]
 	.page
 	.subttl  WAIT
 
@@ -9982,6 +10070,7 @@ wait	jsr getnum		;get required mask1
 	rts			;got a nonzero
 
 ;.end
+;[[function.fre]]
 	.page
 	.subttl  FRE
 
@@ -10029,6 +10118,7 @@ fre	jsr conint	;get integer argument in .x
 40$	bra nosflt	;	go float the number (y,a)=(lo,hi)
 
 ;.end
+;[[function.val]]
 	.page
 	.subttl  VAL
 
@@ -10068,6 +10158,7 @@ val_1	clc			;///jump table entry.  convert PETSCII to floating point
 	rts
 
 ;.end
+;[[function.dec]]
 	.page
 	.subttl  DEC
 
@@ -10125,6 +10216,7 @@ decbad
 
 ;.end
 	.page
+;[[command.peekpoke]]
 	.subttl  PEEK  POKE
 
 
@@ -10182,6 +10274,7 @@ poke	jsr getnum
 
 ;.end
 	.page
+;[[function.errstr]]
 	.subttl  ERR$
 
 errd	jsr sign		;get sign
@@ -10243,6 +10336,7 @@ errd	jsr sign		;get sign
 
 
 ;.end
+;[[function.hexstr]]
 	.page
 	.subttl  HEX$
 
@@ -10283,6 +10377,7 @@ dohex	and #$0f
 	rts
 
 ;.end
+;[[function.joy]]
 	.page
 	.subttl  JOY
 
@@ -10347,6 +10442,7 @@ joytab	.byte 4,2,3,0,6,8,7,0,5,1,0
 
 ;.end
 	.page
+;[[function.potpen]]
 	.subttl  POT  LPEN
 
 ;***********************************************************
@@ -10445,6 +10541,7 @@ lpen	jsr chkcls		;look for closing parens
 
 
 ;.end
+;[[function.pointer]]
 	.page
 	.subttl  POINTER
 
@@ -10474,6 +10571,7 @@ pointer_ret=*-1
 10$	bra nosflt
 
 ;.end
+;[[operator.xor]]
 	.page
 	.subttl  XOR
 
@@ -10508,6 +10606,7 @@ xor	phw poker	;protect the poker value (could be in use)		[910911]
 	rts
 
 ;.end
+;[[operator.mod]]
 	.page
 	.subttl  MOD
 
@@ -10552,6 +10651,7 @@ mod	jsr chknum	;1st arg in FAC1 (number)
 
 ;.end
 	.page
+;[[function.rwindow]]
 	.subttl  RWINDOW
 
 ;******************************************************************************
@@ -10594,6 +10694,7 @@ rwindow	jsr chkcls
 	bra sngflt		;float 1 byte arg in .Y
 
 ;.end
+;[[function.rnd]]
 	.page
 	.subttl  RND
 
@@ -10669,6 +10770,7 @@ raddc  .byte @150,@50,@261,@106,0
 
 ;.end
 	.page
+;[[math.ext1]]
 	.subttl Math Package (CODE12)
 
 n32768	.byte $90,$80,0,0,0
@@ -10743,6 +10845,7 @@ errind	bbr7 runmod,storts	;goto error if not in direct mode
 
 ;.end
 	.page
+;[[function.userdef]]
 	.subttl User Defined Function
 
 ; User Defined Function Code
@@ -10863,6 +10966,8 @@ deffin	ldy #0
 	rts
 
 ;.end
+;[[function.stringmisc]]
+
 	.page
 	.subttl MID$  LEFT$  RIGHT$  ASC  STR$  LEN
 
@@ -11209,6 +11314,7 @@ mvdone	clc			;update frespc pointer
 10$	rts
 
 	.page
+;[[string.manager]]
 ; FRETMP is passed a string descriptor pntr in (a,y).  A check is made to see
 ; if the string descriptor points to the last temporary descriptor allocated by
 ; putnew.  If so, the temporary is freed up by the updating of (temppt).  If a
@@ -11297,6 +11403,7 @@ fretms	cpy lastpt+1		;last entry to temp?
 frerts	rts			;all done
 
 ;.end
+;[[string.garbage]]
 	.page
 	.subttl Garbage Collection
 
@@ -11475,6 +11582,7 @@ gloop	jsr chkgrb		;check garbage string
 	jsr movpnt
 	bra gloop
 
+;[[string.garbage.utils]]
 	.page
 ; Subroutines used for garbage collection.
 ;
@@ -11579,6 +11687,7 @@ slr1	dex			;.x = ptr to temp. string descriptor
 	rts
 
 ;.end
+;[[math.ext2]]
 	.page
 	.subttl  Floating Point Math Package (CODE17)
 
@@ -11621,6 +11730,7 @@ getsad			;get a signed 2-byte value in (y,a), ///entry from sprcor
 	rts		;it's all done
 
 ;.end
+;[[math.ext3]]
 	.page
 	.subttl Floating Point Math Package (CODE18)
 
@@ -11885,6 +11995,7 @@ shftrt	clc		;clear output of FACOV
 	rts
 
 ;.end
+;[[math.const]]
 	.page
 	.subttl Floating Point Math Package (CODE19)
 
@@ -11966,6 +12077,7 @@ atncon	.byte 11			;degree-1
 	.byte @177,@252,@252,@252,@023
 	.byte @201,@000,@000,@000,@000
 
+;[[math.log]]
 	.page
 ; Natural Log Function
 ;
@@ -12020,6 +12132,7 @@ romsub	jsr romupk
 romdiv	jsr romupk
 	bra fdivt
 
+;[[math.multiply]]
 	.page
 ; Multiplication        FAC = ARG*FAC
 
@@ -12084,6 +12197,7 @@ mltpl1	lsr a
 multrt	rts
 
 	.page
+;[[math.unpack]]
 ; Unpack a ROM constant into the FAC
 
 romupk	sta index1
@@ -12518,6 +12632,7 @@ fcomp	sta index2
 20$	bra fcomps	;a part of sign sets up (a)
 
 ;.end
+;[[math.ext4]]
 	.page
 	.subttl Floating Point Math Package (CODE21)
 
@@ -12584,6 +12699,8 @@ clrfac	sta facho	;make it really zero
 	sta faclo
 	tay
 intrts	rts
+
+;[[math.fpin]]
 
 	.page
 ; Floating Point Input Routine.
@@ -12752,6 +12869,7 @@ fin_chrget_2
 10$	rts
 
 ;.end
+;[[math.ext5]]
 	.page
 	.subttl Floating Point Math Package (CODE22,23)
 
@@ -13017,6 +13135,7 @@ negop			;/// entry point
 negrts	rts
 
 ;.end
+;[[math.ext6]]
 	.page
 	.subttl Floating Point Math Package (CODE24)
 
@@ -13088,6 +13207,8 @@ exp	lda #<logeb2	;multiply by LOG(e) base 2
 	jsr mldexp	;modify facexp and check for overflow
 	rts		; (has to do jsr due to pla's in muldiv)
 
+;[[math.polyeval]]
+
 	.page
 ; Polynomial Evaluator and the Random Number Generator.
 ;
@@ -13141,6 +13262,7 @@ poly1	jsr mov2f	;save FAC (rounds, .y=0)
 	rts		;yes
 
 ;.end
+;[[math.ext7]]
 	.page
 	.subttl Floating Point Math Package (TRIG)
 
@@ -13268,6 +13390,7 @@ atn	lda facsgn	;what is sign?
 40$	rts		;all done
 
 ;.end
+;[[boot]]
 	.page
 	.subttl  BOOT
 
@@ -13795,6 +13918,7 @@ dschk	php			;check if current device >=8, and clear DS if so
 ;	jmp _stop
 
 ;.end
+;[[command.print.using]]
 	.page
 	.subttl  PRINT USING
 ; Print Using	- Formatted print routine
@@ -13914,6 +14038,8 @@ reay	jsr chrgot	;get old character
 	cmp #';'	;semi-colon?
 	bne crdo	;end of print using
 	jmp chrget	;branch if yes
+
+;[[command.fform]]
 
 	.page
 ;  FFORM	- output a number to format
@@ -14489,6 +14615,7 @@ rt	rts
 ;.end
 	.page
 	.subttl  INSTR()
+;[[function.instr]]
 
 ;  INSTRing - Find position of str1 in str2 at or after position n
 ;
@@ -14591,6 +14718,8 @@ instr	lda facmo	;save pointer to temporary descriptors
 	.page
 	.subttl  TYPE
 
+;[[function.type]]
+
 ; TYPE		types a given disk (SEQ) file to output channel
 ;
 
@@ -14652,6 +14781,7 @@ open_SEQ_file
 ;	jsr _close
 ;	bra errlen		;buffer overflow: report 'string too long'
 
+;[[command.disk]]
 	.page
 	.subttl  DISK command
 
@@ -14679,6 +14809,7 @@ disk
 
 
 ;.end
+;[[dos.setup]]
 	.page
 	.subttl  DOS 1
 
@@ -14801,6 +14932,7 @@ dcat11	jsr release_channels	;release cmd channel, restore terminal
 	lda #doslfn
 	bra close_out		;					[900725]
 
+;[[command.ldir]]
 	.page
 ; LDIR  same as DIR, except it buffers each line to reduce
 ;       talker/listener turnaround time.  Even so, it is still
@@ -14884,6 +15016,7 @@ dcato	jsr _clrch
 10$	rts
 
 	.page
+;[[function.dopen]]
 ; DOPEN dfn(,t(,r))
 
 dopen	lda #$22		;set error flag
@@ -15073,6 +15206,8 @@ bverify	lda #1			;flag 'verify'
 	  .byte $2c
 
 
+;[[command.bload]]
+
 ; BLOAD dfn
 
 bload	lda #0			;flag 'load'
@@ -15137,6 +15272,8 @@ bload_boot			;<<<<<<<<<<<<<<<<<<<<<< entry for BOOT'filename'
 	clc
 	rts
 
+;[[command.header]]
+
 	.page
 ; HEADER nddn [,id]		(alias: FORMAT)
 
@@ -15158,6 +15295,7 @@ header	jsr dospar		;parse the line
 10$	jsr trans		;build and send command
 				;fall into 'print_dos_error'
 
+;[[dos.errors]]
 	.page
 print_dos_error			;						[900725]
 	bbs7 runmod,header_rts	;branch if not direct mode
@@ -15215,6 +15353,7 @@ header_rts
 	clc
 	rts
 
+;[[command.scratch]]
 	.page
 ; SCRATCH sdfn		aliases: DELETE, ERASE
 
@@ -15248,6 +15387,7 @@ scratch	jsr dospar		;parse the line
 30$	rts
 
 	.page
+;[[command.record]]	
 ; RECORD- relative record access
 
 record	lda #'#'
@@ -15288,6 +15428,7 @@ record	lda #'#'
 20$	ldx #errfno		;file not found err (file not open)			[910404]
 	bra error
 
+;[[command.DCLEAR]]
 	.page
 ; DCLEAR - reinitilaize the drive
 
@@ -15298,9 +15439,7 @@ dclear	jsr dospar		;parse the line
 	jsr print_dos_error	;if any
 	bra dclall
 
-
-
-
+;[[command.collect]]
 ; COLLECT v<drive#>
 
 collect	jsr dospar		;parse the line
@@ -15314,6 +15453,7 @@ collect	jsr dospar		;parse the line
 	bra print_dos_error	;if any
 
 
+;[[command.copy]]
 	.page
 ; COPY cdddfn=sdsfn
 
@@ -15347,6 +15487,7 @@ dcopy	jsr dospar		;parse the line
 
 
 
+;[[command.concat]]
 ; CONCAT
 
 concat	jsr dospar		;parse the line
@@ -15358,6 +15499,7 @@ concat	jsr dospar		;parse the line
 
 
 
+;[[command.rename]]
 
 ; RENAME rdddfn=sdsfn
 
@@ -15390,6 +15532,7 @@ backup	lda #$c7		;set error flags
 	jsr trans		;send command
 	bra print_dos_error	;if any
 
+;[[command.trans]]
 
 	.page
 ; Trans subroutine
@@ -15411,6 +15554,7 @@ trans	jsr sendp		;build string to output
 	rts
 
 ;.end
+;[[dos.parser]]
 	.page
 	.subttl  DOS 2
 
@@ -15979,6 +16123,7 @@ frec	= *-tabld-1					;Record
 	.byte 'P',xsca,xrcl,xrec
 
 	.page
+;[[dos.sendparam]]
 ; Send parameters to device
 ;
 ; Entry:	.a = number of bytes in format
@@ -16435,6 +16580,7 @@ sbits	.byte $01,$02,$04,$08,$10,$20,$40,$80
 rbits	.byte $80,$40,$20,$10,$08,$04,$02,$01
 
 ;.end
+;[[handler.irq]]
 	.page
 	.subttl BASIC IRQ Handler
 
@@ -16841,6 +16987,7 @@ sprsub	pha			;save angle phase
 30$	rts
 
 ;.end
+;[[command.mouse]]
 	.page
 	.subttl  MOUSE
 
@@ -16943,6 +17090,8 @@ mouse	cmp #on_token		;						new	[910122]
 40$	rts
 
 ;.end
+;[[function.rmouse]]
+
 	.page
 ;************************************************************************
 ;*   RMOUSE	Returns in variable list current status of mouse	*
@@ -17049,6 +17198,7 @@ rmouse	lda #0			;Init
 90$	rts
 
 ;.end
+;[[command.cursor]]
 	.page
 	.subttl   CURSOR
 
@@ -17109,6 +17259,8 @@ cursor	cmp #on_token		;Check for ON | OFF
 	bra 1$			;		it is- go evaluate position
 
 30$	rts			;	eol
+
+;[[function.rcursor]]
 
 	.page
 ;************************************************************************
@@ -17330,6 +17482,7 @@ AutoSearch
 	.messg ***ROM OVERFLOW: $7F00
 	.endif
 ;.end
+;[[command.screen]]
 	.page
 	.subttl  GRAPHIC Interface
 
@@ -17559,6 +17712,7 @@ c65.screenclose
 
 	jmp ($800a)		;bra screenclose
 
+;[[command.pen]]
 	.page
 ;*****************************************************************
 ;*	PEN
@@ -17581,6 +17735,8 @@ c65.setpen
 	stx GKI.parm2
 
 	jmp ($8010)		;bra setpen
+
+;[[command.dmode]]
 
 	.page
 ;*****************************************************************
@@ -17623,6 +17779,8 @@ c65.setdmode
 	stx GKI.parm5
 
 	jmp ($8014)		;bra setdmode
+
+;[[command.dpat]]
 
 	.page
 ;*****************************************************************
@@ -17672,6 +17830,8 @@ c65.setdpat
 	stx GKI.parm6
 
 20$	jmp ($8016)		;bra setdpat
+
+;[[command.palette]]
 
 	.page
 ;*****************************************************************
@@ -17743,6 +17903,7 @@ set_palette
 	bcs set_palette		;	yes- loop
 	rts
 
+;[[command.line]]
 	.page
 ;*****************************************************************
 ;*	LINE		draw a dot, a line or a stick shape
@@ -17796,6 +17957,7 @@ c65.line
 	bcs 1$			;	yes, continue
 	rts
 
+;[[command.box]]
 	.page
 ;*****************************************************************
 ;*	BOX			draw a 4-sided figure
@@ -17852,6 +18014,7 @@ c65.box
 
 	jmp ($801a)		;bra box
 
+;[[command.circle]]
 	.page
 ;*****************************************************************
 ;*	CIRCLE			draw a Circle
@@ -17889,6 +18052,7 @@ c65.circle
 	jmp ($801c)		;bra circle
 
 	.page
+;[[command.ellipse]]
 	.subttl  ELLIPSE
 
 ;*****************************************************************
@@ -17932,6 +18096,7 @@ c65.ellipse
 
 	jmp ($8020)		;bra ellipse
 
+;[[command.polygon]]
 	.page
 	.subttl  POLYGON
 
@@ -18006,6 +18171,7 @@ c65.polygon			;changed BASIC syntax to something more reasonable	[910923] FAB
 
 	jmp ($801e)		;bra polygon
 
+;[[command.set]]
 	.page
 	.subttl  SET multipurpose command
 
@@ -18145,6 +18311,7 @@ verify_mode
 verify_cmd	.byte 'U0>V'	;Verify on/off command
 
 ;.end
+;[[command.char]]
 	.page
 	.subttl  CHAR
 
@@ -18218,6 +18385,7 @@ c65.char
 
 40$	rts
 
+;[[command.paint]]
 	.page
 	.subttl  PAINT
 
@@ -18279,6 +18447,7 @@ c65.paint			;						new [910228] FAB
 	beq error		;		stack overflow, say 'out of memory'
 	bra break_exit		;		user hit stop key
 
+;[[command.loadiff]]
 	.page
 	.subttl   LOAD/SAVE IFF
 
@@ -18321,6 +18490,7 @@ exit_GKI_disk_op
 	bcs error		;	must be I/O or file data error
 	rts			;	load was successful
 
+;[[command.saveiff]]
 	.page
 ;*****************************************************************
 ;*
@@ -18362,6 +18532,7 @@ saveiff
 ;	rts			;	load was successful
 
 ;.end
+;[[command.viewport]]
 	.page
 	.subttl   VIEWPORT Commands
 
@@ -18408,6 +18579,7 @@ c65.cut
 c65.paste
 	jmp bad_command
 
+;[[command.genlock]]
 	.page
 	.subttl  GENLOCK
 
@@ -18464,6 +18636,8 @@ genlock	sta GKI.parm1		;save token as flag for set palette			[910107]
 	lda #%00010000		;	if present, set FGBG bit in red palette
 	sta _red,x
 	bra 25$			;	loop
+
+;[[command.color]]
 
 	.page
 	.subttl  COLOR Control
@@ -18580,6 +18754,7 @@ chkeos				;Check for next byte = end of statement, error if not
 
 
 ;.end
+;[[command.sprite]]
 	.page
 	.subttl SPRITE Commands and Functions
 
@@ -18692,6 +18867,7 @@ get_sprite_number
 	rts
 
 ;.end
+;[[command.movspr]]
 	.page
 	.subttl MOVSPR Command
 
@@ -19040,6 +19216,8 @@ movspr_line
 	cli
 	rts			;done!
 
+;[[command.sprcor]]
+
 	.page
 ;  SPRCOR  --	Get sprite position coordinate
 ;
@@ -19092,6 +19270,7 @@ chkcom_1
 sproff	.byte 0,11,22,33,44,55,66,77	;sprite offsets into speed table
 
 ;.end
+;[[command.sprcolor]]
 	.page
 	.subttl SPRCOLOR Command
 
@@ -19238,6 +19417,7 @@ desc_free				;free temporary descriptor, set up pointers to string.
 	rts				;return w/ x=len, (a,y)==> string
 
 ;.end
+;[[command.collision]]
 	.page
 	.subttl COLLISION Command
 
@@ -19276,6 +19456,7 @@ collision
 	rts
 
 ;.end
+;[[function.rcolor]]
 	.page
 	.subttl  RCOLOR Function
 
@@ -19309,6 +19490,7 @@ rcolor	jsr conint      	;evaluate integer argument, put in .X
 color_source
 	.word  vic+33,_color,highlight_color,vic+32
 
+;[[function.rgraphic]]
 	.page
 	.subttl Graphic Functions
 
@@ -19380,6 +19562,7 @@ rgraphic
 	jsr PopParms		;restore Graphics parameters & LINNUM
 	rts
 
+;[[function.pixel]]	
 	.page
 ; Return the color of a given X,Y pixel location on the drawscreen		[910801]
 ; 	PIXEL (x,y)
@@ -19401,6 +19584,7 @@ pixel	jsr CheckGraphicMode	;verify screen open
 	jsr PopParms		;restore graphics parameters
 	rts
 
+;[[function.rpen]]
 	.page
 ; Return the color of a drawscreen's PEN 					[910820]
 ; 	RPEN (pen#)	where pen# = 0,1,2
@@ -19422,6 +19606,7 @@ rpen	jsr CheckGraphicMode	;verify screen open
 	rts
 
 	.page
+;[[function.rpalette]]
 ; Return the R,G, or B component of a color					[910820]
 ;	RPALETTE (screen#, color#, rgb)
 
@@ -19490,6 +19675,7 @@ PopParms			;						[910820]
 	rts
 
 ;.end
+;[[function.rsprite]]
 	.page
 	.subttl RSPRITE Function
 
@@ -19572,6 +19758,7 @@ rspcolor
 	bra sngflt	;float 1 byte arg in .Y
 
 ;.end
+;[[function.rsppos]]
 	.page
 	.subttl RSPPOS Function
 
@@ -19636,6 +19823,7 @@ rsppos	jsr conint	;get first arg, sprite #, in .X
 	bra nosflt	;..and go float 2 byte value in y,a
 
 ;.end
+;[[function.bump]]
 	.page
 	.subttl BUMP Function
 
@@ -20179,6 +20367,7 @@ twobyt
 ;illval
 ;	jmp fcerr		;illegal value
 
+
 	.page
 ;******************************************************************
 ;  INCORD  ---  Get X,Y coordinate from input stream into vwork+x
@@ -20343,6 +20532,7 @@ incval
 
 ;.end
 	.page
+;[[edit.mode]]
 	.subttl  EDIT Mode
 
 ; Edit mode is simply a poor man's word processor.  Text is entered normally
@@ -20657,6 +20847,7 @@ Sound_CLR_1
 	plp
 	rts
 
+;[[initialise.sprites]]
 	.page
 Sprite_CLR
 	jsr chkeos		;eat CLR token, check eos			[910717] new
@@ -20689,6 +20880,7 @@ Sprite_CLR_1
 ;	rts
 
 ;.end
+;[[handler.nmi]]
 	.page
 	.subttl BASIC NMI Handler
 
@@ -20707,6 +20899,7 @@ basic_nmi			;					removed	[910826]
 	.messg ***ROM OVERFLOW: $C000
 	.endif
 ;.end
+;[[jumptable]]
 	.page
 	.subttl C65 BASIC Jump Table
 

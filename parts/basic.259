@@ -86,6 +86,8 @@ mouse cmp #on_token  ;      new [910122]
 40$ rts 
  
 ;.end 
+;[[function.rmouse]] 
+ 
  .page 
 ;************************************************************************ 
 ;*   RMOUSE Returns in variable list current status of mouse * 

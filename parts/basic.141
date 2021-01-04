@@ -29,5 +29,6 @@ poke jsr getnum
  
 ;.end 
  .page 
+;[[function.errstr]] 
  .subttl  ERR$ 
  

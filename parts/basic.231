@@ -28,5 +28,6 @@ dcopy jsr dospar  ;parse the line
  
  
  
+;[[command.concat]] 
 ; CONCAT 
  

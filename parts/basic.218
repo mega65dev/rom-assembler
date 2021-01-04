@@ -24,6 +24,7 @@ dcat11 jsr release_channels ;release cmd channel, restore terminal
  lda #doslfn 
  bra close_out  ;     [900725] 
  
+;[[command.ldir]] 
  .page 
 ; LDIR  same as DIR, except it buffers each line to reduce 
 ;       talker/listener turnaround time.  Even so, it is still 

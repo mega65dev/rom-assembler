@@ -9,8 +9,9 @@ l49_1            +lbra rem
 
 
 ;.end
-; .page
-; .subttl ON...GOTO  ON...GOSUB
+;[[command.on]]
+
+
 
 ;*********************************************************
 ;* ON expression {GOTO | GOSUB} line_number

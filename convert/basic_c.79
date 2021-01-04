@@ -38,7 +38,7 @@ l79_4            jsr move_init                            ; digit...move down
 
                  bra iline_20                             ; branch always
 
-; .page
+
 ;*************************** FORM_LINE *********************************
 
 ; Remaps the destination line if it is greater than n3

@@ -1,7 +1,7 @@
 graphic_kernel                                            ; ...via indirect
                  jmp ($8002)                              
 
-; .page
+
 ; C65 Graphic Kernel Jump Table      [910826]
 ;
 ; 8000 init   ;sets up graphic vars
@@ -35,7 +35,7 @@ graphic_kernel                                            ; ...via indirect
 ; 8036 kg65.f.index2color-1 ;25
 ; 8038 kg65.f.rgraphic  ;26
 
-; .ifgt *-$8000
-; .messg ***ROM OVERFLOW: $8000
-; .endif
-; .end
+
+
+
+

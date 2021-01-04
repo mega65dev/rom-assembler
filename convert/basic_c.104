@@ -1,7 +1,7 @@
 play_rts                                                  
                  rts                                      
 
-; .page
+
 play_one_character                                          
                  cmp #' '                                 ; spaces are a 'no-op'
                  beq play_rts                             
@@ -33,7 +33,7 @@ l104_4           cmp mutabl,x
                  cmp #'$'                                 ; flat?
                  +lbeq play_flat                          
 
-; .page
+
 ; Must be a digit here for Octave, Voice, envelope (T), filter (X), or volume (U)
 
                  sec                                      

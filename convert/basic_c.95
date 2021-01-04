@@ -12,8 +12,9 @@ rescnt           ldx #errcr
                  +lbra error                              
 
 ;.end
-; .page
-; .subttl  DO  LOOP  UNTIL  WHILE  EXIT
+
+;[[command.loops]]
+
 
 do               ldy #1                                   
 l95_1            lda txtptr,y                             ; save current pointers for stack entry

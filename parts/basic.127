@@ -19,6 +19,7 @@ decblt dec hightr+1
  rts 
  
 ;.end 
+;[[arrays]] 
  .page 
  .subttl Array Routines 
  

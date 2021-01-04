@@ -66,6 +66,7 @@ filter_offset
 voltab .byte 0,1,3,5,7,8,10,12,14,15 
  
 ;.end 
+;[[command.filter]] 
  .page 
  .subttl  FILTER 
  
@@ -162,6 +163,7 @@ filter jsr getbyt  ;get left/right SID    [910612]
  
 ;.end 
  .page 
+;[[command.envelope]] 
  .subttl  ENVELOPE 
  
 ;**************************************************************** 

@@ -4,7 +4,7 @@ gosub            bbs4 runmod,edit_err                     ; [910620]
                  jsr goto                                 
                  +lbra newstt                             
 
-; .page
+
 goto             bbs4 runmod,edit_err                     ; [910620]
                  jsr linget                               ; pick up the line number in LINNUM
                  lda endchr                               ; test if linget found any number
@@ -68,8 +68,8 @@ edit_err
                  +lbra error                              
 
 ;.end
-; .page
-; .subttl  GO  GO64
+
+
 
 go_without_to                                             
                  jsr chrget                               ; what is next character?
@@ -91,8 +91,9 @@ l71_2            jsr are_you_sure
 
 
 ;.end
-; .page
-; .subttl  CONTINUE
+;[[command.continue]]
+
+
 ;**********************************************************
 ;*
 ;* CONTINUE Execution after STOP/END

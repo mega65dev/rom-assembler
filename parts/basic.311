@@ -26,6 +26,7 @@ incval
  
 ;.end 
  .page 
+;[[edit.mode]] 
  .subttl  EDIT Mode 
  
 ; Edit mode is simply a poor man's word processor.  Text is entered normally 

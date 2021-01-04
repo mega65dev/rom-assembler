@@ -4,8 +4,10 @@ nescpr           +lbcs p1l015                             ; no takers, print a f
 
 
 ;.end
-; .page
-; .subttl NEW  CLR
+;[[command.newclr]]
+
+
+
 ;
 ; The NEW command clears the program text as well as variable space.
 ;
@@ -57,7 +59,7 @@ init_text
 runc             jsr reset_txtptr                         ; load (txtptr) with (txttab)-1
                  bra clearc                               ; "CLR" to clear vars    [910410]
 
-; .page
+
 ; CLeaR Routines
 ;
 
@@ -87,7 +89,7 @@ l41_2            +lbne snerr                              ; no- error
                  jsr chkeos                               
                  +lbra Clear_DS                           ; yes- clear current DS$
 
-; .page
+
 ; Clearc is a subroutine which initializes the variable and array space by
 ; resetting STREND (the end of array storage).  It falls into INIT_STACK,
 ; which resets the stack.

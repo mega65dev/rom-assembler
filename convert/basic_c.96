@@ -75,4 +75,4 @@ l96_2            cmp #':'                                 ; end of line or end o
                  inc txtptr+1                             
                  bra fndend                               
 
-; .page
+

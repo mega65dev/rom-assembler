@@ -1,8 +1,9 @@
 verify_cmd       !text "U0>V"                             ; Verify on/off command
 
 ;.end
-; .page
-; .subttl  CHAR
+;[[command.char]]
+
+
 
 ;*****************************************************************
 ;* CHAR   draw a character string
@@ -74,8 +75,9 @@ l277_1           sty GKI__parm10                          ; lo
 
 l277_2           rts                                      
 
-; .page
-; .subttl  PAINT
+;[[command.paint]]
+
+
 
 ;*****************************************************************
 ;* PAINT   fill a graphic area with color

@@ -11,7 +11,7 @@ negate_step
                  rts                                      
 
 
-; .page
+
 ; Here is where BASIC_IRQ exits
 
 basic_irq_end                                             
@@ -19,7 +19,7 @@ basic_irq_end
                  cli                                      
                  rts                                      
 
-; .page
+
 ; Update sprite position subroutine
 
 sprsub           pha                                      ; save angle phase
@@ -45,8 +45,9 @@ l258_2           sta vic,y                                ; decrement position  
 l258_3           rts                                      
 
 ;.end
-; .page
-; .subttl  MOUSE
+;[[command.mouse]]
+
+
 
 ;***********************************************************************
 ;*   MOUSE  ON  [,[port] [,[sprite] [,[hotspot] [,X/Yposition] ]]]

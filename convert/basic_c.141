@@ -28,6 +28,7 @@ l141_4           cli                                      ; [910612]
 
 
 ;.end
-; .page
-; .subttl  ERR$
+
+;[[function.errstr]]
+
 

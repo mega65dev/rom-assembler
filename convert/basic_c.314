@@ -12,7 +12,7 @@ edit_load_done
                  sty text_top+1                           
                  +lbra link_program                       ; relink & RTS
 
-; .page
+
 edit_save                                                 
                  lda #$e6                                 ; parse:  filename [,U#] [,D#]
                  jsr dosprs                               ; (like dopen:      0 0 0 *  * 0 0 1 )
@@ -67,5 +67,5 @@ l314_4           ldy #0                                   ; check for EOF: a pai
 l314_5           +lbra list_exit                          ; release channel, close file, exit
 
 ;.end
-; .page
-; .subttl  ETC.
+
+

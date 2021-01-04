@@ -54,7 +54,7 @@ indtxt
                  lda #txtptr                              
 ; bra lda_far_ram0
 
-; .page
+
 ; C65 BASIC Indirect Load Subroutines
 
 lda_far_ram0                                              
@@ -92,6 +92,6 @@ l6_1             jsr _lda_far                             ; LDA (.x),Y from bank
                  and #$ff                                 ; set processor status per byte fetched
                  rts                                      
 
-; .page
+
 ; C65 BASIC Indirect Save Subroutines
 

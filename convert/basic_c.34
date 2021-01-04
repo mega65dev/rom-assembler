@@ -52,6 +52,8 @@ l34_6            jsr chargt                               ; terminating characte
                  +lbra chrtst                             ; return with flags set appropriately (esp. for 'range')
 
 ;.end
-; .page
-; .subttl LIST
+
+;[[command.list]]
+
+
 

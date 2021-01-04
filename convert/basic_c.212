@@ -2,7 +2,7 @@ cdout            jsr outch ;outdo                         ; char out
                  dec cform                                ; count it
                  rts                                      
 
-; .page
+
 ; Using- anaf: analyze format
 
 anaf             ldy endfd                                ; format pointer

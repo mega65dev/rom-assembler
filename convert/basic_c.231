@@ -28,5 +28,6 @@ l231_2           ldy #fcopy                               ; tabld offset
 
 
 
+;[[command.concat]]
 ; CONCAT
 

@@ -4,7 +4,7 @@ keydat           !text "($RHC+",$22                       ; chr$( string
 
 keychr           !text cr,$8d,$22,esc                     ; special KEY chars- return, sft-return, quote, esc
 
-; .page
+
 ;************************************************************************
 ;
 ;   Key_Change  Add, Delete or Change function key definition
@@ -33,7 +33,7 @@ key_restore
                  +lbcs omerr                              ; bad return (.c=1)
                  rts                                      ; ok return  (.c=0)
 
-; .page
+
 ;************************************************************************
 ;   Key_Load  Load function key definitions (from disk)   [900725]
 ;************************************************************************
@@ -68,7 +68,7 @@ GetLoadChannel                                            ; Used by KeyLoad and 
                  clc                                      
                  rts                                      
 
-; .page
+
 LoadBlock                                                 
                  sta highds                               ; where to put data
                  sty highds+1                             

@@ -110,7 +110,9 @@ l291_5           lda fct,y
                  cli                                      
                  rts                                      ; done!
 
-; .page
+;[[command.sprcor]]
+
+
 ;  SPRCOR  -- Get sprite position coordinate
 ;
 

@@ -1,5 +1,6 @@
-; .nam C65 Development BASIC 10.0 (C)1991 CBM
-; .subttl *** Copyright (C) 1991  by  Commodore Business Machines, Inc. ***
+;[[header]]
+
+
 
 ;  ***************************************************************************
 ;  *                               //                                        *
@@ -45,10 +46,10 @@
 ; *                                                                *
 ; ******************************************************************
 
-; .STORE $2000,$a000,"b65.rom"
+
 
 ; This version written and assembled by Fred Bowen using BSO format.
-; .page
+
 ; Adapted from the following C128 files, ROM part numbers 318018-04, 3180194-04:
 ;
 ; disclaim  resume   hexfunc
@@ -98,14 +99,15 @@
 ; trap   errfunc   swap
 ; patcheshi  jumptable  def
 ; strings
-; .page
-; .subttl C65 BASIC 10.0 Macro Definitions
 
-; .blist
 
-; .page
-; .subttl C65 BASIC 10.0 Declarations
 
+
+
+
+
+
+;[[constants]]
 ; General assignments and equates
 
 doslfn           = 0                                      ; DOS' private logical file number
@@ -152,8 +154,9 @@ d2pra            = d2_6526
 
 dma_ctlr         = $d700                                  ; DMA Controller
 
-; .page
+
 ;  BASIC base page storage
+;[[data.zeropage]]
 
                  * = $0000                                
 
@@ -323,7 +326,9 @@ srow
 fstr1            !fill 3                                  ; 
 fstr2            !fill 3                                  ; 
 
-; .page
+
+;[[stackdata]]
+
                  * = $00ff                                
 
 lofbuf           !fill 1                                  
@@ -366,14 +371,16 @@ dma2_mod_hi      !fill 1
 sysstk                                                    ; bottom of system stack
 stkend           = $1fb                                   ; top of system stack
 
-; .page
+;[[data]]
+
+
                  * = $0200                                
 
 buflen           = 161                                    ; input buffer size (2 80-column lines + 1)
 buf              !fill buflen                             ; BASIC/Monitor line input buffer
 buf_txtptr       = buf-1                                  
 
-; .page
+
                  * = $02c0                                
 ; BASIC RAM code  (RAM code not needed- following moved to ROM)
 ;
@@ -416,7 +423,7 @@ lightpen_ypos    !fill 1
 ; nmi_wrap_flag *=*+1  ;used by BASIC_NMI to block all but one NMI call [910523]
 ;    ; (removed)      [910826]
 ;(leaving 12 bytes)
-; .page
+
 ; BASIC indirect vectors
 
                  * = $02f7                                
@@ -442,7 +449,7 @@ cbinv            !fill 2                                  ; BRK RAM vector
 
 ; Remainder of this area reserved for Kernel indirects & Kernel RAM code
 
-; .page
+
                  * = $0400                                ; BASIC's run-time stack (2 pages)
 stktop                                                    ; (also used by BOOT SYS and Monitor)
 stkbot           = $05ff                                  
@@ -459,7 +466,7 @@ screen_start                                              ; Text display screen
 sprite_ptrs_40   = screen_start+$3f8                      
 sprite_ptrs_80   = screen_start+$7f8                      
 
-; .page
+
                  * = $1170                                ; previous to this used by Kernel
 
 oldlin           !fill 2                                  ; BASIC storage
@@ -509,7 +516,7 @@ ysgn             = savram+6
 fct              = savram+8                               
 errval           = savram+12                              
 
-; .page
+
 ; PRINT USING definitions & storage  (24 bytes)
 
 puchrs                                                    ; Declarations for PRINT USING...
@@ -539,7 +546,7 @@ begfd            !fill 1                                  ; pointer to begin of 
 lfor             !fill 1                                  ; length of format
 endfd            !fill 1                                  ; pointer to end of field
 
-; .page
+
 ;  * = $1200 ;BASIC Graphic, Sprite, Music, & Sound storage
 
 ;  The following 24 bytes are multiply defined...
@@ -574,7 +581,7 @@ endfd            !fill 1                                  ; pointer to end of fi
 ; xcord2 *=*+2
 ; ycord2 *=*+2
 
-; .page
+
 ;  Shape variables  (multiply defined).
 ;
 ;  *=params
@@ -608,7 +615,7 @@ endfd            !fill 1                                  ; pointer to end of fi
 ; rowcnt *=*+1
 ; strcnt *=*+1
 
-; .page
+
 ;  General  graphic & sound  buffers & assignments
 ;
 ;  * = parend
@@ -660,7 +667,7 @@ vtemp5           !fill 1
 ; errval *=*+2
 ; lesser *=*+1
 ; greatr *=*+1
-; .page
+
 ;  Angle stuff (used by sprites)
 
 angsgn           !fill 1                                  ; sign of angle
@@ -695,7 +702,7 @@ init_as_0        = *-sprite_data-1
 ; lincnt *=*+1  ; "
 ; sprite_number *=*+1  ; "
 
-; .page
+
 ; Music stuff driving stereo SIDs, 3 voices each
 
 voices           !fill 12                                 ; Voice counters (activity flags)  [910612] stereo
@@ -726,7 +733,7 @@ pulshi           !fill 10
 parcnt           !fill 1                                  ; temp: envelope
 nibble           !fill 1                                  ; temp: envelope, filter
 
-; .page
+
 ; SOUND command stuff
 
 sound_voice      !fill 1                                  
@@ -764,12 +771,12 @@ temp_waveform    !fill 1
 pot_temp_1       !fill 1                                  ; temporaries for 'POT' function
 pot_temp_2       !fill 1                                  
 
-; .page
+
                  * = $1300                                
 
 dosstr           !fill 256                                ; DOS input/output string buffer
 
-; .page
+
                  * = $1f00                                ; Graphics Kernel Interface
 
 GKI__parm1       !fill 1                                  ; ml interface parm values
@@ -815,9 +822,9 @@ GKI__temp16      !fill 1
 GKI__temp17      !fill 1                                  
 
 ;.end
-; .page
-; .subttl C65 Kernal Entry Points
 
+
+;[[kernal]]
 ; Addresses of OS parameters referenced by BASIC:
 
 _6510_data_reg   = $01                                    
@@ -924,6 +931,7 @@ _screen_org      = $ffed
 _plot            = $fff0                                  
 
 ;.end
-; .page
-; .subttl C65 BASIC 10.0 Initilaization
 
+
+
+;[[initialise]]

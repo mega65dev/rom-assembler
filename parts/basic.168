@@ -37,6 +37,7 @@ getsad   ;get a signed 2-byte value in (y,a), ///entry from sprcor
  rts  ;it's all done 
  
 ;.end 
+;[[math.ext3]] 
  .page 
  .subttl Floating Point Math Package (CODE18) 
  

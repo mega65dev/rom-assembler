@@ -77,7 +77,7 @@ notabr           jsr chrget                               ; reget last character
 xspac1           jsr outspc                               
                  bne xspac2                               
 
-; .page
+
 ; STROUT Routine
 ;
 ; Print the string pointed to by .x.  It must end with a null byte.
@@ -114,8 +114,9 @@ outqst           lda #'?'
 ; rts
 
 ;.end
-; .page
-; .subttl INPUT  GET  READ  LINPUT
+
+;[[command.inputs]]
+
 
 get              jsr errdir                               ; direct mode illegal
                  sta z_p_temp_1                           ; flag to distinguish between GET and GETKEY
@@ -147,7 +148,7 @@ gettty                                                    ; GET
                  bne release_channels                     ; restore terminal channels
                  rts                                      
 
-; .page
+
 linputn                                                   ; input line from channel into a string var
                  jsr chrget                               ; (eat input# token)
                  smb7 op                                  

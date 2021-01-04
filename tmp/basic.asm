@@ -1,5 +1,6 @@
-; .nam C65 Development BASIC 10.0 (C)1991 CBM
-; .subttl *** Copyright (C) 1991  by  Commodore Business Machines, Inc. ***
+;[[header]]
+
+
 
 ;  ***************************************************************************
 ;  *                               //                                        *
@@ -45,10 +46,10 @@
 ; *                                                                *
 ; ******************************************************************
 
-; .STORE $2000,$a000,"b65.rom"
+
 
 ; This version written and assembled by Fred Bowen using BSO format.
-; .page
+
 ; Adapted from the following C128 files, ROM part numbers 318018-04, 3180194-04:
 ;
 ; disclaim  resume   hexfunc
@@ -98,14 +99,15 @@
 ; trap   errfunc   swap
 ; patcheshi  jumptable  def
 ; strings
-; .page
-; .subttl C65 BASIC 10.0 Macro Definitions
 
-; .blist
 
-; .page
-; .subttl C65 BASIC 10.0 Declarations
 
+
+
+
+
+
+;[[constants]]
 ; General assignments and equates
 
 doslfn           = 0                                      ; DOS' private logical file number
@@ -152,8 +154,9 @@ d2pra            = d2_6526
 
 dma_ctlr         = $d700                                  ; DMA Controller
 
-; .page
+
 ;  BASIC base page storage
+;[[data.zeropage]]
 
                  * = $0000
 
@@ -323,7 +326,9 @@ srow
 fstr1            !fill 3                                  ;
 fstr2            !fill 3                                  ;
 
-; .page
+
+;[[stackdata]]
+
                  * = $00ff
 
 lofbuf           !fill 1
@@ -366,14 +371,16 @@ dma2_mod_hi      !fill 1
 sysstk                                                    ; bottom of system stack
 stkend           = $1fb                                   ; top of system stack
 
-; .page
+;[[data]]
+
+
                  * = $0200
 
 buflen           = 161                                    ; input buffer size (2 80-column lines + 1)
 buf              !fill buflen                             ; BASIC/Monitor line input buffer
 buf_txtptr       = buf-1
 
-; .page
+
                  * = $02c0
 ; BASIC RAM code  (RAM code not needed- following moved to ROM)
 ;
@@ -416,7 +423,7 @@ lightpen_ypos    !fill 1
 ; nmi_wrap_flag *=*+1  ;used by BASIC_NMI to block all but one NMI call [910523]
 ;    ; (removed)      [910826]
 ;(leaving 12 bytes)
-; .page
+
 ; BASIC indirect vectors
 
                  * = $02f7
@@ -442,7 +449,7 @@ cbinv            !fill 2                                  ; BRK RAM vector
 
 ; Remainder of this area reserved for Kernel indirects & Kernel RAM code
 
-; .page
+
                  * = $0400                                ; BASIC's run-time stack (2 pages)
 stktop                                                    ; (also used by BOOT SYS and Monitor)
 stkbot           = $05ff
@@ -459,7 +466,7 @@ screen_start                                              ; Text display screen
 sprite_ptrs_40   = screen_start+$3f8
 sprite_ptrs_80   = screen_start+$7f8
 
-; .page
+
                  * = $1170                                ; previous to this used by Kernel
 
 oldlin           !fill 2                                  ; BASIC storage
@@ -509,7 +516,7 @@ ysgn             = savram+6
 fct              = savram+8
 errval           = savram+12
 
-; .page
+
 ; PRINT USING definitions & storage  (24 bytes)
 
 puchrs                                                    ; Declarations for PRINT USING...
@@ -539,7 +546,7 @@ begfd            !fill 1                                  ; pointer to begin of 
 lfor             !fill 1                                  ; length of format
 endfd            !fill 1                                  ; pointer to end of field
 
-; .page
+
 ;  * = $1200 ;BASIC Graphic, Sprite, Music, & Sound storage
 
 ;  The following 24 bytes are multiply defined...
@@ -574,7 +581,7 @@ endfd            !fill 1                                  ; pointer to end of fi
 ; xcord2 *=*+2
 ; ycord2 *=*+2
 
-; .page
+
 ;  Shape variables  (multiply defined).
 ;
 ;  *=params
@@ -608,7 +615,7 @@ endfd            !fill 1                                  ; pointer to end of fi
 ; rowcnt *=*+1
 ; strcnt *=*+1
 
-; .page
+
 ;  General  graphic & sound  buffers & assignments
 ;
 ;  * = parend
@@ -660,7 +667,7 @@ vtemp5           !fill 1
 ; errval *=*+2
 ; lesser *=*+1
 ; greatr *=*+1
-; .page
+
 ;  Angle stuff (used by sprites)
 
 angsgn           !fill 1                                  ; sign of angle
@@ -695,7 +702,7 @@ init_as_0        = *-sprite_data-1
 ; lincnt *=*+1  ; "
 ; sprite_number *=*+1  ; "
 
-; .page
+
 ; Music stuff driving stereo SIDs, 3 voices each
 
 voices           !fill 12                                 ; Voice counters (activity flags)  [910612] stereo
@@ -726,7 +733,7 @@ pulshi           !fill 10
 parcnt           !fill 1                                  ; temp: envelope
 nibble           !fill 1                                  ; temp: envelope, filter
 
-; .page
+
 ; SOUND command stuff
 
 sound_voice      !fill 1
@@ -764,12 +771,12 @@ temp_waveform    !fill 1
 pot_temp_1       !fill 1                                  ; temporaries for 'POT' function
 pot_temp_2       !fill 1
 
-; .page
+
                  * = $1300
 
 dosstr           !fill 256                                ; DOS input/output string buffer
 
-; .page
+
                  * = $1f00                                ; Graphics Kernel Interface
 
 GKI__parm1       !fill 1                                  ; ml interface parm values
@@ -815,9 +822,9 @@ GKI__temp16      !fill 1
 GKI__temp17      !fill 1
 
 ;.end
-; .page
-; .subttl C65 Kernal Entry Points
 
+
+;[[kernal]]
 ; Addresses of OS parameters referenced by BASIC:
 
 _6510_data_reg   = $01
@@ -924,9 +931,10 @@ _screen_org      = $ffed
 _plot            = $fff0
 
 ;.end
-; .page
-; .subttl C65 BASIC 10.0 Initilaization
 
+
+
+;[[initialise]]
 ; ***************************************************************************************************************
 ; ***************************************************************************************************************
 ;
@@ -1035,7 +1043,7 @@ go_ready
                  cli                                      ; enable IRQ
                  +lbra ready
 
-; .page
+
 init_storage
                  lda #76                                  ; 'jmp' opcode
                  sta jmper
@@ -1173,7 +1181,7 @@ l1_4             sta sprite_data,x
 
                  +lbra init_text                          ; go to 'new'
 
-; .page
+
 init_sound_sprites                                          ; [910523]
 ;; init_voices   ;Initialize music stuff
 ; bit _pal_ntsc  ;determine if PAL or NTSC system  [910724]
@@ -1269,7 +1277,7 @@ l2_2             ldx sproff,y                             ; get table offset
 ; sta nmi_wrap_flag ;enable BASIC NMI handler   [910523]
                  rts                                      ; (removed)    [910826]
 
-; .page
+
 signon_message
 l3_1             jsr _primm
                  !text 147,18,028,"                     ",146,169
@@ -1285,7 +1293,7 @@ l3_1             jsr _primm
 
                  rts
 
-; .page
+
 init_vectors
                  ldx #l4_3-l4_2-1
 l4_1             lda l4_2,x
@@ -1303,7 +1311,7 @@ l4_2             !word AutoScroll                         ; autoscroll vector
                  !word nesclk,nescpr,nescex               ; escape command vectors
 l4_3
 
-; .page
+
 ;; CHRGET/CHRGOT code.  It is downloaded to RAM.
 ;;
 ;chrget_pattern
@@ -1344,7 +1352,7 @@ l4_3
 ;
 ;endmov   ;(45 bytes to here)
 
-; .page
+
 ; CHRGET/CHRGOT code.
 ;
 
@@ -1363,7 +1371,8 @@ l5_1             rts
 
 
 ;.end
-; .page
+;[[indirection]]
+
 ; C65 BASIC Indirect Load Subroutines
 
 
@@ -1423,7 +1432,7 @@ indtxt
                  lda #txtptr
 ; bra lda_far_ram0
 
-; .page
+
 ; C65 BASIC Indirect Load Subroutines
 
 lda_far_ram0
@@ -1461,7 +1470,7 @@ l6_1             jsr _lda_far                             ; LDA (.x),Y from bank
                  and #$ff                                 ; set processor status per byte fetched
                  rts
 
-; .page
+
 ; C65 BASIC Indirect Save Subroutines
 
 sta_far_ram1
@@ -1504,9 +1513,10 @@ indcmp_in1                                                ; [910620]
                  jmp _cmp_far                             ; STA (.x),Y to bank .z
 
 ;.end
-; .page
-; .subttl Crunch - Tokenization Routine
 
+
+
+;[[tokeniser]]
 ;        CRUNCH
 ;
 ;  Entry:  TXTPTR points to start of text to crunch
@@ -1667,7 +1677,7 @@ l8_13            ldy #0
                  jsr chrget                               ; skip over token,
                  +lbra crun10                             ; ..and continue with line.
 
-; .page
+
 ;      KLOOP
 ;
 ;  Crunch loop.  Moves offset .y characters from txtptr to end of line.
@@ -1688,7 +1698,7 @@ l9_1             iny
                  bne l9_1                                 ; not end of line
                  rts
 
-; .page
+
 ;      RESER
 ;
 ;  Search reserved word list for a match
@@ -1755,8 +1765,10 @@ l10_8            lda #$80                                 ; last chr is shifted 
                  bra l10_6
 
 ;.end
-; .page
-; .subttl Non-Escape Keyword List
+
+
+
+;[[tokeniser.keywords]]
 
 keyword_list
                  !text "EN",'D'+$80                       ; $80
@@ -1891,9 +1903,10 @@ keyword_list
 
 ;.end
 
-; .page
-; .subttl Escape Tokens and Keywords
 
+
+
+;[[tokeniser.keyword.esc]]
 ; Escape Command Tokens
 
 esc_command_list
@@ -1968,7 +1981,7 @@ esc_command_list
 
                  !text 0                                  ; End marker
 ;(don't forget to change last_command_token!)
-; .page
+
 ; Escape Function Tokens
 
 esc_function_list
@@ -1987,8 +2000,9 @@ esc_function_list
                  !text 0
 
 ;.end
-; .page
-; .subttl Jump Table For Dispatch Routine
+;[[tokeniser.vectors]]
+
+
 stmdsp
                  !word end-1
                  !word for-1
@@ -2152,7 +2166,7 @@ stmdsp2
                  !word saveiff-1                          ; [910930]
                  !word edit-1                             ; [910620]
 
-; .page
+
 fundsp
                  !word sgn
                  !word int
@@ -2198,7 +2212,7 @@ fundsp
                  !word pixel                              ; escape c65     [910820]
                  !word rpalette                           ; escape c65     [910820]
 
-; .page
+
 optab            !text 121
                  !word faddt-1
                  !text 121
@@ -2221,8 +2235,9 @@ ptdorl           !text 100
                  !word dorel-1
 
 ;.end
-; .page
-; .subttl  Keyword Equates
+
+;[[tokeniser.const]]
+
 
 end_token        = $80                                    ; v2 commands
 for_token        = $81
@@ -2278,7 +2293,7 @@ using_token      = $fb
 until_token      = $fc
 while_token      = $fd
 esc_command_token = $fe
-; .page
+
 first_esc_command_token = $02
 collision_token  = $17
 begin_token      = $18
@@ -2294,8 +2309,9 @@ first_esc_function_token = $02
 pointer_token    = $0a
 last_esc_function_token = $0d                                    ; [910820]
 
-; .page
-; .subttl Error Messages
+
+;[[errors]]
+
 
 ok_error_message
                  !text "O",'K'+$80                        ; 0 for ERR$ [910911]
@@ -2344,8 +2360,9 @@ error_message_list
                  !text "FILE REA",'D'+$80                 ; 41
                  !text "EDIT MOD",'E'+$80                 ; 42    [910620]
 
-; .page
-; .subttl  Error Message Numbers
+
+
+;[[errors/constants]]
 
 errtmf           = 1
 errfno           = 3
@@ -2388,8 +2405,9 @@ edit_mode_error  = 42                                     ; [910620]
 last_error_message = 42                                     ; # of last error msg
 
 ;.end
-; .page
-; .subttl Error message output
+
+;[[error.handler]]
+
 
 ; Routine to translate error message # in .a
 ; into address of string containing message in index2
@@ -2413,8 +2431,9 @@ l11_2            lda (index2),y                           ; look at msg, and fin
 l11_3            rts
 
 ;.end
-; .page
-; .subttl Execute Dispatcher
+;[[dispatcher]]
+
+
 
 ; Here for new statement. Character -> by txtptr is ':' or eol. The adr of
 ; this loc is left on the stack when a statement is executed so that it can
@@ -2504,7 +2523,7 @@ tto              lda txtptr
                  sty oldtxt+1
 xeqrts           rts
 
-; .page
+
 ; Set up for command processing and set processor address on stack.
 ; Exit via jmp to CHRGET
 
@@ -2596,7 +2615,8 @@ morsts           cmp #':'
                  +lbeq xeqcm                              ; if ':', continue statement
                  bra snerr1
 
-; .page
+
+;[[command.set1]]
 ; STOP, STOP KEY, and END handlers
 ;
 
@@ -2643,8 +2663,9 @@ break            jsr release_channels                     ; make sure we're in t
 do_rts           rts
 
 ;.end
-; .page
-; .subttl Function Handler
+;[[functions]]
+
+
 
 ; At this point, eval has determined that the token in a has to be a
 ; function.  It must therefor be in the range SGN...MID$ (old BASIC),
@@ -2724,7 +2745,7 @@ fingo
 ;string functions remove this ret addr
                  +lbra chknum                             ; check for "numeric-ness" and return
 
-; .page
+
 ; Escape Function handler
 
 do_esc_fn
@@ -2758,7 +2779,7 @@ n_esc_fn_vec
 go_foreign_esc_fn
                  jmp (esc_fn_vec)
 
-; .page
+
 orop             ldy #255                                 ; must always complement
                  !text $2c
 
@@ -2785,6 +2806,7 @@ andop            ldy #0
                  +lbra givayf                             ; float (a,y) and return to user
 
 
+;[[relational]]
 
 ; Time to perform a relational operator.
 ; (domask) contains the bits as to which relational operator it was.
@@ -2803,7 +2825,7 @@ dorel            jsr chkval                               ; check for match
                  tax
                  bra qcomp
 
-; .page
+
 strcmp           lda #0
                  sta valtyp
                  dec opmask
@@ -2836,7 +2858,7 @@ qcomp            bmi docmp                                ; c is always set then
                  clc
                  bra docmp                                ; always branch
 
-; .page
+
 getcmp           lda #argmo
                  jsr lda_far_ram1                         ; lda (argmo),y from RAM1
                  pha
@@ -2863,8 +2885,9 @@ l20_1            +lbra float                              ; float the one-byte r
 
 
 ;.end
-; .page
-; .subttl  Ready, Error, Main (CODE 0)
+
+;[[readyerror]]
+
 
 bad_command
                  ldx #err_bad_command                     ; unimplemented command
@@ -2922,7 +2945,8 @@ l21_2            ldy trapno+1                             ; is trap set?
                  jsr luk4it
                  +lbra newstt
 
-; .page
+
+;[[error.handler]]
 errisd           dex
                  txa
                  jsr erstup                               ; set up address of error msg in .a in index2
@@ -2959,7 +2983,9 @@ errfin           ldy curlin+1                             ; direct mode?
                  jsr inprt
 l23_1            jsr highlight_done                       ; restore normal text color????    [910624]
 
-; .page
+;[[interface]]
+
+
 ready_1
                  lda #%10000000
                  jsr _setmsg                              ; turn Kernel messages on
@@ -2982,6 +3008,8 @@ nmain            ldx #$ff                                 ; set direct mode flag
                  stx curlin+1
                  jsr InputLine                            ; get a line of input & buffer it
 
+;[[execute]]
+
 execute_a_line                                            ; EXECUTE PLAIN TEXT IN BUFFER
                  stx txtptr                               ; init buffer pointer
                  sty txtptr+1
@@ -2992,6 +3020,7 @@ execute_a_line                                            ; EXECUTE PLAIN TEXT I
                  jsr crunch                               ; got text- tokenize buffer,
                  jsr chrgot                               ; get first command (token),
                  +lbra xeqdir                             ; and execute it
+
 
 ;ADD or DELETE NEW LINE
 l25_1            jsr linget                               ; evaluate line number, put into into linnum
@@ -3004,7 +3033,8 @@ l25_3            sty count                                ; save length
                  jsr FindLine                             ; locate line in program
                  +lbcc nodel                              ; not found, go insert line into program
 ; else delete current line and insert this one
-; .page
+;[[edit.shift]]
+
 ; Test: IF new line is longer than the line it replaces,
 ;  THEN IF there isn't enough room in memory to add this new line,
 ;   THEN out-of-memory error
@@ -3091,7 +3121,7 @@ l25_5            lda lowtr                                ; set up DMA destinati
                  sta text_top+1                           ; hi
 ;fall into routine to insert new line (if any)
 
-; .page
+
 nodel            jsr init_stack                           ; 'clearc' removed since text changes don't require trashing variables
                  jsr link_program                         ; fix links
                  jsr error_clear                          ; clear HELP/error flag, assuming he fixed whatever caused current error, if any
@@ -3279,8 +3309,9 @@ l26_11           lda #29                                  ; cursor right
 
 l26_12           +lbra main
 
+;[[linkprogram]]
 
-; .page
+
 link_program
                  lda txttab
                  ldy txttab+1
@@ -3327,7 +3358,9 @@ link_error                                                ; [910103]
 
 lnkrts           rts
 
-; .page
+;[[command.input.handler]]
+
+
 ; Function to get a line one character at a time from the input
 ; channel and build it in the input buffer.
 ;
@@ -3363,8 +3396,10 @@ l28_2            lda #0                                   ; fininl.  terminate i
                  rts
 
 ;.end
-; .page
-; .subttl Runtime Stack Routines
+
+;[[stack]]
+
+
 
 ; Find a specific token in the run-time stack. token to be found is in srchtk.
 ;
@@ -3448,7 +3483,7 @@ l29_5            txa
 l29_6            ldy #1                                   ; clear z flag
 l29_7            rts
 
-; .page
+
 ; GETSTK
 ;
 ; Add (.A) elements to top of run-time stack.  Error if result exceeds tos.
@@ -3468,7 +3503,7 @@ l30_1            sty tos+1
                  +lbcc omerr
 l30_2            rts
 
-; .page
+
 ; (a,y) is a certain address.  REASON makes sure it is less than (fretop).
 
 reason           cpy fretop+1
@@ -3501,7 +3536,7 @@ l31_3            pla
                  +lbcs omerr
 l31_4            rts
 
-; .page
+
 
 ;  Utilities involved in the operation of the BASIC run-time stack.
 
@@ -3535,8 +3570,10 @@ rlsstk           tya
 l32_1            rts
 
 ;.end
-; .page
-; .subttl FindLine
+;[[linesearch]]
+
+
+
 
 ; FindLine
 ; Searches the program text for the line whose number is passed in "linnum".
@@ -3598,8 +3635,10 @@ l33_3            clc                                      ; exit, line not found
 l33_4            rts                                      ; exit, line found (.c=1)
 
 ;.end
-; .page
-; .subttl LinGet
+;[[command.line.get]]
+
+
+
 
 ; LINGET  Reads a line # from the current txtptr position
 ;   and stores it in linnum  (valid range is 0-63999).
@@ -3663,8 +3702,10 @@ l34_6            jsr chargt                               ; terminating characte
                  +lbra chrtst                             ; return with flags set appropriately (esp. for 'range')
 
 ;.end
-; .page
-; .subttl LIST
+
+;[[command.list]]
+
+
 
 list             rmb7 helper                              ; clear 'help' flag for p1line
 
@@ -3756,7 +3797,7 @@ list_err
                  plp
                  +lbra exit_disk_op
 
-; .page
+
 ; LIST command is of the form  LIST [range]
 
 list_memory
@@ -3792,7 +3833,9 @@ l36_4            jsr p1line                               ; print line #, space,
                  sta lowtr+1
                  bra l36_1
 
-; .page
+;[[command.list.basic]]
+
+
 ;******************************************************
 ; P1LINE Print 1 line of BASIC text
 ;
@@ -3841,7 +3884,7 @@ l38_4            jsr indlow
                  +lbeq highlight_done                     ; finished when trailing null is found
                  jmp (iqplop)                             ; usually points to nqplop
 
-; .page
+
 nqplop                                                    ; <<<<<<< vector entry
                  bpl p1l015                               ; not a token, just print character
                  bbs7 dores,p1l015                        ; branch if inside quotes, print chr as is
@@ -3894,7 +3937,7 @@ p1l072           lda (index1),y                           ; get char from ROM ta
                  iny
                  bra p1l072
 
-; .page
+
 ; Print Escape Command
 
 print_esc_cmd
@@ -3933,7 +3976,7 @@ print_esc_fn
                  lda #>esc_function_list
                  bra p1l026                               ; go scan list and print it
 
-; .page
+
 ; The token to be printed is an escape token which is NOT recognized by BASIC.
 ; We will jump through the indirect chain and see if anyone claims this token.
 ;
@@ -3964,8 +4007,10 @@ nescpr           +lbcs p1l015                             ; no takers, print a f
 
 
 ;.end
-; .page
-; .subttl NEW  CLR
+;[[command.newclr]]
+
+
+
 ;
 ; The NEW command clears the program text as well as variable space.
 ;
@@ -4017,7 +4062,7 @@ init_text
 runc             jsr reset_txtptr                         ; load (txtptr) with (txttab)-1
                  bra clearc                               ; "CLR" to clear vars    [910410]
 
-; .page
+
 ; CLeaR Routines
 ;
 
@@ -4047,7 +4092,7 @@ l41_2            +lbne snerr                              ; no- error
                  jsr chkeos
                  +lbra Clear_DS                           ; yes- clear current DS$
 
-; .page
+
 ; Clearc is a subroutine which initializes the variable and array space by
 ; resetting STREND (the end of array storage).  It falls into INIT_STACK,
 ; which resets the stack.
@@ -4086,7 +4131,9 @@ l42_1            lda pudefs,x
 
 fload            jsr restore__1                           ; reset pointer for DATA statements
 
-; .page
+
+;[[stack.init]]
+
 ; INIT_STACK Routine (formerly STKINI)
 ;
 ;   Init_Stack resets the stack pointer.  String temporaries are freed up,
@@ -4121,8 +4168,10 @@ reset_txtptr
                  rts
 
 ;.end
-; .page
-; .subttl RETURN
+;[[command.return]]
+
+
+
 ;*********************************************************************
 ; RETURN Routine
 ;
@@ -4166,8 +4215,10 @@ ret010           jsr movfnd                               ; (fndpnt) => (tos)
                  bra data
 
 ;.end
-; .page
-; .subttl DATA
+;[[command.data]]
+
+
+
 
 data
                  jsr datan                                ; skip to end of statement- offset in .y
@@ -4207,8 +4258,9 @@ l43_2            jsr indtxt
                  beq l43_1                                ; yes, time to change
 
 ;.end
-; .page
-; .subttl IF  THEN  ELSE
+;[[command.ifthenelse]]
+
+
 
 ;****************************************************************
 ;*
@@ -4269,7 +4321,7 @@ l46_1            cmp #esc_command_token                   ; is this the beginnin
 l46_2            jsr chrgot                               ; get back original character, & set up flags
                  +lbra xeqcm3                             ; ..and go execute whatever it is
 
-; .page
+
 find_bend                                                 ; ... subroutine to find end of current b-block
                  jsr chrget
                  bne l47_3
@@ -4339,7 +4391,7 @@ l48_1            inw txtptr
 
 l48_2            rts
 
-; .page
+
 
 else             cmp #esc_command_token                   ; is this of the form "ELSE b-block"?
                  bne l49_1                                ; no, must be an escape command
@@ -4352,8 +4404,9 @@ l49_1            +lbra rem
 
 
 ;.end
-; .page
-; .subttl ON...GOTO  ON...GOSUB
+;[[command.on]]
+
+
 
 ;*********************************************************
 ;* ON expression {GOTO | GOSUB} line_number
@@ -4379,8 +4432,9 @@ l50_2            jsr chrget                               ; advance and set code
                  rts                                      ; either end of line or syntax error
 
 ;.end
-; .page
-; .subttl LET
+;[[command.let]]
+
+
 
 ;****************************************************************
 ;*
@@ -4436,7 +4490,7 @@ inpcom           ldy forpnt+1                             ; TI$?
                  +lbeq Set_TI_String                      ; yes
                  bra getspt                               ; no
 
-; .page
+
 dskx1            pla
                  iny
 
@@ -4460,7 +4514,7 @@ l51_2            lda facmo                                ; dntcpy
                  ldy facmo+1
                  bra copyc
 
-; .page
+
 getspt           ldy #2                                   ; get pntr to descriptor
                  jsr indfmo
                  cmp dsdesc+2                             ; check for DS$ hi
@@ -4497,7 +4551,7 @@ copyc            sta dscpnt
                  sty index+1
                  jsr fretms
 
-; .page
+
 ;   Fix the strings by flagging the old string as garbage and the new
 ;   string by pointing it to its new descriptor.
 
@@ -4541,7 +4595,7 @@ l52_3            lda #dscpnt
                  plx
                  rts
 
-; .page
+
 ;   STRADJ takes the pointer index which points to a descriptor and
 ;   indexes to the desciptor's string data.  If the string is not in
 ;   string space (no action to take) we return with carry clear, else
@@ -4591,8 +4645,9 @@ l53_5            pla                                      ; clean up stack
                  rts
 
 ;.end
-; .page
-; .subttl PRINT  PRINT#  CMD
+;[[command.printcmd]]
+
+
 
 ;***********************************************************
 ;*
@@ -4697,7 +4752,7 @@ notabr           jsr chrget                               ; reget last character
 xspac1           jsr outspc
                  bne xspac2
 
-; .page
+
 ; STROUT Routine
 ;
 ; Print the string pointed to by .x.  It must end with a null byte.
@@ -4734,8 +4789,9 @@ outqst           lda #'?'
 ; rts
 
 ;.end
-; .page
-; .subttl INPUT  GET  READ  LINPUT
+
+;[[command.inputs]]
+
 
 get              jsr errdir                               ; direct mode illegal
                  sta z_p_temp_1                           ; flag to distinguish between GET and GETKEY
@@ -4767,7 +4823,7 @@ gettty                                                    ; GET
                  bne release_channels                     ; restore terminal channels
                  rts
 
-; .page
+
 linputn                                                   ; input line from channel into a string var
                  jsr chrget                               ; (eat input# token)
                  smb7 op
@@ -4834,7 +4890,7 @@ l56_1            lda buf                                  ; bufful. get anything
                  jsr datan                                ; skip to end of statement
                  +lbra addon
 
-; .page
+
 read             rmb7 op                                  ; flag READ vs. LREAD    [910102]
                  ldx datptr                               ; get last data location
                  ldy datptr+1
@@ -4884,7 +4940,7 @@ l57_4            sta buf
                  ldy #>buf_txtptr
                  bra datbk
 
-; .page
+
 qdata            +lbmi datlop                             ; branch if READ
                  lda channl                               ; else it's INPUT
                  bne l58_1
@@ -5002,7 +5058,7 @@ l60_3            ldy #0                                   ; last data chr could 
 
 l60_4            rts                                      ; do next statement
 
-; .page
+
 ; DATLOP Routine Subroutine to find data.
 ;
 ; The search is made by using the execution code for data to skip over
@@ -5036,8 +5092,9 @@ l61_1            jsr addon                                ; nowlin.  txtptr+.y
 
 
 ;.end
-; .page
-; .subttl NEXT
+;[[command.next]]
+
+
 
 ; Next routine
 ;
@@ -5142,8 +5199,8 @@ l62_6
 l62_7            rts
 
 ;.end
-; .page
-; .subttl DIM
+;[[command.dim]] .page
+
 
 ; The DIMension code sets DIMFLG and then falls into the variable search
 ; routine, which looks at DIMFLG at 3 different points:
@@ -5166,8 +5223,9 @@ dim              tax                                      ; make .x non-zero (.a
                  rts
 
 ;.end
-; .page
-; .subttl SYS
+;[[command.sys]]
+
+
 
 sys              jsr getwrd                               ; convert arg to integer value
                  lda linnum                               ; set up arg's for call to 'long jsr'
@@ -5201,8 +5259,9 @@ l63_5            jmp _jsr_far                             ; far, far away
 ;If returns, Kernel will update _reg's for us
 
 ;.end
-; .page
-; .subttl DMA
+;[[command.dma]]
+
+
 
 ; DMA - Set up for DMA operation (FETCH/STASH/SWAP)
 ;
@@ -5266,8 +5325,9 @@ l64_11           bit dma_ctlr+3                           ; check status (in cas
 l64_12           rts
 
 ;.end
-; .page
-; .subttl  TRON  TROFF
+;[[command.trace]]
+
+
 
 
 tron                                                      ; trace mode on
@@ -5281,8 +5341,9 @@ troff                                                     ; trace mode off
 
 
 ;.end
-; .page
-; .subttl  RREG
+;[[command.sys.returnreg]]
+
+
 
 ; RREG - Return values of 6502 registers following a SYS call.
 ;
@@ -5325,8 +5386,9 @@ l65_3            inc count                                ; 5 registers to do
 l65_4            rts
 
 ;.end
-; .page
-; .subttl MID$
+;[[command.midstring]]
+
+
 
 ; Alternate use of the MID$ function, as the target of an assignment.
 ;
@@ -5404,9 +5466,9 @@ l66_6            phx
 l66_7            +lbra frefac                             ; free up temp. string, rts
 
 ;.end
+;[[command.auto]]
 
-; .page
-; .subttl  AUTO
+
 
 ; AUTO Increment
 ;   Syntax :    auto {line-number} (line-number = 0 means turn off)
@@ -5421,8 +5483,8 @@ auto
                  rts
 
 ;.end
-; .page
-; .subttl  HELP
+
+
 
 help             ldx errnum                               ; check for error status
                  inx
@@ -5501,8 +5563,9 @@ highlight_text                                            ; nasty kludge to colo
 l70_1            rts
 
 ;.end
-; .page
-; .subttl  GOSUB  GOTO
+;[[command.gotosub]]
+
+
 
 ; GOSUB-  Push text pointer, line #, & gosub token on stack:
 ;
@@ -5525,7 +5588,7 @@ gosub            bbs4 runmod,edit_err                     ; [910620]
                  jsr goto
                  +lbra newstt
 
-; .page
+
 goto             bbs4 runmod,edit_err                     ; [910620]
                  jsr linget                               ; pick up the line number in LINNUM
                  lda endchr                               ; test if linget found any number
@@ -5589,8 +5652,8 @@ edit_err
                  +lbra error
 
 ;.end
-; .page
-; .subttl  GO  GO64
+
+
 
 go_without_to
                  jsr chrget                               ; what is next character?
@@ -5612,8 +5675,9 @@ l71_2            jsr are_you_sure
 
 
 ;.end
-; .page
-; .subttl  CONTINUE
+;[[command.continue]]
+
+
 ;**********************************************************
 ;*
 ;* CONTINUE Execution after STOP/END
@@ -5654,8 +5718,9 @@ cont_rts
                  rts
 
 ;.end
-; .page
-; .subttl  RUN
+;[[command.run]]
+
+
 ;***********************************************************
 ;*
 ;* RUN Command
@@ -5702,8 +5767,9 @@ run__20          jsr clearc                               ; first trash all vari
                  +lbra newstt                             ; ..otherwise it's business as usual
 
 ;.end
-; .page
-; .subttl  RESTORE
+;[[command.restore]]
+
+
 ;*********************************************************************
 ;*
 ;* RESTORE Command
@@ -5741,8 +5807,9 @@ l73_1            sta datptr
                  rts
 
 ;.end
-; .page
-; .subttl  RENUMBER
+;[[command.renumber]]
+
+
 ;***********************************************************************
 ;
 ; RENUMBER Command
@@ -5858,7 +5925,7 @@ renum_30
                  sbc highds+1
                  +lbcc fcerr                              ; bad...
 
-; .page
+
 ;***********************************************************************
 ;**************  R E N U M B E R    P A S S    O N E  ******************
 ;***********************************************************************
@@ -5910,7 +5977,7 @@ set_next
                  sta txtptr+1
 set_end          rts
 
-; .page
+
 ;***********************************************************************
 ;**************  R E N U M B E R    P A S S    T W O  ******************
 ;***********************************************************************
@@ -5944,7 +6011,7 @@ ren_pass_3
                  dec z_p_temp_1                           ; z_p_temp_1 = 0 (for pass 3)
                  jsr imbed_lines                          ; search for and update imbedded line #'s
 
-; .page
+
 ;***********************************************************************
 ;*************  R E N U M B E R    P A S S    F O U R  *****************
 ;***********************************************************************
@@ -5993,7 +6060,7 @@ direct_mode_exit
                  sta oldtxt+1
                  rts
 
-; .page
+
 ;***********************************************************************
 ;*************  R E N U M B E R   S U B R O U T I N E S  ***************
 ;***********************************************************************
@@ -6085,7 +6152,7 @@ iline_20
                  beq iline_10                             ; it is...
                  bra chk_quote                            ; no...
 
-; .page
+
 ;*********** This part of imbed_lines executed in pass 2 only **********
 
 p2code                                                    ; updates text_top without actually changing lines
@@ -6112,7 +6179,7 @@ l78_3            jsr chrget
                  dew fndpnt                               ; digit...move down
                  bra l78_3                                ; still digits...
 
-; .page
+
 ;*********** This part of imbed_lines executed in pass 3 only **********
 
 p3code
@@ -6155,7 +6222,7 @@ l79_4            jsr move_init                            ; digit...move down
 
                  bra iline_20                             ; branch always
 
-; .page
+
 ;*************************** FORM_LINE *********************************
 
 ; Remaps the destination line if it is greater than n3
@@ -6205,7 +6272,7 @@ l80_4            jsr chargt
 l80_5            jsr line_add                             ; scan to end of line
                  bra find_it                              ; always
 
-; .page
+
 ;*************************** N1_RESET **********************************
 
 ; Copies n1 (new renumber origin) into facho & sets (txtptr) = (txttab)-1
@@ -6269,7 +6336,7 @@ chargt
                  inw txtptr
                  +lbra indtxt
 
-; .page
+
 ;***********************************************************************
 ;************************* MEMORY MOVE ROUTINES ************************
 ;***********************************************************************
@@ -6296,7 +6363,7 @@ move_init
 
                  rts
 
-; .page
+
 ;****************************** MOVEDOWN *******************************
 
 ; Move block of BASIC text from INDEX1+COUNT to INDEX2 down to INDEX1.
@@ -6345,7 +6412,7 @@ execute_DMA1                                              ; [910620] Edit
                  sta dma_ctlr                             ; dma_list lo & trigger
                  rts
 
-; .page
+
 ;******************************* MOVEUP ********************************
 
 ; Move block of BASIC text from INDEX1 to INDEX2 up to INDEX2+COUNT.
@@ -6397,8 +6464,9 @@ l81_2            sta dma1_src_bank                        ; banks
                  rts
 
 ;.end
-; .page
-; .subttl  FOR
+
+;[[command.for]]
+
 ; FOR
 ;
 ; Push the following information on the run-time stack:
@@ -6517,8 +6585,9 @@ l82_4            sta (tos),y                              ; (common area)
                  rts
 
 ;.end
-; .page
-; .subttl  DELETE
+;[[command.delete]]
+
+
 
 ; Delete a range of source   -or-   Delete a disk file
 ;
@@ -6591,7 +6660,7 @@ l84_1            sta text_top                             ; set eot pointer
                  stx text_top+1
                  rts                                      ; C128-04 fix: was 'jmp ready' (FAB)
 
-; .page
+
 ;********************************
 ;*
 ;*    Input Range Parameters
@@ -6630,8 +6699,9 @@ l85_3            rts
 l85_4            +lbra snerr                              ; syntax error
 
 ;.end
-; .page
-; .subttl  FIND  CHANGE
+;[[command.findchange]]
+
+
 
 ; FIND   "string"                    [,line_range]
 ; CHANGE "oldstring" TO "newstring"  [,line_range]
@@ -6677,7 +6747,7 @@ l86_2            jsr range                                ; set up line number r
                  smb5 helper                              ; set   'find' flag for 'p1line'
                  bra find_loop_1                          ; begin
 
-; .page
+
 find_loop
                  ldy #0                                   ; move to next line (copy link bytes to lowtr)
                  jsr indlow
@@ -6709,7 +6779,7 @@ l87_2            +lbcs find_exit                          ; line is >  last line
 l87_3            ldx #3                                   ; set initial position - 1 (past link & line#)
                  stx fndpnt
 
-; .page
+
 find_loop_2
                  jsr _stop                                ; check stop key
                  +lbeq find_break                         ; exit if down
@@ -6756,7 +6826,7 @@ print_line
                  jsr p1line                               ; print #, space, and the line of code
                  bbr7 op,find_loop_2                      ; Find op? branch if so and continue search
 
-; .page
+
 ; Change operation
 ; Query the user and replace string1 with string2 if he wants to.
 ; Options are  'Y' (yes),  '*' (do all),  'CR' (quit),  anything else means no.
@@ -6864,7 +6934,7 @@ l89_8            jsr link_program                         ; relink program
                  sta fndpnt
                  +lbra find_loop_2                        ; and resume searching
 
-; .page
+
 find_exit
                  jsr crdo                                 ; normal exit
                  pla
@@ -6908,8 +6978,8 @@ l90_1            inc fstr1+2,x
                  rts
 
 ;.end
-; .page
-; .subttl  PUDEF
+
+
 
 puctrl           jsr frmstr                               ; do frmevl,frestr. return with a=len, index=~string
                  tay
@@ -6924,8 +6994,9 @@ l91_1            jsr indin1_ram1                          ; lda (index),y
                  rts
 
 ;.end
-; .page
-; .subttl  TRAP
+
+;[[command.trap]]
+
 
 trap
 ; jsr errdir ;why not????      [910925]
@@ -6940,9 +7011,10 @@ l92_1            lda #$ff                                 ; flag no trap
                  rts
 
 ;.end
+;[[command.resume]]
 
-; .page
-; .subttl  RESUME
+
+
 
 ; RESUME command
 ;
@@ -7030,8 +7102,9 @@ rescnt           ldx #errcr
                  +lbra error
 
 ;.end
-; .page
-; .subttl  DO  LOOP  UNTIL  WHILE  EXIT
+
+;[[command.loops]]
+
 
 do               ldy #1
 l95_1            lda txtptr,y                             ; save current pointers for stack entry
@@ -7132,7 +7205,7 @@ l96_2            cmp #':'                                 ; end of line or end o
                  inc txtptr+1
                  bra fndend
 
-; .page
+
 loop             beq popngo                               ; no conditionals, just do it
                  cmp #while_token
                  beq loop10
@@ -7192,8 +7265,9 @@ frmjmp
                  +lbra frmevl
 
 ;.end
-; .page
-; .subttl  KEY
+;[[command.key]]
+
+
 
 ;**************************************************************
 ;
@@ -7231,7 +7305,7 @@ l97_3            cmp #esc_command_token                   ; KEY OFF ?
                  smb5 _locks                              ; yes- set Editor's lock bit
 l97_4            +lbra chrget                             ; exit
 
-; .page
+
 ;**************************************************************
 ;
 ;   Key_List  List all function key definitions
@@ -7322,7 +7396,7 @@ keydat           !text "($RHC+",$22                       ; chr$( string
 
 keychr           !text cr,$8d,$22,esc                     ; special KEY chars- return, sft-return, quote, esc
 
-; .page
+
 ;************************************************************************
 ;
 ;   Key_Change  Add, Delete or Change function key definition
@@ -7351,7 +7425,7 @@ key_restore
                  +lbcs omerr                              ; bad return (.c=1)
                  rts                                      ; ok return  (.c=0)
 
-; .page
+
 ;************************************************************************
 ;   Key_Load  Load function key definitions (from disk)   [900725]
 ;************************************************************************
@@ -7386,7 +7460,7 @@ GetLoadChannel                                            ; Used by KeyLoad and 
                  clc
                  rts
 
-; .page
+
 LoadBlock
                  sta highds                               ; where to put data
                  sty highds+1
@@ -7413,7 +7487,7 @@ LoadEOF
                  clc
                  +lbra list_err                           ; release channel, close file, return to main
 
-; .page
+
 ;************************************************************************
 ;   Key_Save  Save function key definitions (from disk)   [900725]
 ;************************************************************************
@@ -7448,8 +7522,9 @@ GetSaveChannel                                            ; Used by KeySave and 
                  jmp _setbank
 
 ;.end
-; .page
-; .subttl  BANK
+
+;[[command.bank]]
+
 
 ;************************************************************************
 ;*  Set Memory Bank for PEEK,POKE,WAIT,BLOAD,BSAVE and SYS,BOOT Commands
@@ -7475,8 +7550,9 @@ bank             jsr getbyt                               ; get bank number in .
 
 
 ;.end
-; .page
-; .subttl  PLAY
+;[[command.play]]
+
+
 
 ; C65 Music Interpreter
 ;
@@ -7514,7 +7590,7 @@ l103_1           ldy hulp
 play_rts
                  rts
 
-; .page
+
 play_one_character
                  cmp #' '                                 ; spaces are a 'no-op'
                  beq play_rts
@@ -7546,7 +7622,7 @@ l104_4           cmp mutabl,x
                  cmp #'$'                                 ; flat?
                  +lbeq play_flat
 
-; .page
+
 ; Must be a digit here for Octave, Voice, envelope (T), filter (X), or volume (U)
 
                  sec
@@ -7594,7 +7670,7 @@ l105_2           lda filters1,x                           ; update the hardware
 ; jsr go_fast  ;      [910716] 4567R7A
                  bra clear_flag                           ; always
 
-; .page
+
 set_voice
                  dec
                  cmp #6                                   ; stereo SIDs: 0-2=right, 3-5=left  [910612]
@@ -7632,7 +7708,7 @@ set_envelope_1                                            ; entry for initializa
 ; jsr go_fast  ;      [910716] 4567R7A
                  bra clear_flag
 
-; .page
+
 set_volume
                  jsr wait_for_all_quiet                   ; [910626]
                  tax
@@ -7655,7 +7731,7 @@ set_volume
                  stx sid1+24,y                            ; set new volume
 ; jsr go_fast  ;      [910716] 4567R7A
 ;fall into clear_flag
-; .page
+
 clear_flag
                  lda #0
                  sta flag
@@ -7701,7 +7777,7 @@ l107_3           bit voices+1,x                           ; wait for voice to be
                  bne l107_2                               ; until done 3 voices
                  rts
 
-; .page
+
 play_bad_value
                  jsr clear_flag
                  +lbra fcerr                              ; illegal quantity
@@ -7736,7 +7812,7 @@ l108_3           dex
 
 l108_4           rts
 
-; .page
+
 play_note
                  sec
                  sbc #'A'
@@ -7776,7 +7852,7 @@ l109_4           dey
                  ror pitch
                  bra l109_4
 
-; .page
+
 play_command
                  cmp #'M'                                 ; measure?
                  beq l110_1
@@ -7813,7 +7889,7 @@ play_flat
                  sta sharp
                  rts
 
-; .page
+
 play_note_1                                               ; play a note
                  sta pitch+1
                  lda #0                                   ; flag 'not rest'
@@ -7862,7 +7938,7 @@ l111_2           pla                                      ; test if this is a re
 ; jsr go_fast  ;      [910716] 4567R7A
 l111_3           cli
 
-; .page
+
 clear_play_flags
                  lda #0
                  sta sharp                                ; clear flags
@@ -7877,7 +7953,7 @@ tempo            jsr getbyt                               ; duration of whole no
                  stx tempo_rate
                  rts
 
-; .page
+
 times2           !text 0,2,4,6,8,10                       ; [910612] stereo
 
 notes            !text "WHQIS"                            ; sixteenth,eigth,quarter,half,and whole notes
@@ -7931,8 +8007,9 @@ filter_offset
 voltab           !text 0,1,3,5,7,8,10,12,14,15
 
 ;.end
-; .page
-; .subttl  FILTER
+;[[command.filter]]
+
+
 
 ;******************************************************************
 ;
@@ -8026,8 +8103,9 @@ l112_8           lda fltsav,y                             ; copy new filter para
                  rts
 
 ;.end
-; .page
-; .subttl  ENVELOPE
+
+;[[command.envelope]]
+
 
 ;****************************************************************
 ;
@@ -8121,8 +8199,9 @@ volrts
                  rts
 
 ;.end
-; .page
-; .subttl  VOLUME
+
+;[[command.volume]]
+
 
 ;***************************************************************
 ;*
@@ -8188,8 +8267,9 @@ l114_1           jsr optbyt                               ; get optional left pa
                  rts
 
 ;.end
-; .page
-; .subttl  SOUND
+;[[command.sound]]
+
+
 
 ;*****************************************************************************
 ;*
@@ -8361,8 +8441,9 @@ l115_9           ldx sound_voice
                  rts
 
 ;.end
-; .page
-; .subttl  WINDOW
+;[[command.window]]
+
+
 
 ;****************************************************************
 ;*
@@ -8430,8 +8511,9 @@ l116_3           txa
 l116_4           +lbra fcerr                              ; illegal value error
 
 ;.end
-; .page
-; .subttl  FAST  SLOW
+;[[command.fastslow]]
+
+
 
 ;***********************************************************************
 ;
@@ -8462,8 +8544,8 @@ slow
                  rts
 
 ;.end
-; .page
-; .subttl Check Value Types
+
+
 
 ; These routines check for certain VALTYP.   (c) is not preserved.
 
@@ -8492,8 +8574,9 @@ sterr            ldx #errst
                  +lbra error
 
 ;.end
-; .page
-; .subttl Formula Evaluator
+
+;[[evaluate]]
+
 
 ; Formula Evaluator Routine
 ;
@@ -8539,7 +8622,7 @@ loprel           sec                                      ; prepare to subtract
                  jsr chrget
                  bra loprel                               ; get the next candidate
 
-; .page
+
 endrel           ldx opmask                               ; were there any?
                  bne finrel                               ; yes, handle as special op
                  +lbcs qop                                ; not an operator
@@ -8569,7 +8652,7 @@ negprc           jsr dopre1                               ; save a return for op
                  beq qopgo                                ; done!
                  bra pulstk
 
-; .page
+
 finrel           lsr valtyp                               ; get value type into (c)
                  txa
                  rol                                      ; put VALTYP into low order bit of mask
@@ -8593,7 +8676,7 @@ dopre1           lda optab+2,y
                  lda opmask                               ; (a) may be mask for rel
                  bra lpoper
 
-; .page
+
 pushf1                                                    ; save FAC on stack unpacked
                  pla                                      ; first grab return address off stack
                  sta index1
@@ -8641,7 +8724,7 @@ pullf1                                                    ; retrieve FAC from st
                  sta facsgn
                  jmp (index1)                             ; return
 
-; .page
+
 qop              ldy #255
                  pla                                      ; get high precedence of last op
 qopgo            beq qoprts                               ; done!
@@ -8671,7 +8754,7 @@ pulstk           pla                                      ; get mask for rel op 
 
 qoprts           lda facexp                               ; get it and set codes
                  rts                                      ; return
-; .page
+
 eval             jmp (ieval)
 
 neval            lda #0                                   ; assume numeric
@@ -8714,7 +8797,7 @@ st2txt           ldx strng2
                  sty txtptr+1
                  rts
 
-; .page
+
 eval3            cmp #not_token                           ; not?
                  bne eval4
                  ldy #24
@@ -8738,7 +8821,7 @@ eval4            cmp #fn_token                            ; user defined functio
                  +lbcs isfun                              ; yes
 ; (functions are the highest numbered
 ; tokens so no need to check further)
-; .page
+
 parchk           jsr chkopn                               ; only thing left is formula in parens
                  jsr frmevl                               ; a formula in parens
 
@@ -8776,8 +8859,8 @@ gonprc           pla                                      ; get rid of rts addr.
                  +lbra negprc                             ; do negation
 
 ;.end
-; .page
-; .subttl Variable Assignment
+
+
 
 is_variable
                  jsr ptrget                               ; parse variable name, put name in varnam
@@ -8810,7 +8893,7 @@ isvret           sta facmo                                ; save pointer to vari
                  bne ds_rts
                  +lbra Get_TI_String                      ; the one and only TI$
 
-; .page
+
 isvds            cpx #'D'                                 ; is this DS$?
                  bne ds_rts                               ; no
                  cpy #'S'+$80                             ; shifted S?
@@ -8846,7 +8929,7 @@ l118_3           +lbra putnew
 
 ds_rts           rts
 
-; .page
+
 is_numeric
                  bbr7 intflg,is_floating                  ; branch if not an integer
                  ldy #0
@@ -8870,7 +8953,7 @@ is_floating
                  cmp #<zero
                  bne gomovf                               ; not TI, etc.
 
-; .page
+
 ; The pointer does point to the ROM zero.  Now it is necessary to
 ; examine the actual variable name case by case.
 
@@ -8929,7 +9012,7 @@ qerlin           cpx #'E'                                 ; ER or EL?
 qnumer           lda errnum                               ; want ER (number of last error)
                  +lbra float
 
-; .page
+
 gomovf           lda facmo
                  ldy facmo+1
 
@@ -8961,8 +9044,8 @@ movfrm           sta index1                               ; move value from RAM
                  rts
 
 ;.end
-; .page
-; .subttl Variable Search
+
+
 
 ;  Read the variable name at the current text position and put a pointer
 ;  to its value in VARPNT.   TXTPTR points to the terminating character.
@@ -9305,8 +9388,9 @@ decblt           dec hightr+1
                  rts
 
 ;.end
-; .page
-; .subttl Array Routines
+;[[arrays]]
+
+
 
 ; The format of arrays in core:
 ;
@@ -9413,7 +9497,7 @@ gotary           ldx #errdd                               ; perhaps a "re-dimens
                  bne bserr                                ; same so get definition.
                  +lbra getdef
 
-; .page
+
 ; Come here when variable is not found in the array table to build an entry.
 ;
 ; Put down the descriptor.
@@ -9622,7 +9706,7 @@ l129_3           stx addend
                  lda varpnt
 dimrts           rts
 
-; .page
+
 ; Integer arithmetic routines.
 ;
 ; Two byte unsigned integer multiply.
@@ -9678,8 +9762,9 @@ l130_1           sta arypnt
                  rts
 
 ;.end
-; .page
-; .subttl  TIME functions
+;[[command.time]]
+
+
 
 ; TI$="hh:mm:ss.t" Allows optional colons to delimit parameters and
 ;   allows input to be abbrieviated (eg., TI$="h:mm" or
@@ -9739,7 +9824,7 @@ l131_5           ldz time                                 ; tenths  0-9
                  ldy time+3                               ; hours  0-23
                  jmp _SetTime                             ; Go set time & exit
 
-; .page
+
 ; Get an ASCII digit, make sure it's in range 0-9 or a colon.
 ; if no digit to get, default to '0'
 ;
@@ -9770,7 +9855,7 @@ l132_1           and #$0f                                 ; make BCD
 MaxTimeValues
                  !text $10,$60,$60,$24                    ; t,s,m,h in packed BCD
 
-; .page
+
 ; x$=TI$  Return a string of the form "hh:mm:ss.t", including colons.
 
 Get_TI_String
@@ -9823,7 +9908,8 @@ l133_2           lda time,x
                  jsr mvdone                               ; update frespc ????
                  +lbra putnew                             ; make descriptor in dsctmp real
 
-; .page
+
+;[[time]]
 ; TI. Convert 24-hour TOD into tenths of seconds.  901010 F.Bowen
 
 Get_TI
@@ -9864,7 +9950,7 @@ ReadSystemClock
                  sty time+3                               ; hours  0-59
                  rts
 
-; .page
+
 ; Unsigned Integer Multiply: Time * Factor  -> Tenths_of_Seconds
 ;     A   *  (B,C)  ->      (D,E,F)
 
@@ -9915,8 +10001,9 @@ TimeFactor
                  !word 600                                ; per minute  (max   59*600 =  35400 ($08A48)
                  !word 36000                              ; per hour    (max 23*36000 = 828000 ($CA260)
 
-; .page
-; .subttl  SLEEP
+;[[command.sleep]]
+
+
 
 ;*******************************************************************************
 ;*
@@ -9983,7 +10070,7 @@ sleep            jsr getwrd                               ; get argument in (y,a
 ; sta _sleep_counter+2
 ; rts
 
-; .page
+
 ; SLEEP is now based upon the system hardware TOD clock (same one used by TI$).  This
 ; makes it accurate, something it was not when it was based upon the frame rate.
 
@@ -10010,8 +10097,9 @@ l136_3           jsr _ReadTime                            ; Wait for tenths to i
                  rts
 
 ;.end
-; .page
-; .subttl  WAIT
+;[[command.wait]]
+
+
 
 ; WAIT<location>,<mask1>[,<mask2>] statement waits until the contents of
 ; <location> is nonzero when XORed with mask2 and then ANDed with mask1.
@@ -10043,8 +10131,9 @@ l137_3           lda (poker),y
                  rts                                      ; got a nonzero
 
 ;.end
-; .page
-; .subttl  FRE
+;[[function.fre]]
+
+
 
 ;*****************************************************************************
 ; FRE(n) Function
@@ -10090,8 +10179,9 @@ l138_2           ldy _expansion                           ; FRE(expansion banks)
 l138_3           +lbra nosflt                             ; go float the number (y,a)=(lo,hi)
 
 ;.end
-; .page
-; .subttl  VAL
+;[[function.val]]
+
+
 
 ; The VAL function takes a string and turns it into a number by interpreting
 ; the PETSCII digits etc.  Except for the problem that a terminator must be
@@ -10129,8 +10219,9 @@ val_1            clc                                      ; ///jump table entry.
                  rts
 
 ;.end
-; .page
-; .subttl  DEC
+;[[function.dec]]
+
+
 
 ; DEC convert a hex string representing a 2-byte integer into decimal.
 
@@ -10185,8 +10276,9 @@ decbad
                  +lbra fcerr                              ; illegal qty error
 
 ;.end
-; .page
-; .subttl  PEEK  POKE
+
+;[[command.peekpoke]]
+
 
 
 peek             phw poker                                ; ..also happens to be LINNUM!   [910911]
@@ -10211,7 +10303,7 @@ l140_1           lda (poker),y
                  sta poker
                  +lbra sngflt                             ; float it
 
-; .page
+
 poke             jsr getnum
 l141_1           txa                                      ; set up value to store for Kernel 'stash' routine
                  ldy #0                                   ; ..and index
@@ -10242,8 +10334,9 @@ l141_4           cli                                      ; [910612]
 
 
 ;.end
-; .page
-; .subttl  ERR$
+
+;[[function.errstr]]
+
 
 errd             jsr sign                                 ; get sign
                  bmi l142_1                               ; (allow err$(er) when er=-1)
@@ -10304,8 +10397,9 @@ l142_7           +lbra chrd1                              ; pla,pla,jmp putnew
 
 
 ;.end
-; .page
-; .subttl  HEX$
+;[[function.hexstr]]
+
+
 
 hexd             jsr chknum
                  phw poker                                ; save linnum    [910911]
@@ -10344,8 +10438,9 @@ l143_1           adc #'0'
                  rts
 
 ;.end
-; .page
-; .subttl  JOY
+;[[function.joy]]
+
+
 
 ;*************************************************************
 ; JOY (n)  -- Return joystick status
@@ -10407,8 +10502,9 @@ l144_2           +lbra sngflt                             ; float 1 byte arg in 
 joytab           !text 4,2,3,0,6,8,7,0,5,1,0
 
 ;.end
-; .page
-; .subttl  POT  LPEN
+
+;[[function.potpen]]
+
 
 ;***********************************************************
 ; POT(n)  --  Read paddles
@@ -10476,7 +10572,7 @@ l145_5           pla
                  plp                                      ; restore status
                  +lbra nosflt                             ; output 2-byte result
 
-; .page
+
 ;*************************************************************
 ;  LPEN(n)  --  Read light pen
 ;
@@ -10506,8 +10602,9 @@ l146_1           +lbra nosflt                             ; float it (y,a)
 
 
 ;.end
-; .page
-; .subttl  POINTER
+;[[function.pointer]]
+
+
 
 ;******************************************************************
 ;
@@ -10535,8 +10632,9 @@ pointer_ret      =*-1
 l147_1           +lbra nosflt
 
 ;.end
-; .page
-; .subttl  XOR
+;[[operator.xor]]
+
+
 
 ;**************************************************************
 ;*
@@ -10569,8 +10667,9 @@ xor              phw poker                                ; protect the poker va
                  rts
 
 ;.end
-; .page
-; .subttl  MOD
+;[[operator.mod]]
+
+
 
 ;**************************************************************
 ;*
@@ -10612,8 +10711,9 @@ l148_1           lda facexp,x
 
 
 ;.end
-; .page
-; .subttl  RWINDOW
+
+;[[function.rwindow]]
+
 
 ;******************************************************************************
 ;
@@ -10655,8 +10755,9 @@ l149_3           tay
                  +lbra sngflt                             ; float 1 byte arg in .Y
 
 ;.end
-; .page
-; .subttl  RND
+;[[function.rnd]]
+
+
 
 ;    Random Number Function  RND(x)
 ;
@@ -10694,7 +10795,7 @@ rnd_0            bmi l150_2                               ; /// entry from jump 
                  sta facho
                  bra l150_3
 
-; .page
+
 l150_1           lda #<rndx                               ; get last one into FAC
                  ldy #>rndx
                  jsr movfm
@@ -10729,8 +10830,9 @@ rmulc            !text 152,53,68,122,0
 raddc            !text 104,40,177,70,0
 
 ;.end
-; .page
-; .subttl Math Package (CODE12)
+
+;[[math]]
+
 
 n32768           !text $90,$80,0,0,0
 
@@ -10759,7 +10861,7 @@ ayint            lda facexp
 
 nonono           +lbne fcerr                              ; no, FAC is too big
 qintgo           +lbra qint                               ; go shove it
-; .page
+
 
 ; Float an unsigned double byte integer
 ; Entry:  MSB in (a), LSB in (y)
@@ -10803,8 +10905,9 @@ errind           bbr7 runmod,storts                       ; goto error if not in
                  +lbra error
 
 ;.end
-; .page
-; .subttl User Defined Function
+
+;[[function.userdef]]
+
 
 ; User Defined Function Code
 ;
@@ -10843,7 +10946,7 @@ def              jsr getfnm                               ; get a pointer to the
                  jsr data
                  bra deffin
 
-; .page
+
 ; Subroutine to get a pointer to a function name
 
 getfnm           lda #fn_token                            ; must start with fn
@@ -10877,7 +10980,7 @@ fndoer           jsr getfnm                               ; get the function's n
                  sta varpnt+1
                  iny                                      ; since def uses only 4
 
-; .page
+
 defstf           lda #varpnt
                  jsr lda_far_ram1
                  pha                                      ; push it all on the stack, since we might be recursing
@@ -10924,8 +11027,10 @@ l151_1           pla                                      ; get old arg value of
                  rts
 
 ;.end
-; .page
-; .subttl MID$  LEFT$  RIGHT$  ASC  STR$  LEN
+;[[function.stringmisc]]
+
+
+
 
 ; The STR$() function takes a number and gives a string with
 ; the characters the output of the number would have given.
@@ -10958,7 +11063,7 @@ chrd             jsr conint                               ; get integer in range
 chrd1            pla                                      ; get rid of "chknum" return address
                  pla
                  +lbra putnew                             ; setup FAC to point to desc
-; .page
+
 
 ; The following is the LEFT$($,#) function.  It takes the leftmost # characters
 ; of the string.  If # > len of the string, it returns the whole string.
@@ -11089,8 +11194,8 @@ asc              jsr len1
 l155_1           +lbra sngflt
 
 ;.end
-; .page
-; .subttl String Routines
+
+
 
 
 
@@ -11109,7 +11214,7 @@ strspa           jsr getspa                               ; get string space
                  sta dsctmp                               ; save length
                  rts                                      ; done
 
-; .page
+
 ; STRLT2 takes the string literal whose first character is pointed to by
 ; (xreg)+1 and builds a descriptor for it.  The descriptor is initially
 ; built in DSCTMP, but PUTNEW transfers it into a temporary and leaves a
@@ -11152,7 +11257,7 @@ l156_3           sty dsctmp                               ; no, back up. retain 
 l156_4           stx strng2+1
                  tya
 
-; .page
+
 strlit_1                                                  ; //// entry from SPRSAV
                  jsr strini
                  tay
@@ -11169,7 +11274,7 @@ l157_1           dey
                  pla                                      ; restore length
                  jsr mvdone                               ; finish up by updating frespc
 
-; .page
+
 ; Some string function is returning a result in DSCTMP.  Set up a temp
 ; descriptor with DSCTMP in it.  Put a pointer to the descriptor in FACMO&LO
 ; and flag the result as a string type.
@@ -11199,7 +11304,7 @@ putnew           ldx temppt                               ; pointer to first fre
                  stx temppt                               ; save pointer to next temp, if any
                  rts                                      ; all done
 
-; .page
+
 ; The following routine concatenates two strings.  At this point, the FAC
 ; contains the first one and (txtptr) points to the + sign.
 
@@ -11233,7 +11338,7 @@ cat              lda faclo                                ; push high order onto
                  jsr putnew
                  +lbra tstop                              ; "cat" reenters frmevl from tstop
 
-; .page
+
 movins           ldy #0                                   ; get address of string
                  jsr indst1_ram1
                  pha
@@ -11269,7 +11374,8 @@ mvdone           clc                                      ; update frespc pointe
                  inc frespc+1
 l159_1           rts
 
-; .page
+
+;[[string.manager]]
 ; FRETMP is passed a string descriptor pntr in (a,y).  A check is made to see
 ; if the string descriptor points to the last temporary descriptor allocated by
 ; putnew.  If so, the temporary is freed up by the updating of (temppt).  If a
@@ -11316,7 +11422,7 @@ l160_1           sta index
                  cpx fretop
                  bne frerts
 
-; .page
+
 ; The string was the last one put into string space.  Save garbage
 ; collection some time by freeing up. (length + 2)
 
@@ -11358,8 +11464,9 @@ fretms           cpy lastpt+1                             ; last entry to temp?
 frerts           rts                                      ; all done
 
 ;.end
-; .page
-; .subttl Garbage Collection
+;[[string.garbage]]
+
+
 
 ;  Get space for a string, perhaps forcing garbage collection.
 ;
@@ -11394,7 +11501,7 @@ l161_2           cpy strend+1
                  cmp strend
                  bcc garbag                               ; clean up
 
-; .page
+
 strfre           sta frespc
                  sty frespc+1
                  ldy #1                                   ; flag string as garbage
@@ -11425,7 +11532,7 @@ garbag           lda garbfl
                  bra tryag2                               ; always branches
 
 
-; .page
+
 ; Routine looks for and squashes out any unused string space it finds, thus
 ; returning the space for future use by the string routines.  GARBA2 is called
 ; only when BASIC needs space or the FRE() function is used.
@@ -11460,7 +11567,7 @@ l162_2           ldy #0                                   ; set up flag
                  sty frespc+1
                  txa
 
-; .page
+
 ; do while (grbpnt <= fretop)
 
 gloop            jsr chkgrb                               ; check garbage string
@@ -11536,7 +11643,8 @@ l163_6           ldy #0                                   ; skip over good strin
                  jsr movpnt
                  bra gloop
 
-; .page
+;[[string.garbage.utils]]
+
 ; Subroutines used for garbage collection.
 ;
 ;  Compare for (y,a) = fretop.
@@ -11597,7 +11705,7 @@ l164_7           pla                                      ; throw away return ad
                  sty fretop+1
                  rts
 
-; .page
+
 movpnt           eor #$ff                                 ; comp and add
                  sec
                  adc grbpnt
@@ -11640,8 +11748,9 @@ l167_1           pla   ;.a=len & set z flag               ; .x=next desc. ptr
                  rts
 
 ;.end
-; .page
-; .subttl  Floating Point Math Package (CODE17)
+;[[math.ext2]]
+
+
 
 gtbytc           jsr chrget
 
@@ -11682,8 +11791,9 @@ getsad                                                    ; get a signed 2-byte 
                  rts                                      ; it's all done
 
 ;.end
-; .page
-; .subttl Floating Point Math Package (CODE18)
+;[[math.ext3]]
+
+
 
 ; Floating Point Math Package configuration:
 ;
@@ -11731,7 +11841,7 @@ getsad                                                    ; get a signed 2-byte 
 ; It is only when something is stored away that it is packed to four bytes,
 ; the unpacked format has a sn byte reflecting the sign of the ho turned on.
 ; The exp is the same as stored format. This is done for speed of operation.
-; .page
+
 
 fsub             jsr conupk
 
@@ -11946,8 +12056,9 @@ shftrt           clc                                      ; clear output of FACO
                  rts
 
 ;.end
-; .page
-; .subttl Floating Point Math Package (CODE19)
+;[[math.const]]
+
+
 
 ; Constants used by LOG, EXP, TRIG, and others.
 
@@ -12027,7 +12138,8 @@ atncon           !text 11                                 ; degree-1
                  !text 127,170,170,170,19
                  !text 129,0,0,0,0
 
-; .page
+;[[math.log]]
+
 ; Natural Log Function
 ;
 ; Calculation is by   LN(f*2^n) = (n+LOG2(f))*LN(2)
@@ -12081,7 +12193,8 @@ romsub           jsr romupk
 romdiv           jsr romupk
                  +lbra fdivt
 
-; .page
+;[[math.multiply]]
+
 ; Multiplication        FAC = ARG*FAC
 
 fmultt_c65                                                ; [910402]
@@ -12112,7 +12225,7 @@ fmultt           beq multrt                               ; if FAC=0, return.  F
                  jsr mltpl1
                  +lbra movfr                              ; move result into FAC
 
-; .page
+
 mltply           +lbeq mulshf                             ; normalize result and return. shift result right 1 byte.  exits with .c=0
 mltpl1           lsr
                  ora #$80                                 ; will flag end of shifting
@@ -12144,7 +12257,8 @@ l171_2           ror resho
 
 multrt           rts
 
-; .page
+
+;[[math.unpack]]
 ; Unpack a ROM constant into the FAC
 
 romupk           sta index1
@@ -12172,7 +12286,7 @@ romupk           sta index1
                  lda facexp                               ; sets code of facexp
                  rts
 
-; .page
+
 ; Unpack a RAM constant into the FAC
 
 conupk           sta index1
@@ -12208,7 +12322,7 @@ conupk           sta index1
                  lda facexp                               ; set codes of facexp
                  rts
 
-; .page
+
 ; Check special cases and add exponents for FMULT, FDIV
 
 muldiv
@@ -12238,7 +12352,7 @@ zeremv           pla                                      ; get addr off stack
                  pla
                  +lbra zerofc                             ; underflow
 
-; .page
+
 ; Multiply FAC by 10
 
 mul10            jsr movaf                                ; copy FAC into ARG
@@ -12256,7 +12370,7 @@ finml6           ldx #0
 
 mul10r           rts
 
-; .page
+
 div10            jsr movaf                                ; move FAC to ARG
                  lda #<tenc
                  ldy #>tenc                               ; point to constant of 10.0
@@ -12286,7 +12400,7 @@ fdivt            +lbeq doverr                             ; can't divide by zero
                  ldx #$fc                                 ; set up procedure
                  lda #1
 
-; .page
+
 divide                                                    ; this is the best code in the whole pile
                  ldy argho                                ; see what relation holds
                  cpy facho
@@ -12320,7 +12434,7 @@ shfarg           asl arglo                                ; shift ARG one place 
                  bmi divide                               ; if msb on, go decide whether to sub
                  bpl savquo
 
-; .page
+
 divsub           tay                                      ; notice c must be on here
                  lda arglo
                  sbc faclo
@@ -12354,7 +12468,7 @@ divnrm           asl                                      ; get last two bits in
                  plp
 
 
-; .page
+
 movfr            lda resho                                ; move result to FAC
                  sta facho
                  lda resmoh
@@ -12389,7 +12503,7 @@ movfm            sta index1                               ; move memory into FAC
                  sty facov
                  rts
 
-; .page
+
 ; Move number from FAC to memory
 
 mov2f            ldx #tempf2                              ; move from FAC to temp FAC2
@@ -12421,7 +12535,7 @@ movmf            jsr round
                  sty facov                                ; zero it since rounded
                  rts                                      ; (y)=0
 
-; .page
+
 movmf_ram1
                  jsr round
                  stx index1
@@ -12449,7 +12563,7 @@ movmf_ram1
                  plx
                  rts                                      ; (y)=0
 
-; .page
+
 movfa            lda argsgn
 
 movfa1           sta facsgn
@@ -12474,7 +12588,7 @@ l174_1           lda facexp-1,x
 movrts           rts
 
 
-; .page
+
 round            lda facexp                               ; zero?
                  beq movrts                               ; yes, done rounding
                  asl facov                                ; round?
@@ -12500,7 +12614,7 @@ fcomps           rol
 signrt           rts
 
 
-; .page
+
 ; SGN function
 
 sgn              jsr sign
@@ -12534,7 +12648,7 @@ abs              lsr facsgn
                  rts
 
 
-; .page
+
 ; Compare two numbers:
 ;
 ; a=1  if  ARG < FAC
@@ -12579,8 +12693,9 @@ l175_1           lda facsgn
 l175_2           bra fcomps                               ; a part of sign sets up (a)
 
 ;.end
-; .page
-; .subttl Floating Point Math Package (CODE21)
+;[[math.ext4]]
+
+
 
 ; Quick Greatest Integer Function
 ;
@@ -12619,7 +12734,7 @@ qint1            tay                                      ; put count in counter
                  rts
 
 
-; .page
+
 ; Greatest Integer Function
 
 int              lda facexp
@@ -12646,7 +12761,9 @@ clrfac           sta facho                                ; make it really zero
                  tay
 intrts           rts
 
-; .page
+;[[math.fpin]]
+
+
 ; Floating Point Input Routine.
 ;
 ; Number input is left in FAC.  At entry (TXTPTR) points to the first character
@@ -12671,7 +12788,7 @@ l177_1           sty deccnt,x                             ; zero mo and lo
                  stx sgnflg                               ; it's negative. (x=@377)
                  bra finc                                 ; always branches
 
-; .page
+
 qplus            cmp #'+'                                 ; plus sign?
                  bne fin1                                 ; yes, skip it
 
@@ -12756,7 +12873,7 @@ faddt_c65                                                 ; [910402]
                  ldx facexp                               ; set signs on thing to add
                  +lbra faddt                              ; add together and return
 
-; .page
+
 ; Pack in the next digit of the exponent.
 ; Multiply the old exp by 10 and add in the next digit.
 ; (note: does not check for exp overflow)
@@ -12789,7 +12906,7 @@ l179_3           adc syntmp
 l179_4           sta tenexp                               ; save result
                  +lbra finec
 
-; .page
+
 ; Get a character from either text or string area, and set the flags
 ; in the manner performed by CHRGET.
 
@@ -12813,8 +12930,9 @@ fin_chrget_2
 l180_1           rts
 
 ;.end
-; .page
-; .subttl Floating Point Math Package (CODE22,23)
+;[[math.ext5]]
+
+
 
 inprt            jsr _primm
                  !text " IN ",0
@@ -13011,7 +13129,7 @@ fout20           lda #<fbuffr
                  ldy #>fbuffr
                  rts                                      ; all done
 
-; .page
+
 ; Exponentiation and Square Root Functions.
 ;
 ; square root function - sqr(a)
@@ -13078,8 +13196,9 @@ negop                                                     ; /// entry point
 negrts           rts
 
 ;.end
-; .page
-; .subttl Floating Point Math Package (CODE24)
+;[[math.ext6]]
+
+
 
 ; Exponentation Function
 ;
@@ -13149,7 +13268,9 @@ l184_4           lda argexp,x
                  jsr mldexp                               ; modify facexp and check for overflow
                  rts                                      ; (has to do jsr due to pla's in muldiv)
 
-; .page
+;[[math.polyeval]]
+
+
 ; Polynomial Evaluator and the Random Number Generator.
 ;
 ; Evaluate  p(x^2)*x
@@ -13202,8 +13323,9 @@ l185_2           sta polypt
                  rts                                      ; yes
 
 ;.end
-; .page
-; .subttl Floating Point Math Package (TRIG)
+;[[math.ext7]]
+
+
 
 ; Sine, Cosine, and Tangent Functions.
 
@@ -13329,8 +13451,9 @@ l188_3           pla                                      ; was original aurgume
 l188_4           rts                                      ; all done
 
 ;.end
-; .page
-; .subttl  BOOT
+;[[boot]]
+
+
 
 ;****************************************************************************
 ; BOOT  Boot has three modes of operation...
@@ -13390,7 +13513,7 @@ l189_6           iny                                      ; Copy default filenam
                  +lbcs erexit                             ; error if problems
                  +lbra run_a_program                      ; else go run it
 
-; .page
+
 ; AUTOBOOT_CSG Runs a system diagnostic if PB0 is low after initialization.
 ;  Diagnostic is copied to RAM-0 from ROM-2 and jumped to.
 
@@ -13427,7 +13550,7 @@ l190_1           lda l190_2,x                             ; prep DMA list
 ; move from $024000 to $1000, $4000 bytes   Diagnostic  [911105]
 l190_2           !text $00,$00,$40,$00,$40,$02,$00,$10,$00,0,0,0
 
-; .page
+
 ; AUTOBOOT Attempts to RUN a disk program after cold startup.  The
 ;  program must be a BASIC program called "AUTOBOOT.C65*"
 
@@ -13480,8 +13603,8 @@ l191_3           rts                                      ; failure- go_ready
 autoboot_filename
                  !text "AUTOBOOT.C65*",0
 
-; .page
-; .subttl  SAVE  LOAD  VERIFY  OPEN  CLOSE
+
+
 
 erexit           tax                                      ; set termination flags
                  +lbne error                              ; normal error
@@ -13521,7 +13644,7 @@ cgetl
                  +lbcs break_exit                         ; 'stop' key was pressed
                  rts
 
-; .page
+
 save             jsr plsv                                 ; parse parameters, dschk
 
 
@@ -13556,7 +13679,7 @@ l192_1           sec
 l192_2           bcs erexit                               ; exit if kernel problem (rts)
 l192_3           rts
 
-; .page
+
 verify           lda #1                                   ; verify flag
                  !text $2c                                ; skip two bytes
 
@@ -13645,7 +13768,7 @@ cld70            jsr reset_txtptr
                  jsr link_program
                  +lbra fload
 
-; .page
+
 open             jsr paoc                                 ; parse statement
                  jsr _open                                ; open it
                  bra close_out_1
@@ -13676,7 +13799,7 @@ l195_1           pla                                      ; something else
                  +lbcs erexit
                  rts
 
-; .page
+
 ; Parse LOAD, SAVE, & VERIFY commands
 
 plsv
@@ -13788,7 +13911,7 @@ l197_2           pla
                  plp
                  rts
 
-; .page
+
 ;k_readst
 ; jsr put_io_in_map
 ; jmp _readst
@@ -13856,8 +13979,9 @@ l197_2           pla
 ; jmp _stop
 
 ;.end
-; .page
-; .subttl  PRINT USING
+;[[command.print.using]]
+
+
 ; Print Using - Formatted print routine
 ;
 ; Entered by cmd, print, or print#
@@ -13976,7 +14100,9 @@ reay             jsr chrgot                               ; get old character
                  +lbne crdo                               ; end of print using
                  jmp chrget                               ; branch if yes
 
-; .page
+;[[command.fform]]
+
+
 ;  FFORM - output a number to format
 ;
 ;  Number is in fbuffr,  format checked by anaf
@@ -14115,7 +14241,7 @@ ldvn             lda vn
                  inc z_p_temp_1                           ; before decimal point
                  bra hup
 
-; .page
+
 ; Using- shift decimal point
 
 shpn             sec
@@ -14157,7 +14283,7 @@ nos3             jsr eadj                                 ; adjust exponent
 poit             sty point                                ; decimal point pointer
 rdy              rts
 
-; .page
+
 ; Using- adjust exponent
 
 sexp             bne retrn                                ; no over/underflow
@@ -14210,7 +14336,7 @@ tag3             lda fbuffr,x                             ; get digit of exp
                  cmp #'9'                                 ; overflow
                  rts                                      ; return .z set
 
-; .page
+
 ; Using- ansub: load format field char in .a
 
 ansub            clc
@@ -14244,7 +14370,7 @@ l206_1           sta swe,x                                ; init working registe
                  tay
                  rts
 
-; .page
+
 ; Using- round number
 
 uround           clc
@@ -14283,7 +14409,7 @@ l207_3           lda #'1'
                  inc vn
 rrts             rts
 
-; .page
+
 ; Using- alg: delete leading zeros of no
 
 alg              ldy point                                ; start with a .?
@@ -14431,7 +14557,7 @@ cdout            jsr outch ;outdo                         ; char out
                  dec cform                                ; count it
                  rts
 
-; .page
+
 ; Using- anaf: analyze format
 
 anaf             ldy endfd                                ; format pointer
@@ -14548,8 +14674,9 @@ com2             cmp #'='
 rt               rts
 
 ;.end
-; .page
-; .subttl  INSTR()
+
+
+;[[function.instr]]
 
 ;  INSTRing - Find position of str1 in str2 at or after position n
 ;
@@ -14649,8 +14776,10 @@ l214_8           lda #0                                   ; not found
                  +lbra sngflt                             ; float 1 byte in .y
 
 ;.end
-; .page
-; .subttl  TYPE
+
+
+
+;[[function.type]]
 
 ; TYPE  types a given disk (SEQ) file to output channel
 ;
@@ -14713,8 +14842,9 @@ l215_6           +lbra list_exit                          ; release channel, clo
 ; jsr _close
 ; bra errlen  ;buffer overflow: report 'string too long'
 
-; .page
-; .subttl  DISK command
+;[[command.disk]]
+
+
 
 ; DISK "command_string" [,U#] [,D#]     new [910123]
 
@@ -14740,8 +14870,9 @@ disk
 
 
 ;.end
-; .page
-; .subttl  DOS 1
+;[[dos.setup]]
+
+
 
 ; These routines take tokens and values after the following BASIC keywords:
 ;
@@ -14862,7 +14993,8 @@ dcat11           jsr release_channels                     ; release cmd channel,
                  lda #doslfn
                  +lbra close_out                          ; [900725]
 
-; .page
+;[[command.ldir]]
+
 ; LDIR  same as DIR, except it buffers each line to reduce
 ;       talker/listener turnaround time.  Even so, it is still
 ; unacceptably slow for normal screen output, which is
@@ -14944,7 +15076,8 @@ dcato            jsr _clrch
 
 l219_1           rts
 
-; .page
+
+;[[function.dopen]]
 ; DOPEN dfn(,t(,r))
 
 dopen            lda #$22                                 ; set error flag
@@ -14985,7 +15118,7 @@ open_file                                                 ; dop2.
                  jsr _setbank
                  jmp _open
 
-; .page
+
 ; Find an available secondary address
 
 find_sa
@@ -15020,7 +15153,7 @@ too_many_files
                  ldx #errtmf                              ; too many files open
                  +lbra error
 
-; .page
+
 ; Close disk file
 
 dclose           lda #$f3                                 ; set error flags
@@ -15053,7 +15186,7 @@ l222_1           lda #$66                                 ; set error flags
                  jsr _setbank
                  +lbra savenp
 
-; .page
+
 ; DVERIFY
 
 dverify          lda #1                                   ; flag 'verify'
@@ -15087,7 +15220,7 @@ dload_boot                                                ; <<<<<<<<<<<<<<<<<< e
 
                  +lbra cld10                              ; finish load, using 'LOAD' code.
 
-; .page
+
 ; BSAVE
 
 bsave            lda #$66                                 ; std error flag
@@ -15127,12 +15260,14 @@ l224_1           ldy #fopn                                ; table offset
                  +lbra savenb
 
 
-; .page
+
 ; DVERIFY
 
 bverify          lda #1                                   ; flag 'verify'
                  !text $2c
 
+
+;[[command.bload]]
 
 ; BLOAD dfn
 
@@ -15198,7 +15333,9 @@ l225_4           lda verck                                ; load or verify opera
                  clc
                  rts
 
-; .page
+;[[command.header]]
+
+
 ; HEADER nddn [,id]  (alias: FORMAT)
 
 header           jsr dospar                               ; parse the line
@@ -15219,7 +15356,8 @@ header           jsr dospar                               ; parse the line
 l226_1           jsr trans                                ; build and send command
 ;fall into 'print_dos_error'
 
-; .page
+;[[dos.errors]]
+
 print_dos_error                                           ; [900725]
                  bbs7 runmod,header_rts                   ; branch if not direct mode
                  jsr Check_DS                             ; get current disk error message
@@ -15276,7 +15414,8 @@ header_rts
                  clc
                  rts
 
-; .page
+;[[command.scratch]]
+
 ; SCRATCH sdfn  aliases: DELETE, ERASE
 
 scratch          jsr dospar                               ; parse the line
@@ -15308,7 +15447,8 @@ l228_3           jsr crdo                                 ; done
 
 l228_4           rts
 
-; .page
+
+;[[command.record]]
 ; RECORD- relative record access
 
 record           lda #'#'
@@ -15349,7 +15489,8 @@ record           lda #'#'
 l229_1           ldx #errfno                              ; file not found err (file not open)   [910404]
                  +lbra error
 
-; .page
+;[[command.DCLEAR]]
+
 ; DCLEAR - reinitilaize the drive
 
 dclear           jsr dospar                               ; parse the line
@@ -15359,9 +15500,7 @@ dclear           jsr dospar                               ; parse the line
                  jsr print_dos_error                      ; if any
                  +lbra dclall
 
-
-
-
+;[[command.collect]]
 ; COLLECT v<drive#>
 
 collect          jsr dospar                               ; parse the line
@@ -15375,7 +15514,8 @@ l230_1           jsr trans                                ; send command
                  +lbra print_dos_error                    ; if any
 
 
-; .page
+;[[command.copy]]
+
 ; COPY cdddfn=sdsfn
 
 dcopy            jsr dospar                               ; parse the line
@@ -15408,6 +15548,7 @@ l231_2           ldy #fcopy                               ; tabld offset
 
 
 
+;[[command.concat]]
 ; CONCAT
 
 concat           jsr dospar                               ; parse the line
@@ -15419,6 +15560,7 @@ concat           jsr dospar                               ; parse the line
 
 
 
+;[[command.rename]]
 
 ; RENAME rdddfn=sdsfn
 
@@ -15431,7 +15573,7 @@ rename           lda #$e4                                 ; set error flags
                  +lbra print_dos_error                    ; if any
 
 
-; .page
+
 ; BACKUP D<destination_drive>=D<source_drive>
 ;
 ; where destination|source_drive is [0...9]
@@ -15451,8 +15593,9 @@ l232_1           jsr dclall                               ; close disk
                  jsr trans                                ; send command
                  +lbra print_dos_error                    ; if any
 
+;[[command.trans]]
 
-; .page
+
 ; Trans subroutine
 
 trans            jsr sendp                                ; build string to output
@@ -15472,8 +15615,9 @@ trans            jsr sendp                                ; build string to outp
                  rts
 
 ;.end
-; .page
-; .subttl  DOS 2
+;[[dos.parser]]
+
+
 
 ; This is the DOS parser routine which looks at lines passed to it and
 ; verifies that the syntax is proper.  -mgm 7/23/79-
@@ -15528,7 +15672,7 @@ trans            jsr sendp                                ; build string to outp
 ;      "0" bits are required to be clear
 ;      "1" bits are required to be set
 ;      "*" bits are optional parameters
-; .page
+
 ; Entry (dosprs):
 ;  parstx shall be set to prevent any auxiliary options to be specified.
 ;
@@ -15570,7 +15714,7 @@ trans            jsr sendp                                ; build string to outp
 dostbl           !word $ffff,$ffff                        ; default start/end address
                  !text doslfn,dosffn,$6f                  ; default la/fa/sa
 
-; .page
+
 dospar           lda #0                                   ; DOS Parser
 
 dosprs                                                    ; special error flag entry
@@ -15614,7 +15758,7 @@ done             pla                                      ; get aux error flag
                  ldx parstx
                  rts
 
-; .page
+
 ; Parse given parameters.  what it is  example
 ;     -------------------- ---------
 parse1           cmp #'"'
@@ -15644,7 +15788,7 @@ parse1           cmp #'"'
 
                  +lbne snerr                              ; none of these, syntax error
 
-; .page
+
 on1              jsr on
                  +lbra del1
 
@@ -15966,8 +16110,8 @@ prxrpt           and parstx                               ; and with parstx
                  rts
 
 ;.end
-; .page
-; .subttl  DOS 3
+
+
 
 ; CBM-2001 BASIC-4 disk verb processors.  -- rsr 7-24-79 --
 ;
@@ -16039,7 +16183,8 @@ fdisk            = *-tabld-1                              ; Disk command  [91012
 frec             = *-tabld-1                              ; Record
                  !text "P",xsca,xrcl,xrec
 
-; .page
+
+;[[dos.sendparam]]
 ; Send parameters to device
 ;
 ; Entry: .a = number of bytes in format
@@ -16191,7 +16336,7 @@ l243_1           jsr indin1_ram1
 rdrt0            dex                                      ; case cdd=sd
 rdrt1            +lbra sdp1                               ; get next symbol
 
-; .page
+
 ; Syntax checker DOS write
 
 chk1             and #$e6                                 ; for HEADER, DLOAD, SCRATCH, TYPE, LIST
@@ -16227,8 +16372,8 @@ chk6             and #5                                   ; for APPEND, DOPEN
                  rts
 
 ;.end
-; .page
-; .subttl  DOS 4
+
+
 
 ; Allocate DS$ if nesessary, but use old DS$ string otherwise
 ; Called by DS$ and DS
@@ -16300,7 +16445,7 @@ l244_4           pha                                      ; errbad.
                  plx                                      ; get error
                  +lbra error
 
-; .page
+
 ; Clear_DS subroutine - forget current DS$ message, if any
 ;
 
@@ -16324,7 +16469,7 @@ Clear_DS                                                  ; oldclr.
 
 l245_1           rts
 
-; .page
+
 ; Read DOS error message, but don't care what it is.  Want to stop disk LED blink.
 ;
 
@@ -16349,7 +16494,7 @@ l246_2           jsr _clrch                               ; shut down command ch
                  sec                                      ; not a real close
                  jmp _close                               ; close it
 
-; .page
+
 ; R-U-sure subroutine
 
 are_you_sure
@@ -16381,8 +16526,8 @@ response_fake
                  rts
 
 ;.end
-; .page
-; .subttl  General Purpose Subroutines
+
+
 
 ;*****************************************************************
 ;  OPTWRD - get an optional, unsigned 2-byte value in y,a.
@@ -16410,7 +16555,7 @@ l248_1           lda #0
 optw99           clc
                  rts
 
-; .page
+
 comsad           jsr chkcom                               ; get a comma & signed 2-byte arg in y,a   [910307]
                  +lbra sadwrd
 
@@ -16430,7 +16575,7 @@ l249_1           lda #0                                   ; default optional arg
                  clc
                  rts
 
-; .page
+
 ;*****************************************************************
 ;  OPTBYT - get an optional 1 byte value in x.
 ;
@@ -16455,7 +16600,7 @@ optbyt           jsr chrgot
                  sec
                  rts
 
-; .page
+
 prtdec
                  phy
                  phx
@@ -16496,8 +16641,9 @@ sbits            !text $01,$02,$04,$08,$10,$20,$40,$80
 rbits            !text $80,$40,$20,$10,$08,$04,$02,$01
 
 ;.end
-; .page
-; .subttl BASIC IRQ Handler
+;[[handler.irq]]
+
+
 
 basic_irq
 ; lda _vicIRQ  ;a VIC raster interrupt?
@@ -16512,7 +16658,7 @@ basic_irq
 l251_1           inc irq_wrap_flag                        ; shut the door
                  cli                                      ; but leave the window open
 
-; .page
+
 ; Test if there was a VIC collision/light pen interrupt
 
 collision_irq
@@ -16548,7 +16694,7 @@ l252_3           pla
 l252_4           dey
                  bpl l252_1
 
-; .page
+
 ; Check light pen latch
 
                  lsr
@@ -16570,7 +16716,7 @@ l252_4           dey
                  sta int_trip_flag+2                      ; yes- let BASIC know we caught one
 
 l252_5
-; .page
+
 ; Update moving sprites
 
 movspr_irq
@@ -16619,7 +16765,7 @@ l253_4           dec sprite_data+1,x
 l253_5           dey                                      ; check next sprite
                  bpl l253_1                               ; loop until done moving all sprites
                  +lbra music_irq                          ; then continue with next IRQ task
-; .page
+
 movspr_to_irq                                             ; [910809]
                  phy                                      ; sprite #
                  and #$3f                                 ; speed factor
@@ -16713,7 +16859,7 @@ l255_4           tya                                      ; restore y to sprite 
                  tay
                  rts
 
-; .page
+
 ; Play music, if in progress
 
 music_irq
@@ -16749,7 +16895,7 @@ l256_2           inx
                  cpx #6+6                                 ; [910612]
                  bcc l256_1                               ; loop for 6 voices
 ;then continue with next IRQ task
-; .page
+
 ; Test if SOUND command wants anything
 
 sound_irq
@@ -16868,7 +17014,7 @@ negate_step
                  rts
 
 
-; .page
+
 ; Here is where BASIC_IRQ exits
 
 basic_irq_end
@@ -16876,7 +17022,7 @@ basic_irq_end
                  cli
                  rts
 
-; .page
+
 ; Update sprite position subroutine
 
 sprsub           pha                                      ; save angle phase
@@ -16902,8 +17048,9 @@ l258_2           sta vic,y                                ; decrement position  
 l258_3           rts
 
 ;.end
-; .page
-; .subttl  MOUSE
+;[[command.mouse]]
+
+
 
 ;***********************************************************************
 ;*   MOUSE  ON  [,[port] [,[sprite] [,[hotspot] [,X/Yposition] ]]]
@@ -16954,7 +17101,7 @@ l259_1           jsr chrget                               ; eat token
                  ror
                  jsr _mouse                               ; do it (???? do after coord error check)
 
-; .page
+
                  jsr optbyt                               ; get (optional) hotspot, x  new [910307]
                  bcc l259_2                               ; not given
                  cpx #24
@@ -17004,7 +17151,9 @@ l259_3           jsr chrgot                               ; get (optional) posit
 l259_4           rts
 
 ;.end
-; .page
+;[[function.rmouse]]
+
+
 ;************************************************************************
 ;*   RMOUSE Returns in variable list current status of mouse *
 ;*         *
@@ -17110,8 +17259,9 @@ l260_7           inc count                                ; Next assignment
 l260_8           rts
 
 ;.end
-; .page
-; .subttl   CURSOR
+;[[command.cursor]]
+
+
 
 ;*****************************************************************
 ;*   CURSOR [ON|OFF,] [column] [,row [,style] ]
@@ -17171,7 +17321,9 @@ l261_3           jsr _cursor                              ; Turn cursor ON or OF
 
 l261_4           rts                                      ; eol
 
-; .page
+;[[function.rcursor]]
+
+
 ;************************************************************************
 ;*   RCURSOR Returns in variable list current cursor position *
 ;*         *
@@ -17214,8 +17366,8 @@ l262_3           inc count                                ; Next assignment
 l262_4           rts
 
 ;.end
-; .page
-; .subttl  AutoScroll
+
+
 
 AutoScroll
                  pha                                      ; save character for Editor
@@ -17254,7 +17406,7 @@ AutoScrollyes
                  smb1 helper                              ; set flag for LINGET not to go to error if it has problems
                  bbs7 form,AutoScrolldn                   ; branch according to direction of scroll...
 
-; .page
+
 AutoScrollup                                              ; wanting to scroll up
                  sec
                  lda _screen_bottom                       ; put cursor at bottom of screen
@@ -17286,7 +17438,7 @@ l263_2           jsr crdo                                 ; get a blank line to 
                  jsr crdo                                 ; and add an extra newline
                  bra l263_2
 
-; .page
+
 AutoScrolldn                                              ; wanting to scroll down
                  ldx #0                                   ; put cursor at top of screen
                  jsr AutoSearch                           ; search for a line number on screen, put it in linnum
@@ -17329,7 +17481,7 @@ l264_3           sta index                                ; pointer to link byte
                  stx lowtr+1
 ; bra AutoScrollprint ; print the line & exit
 
-; .page
+
 AutoScrollprint
                  ldy #2                                   ; get line number to print
                  jsr indlow
@@ -17387,12 +17539,13 @@ l265_4           lda #$ff                                 ; no line found, fake 
                  sta linnum+1
                  rts
 
-; .ifgt *-$7f00
-; .messg ***ROM OVERFLOW: $7F00
-; .endif
+
+
+
 ;.end
-; .page
-; .subttl  GRAPHIC Interface
+;[[command.screen]]
+
+
 
                  * = $af00                                ; [911001]
 
@@ -17422,7 +17575,7 @@ Screen
                  beq ScreenSet
 l266_1           +lbra snerr                              ; report syntax error
 
-; .page
+
 CheckGraphicMode
                  bit $1f4b                                ; Check draw screen allocation   [910711]
                  bmi NoGraphicArea
@@ -17465,7 +17618,7 @@ RestoreTextScreen                                          ; [910404]
 ;; sta _graphm  ;text mode????
 ; rts
 
-; .page
+
 ;*****************************************************************
 ; SCNCLR  clear a text or graphic screen
 ;
@@ -17502,7 +17655,7 @@ C65__screenclear
                  jsr CheckGraphicMode
                  jmp ($800c)                              ; bra screenclear
 
-; .page
+
 ;*****************************************************************
 ;* SCREEN SET  specify draw & view screens
 ;*
@@ -17536,7 +17689,7 @@ l267_1           stx GKI__parm1
                  bcs NoGraphicArea
                  rts
 
-; .page
+
 ;*****************************************************************
 ;* SCREEN DEF  define a graphic screen
 ;*
@@ -17575,7 +17728,7 @@ l268_1           +lbcs fcerr                              ; illegal quantity err
 
                  jmp ($8006)                              ; bra screendef
 
-; .page
+
 ;*****************************************************************
 ;* SCREEN OPEN  open a graphic screen for viewing or drawing
 ;*
@@ -17599,7 +17752,7 @@ C65__screenopen
 ; bcs NoGraphicArea ; bad ???? let user catch via RGRAPHIC
 ; rts
 
-; .page
+
 ;*****************************************************************
 ;* SCREEN CLOSE  close a graphic screen
 ;*
@@ -17620,7 +17773,8 @@ C65__screenclose
 
                  jmp ($800a)                              ; bra screenclose
 
-; .page
+;[[command.pen]]
+
 ;*****************************************************************
 ;* PEN
 ;*
@@ -17643,7 +17797,9 @@ C65__setpen
 
                  jmp ($8010)                              ; bra setpen
 
-; .page
+;[[command.dmode]]
+
+
 ;*****************************************************************
 ;* DMODE   Set Draw Mode
 ;*
@@ -17685,7 +17841,9 @@ l269_1           +lbcs fcerr                              ; illegal quantity err
 
                  jmp ($8014)                              ; bra setdmode
 
-; .page
+;[[command.dpat]]
+
+
 ;*****************************************************************
 ;* DPAT   set draw pattern
 ;*
@@ -17734,7 +17892,9 @@ l270_1           +lbcs fcerr                              ; if out of range
 
 l270_2           jmp ($8016)                              ; bra setdpat
 
-; .page
+;[[command.palette]]
+
+
 ;*****************************************************************
 ;* PALETTE   set palette colors
 ;*
@@ -17804,7 +17964,8 @@ l272_2           jsr optbyt                               ; get another color re
                  bcs set_palette                          ; yes- loop
                  rts
 
-; .page
+;[[command.line]]
+
 ;*****************************************************************
 ;* LINE  draw a dot, a line or a stick shape
 ;*
@@ -17857,7 +18018,8 @@ l273_4           lda GKI__parm5,x                         ; copy x1,y1 to x0,y0
                  bcs l273_1                               ; yes, continue
                  rts
 
-; .page
+;[[command.box]]
+
 ;*****************************************************************
 ;* BOX   draw a 4-sided figure
 ;*
@@ -17913,7 +18075,8 @@ C65__box
 
                  jmp ($801a)                              ; bra box
 
-; .page
+;[[command.circle]]
+
 ;*****************************************************************
 ;* CIRCLE   draw a Circle
 ;*
@@ -17949,8 +18112,9 @@ C65__circle
 
                  jmp ($801c)                              ; bra circle
 
-; .page
-; .subttl  ELLIPSE
+
+;[[command.ellipse]]
+
 
 ;*****************************************************************
 ;* ELLIPSE   draw an Ellipse
@@ -17993,8 +18157,9 @@ C65__ellipse
 
                  jmp ($8020)                              ; bra ellipse
 
-; .page
-; .subttl  POLYGON
+;[[command.polygon]]
+
+
 
 ;*****************************************************************
 ;* POLYGON   draw a regular n-sided Polygon
@@ -18067,8 +18232,9 @@ l274_2           +lbcc fcerr
 
                  jmp ($801e)                              ; bra polygon
 
-; .page
-; .subttl  SET multipurpose command
+;[[command.set]]
+
+
 
 ;  SET  A multipurpose command initiator
 
@@ -18106,7 +18272,7 @@ l275_2           jsr getdisknum_1                         ; skip delimiter
                  stx dosds2                               ; got new disk unit #
 
 
-; .page
+
 ;  Open disk command channel & pass it 'renumber' command
 
                  jsr dclall                               ; Close any open files????
@@ -18132,7 +18298,7 @@ l275_3           lda disk_renum_cmd,x                     ; move command to RAM,
 
 disk_renum_cmd   !text "M-W",119,0,2                      ; Renumber Drive command
 
-; .page
+
 
 ;  GetDiskNum - Get a (required) disk number and check it
 
@@ -18168,7 +18334,7 @@ SendDiskCmd
                  jsr _close
                  +lbra Clear_DS                           ; Exit
 
-; .page
+
 ;  SET VERIFY <ON | OFF> Set DOS verify-after-write mode for 3.5" drives
 
 verify_mode
@@ -18206,8 +18372,9 @@ l276_2           lda verify_cmd,x                         ; move command to RAM,
 verify_cmd       !text "U0>V"                             ; Verify on/off command
 
 ;.end
-; .page
-; .subttl  CHAR
+;[[command.char]]
+
+
 
 ;*****************************************************************
 ;* CHAR   draw a character string
@@ -18279,8 +18446,9 @@ l277_1           sty GKI__parm10                          ; lo
 
 l277_2           rts
 
-; .page
-; .subttl  PAINT
+;[[command.paint]]
+
+
 
 ;*****************************************************************
 ;* PAINT   fill a graphic area with color
@@ -18340,8 +18508,9 @@ l278_2           cpx #errom
                  +lbeq error                              ; stack overflow, say 'out of memory'
                  +lbra break_exit                         ; user hit stop key
 
-; .page
-; .subttl   LOAD/SAVE IFF
+;[[command.loadiff]]
+
+
 
 ;*****************************************************************
 ;*   LOADIFF "filename" [,U#] [,D#]
@@ -18382,7 +18551,8 @@ exit_GKI_disk_op
                  +lbcs error                              ; must be I/O or file data error
                  rts                                      ; load was successful
 
-; .page
+;[[command.saveiff]]
+
 ;*****************************************************************
 ;*
 ;*   SAVEIFF "[@]filename" [,U#] [,D#]      [910930] FAB
@@ -18423,8 +18593,9 @@ l280_1           +lbcs list_err                           ; exit if error
 ; rts   ; load was successful
 
 ;.end
-; .page
-; .subttl   VIEWPORT Commands
+;[[command.viewport]]
+
+
 
 ;*****************************************************************
 ;*   VIEWPORT <CLR | DEF>  x, y, viewport_width, viewport_height
@@ -18463,14 +18634,15 @@ C65__Viewport
 
 l281_1           jmp ($8022)                              ; clear viewport (???? make this a box command)
 
-; .page
+
 C65__copy
 C65__cut
 C65__paste
                  jmp bad_command
 
-; .page
-; .subttl  GENLOCK
+;[[command.genlock]]
+
+
 
 ;*****************************************************************
 ;* GENLOCK  set/reset genlock mode & color registers
@@ -18526,8 +18698,10 @@ l282_6           jsr optbyt                               ; get (optional) color
                  sta _red,x
                  bra l282_6                               ; loop
 
-; .page
-; .subttl  COLOR Control
+;[[command.color]]
+
+
+
 
 ;*****************************************************************
 ;* COLOR       <ON | OFF> Enable|Disable SW & HW color
@@ -18573,7 +18747,7 @@ l283_5           +lbra chrget                             ; exit after eating la
 
 l283_6           rts                                      ; exit after encountering eol
 
-; .page
+
 foreground
                  jsr getnyb                               ; Set text foreground color
                  stx _color
@@ -18613,7 +18787,7 @@ border
                  stx vic+32
                  rts
 
-; .page
+
 getcomnyb
                  jsr chkcom                               ; check for comma
 getnyb
@@ -18641,8 +18815,9 @@ chkeos                                                    ; Check for next byte 
 
 
 ;.end
-; .page
-; .subttl SPRITE Commands and Functions
+;[[command.sprite]]
+
+
 
 ;************************************************************************************
 ; SPRITE CLR
@@ -18701,7 +18876,7 @@ l285_5           jsr optbyt                               ; look for (optional) 
 
 l285_6           rts
 
-; .page
+
 Sprite_Save                                               ; Just like Key_Save     [911001]
                  jsr GetSaveChannel
                  lda #highds                              ; set starting & ending addresses
@@ -18725,7 +18900,7 @@ Sprite_Load
                  jsr LoadBlockNext                        ; load second block
                  +lbra list_err                           ; release channel, close file, return to main
 
-; .page
+
 ;  Set or clear a bit in a VIC register
 ;
 ; .X = 1 to set, 0 to clear
@@ -18753,8 +18928,9 @@ get_sprite_number
                  rts
 
 ;.end
-; .page
-; .subttl MOVSPR Command
+;[[command.movspr]]
+
+
 
 ;****************************************************************
 ; Move Sprite.  Position sprite and optionally animate it.
@@ -18901,7 +19077,7 @@ l289_7           sta vic+16                               ; save position msb bi
 ; cli
 ;1l289_1 rts   ; mouse or movspr_to
 
-; .page
+
 movspr_to                                                 ; setup for moving sprite to a particular position
 ;we have already positioned the sprite onscreen
                  jsr chrgot                               ; reget terminating character
@@ -18958,7 +19134,7 @@ l290_4           phy
                  beq l290_5
                  inc xpos+1
 l290_5
-; .page
+
 ;******************************************************************
 ;  MOVSPR n, p1 TO p2 - move a sprite along line from p1 to p2
 ;
@@ -19101,7 +19277,9 @@ l291_5           lda fct,y
                  cli
                  rts                                      ; done!
 
-; .page
+;[[command.sprcor]]
+
+
 ;  SPRCOR  -- Get sprite position coordinate
 ;
 
@@ -19126,7 +19304,7 @@ l292_3           ror numcnt                               ; shift in second flag
 sadwrd           jsr frmnum                               ; get number     label [910307]
                  +lbra getsad                             ; get signed 2 byte coordinate,do rts
 
-; .page
+
 ;*************************************************************
 ; CHKCOM_1  --  Check for a comma
 ;
@@ -19153,8 +19331,9 @@ l293_2           rts
 sproff           !text 0,11,22,33,44,55,66,77             ; sprite offsets into speed table
 
 ;.end
-; .page
-; .subttl SPRCOLOR Command
+;[[command.sprcolor]]
+
+
 
 ;**************************************************************
 ;*
@@ -19181,8 +19360,8 @@ l294_1           jsr optbyt                               ; get (optional) 1 byt
 l294_2           rts
 
 ;.end
-; .page
-; .subttl SPRSAV Command
+
+
 
 ;***************************************************************
 ;  SPRSAV ( n1 / s1$ ) , ( n2 / s2$ )
@@ -19263,7 +19442,7 @@ savs50           lda sprtmp_1                             ; restore basic text p
                  sta facmo+1
                  +lbra inpcom                             ; move source to dest, do rts (snerr if not eol)
 
-; .page
+
 savinp           jsr frmevl                               ; evaluate expression
                  bbs7 valtyp,desc_free                    ; exit if a string
                  jsr conint                               ; get one byte integer in .X
@@ -19299,8 +19478,9 @@ desc_free                                                 ; free temporary descr
                  rts                                      ; return w/ x=len, (a,y)==> string
 
 ;.end
-; .page
-; .subttl COLLISION Command
+;[[command.collision]]
+
+
 
 ;*****************************************************************
 ; COLLISION Command
@@ -19337,8 +19517,9 @@ l297_1           sta intval
                  rts
 
 ;.end
-; .page
-; .subttl  RCOLOR Function
+;[[function.rcolor]]
+
+
 
 ;************************************************************************
 ;  RCOLOR (source)  --  return current color assigned to source
@@ -19370,8 +19551,9 @@ rcolor           jsr conint                               ; evaluate integer arg
 color_source
                  !word vic+33,_color,highlight_color,vic+32
 
-; .page
-; .subttl Graphic Functions
+;[[function.rgraphic]]
+
+
 
 ; Return graphic screen status & parameters      [910826]
 ; RGRAPHIC (screen, param) where param = 0 open (1), closed (0), or invalid (>1)
@@ -19441,7 +19623,8 @@ l298_8           tay
                  jsr PopParms                             ; restore Graphics parameters & LINNUM
                  rts
 
-; .page
+;[[function.pixel]]
+
 ; Return the color of a given X,Y pixel location on the drawscreen  [910801]
 ;  PIXEL (x,y)
 
@@ -19462,7 +19645,8 @@ pixel            jsr CheckGraphicMode                     ; verify screen open
                  jsr PopParms                             ; restore graphics parameters
                  rts
 
-; .page
+;[[function.rpen]]
+
 ; Return the color of a drawscreen's PEN      [910820]
 ;  RPEN (pen#) where pen# = 0,1,2
 
@@ -19482,7 +19666,8 @@ l299_1           +lbcs fcerr                              ; drawscreen not set o
                  jsr PopParms                             ; restore graphics parameters
                  rts
 
-; .page
+
+;[[function.rpalette]]
 ; Return the R,G, or B component of a color     [910820]
 ; RPALETTE (screen#, color#, rgb)
 
@@ -19512,7 +19697,7 @@ l300_1           +lbcs fcerr                              ; illegal value
                  jsr PopParms                             ; restore graphics parameters
                  rts
 
-; .page
+
 PushParms                                                 ; [910820]
                  ply                                      ; Grab return address
                  plz
@@ -19551,8 +19736,9 @@ l302_1           pla                                      ; Restore Graphics par
                  rts
 
 ;.end
-; .page
-; .subttl RSPRITE Function
+;[[function.rsprite]]
+
+
 
 ;******************************************************************
 ;* RSPRITE - Return sprite information
@@ -19605,8 +19791,8 @@ l303_2           tay
 rspmod           !text 21,39,27,29,23,28                  ; VIC registers associated with arg#
 
 ;.end
-; .page
-; .subttl RSPCOLOR Function
+
+
 
 ;******************************************************************
 ;* RSPCOLOR - return sprite multicolor reg's
@@ -19633,8 +19819,9 @@ rspcolor
                  +lbra sngflt                             ; float 1 byte arg in .Y
 
 ;.end
-; .page
-; .subttl RSPPOS Function
+;[[function.rsppos]]
+
+
 
 ;******************************************************************
 ;* RSPPOS - Return sprite location / speed data
@@ -19697,8 +19884,9 @@ l304_4           lda vic,y                                ; get correct location
                  +lbra nosflt                             ; ..and go float 2 byte value in y,a
 
 ;.end
-; .page
-; .subttl BUMP Function
+;[[function.bump]]
+
+
 
 ;******************************************************************
 ;* BUMP - read sprite collision
@@ -19724,8 +19912,8 @@ bump             jsr chkcls
                  +lbra sngflt                             ; float 1 byte arg in .Y
 
 ;.end
-; .page
-; .subttl Sprite Support Routines
+
+
 
 ; GRAPHIC3.SRC
 ;****************************************************************
@@ -19794,7 +19982,7 @@ l305_6           pla
                  sta sinval+1,x                           ; save high byte result
                  rts
 
-; .page
+
 ;*************************************************************
 ;  angmlt  -  multiple 2-byte integer times angle
 ;       carry set/reset = cosine/sine
@@ -19826,7 +20014,7 @@ l306_3           plp                                      ; get sign of angle
                  bcc invert                               ; invert result if negative,do rts
                  rts
 
-; .page
+
 ;*************************************************************
 ;  angdst  -  set up values for distance * angles
 ;       vwork+x = x & y distances
@@ -19853,7 +20041,7 @@ l306_3           plp                                      ; get sign of angle
 ;angd20 rts
 
 ;.end
-; .page
+
 ; GRAPHIC8.SRC
 ;****************************************************************
 ;  docolr  --  set up color for 8x8 charcater cell
@@ -19949,7 +20137,7 @@ l306_3           plp                                      ; get sign of angle
 ; .byte >11$,>12$,>13$,>14$,>15$,>16$,>17$,>18$,>19$
 ; .byte >l306_2,>21$,>22$,>23$,>24$
 
-; .page
+
 ;******************************************************************
 ;  getpos - get address in graphic bit map into grapnt
 ;      x = bit offset into byte specified (0-7)
@@ -19994,7 +20182,7 @@ l306_3           plp                                      ; get sign of angle
 ;
 ;rbits .byte   $80,$40,$20,$10,$08,$04,$02,$01
 
-; .page
+
 ;**************************************************************
 ;  divpos  --  convert xpos to column number
 ;  convert ypos to row number
@@ -20025,7 +20213,7 @@ l306_3           plp                                      ; get sign of angle
 ;l306_2 sec
 ; rts
 
-; .page
+
 ;***************************************************************
 ;   SCALXY  - Scale the x & y coordinates found in vwork+x
 ;***************************************************************
@@ -20050,7 +20238,7 @@ l306_3           plp                                      ; get sign of angle
 ; rts
 
 ;.end
-; .page
+
 ;GRAPHICS9.SRC
 ;***************************************************************
 ;   DOTWO  - Add      two 2-byte values if carry clear
@@ -20080,7 +20268,7 @@ addtw2                                                    ; enter here to add y/
                  pla
                  rts
 
-; .page
+
 ;****************************************************************
 ;  SUBTWO  - Subtract vwork+y - vwork+x Result in y/a
 ;****************************************************************
@@ -20118,7 +20306,7 @@ subtwo_savram
                  plp
                  rts
 
-; .page
+
 ;************************************************************
 ;  SETTWO  - Move value in vwork+y into y/a
 ;************************************************************
@@ -20153,7 +20341,7 @@ invert           php
                  plp
 absrts           rts
 
-; .page
+
 ;****************************************************************
 ;  TWOBYT  - Multiply 2 byte fraction in y/a times 2 bytes
 ;  Integer found in vwork+x-reg.  Result = y/a
@@ -20196,7 +20384,7 @@ l307_2           lsr vtemp3                               ; divide by 2
 l307_3           plp                                      ; pop sign
                  bra abstw2                               ; return with signed product in y/a
 
-; .page
+
 ;******************************************************************
 ;  dstpos  -  move xdest/ydest to xpos/ypos
 ;******************************************************************
@@ -20213,7 +20401,7 @@ l307_3           plp                                      ; pop sign
 ; rts
 
 ;.end
-; .page
+
 ;GRAPHICS10.SRC
 ;************************************************************
 ;   incolr  --  get color selection parameter into colsel
@@ -20240,7 +20428,8 @@ l307_3           plp                                      ; pop sign
 ;illval
 ; jmp fcerr  ;illegal value
 
-; .page
+
+
 ;******************************************************************
 ;  INCORD  ---  Get X,Y coordinate from input stream into vwork+x
 ;
@@ -20272,7 +20461,7 @@ l308_2           lda xpos,y
                  bcc l308_2
                  rts
 
-; .page
+
 ;incor3    ;enter here for non-optional arg preceded by a comma
 ; jsr chkcom
 incord
@@ -20321,7 +20510,7 @@ l309_2           jsr dotwo                                ; add/subtract value t
                  clc
                  rts
 
-; .page
+
 docord           jsr chrget                               ; skip over comma
                  inc vtemp4                               ; point to y-destination
                  inc vtemp4
@@ -20370,7 +20559,7 @@ l310_1           rol vtemp5                               ; save coord type for 
                  rts
 
 ;.end
-; .page
+
 ;GRAPHICS11.SRC
 
 ;  ANGVAL  -- Table of angle values on 10 degree boundaries
@@ -20403,8 +20592,9 @@ incval
                  !text $00,$63                            ; 81 - 89 degrees -  .00179
 
 ;.end
-; .page
-; .subttl  EDIT Mode
+
+;[[edit.mode]]
+
 
 ; Edit mode is simply a poor man's word processor.  Text is entered normally
 ; as if the user were typing in a program, but tokenization is turned off.
@@ -20465,7 +20655,7 @@ l312_2           jsr indlow                               ; get next character
 
 
 ;.end
-; .page
+
 ; EDIT LOAD/SAVE  Load or Save a plain text SEQ file in memory
 
 edit_load                                                 ; Called by DLOAD/DVERIFY when in EDIT mode
@@ -20526,7 +20716,7 @@ l313_4           lda #1                                   ; install fake line li
                  bcc l313_5
                  inc linnum+1
 
-; .page
+
 l313_5           iny                                      ; bump buffer pointer
                  cpy #buflen                              ; check buffer (160 max. input buffer size to edit)
                  beq l313_8                               ; split long lines into two????
@@ -20573,7 +20763,7 @@ l313_12          +lbra list_exit                          ; release channel, clo
 ; jsr verify_ok  ;if Verify, report 'ok'
 ;40$ lda #0   ;exit directly to main????
 ; bra end
-; .page
+
 edit_load_done
                  lda #0                                   ; EOF: terminate memory with a pair of nulls
                  tay
@@ -20588,7 +20778,7 @@ edit_load_done
                  sty text_top+1
                  +lbra link_program                       ; relink & RTS
 
-; .page
+
 edit_save
                  lda #$e6                                 ; parse:  filename [,U#] [,D#]
                  jsr dosprs                               ; (like dopen:      0 0 0 *  * 0 0 1 )
@@ -20643,8 +20833,8 @@ l314_4           ldy #0                                   ; check for EOF: a pai
 l314_5           +lbra list_exit                          ; release channel, close file, exit
 
 ;.end
-; .page
-; .subttl  ETC.
+
+
 Sound_CLR
                  jsr chkeos                               ; eat CLR token, check eos   [910717] new
 Sound_CLR_1
@@ -20718,7 +20908,8 @@ l315_7           ldx #0
                  plp
                  rts
 
-; .page
+;[[initialise.sprites]]
+
 Sprite_CLR
                  jsr chkeos                               ; eat CLR token, check eos   [910717] new
 Sprite_CLR_1
@@ -20750,8 +20941,9 @@ l316_4           dec
 ; rts
 
 ;.end
-; .page
-; .subttl BASIC NMI Handler
+;[[handler.nmi]]
+
+
 
 basic_nmi                                                 ; removed [910826]
 ; lda nmi_wrap_flag ;filter out wrapped NMI calls   [910523] audio
@@ -20764,12 +20956,13 @@ basic_nmi                                                 ; removed [910826]
 ; dec nmi_wrap_flag ;open the door to NMI
                  rts
 
-; .ifgt *-$c000
-; .messg ***ROM OVERFLOW: $C000
-; .endif
+
+
+
 ;.end
-; .page
-; .subttl C65 BASIC Jump Table
+;[[jumptable]]
+
+
 
                  * = $7f00
 
@@ -20856,7 +21049,7 @@ basic_nmi                                                 ; removed [910826]
                  +lbra sta_far_ram0                       ; sta (.x),y to   BASIC text bank [910716]
                  +lbra sta_far_ram1                       ; sta (.x),y to   BASIC variable bank [910716]
 
-; .page
+
 ; Graphic Kernel Call. (Temporary for C65 development ????)
 ;
 ;  syntax:  GRAPHIC command# [,args]
@@ -20883,7 +21076,7 @@ l317_1
 graphic_kernel                                            ; ...via indirect
                  jmp ($8002)
 
-; .page
+
 ; C65 Graphic Kernel Jump Table      [910826]
 ;
 ; 8000 init   ;sets up graphic vars
@@ -20917,7 +21110,7 @@ graphic_kernel                                            ; ...via indirect
 ; 8036 kg65.f.index2color-1 ;25
 ; 8038 kg65.f.rgraphic  ;26
 
-; .ifgt *-$8000
-; .messg ***ROM OVERFLOW: $8000
-; .endif
-; .end
+
+
+
+

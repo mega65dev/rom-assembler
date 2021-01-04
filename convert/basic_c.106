@@ -35,7 +35,7 @@ set_envelope_1                                            ; entry for initializa
 ; jsr go_fast  ;      [910716] 4567R7A
                  bra clear_flag                           
 
-; .page
+
 set_volume                                                
                  jsr wait_for_all_quiet                   ; [910626]
                  tax                                      
@@ -58,7 +58,7 @@ set_volume
                  stx sid1+24,y                            ; set new volume
 ; jsr go_fast  ;      [910716] 4567R7A
 ;fall into clear_flag
-; .page
+
 clear_flag                                                
                  lda #0                                   
                  sta flag                                 

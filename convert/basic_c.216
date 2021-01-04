@@ -20,8 +20,9 @@ disk
 
 
 ;.end
-; .page
-; .subttl  DOS 1
+;[[dos.setup]]
+
+
 
 ; These routines take tokens and values after the following BASIC keywords:
 ;

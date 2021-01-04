@@ -46,7 +46,7 @@ l310_1           rol vtemp5                               ; save coord type for 
                  rts                                      
 
 ;.end
-; .page
+
 ;GRAPHICS11.SRC
 
 ;  ANGVAL  -- Table of angle values on 10 degree boundaries

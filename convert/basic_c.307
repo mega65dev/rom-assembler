@@ -21,7 +21,7 @@ addtw2                                                    ; enter here to add y/
                  pla                                      
                  rts                                      
 
-; .page
+
 ;****************************************************************
 ;  SUBTWO  - Subtract vwork+y - vwork+x Result in y/a
 ;****************************************************************
@@ -59,7 +59,7 @@ subtwo_savram
                  plp                                      
                  rts                                      
 
-; .page
+
 ;************************************************************
 ;  SETTWO  - Move value in vwork+y into y/a
 ;************************************************************
@@ -94,7 +94,7 @@ invert           php
                  plp                                      
 absrts           rts                                      
 
-; .page
+
 ;****************************************************************
 ;  TWOBYT  - Multiply 2 byte fraction in y/a times 2 bytes
 ;  Integer found in vwork+x-reg.  Result = y/a
@@ -137,7 +137,7 @@ l307_2           lsr vtemp3                               ; divide by 2
 l307_3           plp                                      ; pop sign
                  bra abstw2                               ; return with signed product in y/a
 
-; .page
+
 ;******************************************************************
 ;  dstpos  -  move xdest/ydest to xpos/ypos
 ;******************************************************************
@@ -154,7 +154,7 @@ l307_3           plp                                      ; pop sign
 ; rts
 
 ;.end
-; .page
+
 ;GRAPHICS10.SRC
 ;************************************************************
 ;   incolr  --  get color selection parameter into colsel
@@ -181,7 +181,8 @@ l307_3           plp                                      ; pop sign
 ;illval
 ; jmp fcerr  ;illegal value
 
-; .page
+
+
 ;******************************************************************
 ;  INCORD  ---  Get X,Y coordinate from input stream into vwork+x
 ;

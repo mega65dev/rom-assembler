@@ -18,8 +18,9 @@ pointer_ret      =*-1
 l147_1           +lbra nosflt                             
 
 ;.end
-; .page
-; .subttl  XOR
+;[[operator.xor]]
+
+
 
 ;**************************************************************
 ;*

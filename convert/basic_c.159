@@ -5,7 +5,8 @@ mvdone           clc                                      ; update frespc pointe
                  inc frespc+1                             
 l159_1           rts                                      
 
-; .page
+
+;[[string.manager]]
 ; FRETMP is passed a string descriptor pntr in (a,y).  A check is made to see
 ; if the string descriptor points to the last temporary descriptor allocated by
 ; putnew.  If so, the temporary is freed up by the updating of (temppt).  If a

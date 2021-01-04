@@ -25,6 +25,7 @@ rwindow jsr chkcls
  bra sngflt  ;float 1 byte arg in .Y 
  
 ;.end 
+;[[function.rnd]] 
  .page 
  .subttl  RND 
  

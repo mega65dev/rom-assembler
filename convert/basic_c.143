@@ -35,8 +35,9 @@ l143_1           adc #'0'
                  rts                                      
 
 ;.end
-; .page
-; .subttl  JOY
+;[[function.joy]]
+
+
 
 ;*************************************************************
 ; JOY (n)  -- Return joystick status

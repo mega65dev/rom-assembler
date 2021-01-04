@@ -19,8 +19,9 @@ decblt           dec hightr+1
                  rts                                      
 
 ;.end
-; .page
-; .subttl Array Routines
+;[[arrays]]
+
+
 
 ; The format of arrays in core:
 ;

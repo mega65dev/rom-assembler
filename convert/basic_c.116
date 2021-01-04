@@ -51,8 +51,9 @@ l116_3           txa
 l116_4           +lbra fcerr                              ; illegal value error
 
 ;.end
-; .page
-; .subttl  FAST  SLOW
+;[[command.fastslow]]
+
+
 
 ;***********************************************************************
 ;

@@ -1,6 +1,8 @@
 fload jsr restore$1  ;reset pointer for DATA statements 
  
  .page 
+;[[stack.init]] 
+ 
 ; INIT_STACK Routine (formerly STKINI) 
 ; 
 ;   Init_Stack resets the stack pointer.  String temporaries are freed up, 
@@ -35,6 +37,8 @@ reset_txtptr
  rts 
  
 ;.end 
+;[[command.return]] 
+ 
  .page 
  .subttl RETURN 
 ;********************************************************************* 
@@ -80,6 +84,8 @@ ret010 jsr movfnd ;(fndpnt) => (tos)
  bra data 
  
 ;.end 
+;[[command.data]] 
+ 
  .page 
  .subttl DATA 
  
@@ -121,6 +127,7 @@ remn ldx #0  ;REM terminates on null only
  beq 10$  ; yes, time to change 
  
 ;.end 
+;[[command.ifthenelse]] 
  .page 
  .subttl IF  THEN  ELSE 
  

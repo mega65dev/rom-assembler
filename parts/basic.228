@@ -2,6 +2,7 @@ header_rts
  clc 
  rts 
  
+;[[command.scratch]] 
  .page 
 ; SCRATCH sdfn  aliases: DELETE, ERASE 
  
@@ -35,5 +36,6 @@ scratch jsr dospar  ;parse the line
 30$ rts 
  
  .page 
+;[[command.record]] 
 ; RECORD- relative record access 
  

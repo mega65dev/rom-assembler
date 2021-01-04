@@ -20,8 +20,9 @@ rcolor           jsr conint                               ; evaluate integer arg
 color_source                                              
                  !word vic+33,_color,highlight_color,vic+32 
 
-; .page
-; .subttl Graphic Functions
+;[[function.rgraphic]]
+
+
 
 ; Return graphic screen status & parameters      [910826]
 ; RGRAPHIC (screen, param) where param = 0 open (1), closed (0), or invalid (>1)
@@ -91,7 +92,8 @@ l298_8           tay
                  jsr PopParms                             ; restore Graphics parameters & LINNUM
                  rts                                      
 
-; .page
+;[[function.pixel]]
+
 ; Return the color of a given X,Y pixel location on the drawscreen  [910801]
 ;  PIXEL (x,y)
 

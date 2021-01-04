@@ -24,6 +24,7 @@ wait jsr getnum  ;get required mask1
  rts   ;got a nonzero 
  
 ;.end 
+;[[function.fre]] 
  .page 
  .subttl  FRE 
  

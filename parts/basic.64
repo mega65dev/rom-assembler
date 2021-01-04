@@ -55,6 +55,7 @@ dma    ;params are not longer optional-  [910520] F018A
 90$ rts 
  
 ;.end 
+;[[command.trace]] 
  .page 
  .subttl  TRON  TROFF 
  

@@ -47,8 +47,10 @@ l33_3            clc                                      ; exit, line not found
 l33_4            rts                                      ; exit, line found (.c=1)
 
 ;.end
-; .page
-; .subttl LinGet
+;[[command.line.get]]
+
+
+
 
 ; LINGET  Reads a line # from the current txtptr position
 ;   and stores it in linnum  (valid range is 0-63999).

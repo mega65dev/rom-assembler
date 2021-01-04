@@ -1,7 +1,7 @@
 rdrt0            dex                                      ; case cdd=sd
 rdrt1            +lbra sdp1                               ; get next symbol
 
-; .page
+
 ; Syntax checker DOS write
 
 chk1             and #$e6                                 ; for HEADER, DLOAD, SCRATCH, TYPE, LIST
@@ -37,8 +37,8 @@ chk6             and #5                                   ; for APPEND, DOPEN
                  rts                                      
 
 ;.end
-; .page
-; .subttl  DOS 4
+
+
 
 ; Allocate DS$ if nesessary, but use old DS$ string otherwise
 ; Called by DS$ and DS
@@ -110,7 +110,7 @@ l244_4           pha                                      ; errbad.
                  plx                                      ; get error
                  +lbra error                              
 
-; .page
+
 ; Clear_DS subroutine - forget current DS$ message, if any
 ;
 

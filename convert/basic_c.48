@@ -9,5 +9,5 @@ l48_1            inw txtptr
 
 l48_2            rts                                      
 
-; .page
+
 

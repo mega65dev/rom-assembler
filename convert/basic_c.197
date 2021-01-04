@@ -22,7 +22,7 @@ l197_2           pla
                  plp                                      
                  rts                                      
 
-; .page
+
 ;k_readst
 ; jsr put_io_in_map
 ; jmp _readst
@@ -90,8 +90,9 @@ l197_2           pla
 ; jmp _stop
 
 ;.end
-; .page
-; .subttl  PRINT USING
+;[[command.print.using]]
+
+
 ; Print Using - Formatted print routine
 ;
 ; Entered by cmd, print, or print#

@@ -4,6 +4,8 @@ nmain            ldx #$ff                                 ; set direct mode flag
                  stx curlin+1                             
                  jsr InputLine                            ; get a line of input & buffer it
 
+;[[execute]]
+
 execute_a_line                                            ; EXECUTE PLAIN TEXT IN BUFFER
                  stx txtptr                               ; init buffer pointer
                  sty txtptr+1                             
@@ -14,6 +16,7 @@ execute_a_line                                            ; EXECUTE PLAIN TEXT I
                  jsr crunch                               ; got text- tokenize buffer,
                  jsr chrgot                               ; get first command (token),
                  +lbra xeqdir                             ; and execute it
+
 
 ;ADD or DELETE NEW LINE
 l25_1            jsr linget                               ; evaluate line number, put into into linnum
@@ -26,7 +29,8 @@ l25_3            sty count                                ; save length
                  jsr FindLine                             ; locate line in program
                  +lbcc nodel                              ; not found, go insert line into program
 ; else delete current line and insert this one
-; .page
+;[[edit.shift]]
+
 ; Test: IF new line is longer than the line it replaces,
 ;  THEN IF there isn't enough room in memory to add this new line,
 ;   THEN out-of-memory error
@@ -113,4 +117,4 @@ l25_5            lda lowtr                                ; set up DMA destinati
                  sta text_top+1                           ; hi
 ;fall into routine to insert new line (if any)
 
-; .page
+

@@ -25,7 +25,7 @@ iline_20
                  beq iline_10                             ; it is...
                  bra chk_quote                            ; no...
 
-; .page
+
 ;*********** This part of imbed_lines executed in pass 2 only **********
 
 p2code                                                    ; updates text_top without actually changing lines
@@ -52,6 +52,6 @@ l78_3            jsr chrget
                  dew fndpnt                               ; digit...move down
                  bra l78_3                                ; still digits...
 
-; .page
+
 ;*********** This part of imbed_lines executed in pass 3 only **********
 

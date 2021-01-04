@@ -16,4 +16,5 @@ header jsr dospar  ;parse the line
 10$ jsr trans  ;build and send command 
     ;fall into 'print_dos_error' 
  
+;[[dos.errors]] 
  .page 

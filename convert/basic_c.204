@@ -12,7 +12,7 @@ ldvn             lda vn
                  inc z_p_temp_1                           ; before decimal point
                  bra hup                                  
 
-; .page
+
 ; Using- shift decimal point
 
 shpn             sec                                      
@@ -54,7 +54,7 @@ nos3             jsr eadj                                 ; adjust exponent
 poit             sty point                                ; decimal point pointer
 rdy              rts                                      
 
-; .page
+
 ; Using- adjust exponent
 
 sexp             bne retrn                                ; no over/underflow

@@ -29,6 +29,7 @@ val_1 clc   ;///jump table entry.  convert PETSCII to floating point
  rts 
  
 ;.end 
+;[[function.dec]] 
  .page 
  .subttl  DEC 
  

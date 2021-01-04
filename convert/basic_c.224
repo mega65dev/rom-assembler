@@ -11,7 +11,7 @@ dload_boot                                                ; <<<<<<<<<<<<<<<<<< e
 
                  +lbra cld10                              ; finish load, using 'LOAD' code.
 
-; .page
+
 ; BSAVE
 
 bsave            lda #$66                                 ; std error flag
@@ -51,6 +51,6 @@ l224_1           ldy #fopn                                ; table offset
                  +lbra savenb                             
 
 
-; .page
+
 ; DVERIFY
 

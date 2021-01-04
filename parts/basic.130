@@ -56,6 +56,7 @@ fmaptr lda count
  rts 
  
 ;.end 
+;[[command.time]] 
  .page 
  .subttl  TIME functions 
  

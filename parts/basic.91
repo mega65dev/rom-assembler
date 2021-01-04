@@ -12,5 +12,6 @@ puctrl jsr frmstr  ;do frmevl,frestr. return with a=len, index=~string
  
 ;.end 
  .page 
+;[[command.trap]] 
  .subttl  TRAP 
  

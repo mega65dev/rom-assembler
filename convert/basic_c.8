@@ -21,9 +21,10 @@ indcmp_in1                                                ; [910620]
                  jmp _cmp_far                             ; STA (.x),Y to bank .z
 
 ;.end
-; .page
-; .subttl Crunch - Tokenization Routine
 
+
+
+;[[tokeniser]]
 ;        CRUNCH
 ;
 ;  Entry:  TXTPTR points to start of text to crunch
@@ -184,7 +185,7 @@ l8_13            ldy #0
                  jsr chrget                               ; skip over token,
                  +lbra crun10                             ; ..and continue with line.
 
-; .page
+
 ;      KLOOP
 ;
 ;  Crunch loop.  Moves offset .y characters from txtptr to end of line.

@@ -31,7 +31,7 @@ l275_2           jsr getdisknum_1                         ; skip delimiter
                  stx dosds2                               ; got new disk unit #
 
 
-; .page
+
 ;  Open disk command channel & pass it 'renumber' command
 
                  jsr dclall                               ; Close any open files????

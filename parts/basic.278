@@ -38,6 +38,7 @@ C65__paint   ;      new [910228] FAB
  beq error  ;  stack overflow, say 'out of memory' 
  bra break_exit  ;  user hit stop key 
  
+;[[command.loadiff]] 
  .page 
  .subttl   LOAD/SAVE IFF 
  

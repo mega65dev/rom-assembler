@@ -16,6 +16,7 @@ l167_1           pla   ;.a=len & set z flag               ; .x=next desc. ptr
                  rts                                      
 
 ;.end
-; .page
-; .subttl  Floating Point Math Package (CODE17)
+;[[math.ext2]]
+
+
 

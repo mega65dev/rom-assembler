@@ -23,7 +23,7 @@ putnew           ldx temppt                               ; pointer to first fre
                  stx temppt                               ; save pointer to next temp, if any
                  rts                                      ; all done
 
-; .page
+
 ; The following routine concatenates two strings.  At this point, the FAC
 ; contains the first one and (txtptr) points to the + sign.
 
@@ -57,7 +57,7 @@ cat              lda faclo                                ; push high order onto
                  jsr putnew                               
                  +lbra tstop                              ; "cat" reenters frmevl from tstop
 
-; .page
+
 movins           ldy #0                                   ; get address of string
                  jsr indst1_ram1                          
                  pha                                      

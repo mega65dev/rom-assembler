@@ -2,8 +2,9 @@ volrts
                  rts                                      
 
 ;.end
-; .page
-; .subttl  VOLUME
+
+;[[command.volume]]
+
 
 ;***************************************************************
 ;*
@@ -69,8 +70,9 @@ l114_1           jsr optbyt                               ; get optional left pa
                  rts                                      
 
 ;.end
-; .page
-; .subttl  SOUND
+;[[command.sound]]
+
+
 
 ;*****************************************************************************
 ;*

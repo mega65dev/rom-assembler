@@ -19,6 +19,6 @@ l246_2           jsr _clrch                               ; shut down command ch
                  sec                                      ; not a real close
                  jmp _close                               ; close it
 
-; .page
+
 ; R-U-sure subroutine
 

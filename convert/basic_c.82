@@ -83,8 +83,9 @@ l82_4            sta (tos),y                              ; (common area)
                  rts                                      
 
 ;.end
-; .page
-; .subttl  DELETE
+;[[command.delete]]
+
+
 
 ; Delete a range of source   -or-   Delete a disk file
 ;

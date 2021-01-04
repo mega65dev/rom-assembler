@@ -19,8 +19,9 @@ l302_1           pla                                      ; Restore Graphics par
                  rts                                      
 
 ;.end
-; .page
-; .subttl RSPRITE Function
+;[[function.rsprite]]
+
+
 
 ;******************************************************************
 ;* RSPRITE - Return sprite information

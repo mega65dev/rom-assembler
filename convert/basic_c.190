@@ -31,7 +31,7 @@ l190_1           lda l190_2,x                             ; prep DMA list
 ; move from $024000 to $1000, $4000 bytes   Diagnostic  [911105]
 l190_2           !text $00,$00,$40,$00,$40,$02,$00,$10,$00,0,0,0 
 
-; .page
+
 ; AUTOBOOT Attempts to RUN a disk program after cold startup.  The
 ;  program must be a BASIC program called "AUTOBOOT.C65*"
 

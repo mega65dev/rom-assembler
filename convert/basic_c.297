@@ -16,8 +16,9 @@ desc_free                                                 ; free temporary descr
                  rts                                      ; return w/ x=len, (a,y)==> string
 
 ;.end
-; .page
-; .subttl COLLISION Command
+;[[command.collision]]
+
+
 
 ;*****************************************************************
 ; COLLISION Command
@@ -54,8 +55,9 @@ l297_1           sta intval
                  rts                                      
 
 ;.end
-; .page
-; .subttl  RCOLOR Function
+;[[function.rcolor]]
+
+
 
 ;************************************************************************
 ;  RCOLOR (source)  --  return current color assigned to source

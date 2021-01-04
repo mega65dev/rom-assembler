@@ -36,6 +36,7 @@ record           lda #'#'
 l229_1           ldx #errfno                              ; file not found err (file not open)   [910404]
                  +lbra error                              
 
-; .page
+;[[command.DCLEAR]]
+
 ; DCLEAR - reinitilaize the drive
 

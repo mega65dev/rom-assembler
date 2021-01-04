@@ -7,7 +7,9 @@ link_error                                                ; [910103]
 
 lnkrts           rts                                      
 
-; .page
+;[[command.input.handler]]
+
+
 ; Function to get a line one character at a time from the input
 ; channel and build it in the input buffer.
 ;
@@ -43,8 +45,10 @@ l28_2            lda #0                                   ; fininl.  terminate i
                  rts                                      
 
 ;.end
-; .page
-; .subttl Runtime Stack Routines
+
+;[[stack]]
+
+
 
 ; Find a specific token in the run-time stack. token to be found is in srchtk.
 ;

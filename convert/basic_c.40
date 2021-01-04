@@ -11,7 +11,7 @@ p1l072           lda (index1),y                           ; get char from ROM ta
                  iny                                      
                  bra p1l072                               
 
-; .page
+
 ; Print Escape Command
 
 print_esc_cmd                                             
@@ -50,7 +50,7 @@ print_esc_fn
                  lda #>esc_function_list                  
                  bra p1l026                               ; go scan list and print it
 
-; .page
+
 ; The token to be printed is an escape token which is NOT recognized by BASIC.
 ; We will jump through the indirect chain and see if anyone claims this token.
 ;

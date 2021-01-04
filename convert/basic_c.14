@@ -4,7 +4,7 @@ tto              lda txtptr
                  sty oldtxt+1                             
 xeqrts           rts                                      
 
-; .page
+
 ; Set up for command processing and set processor address on stack.
 ; Exit via jmp to CHRGET
 

@@ -1,6 +1,7 @@
 multrt           rts                                      
 
-; .page
+
+;[[math.unpack]]
 ; Unpack a ROM constant into the FAC
 
 romupk           sta index1                               
@@ -28,7 +29,7 @@ romupk           sta index1
                  lda facexp                               ; sets code of facexp
                  rts                                      
 
-; .page
+
 ; Unpack a RAM constant into the FAC
 
 conupk           sta index1                               
@@ -64,7 +65,7 @@ conupk           sta index1
                  lda facexp                               ; set codes of facexp
                  rts                                      
 
-; .page
+
 ; Check special cases and add exponents for FMULT, FDIV
 
 muldiv                                                    

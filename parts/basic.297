@@ -16,6 +16,7 @@ desc_free    ;free temporary descriptor, set up pointers to string.
  rts    ;return w/ x=len, (a,y)==> string 
  
 ;.end 
+;[[command.collision]] 
  .page 
  .subttl COLLISION Command 
  
@@ -54,6 +55,7 @@ collision
  rts 
  
 ;.end 
+;[[function.rcolor]] 
  .page 
  .subttl  RCOLOR Function 
  

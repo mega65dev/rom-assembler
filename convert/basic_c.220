@@ -36,7 +36,7 @@ open_file                                                 ; dop2.
                  jsr _setbank                             
                  jmp _open                                
 
-; .page
+
 ; Find an available secondary address
 
 find_sa                                                   

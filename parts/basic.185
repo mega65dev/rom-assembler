@@ -43,6 +43,7 @@ poly1 jsr mov2f ;save FAC (rounds, .y=0)
  rts  ;yes 
  
 ;.end 
+;[[math.ext7]] 
  .page 
  .subttl Floating Point Math Package (TRIG) 
  

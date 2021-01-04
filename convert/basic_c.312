@@ -29,6 +29,6 @@ l312_2           jsr indlow                               ; get next character
 
 
 ;.end
-; .page
+
 ; EDIT LOAD/SAVE  Load or Save a plain text SEQ file in memory
 

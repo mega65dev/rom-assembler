@@ -1,8 +1,8 @@
 rspmod           !text 21,39,27,29,23,28                  ; VIC registers associated with arg#
 
 ;.end
-; .page
-; .subttl RSPCOLOR Function
+
+
 
 ;******************************************************************
 ;* RSPCOLOR - return sprite multicolor reg's
@@ -29,8 +29,9 @@ rspcolor
                  +lbra sngflt                             ; float 1 byte arg in .Y
 
 ;.end
-; .page
-; .subttl RSPPOS Function
+;[[function.rsppos]]
+
+
 
 ;******************************************************************
 ;* RSPPOS - Return sprite location / speed data
@@ -93,8 +94,9 @@ l304_4           lda vic,y                                ; get correct location
                  +lbra nosflt                             ; ..and go float 2 byte value in y,a
 
 ;.end
-; .page
-; .subttl BUMP Function
+;[[function.bump]]
+
+
 
 ;******************************************************************
 ;* BUMP - read sprite collision

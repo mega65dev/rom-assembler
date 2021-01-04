@@ -8,8 +8,9 @@ highlight_text                                            ; nasty kludge to colo
 l70_1            rts                                      
 
 ;.end
-; .page
-; .subttl  GOSUB  GOTO
+;[[command.gotosub]]
+
+
 
 ; GOSUB-  Push text pointer, line #, & gosub token on stack:
 ;

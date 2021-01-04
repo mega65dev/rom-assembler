@@ -33,6 +33,7 @@ set_palette
  bcs set_palette  ; yes- loop 
  rts 
  
+;[[command.line]] 
  .page 
 ;***************************************************************** 
 ;* LINE  draw a dot, a line or a stick shape 

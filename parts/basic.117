@@ -52,6 +52,7 @@ sterr ldx #errst
  
 ;.end 
  .page 
+;[[evaluate]] 
  .subttl Formula Evaluator 
  
 ; Formula Evaluator Routine 

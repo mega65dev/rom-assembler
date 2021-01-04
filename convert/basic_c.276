@@ -1,6 +1,6 @@
 disk_renum_cmd   !text "M-W",119,0,2                      ; Renumber Drive command
 
-; .page
+
 
 ;  GetDiskNum - Get a (required) disk number and check it
 
@@ -36,7 +36,7 @@ SendDiskCmd
                  jsr _close                               
                  +lbra Clear_DS                           ; Exit
 
-; .page
+
 ;  SET VERIFY <ON | OFF> Set DOS verify-after-write mode for 3.5" drives
 
 verify_mode                                               

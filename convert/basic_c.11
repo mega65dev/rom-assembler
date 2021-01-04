@@ -131,9 +131,10 @@ keyword_list
 
 ;.end
 
-; .page
-; .subttl Escape Tokens and Keywords
 
+
+
+;[[tokeniser.keyword.esc]]
 ; Escape Command Tokens
 
 esc_command_list                                          
@@ -208,7 +209,7 @@ esc_command_list
 
                  !text 0                                  ; End marker
 ;(don't forget to change last_command_token!)
-; .page
+
 ; Escape Function Tokens
 
 esc_function_list                                          
@@ -227,8 +228,9 @@ esc_function_list
                  !text 0                                  
 
 ;.end
-; .page
-; .subttl Jump Table For Dispatch Routine
+;[[tokeniser.vectors]]
+
+
 stmdsp                                                    
                  !word end-1                              
                  !word for-1                              
@@ -392,7 +394,7 @@ stmdsp2
                  !word saveiff-1                          ; [910930]
                  !word edit-1                             ; [910620]
 
-; .page
+
 fundsp                                                    
                  !word sgn                                
                  !word int                                
@@ -438,7 +440,7 @@ fundsp
                  !word pixel                              ; escape c65     [910820]
                  !word rpalette                           ; escape c65     [910820]
 
-; .page
+
 optab            !text 121                                
                  !word faddt-1                            
                  !text 121                                
@@ -461,8 +463,9 @@ ptdorl           !text 100
                  !word dorel-1                            
 
 ;.end
-; .page
-; .subttl  Keyword Equates
+
+;[[tokeniser.const]]
+
 
 end_token        = $80                                    ; v2 commands
 for_token        = $81                                    
@@ -518,7 +521,7 @@ using_token      = $fb
 until_token      = $fc                                    
 while_token      = $fd                                    
 esc_command_token = $fe                                    
-; .page
+
 first_esc_command_token = $02                                    
 collision_token  = $17                                    
 begin_token      = $18                                    
@@ -534,8 +537,9 @@ first_esc_function_token = $02
 pointer_token    = $0a                                    
 last_esc_function_token = $0d                                    ; [910820]
 
-; .page
-; .subttl Error Messages
+
+;[[errors]]
+
 
 ok_error_message                                          
                  !text "O",'K'+$80                        ; 0 for ERR$ [910911]
@@ -584,8 +588,9 @@ error_message_list
                  !text "FILE REA",'D'+$80                 ; 41
                  !text "EDIT MOD",'E'+$80                 ; 42    [910620]
 
-; .page
-; .subttl  Error Message Numbers
+
+
+;[[errors/constants]]
 
 errtmf           = 1                                      
 errfno           = 3                                      
@@ -628,8 +633,9 @@ edit_mode_error  = 42                                     ; [910620]
 last_error_message = 42                                     ; # of last error msg
 
 ;.end
-; .page
-; .subttl Error message output
+
+;[[error.handler]]
+
 
 ; Routine to translate error message # in .a
 ; into address of string containing message in index2
@@ -653,8 +659,9 @@ l11_2            lda (index2),y                           ; look at msg, and fin
 l11_3            rts                                      
 
 ;.end
-; .page
-; .subttl Execute Dispatcher
+;[[dispatcher]]
+
+
 
 ; Here for new statement. Character -> by txtptr is ':' or eol. The adr of
 ; this loc is left on the stack when a statement is executed so that it can

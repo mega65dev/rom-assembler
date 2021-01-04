@@ -29,8 +29,9 @@ l138_2           ldy _expansion                           ; FRE(expansion banks)
 l138_3           +lbra nosflt                             ; go float the number (y,a)=(lo,hi)
 
 ;.end
-; .page
-; .subttl  VAL
+;[[function.val]]
+
+
 
 ; The VAL function takes a string and turns it into a number by interpreting
 ; the PETSCII digits etc.  Except for the problem that a terminator must be

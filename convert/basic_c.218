@@ -24,7 +24,8 @@ dcat11           jsr release_channels                     ; release cmd channel,
                  lda #doslfn                              
                  +lbra close_out                          ; [900725]
 
-; .page
+;[[command.ldir]]
+
 ; LDIR  same as DIR, except it buffers each line to reduce
 ;       talker/listener turnaround time.  Even so, it is still
 ; unacceptably slow for normal screen output, which is

@@ -41,8 +41,9 @@ l53_5            pla                                      ; clean up stack
                  rts                                      
 
 ;.end
-; .page
-; .subttl PRINT  PRINT#  CMD
+;[[command.printcmd]]
+
+
 
 ;***********************************************************
 ;*

@@ -71,4 +71,5 @@ Sound_CLR_1
  plp 
  rts 
  
+;[[initialise.sprites]] 
  .page 

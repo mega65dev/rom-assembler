@@ -6,7 +6,7 @@ fout20           lda #<fbuffr
                  ldy #>fbuffr                             
                  rts                                      ; all done
 
-; .page
+
 ; Exponentiation and Square Root Functions.
 ;
 ; square root function - sqr(a)

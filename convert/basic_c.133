@@ -1,7 +1,7 @@
 MaxTimeValues                                             
                  !text $10,$60,$60,$24                    ; t,s,m,h in packed BCD
 
-; .page
+
 ; x$=TI$  Return a string of the form "hh:mm:ss.t", including colons.
 
 Get_TI_String                                             
@@ -54,6 +54,7 @@ l133_2           lda time,x
                  jsr mvdone                               ; update frespc ????
                  +lbra putnew                             ; make descriptor in dsctmp real
 
-; .page
+
+;[[time]]
 ; TI. Convert 24-hour TOD into tenths of seconds.  901010 F.Bowen
 

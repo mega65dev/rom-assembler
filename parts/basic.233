@@ -15,6 +15,7 @@ trans jsr sendp  ;build string to output
  rts 
  
 ;.end 
+;[[dos.parser]] 
  .page 
  .subttl  DOS 2 
  

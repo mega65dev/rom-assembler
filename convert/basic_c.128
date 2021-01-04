@@ -18,7 +18,7 @@ gotary           ldx #errdd                               ; perhaps a "re-dimens
                  bne bserr                                ; same so get definition.
                  +lbra getdef                             
 
-; .page
+
 ; Come here when variable is not found in the array table to build an entry.
 ;
 ; Put down the descriptor.

@@ -24,4 +24,4 @@ l300_1           +lbcs fcerr                              ; illegal value
                  jsr PopParms                             ; restore graphics parameters
                  rts                                      
 
-; .page
+

@@ -86,6 +86,7 @@ rmouse lda #0   ;Init
 90$ rts 
  
 ;.end 
+;[[command.cursor]] 
  .page 
  .subttl   CURSOR 
  

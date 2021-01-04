@@ -15,8 +15,9 @@ trans            jsr sendp                                ; build string to outp
                  rts                                      
 
 ;.end
-; .page
-; .subttl  DOS 2
+;[[dos.parser]]
+
+
 
 ; This is the DOS parser routine which looks at lines passed to it and
 ; verifies that the syntax is proper.  -mgm 7/23/79-
@@ -71,7 +72,7 @@ trans            jsr sendp                                ; build string to outp
 ;      "0" bits are required to be clear
 ;      "1" bits are required to be set
 ;      "*" bits are optional parameters
-; .page
+
 ; Entry (dosprs):
 ;  parstx shall be set to prevent any auxiliary options to be specified.
 ;
@@ -113,7 +114,7 @@ trans            jsr sendp                                ; build string to outp
 dostbl           !word $ffff,$ffff                        ; default start/end address
                  !text doslfn,dosffn,$6f                  ; default la/fa/sa
 
-; .page
+
 dospar           lda #0                                   ; DOS Parser
 
 dosprs                                                    ; special error flag entry

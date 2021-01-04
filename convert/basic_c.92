@@ -11,9 +11,10 @@ l92_1            lda #$ff                                 ; flag no trap
                  rts                                      
 
 ;.end
+;[[command.resume]]
 
-; .page
-; .subttl  RESUME
+
+
 
 ; RESUME command
 ;

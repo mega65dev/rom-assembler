@@ -1,6 +1,6 @@
 dimrts           rts                                      
 
-; .page
+
 ; Integer arithmetic routines.
 ;
 ; Two byte unsigned integer multiply.
@@ -56,8 +56,9 @@ l130_1           sta arypnt
                  rts                                      
 
 ;.end
-; .page
-; .subttl  TIME functions
+;[[command.time]]
+
+
 
 ; TI$="hh:mm:ss.t" Allows optional colons to delimit parameters and
 ;   allows input to be abbrieviated (eg., TI$="h:mm" or

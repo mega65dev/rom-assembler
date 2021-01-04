@@ -21,7 +21,7 @@ l306_3           plp                                      ; get sign of angle
                  bcc invert                               ; invert result if negative,do rts
                  rts                                      
 
-; .page
+
 ;*************************************************************
 ;  angdst  -  set up values for distance * angles
 ;       vwork+x = x & y distances
@@ -48,7 +48,7 @@ l306_3           plp                                      ; get sign of angle
 ;angd20 rts
 
 ;.end
-; .page
+
 ; GRAPHIC8.SRC
 ;****************************************************************
 ;  docolr  --  set up color for 8x8 charcater cell
@@ -144,7 +144,7 @@ l306_3           plp                                      ; get sign of angle
 ; .byte >11$,>12$,>13$,>14$,>15$,>16$,>17$,>18$,>19$
 ; .byte >l306_2,>21$,>22$,>23$,>24$
 
-; .page
+
 ;******************************************************************
 ;  getpos - get address in graphic bit map into grapnt
 ;      x = bit offset into byte specified (0-7)
@@ -189,7 +189,7 @@ l306_3           plp                                      ; get sign of angle
 ;
 ;rbits .byte   $80,$40,$20,$10,$08,$04,$02,$01
 
-; .page
+
 ;**************************************************************
 ;  divpos  --  convert xpos to column number
 ;  convert ypos to row number
@@ -220,7 +220,7 @@ l306_3           plp                                      ; get sign of angle
 ;l306_2 sec
 ; rts
 
-; .page
+
 ;***************************************************************
 ;   SCALXY  - Scale the x & y coordinates found in vwork+x
 ;***************************************************************
@@ -245,7 +245,7 @@ l306_3           plp                                      ; get sign of angle
 ; rts
 
 ;.end
-; .page
+
 ;GRAPHICS9.SRC
 ;***************************************************************
 ;   DOTWO  - Add      two 2-byte values if carry clear

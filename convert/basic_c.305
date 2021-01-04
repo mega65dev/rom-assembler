@@ -12,8 +12,8 @@ bump             jsr chkcls
                  +lbra sngflt                             ; float 1 byte arg in .Y
 
 ;.end
-; .page
-; .subttl Sprite Support Routines
+
+
 
 ; GRAPHIC3.SRC
 ;****************************************************************
@@ -82,7 +82,7 @@ l305_6           pla
                  sta sinval+1,x                           ; save high byte result
                  rts                                      
 
-; .page
+
 ;*************************************************************
 ;  angmlt  -  multiple 2-byte integer times angle
 ;       carry set/reset = cosine/sine

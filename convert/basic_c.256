@@ -31,6 +31,6 @@ l256_2           inx
                  cpx #6+6                                 ; [910612]
                  bcc l256_1                               ; loop for 6 voices
 ;then continue with next IRQ task
-; .page
+
 ; Test if SOUND command wants anything
 

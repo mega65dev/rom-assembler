@@ -1,7 +1,7 @@
 movrts           rts                                      
 
 
-; .page
+
 round            lda facexp                               ; zero?
                  beq movrts                               ; yes, done rounding
                  asl facov                                ; round?
@@ -27,7 +27,7 @@ fcomps           rol
 signrt           rts                                      
 
 
-; .page
+
 ; SGN function
 
 sgn              jsr sign                                 
@@ -61,7 +61,7 @@ abs              lsr facsgn
                  rts                                      
 
 
-; .page
+
 ; Compare two numbers:
 ;
 ; a=1  if  ARG < FAC
@@ -106,8 +106,9 @@ l175_1           lda facsgn
 l175_2           bra fcomps                               ; a part of sign sets up (a)
 
 ;.end
-; .page
-; .subttl Floating Point Math Package (CODE21)
+;[[math.ext4]]
+
+
 
 ; Quick Greatest Integer Function
 ;

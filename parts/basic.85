@@ -30,6 +30,7 @@ range beq 10$   ;a terminator from chrgot?
 40$ bra snerr  ;syntax error 
  
 ;.end 
+;[[command.findchange]] 
  .page 
  .subttl  FIND  CHANGE 
  
