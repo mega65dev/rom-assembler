@@ -52,6 +52,23 @@ class CodeProcessor(BaseProcessor):
 				self.processCode(word)
 				return True
 		#
+		#		Check for .byte
+		#
+		if self.body.startswith(".byte"):
+			self.processByte()
+			return True
+		#
+		#		Check for .word
+		#
+		if self.body.startswith(".word"):
+			self.processWord()
+			return True
+		#
+		#		Check for equate e.g. x = 4
+		#
+		if self.label != "" and self.body.startswith("="):
+			return True
+		#
 		#		Try superclass
 		#
 		return BaseProcessor.tryConvert(self)
@@ -61,8 +78,10 @@ class CodeProcessor(BaseProcessor):
 	def processCode(self,mnemonic):
 		romOpcode = self.readROM(self.currentPC) 								# what is actually in the ROM ?
 		opList = self.cpuInfo.getOpcodeList(mnemonic)							# the possible mnemonics it could be.
-		#assert romOpcode in opList
-		#self.currentPC += opList[romOpcode]										# adjust the program counter.
+		if romOpcode not in opList:
+			print("ROM mismatch error looking for {0:02x}".format(romOpcode))
+			sys.exit(0)
+		self.currentPC += opList[romOpcode]										# adjust the program counter.
 	#
 	#		Read ROM.
 	#		
@@ -71,13 +90,74 @@ class CodeProcessor(BaseProcessor):
 		if addr < 0x8000:
 			return self.romImage[addr-0x2000]
 		assert False
+	#
+	#		Process Byte.
+	#
+	def processByte(self):
+		s = self.body[5:].strip()
+		byteElements = []
+		while s != "":
+			if s.startswith("'"):												# quoted string. wierd use of 'x'+$80
+				p = self.findQuote(s[1:])										# find matching closing quote
+				assert p >= 0
+				textPart = s[:p+2]												# get quoted part,
+				textPart = textPart.replace("''","'")							# handle double quotes
+				s = s[p+2:]														# and strip it.
+				if s == "" or s.startswith(","):								# ordinary boring string found
+					for i in range(0,len(textPart)-2):							# check it is in memory.
+						assert self.readROM(self.currentPC+i) == ord(textPart[i+1])
+					self.currentPC += len(textPart)-2 							# just add it as is
+					byteElements.append('"'+textPart[1:-1]+'"')					# convert format to double quotes
+					if s.startswith(","):										# throw connecting comma.
+						s = s[1:]
+				else:
+					m = re.match("^(\\+\\$[0-9A-Fa-f]+)(\\,?)(.*)$",s)			# analyse it.
+					assert m is not None and len(textPart) == 3 				# check ok and only one char in string
+					byteValue = int(m.group(1)[2:],16)+ord(textPart[1])			# work out the actual ROM value and check
+					assert self.readROM(self.currentPC) == byteValue
+					self.currentPC += 1											# bump PC
+					byteElements.append(textPart+m.group(1))					# add 'x'+$80 or whatever
+					s = m.group(3)
+
+			else:																# something else, which is probably a single byte.
+				element = s.split(",")[0]										# if not we have problems. take it off.
+				s = s[len(element)+1:].strip()
+				byteElements.append(element)
+				if re.match("^\\d+$",element) is not None:						# can we check it ? if so do so.
+					assert self.readROM(self.currentPC) == int(element)		
+				self.currentPC += 1 											# and add a byte
+		#
+		self.body = "!byte "+",".join(byteElements)
+	#
+	#		Process word
+	#
+	def processWord(self):
+		wordCount = len(self.body[5:].split(","))
+		print(self.body,wordCount)
+		self.body = "!word"+self.body[5:]
+		self.currentPC += (wordCount * 2)
+	#
+	#		Find position of closing quote
+	#
+	def findQuote(self,s):
+		p = 0
+		while p < len(s):
+			if s[p:p+2] == "''":
+				p += 2
+			else:
+				if s[p] == "'":
+					return p
+				p += 1
+		return s 
 
 if __name__ == "__main__":
 	hp = CodeProcessor()
-	for page in range(1,4):
-		for l in PartLoader().load(page):		
+	for page in range(1,74):
+		for l in PartLoader().load(page):
+			#print("====== "+l+" ========================",hp.currentPC)
+			startPC = 0 if hp.currentPC is None else hp.currentPC 
 			p = hp.process(l)
 			if p is not None:
-				print("{0:04x} {1}".format(hp.currentPC,p))
+				print("{2:3} : {0:04x} {1}".format(startPC,p,page))
 			else:
-				assert False,l
+				assert False,"Couldn't fathom {"+l+"}"
