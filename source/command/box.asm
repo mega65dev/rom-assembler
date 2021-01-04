@@ -16,40 +16,40 @@
 ;*****************************************************************
 
 C65__box
-                 jsr CheckGraphicMode
-                 jsr sadwrd                               ; get x0
-                 sty GKI__parm1
-                 sta GKI__parm2
+                jsr CheckGraphicMode
+                jsr sadwrd                              ; get x0
+                sty GKI__parm1
+                sta GKI__parm2
 
-                 jsr comsad                               ; get y0
-                 sty GKI__parm3
-                 sta GKI__parm4
+                jsr comsad                              ; get y0
+                sty GKI__parm3
+                sta GKI__parm4
 
-                 jsr comsad                               ; get x1
-                 sty GKI__parm5
-                 sta GKI__parm6
+                jsr comsad                              ; get x1
+                sty GKI__parm5
+                sta GKI__parm6
 
-                 jsr comsad                               ; get y1
-                 sty GKI__parm7
-                 sta GKI__parm8
+                jsr comsad                              ; get y1
+                sty GKI__parm7
+                sta GKI__parm8
 
-                 jsr comsad                               ; get x2
-                 sty GKI__parm9
-                 sta GKI__parm10
+                jsr comsad                              ; get x2
+                sty GKI__parm9
+                sta GKI__parm10
 
-                 jsr comsad                               ; get y2
-                 sty GKI__parm11
-                 sta GKI__parm12
+                jsr comsad                              ; get y2
+                sty GKI__parm11
+                sta GKI__parm12
 
-                 jsr comsad                               ; get x3
-                 sty GKI__parm13
-                 sta GKI__parm14
+                jsr comsad                              ; get x3
+                sty GKI__parm13
+                sta GKI__parm14
 
-                 jsr comsad                               ; get y3
-                 sty GKI__parm15
-                 sta GKI__parm16
+                jsr comsad                              ; get y3
+                sty GKI__parm15
+                sta GKI__parm16
 
-                 jsr optzer                               ; get solid flag
-                 stx GKI__parm17
+                jsr optzer                              ; get solid flag
+                stx GKI__parm17
 
-                 jmp ($801a)                              ; bra box
+                jmp ($801a)                             ; bra box

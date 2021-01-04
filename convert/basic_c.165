@@ -1,12 +1,12 @@
-movpnt           eor #$ff                                 ; comp and add
-                 sec                                      
-                 adc grbpnt                               
-                 ldy grbpnt+1                             
-                 bcs l165_1                               
-                 dey                                      
-l165_1           sta grbpnt                               
-                 sty grbpnt+1                             
-                 rts                                      
+movpnt          eor #$ff                                ; comp and add
+                sec                                     
+                adc grbpnt                              
+                ldy grbpnt+1                            
+                bcs l165_1                              
+                dey                                     
+l165_1          sta grbpnt                              
+                sty grbpnt+1                            
+                rts                                     
 
 
 

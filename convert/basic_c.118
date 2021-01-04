@@ -1,27 +1,27 @@
-gonprc           pla                                      ; get rid of rts addr.
-                 pla                                      
-                 +lbra negprc                             ; do negation
+gonprc          pla                                     ; get rid of rts addr.
+                pla                                     
+                +lbra negprc                            ; do negation
 
 ;.end
 
 
 
-is_variable                                               
-                 jsr ptrget                               ; parse variable name, put name in varnam
+is_variable                                             
+                jsr ptrget                              ; parse variable name, put name in varnam
 
-isvret           sta facmo                                ; save pointer to variable
-                 sty facmo+1                              
-                 ldx varnam                               
-                 ldy varnam+1                             
-                 lda valtyp                               
-                 beq is_numeric                           ; branch if numeric
+isvret          sta facmo                               ; save pointer to variable
+                sty facmo+1                             
+                ldx varnam                              
+                ldy varnam+1                            
+                lda valtyp                              
+                beq is_numeric                          ; branch if numeric
 
-                 lda #0                                   
-                 sta facov                                
-                 cpx #'T'                                 ; TI$ is a special case. look for it
-                 bne isvds                                ; no- go test for DS$
-                 cpy #'I'+$80                             ; shifted I?
-                 bne ds_rts                               ; no- and it's not DS$ either
+                lda #0                                  
+                sta facov                               
+                cpx #'T'                                ; TI$ is a special case. look for it
+                bne isvds                               ; no- go test for DS$
+                cpy #'I'+$80                            ; shifted I?
+                bne ds_rts                              ; no- and it's not DS$ either
 
 ; Variable name is TI$.  To see if this is 'the' TI$ and not an
 ; array TI$(), test to see if it has a pointer to the zero in "ROM".
@@ -29,45 +29,45 @@ isvret           sta facmo                                ; save pointer to vari
 ; a real zero.  If it isn't an array item, its pointer will point
 ; to a dummy zero in "ROM".
 
-                 lda facmo+1                              
-                 cmp #>zero                               
-                 bne ds_rts                               ; not TI$, not DS$
-                 lda facmo                                
-                 cmp #<zero                               
-                 bne ds_rts                               
-                 +lbra Get_TI_String                      ; the one and only TI$
+                lda facmo+1                             
+                cmp #>zero                              
+                bne ds_rts                              ; not TI$, not DS$
+                lda facmo                               
+                cmp #<zero                              
+                bne ds_rts                              
+                +lbra Get_TI_String                     ; the one and only TI$
 
 
-isvds            cpx #'D'                                 ; is this DS$?
-                 bne ds_rts                               ; no
-                 cpy #'S'+$80                             ; shifted S?
-                 bne ds_rts                               ; no
+isvds           cpx #'D'                                ; is this DS$?
+                bne ds_rts                              ; no
+                cpy #'S'+$80                            ; shifted S?
+                bne ds_rts                              ; no
 
-                 jsr Check_DS                             ; yes- check DS$ allocation,
+                jsr Check_DS                            ; yes- check DS$ allocation,
 ;  and get it if not in memory
-                 ldy #$ff                                 
-l118_1           iny                                      ; copy DS$ to a temp.
-                 lda #dsdesc+1                            ; must first determine how big it is
-                 jsr lda_far_ram1                         ; lda (dsdesc+1),y
-                 bne l118_1                               ; loop until terminating null found
+                ldy #$ff                                
+l118_1          iny                                     ; copy DS$ to a temp.
+                lda #dsdesc+1                           ; must first determine how big it is
+                jsr lda_far_ram1                        ; lda (dsdesc+1),y
+                bne l118_1                              ; loop until terminating null found
 
-                 tya                                      ; length of string required
-                 jsr strini                               ; get temp. string space & descriptor
-                 tay                                      
-                 beq l118_3                               ; (don't bother copying if length is 0)
+                tya                                     ; length of string required
+                jsr strini                              ; get temp. string space & descriptor
+                tay                                     
+                beq l118_3                              ; (don't bother copying if length is 0)
 
-                 phx                                      
+                phx                                     
 
-                 ldx #dsctmp+1                            ; ???? was ldx #frespc
-l118_2           lda #dsdesc+1                            ; copy DS$ into temp
-                 dey                                      
-                 jsr lda_far_ram1                         ; lda (dsdesc+1),y
-                 jsr sta_far_ram1                         ; sta (dsctmp+1),y
-                 tya                                      
-                 bne l118_2                               
-                 plx                                      
-                 lda dsdesc                               ; a=length     [901014] FAB
-                 jsr mvdone                               ; ???? (does nothing on C128 - bug or oversight?)
+                ldx #dsctmp+1                           ; ???? was ldx #frespc
+l118_2          lda #dsdesc+1                           ; copy DS$ into temp
+                dey                                     
+                jsr lda_far_ram1                        ; lda (dsdesc+1),y
+                jsr sta_far_ram1                        ; sta (dsctmp+1),y
+                tya                                     
+                bne l118_2                              
+                plx                                     
+                lda dsdesc                              ; a=length     [901014] FAB
+                jsr mvdone                              ; ???? (does nothing on C128 - bug or oversight?)
 
-l118_3           +lbra putnew                             
+l118_3          +lbra putnew                            
 

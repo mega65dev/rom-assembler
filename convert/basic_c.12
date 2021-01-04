@@ -1,41 +1,41 @@
-xeqcm            jmp (igone)                              
+xeqcm           jmp (igone)                             
 
 ; Check if there is an interrupt from VIC that needs to be serviced
 
-ngone            bbr7 runmod,l12_3                        ; get off here if we are in direct mode
-                 lda intval                               ; check if there is an interrupt already in progress
-                 bmi l12_3                                ; yes, don't go any further
+ngone           bbr7 runmod,l12_3                       ; get off here if we are in direct mode
+                lda intval                              ; check if there is an interrupt already in progress
+                bmi l12_3                               ; yes, don't go any further
 
-                 ldx #2                                   ; check for 3 types of interrupts: s/s, s/b, & lp
-l12_1            lda int_trip_flag,x                      
-                 beq l12_2                                ; this wasn't set, go check next
+                ldx #2                                  ; check for 3 types of interrupts: s/s, s/b, & lp
+l12_1           lda int_trip_flag,x                     
+                beq l12_2                               ; this wasn't set, go check next
 
-                 lda #0                                   
-                 sta int_trip_flag,x                      ; reset this flag to show 'serviced'
-                 lda int_adr_lo,x                         ; install the trap address as linnum
-                 sta linnum                               
-                 lda int_adr_hi,x                         
-                 sta linnum+1                             
-                 phx                                      ; save counter & text pointer
-                 phw txtptr                               
-                 lda #$80                                 ; flag 'no other interrupt traps, please'
-                 tsb intval                               
+                lda #0                                  
+                sta int_trip_flag,x                     ; reset this flag to show 'serviced'
+                lda int_adr_lo,x                        ; install the trap address as linnum
+                sta linnum                              
+                lda int_adr_hi,x                        
+                sta linnum+1                            
+                phx                                     ; save counter & text pointer
+                phw txtptr                              
+                lda #$80                                ; flag 'no other interrupt traps, please'
+                tsb intval                              
 
-                 jsr chrget                               ; skip over 2nd byte of line number
-                 jsr gosub_sub                            ; fake a 'gosub' from here, so trap rx can do a RETURN
-                 jsr goto_1                               
-                 jsr newstt                               
+                jsr chrget                              ; skip over 2nd byte of line number
+                jsr gosub_sub                           ; fake a 'gosub' from here, so trap rx can do a RETURN
+                jsr goto_1                              
+                jsr newstt                              
 
-                 lda #$80                                 
-                 trb intval                               
-                 pla                                      
-                 sta txtptr+1                             
-                 pla                                      
-                 sta txtptr                               
-                 plx                                      
+                lda #$80                                
+                trb intval                              
+                pla                                     
+                sta txtptr+1                            
+                pla                                     
+                sta txtptr                              
+                plx                                     
 
-l12_2            dex                                      
-                 bpl l12_1                                
+l12_2           dex                                     
+                bpl l12_1                               
 
 
-l12_3            jsr chrget                               ; get statement type
+l12_3           jsr chrget                              ; get statement type

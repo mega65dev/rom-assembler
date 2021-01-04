@@ -1,29 +1,29 @@
-Get_TI                                                    
-                 jsr ReadSystemClock                      ; glance at the clock, get time as h:m:s:t
-                 stz faclo                                ; init accumulator with tenths (0-9, so nothing to convert)
-                 ldz #0                                   
-                 stz facmo                                
-                 stz facmoh                               
+Get_TI                                                  
+                jsr ReadSystemClock                     ; glance at the clock, get time as h:m:s:t
+                stz faclo                               ; init accumulator with tenths (0-9, so nothing to convert)
+                ldz #0                                  
+                stz facmo                               
+                stz facmoh                              
 
-                 ldx #3                                   ; convert time (BCD) to tenths of seconds (binary) since midnight
-l134_1           jsr TimeMultiply                         
-                 clc                                      
-                 adc faclo                                
-                 sta faclo                                
-                 lda product+1                            
-                 adc facmo                                
-                 sta facmo                                
-                 lda product+2                            
-                 adc facmoh                               
-                 sta facmoh                               ; (can't overflow since 23:59:59:9 -> 863999 ($0D2EFF)
-                 dex                                      
-                 bne l134_1                               ; next factor
+                ldx #3                                  ; convert time (BCD) to tenths of seconds (binary) since midnight
+l134_1          jsr TimeMultiply                        
+                clc                                     
+                adc faclo                               
+                sta faclo                               
+                lda product+1                           
+                adc facmo                               
+                sta facmo                               
+                lda product+2                           
+                adc facmoh                              
+                sta facmoh                              ; (can't overflow since 23:59:59:9 -> 863999 ($0D2EFF)
+                dex                                     
+                bne l134_1                              ; next factor
 
-                 lda #0                                   ; float value in FAC
-                 sta facho                                ; zero msb, facov, facsgn
-                 ldx #160                                 ; set facov for time
-                 sec                                      ; normal fac
-                 +lbra floatb                             ; do it
+                lda #0                                  ; float value in FAC
+                sta facho                               ; zero msb, facov, facsgn
+                ldx #160                                ; set facov for time
+                sec                                     ; normal fac
+                +lbra floatb                            ; do it
 
 
 

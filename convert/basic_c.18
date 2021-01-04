@@ -1,11 +1,11 @@
-break            jsr release_channels                     ; make sure we're in text mode????  [910909]
-                 jsr RestoreTextScreen                    
-                 jsr highlight_text                       ; ????      [910624]
-                 jsr _primm                               
-                 !text cr,"BREAK",0                       
-                 +lbra errfin                             ; exit via 'in line #'
+break           jsr release_channels                    ; make sure we're in text mode????  [910909]
+                jsr RestoreTextScreen                   
+                jsr highlight_text                      ; ????      [910624]
+                jsr _primm                              
+                !text cr,"BREAK",0                      
+                +lbra errfin                            ; exit via 'in line #'
 
-do_rts           rts                                      
+do_rts          rts                                     
 
 ;.end
 ;[[function.dispatch]]
@@ -19,26 +19,26 @@ do_rts           rts
 ;
 ; On entry, we can assume the token is >= 'sgn'
 
-isfun            cmp #esc_function_token                  ; is this an escape function?
-                 beq do_esc_fn                            ; yes
-                 cmp #last_function_token+1               
-                 bcs snerr1                               ; no- must be syntax error
-                 cmp #mid_token+1                         
-                 bcc l18_1                                ; no need to adjust
-                 sbc #rgraphic_token-mid_token-1          
+isfun           cmp #esc_function_token                 ; is this an escape function?
+                beq do_esc_fn                           ; yes
+                cmp #last_function_token+1              
+                bcs snerr1                              ; no- must be syntax error
+                cmp #mid_token+1                        
+                bcc l18_1                               ; no need to adjust
+                sbc #rgraphic_token-mid_token-1         
 
-l18_1            pha                                      ; save token
-                 tax                                      
-                 jsr chrget                               ; set up for synchk.
-                 cpx #instr_token-1                       ; look for (adjusted) instr token
-                 beq l18_2                                ; yes
-                 cpx #rgraphic_token-1                    ; look for rgraphic which now takes 2 args [910801]
-                 +lbeq rgraphic                           ; yes
+l18_1           pha                                     ; save token
+                tax                                     
+                jsr chrget                              ; set up for synchk.
+                cpx #instr_token-1                      ; look for (adjusted) instr token
+                beq l18_2                               ; yes
+                cpx #rgraphic_token-1                   ; look for rgraphic which now takes 2 args [910801]
+                +lbeq rgraphic                          ; yes
 
-                 cpx #mid_token+1                         
-                 bcs oknorm                               ; LEFT$,RIGHT$,MID$ require multiple args
-                 cpx #left_token                          ; is it past last single-arg function?
-                 bcc oknorm                               ; no, must be normal function
+                cpx #mid_token+1                        
+                bcs oknorm                              ; LEFT$,RIGHT$,MID$ require multiple args
+                cpx #left_token                         ; is it past last single-arg function?
+                bcc oknorm                              ; no, must be normal function
 
 
 ; Most functions take a single argument.  The return address of these functions
@@ -53,23 +53,23 @@ l18_1            pha                                      ; save token
 ; description of the string argument is stored on the stack underneath the
 ; value of the integer argument.
 
-l18_2            jsr chkopn                               ; check for an open parenthesis
-                 jsr frmevl                               ; eat open paren and first argument
-                 jsr chkcom                               ; two args so comma must delimit
-                 jsr chkstr                               ; make sure first was string
+l18_2           jsr chkopn                              ; check for an open parenthesis
+                jsr frmevl                              ; eat open paren and first argument
+                jsr chkcom                              ; two args so comma must delimit
+                jsr chkstr                              ; make sure first was string
 
-                 pla                                      ; check token
-                 cmp #instr_token-1                       ; special case: INSTR() bails out here
-                 +lbeq instr                              
-                 ldx facmo+1                              ; push address of string arg1
-                 phx                                      
-                 ldx facmo                                
-                 phx                                      
-                 pha                                      ; push token
-                 jsr getbyt                               ; get arg2
-                 pla                                      ; retrieve token
-                 phx                                      ; push value of arg2
-                 bra fingo                                ; go set up to evaluate fn
+                pla                                     ; check token
+                cmp #instr_token-1                      ; special case: INSTR() bails out here
+                +lbeq instr                             
+                ldx facmo+1                             ; push address of string arg1
+                phx                                     
+                ldx facmo                               
+                phx                                     
+                pha                                     ; push token
+                jsr getbyt                              ; get arg2
+                pla                                     ; retrieve token
+                phx                                     ; push value of arg2
+                bra fingo                               ; go set up to evaluate fn
 
 
 

@@ -1,33 +1,33 @@
-range            beq l85_1                                ; a terminator from chrgot?
-                 bcc l85_1                                ; a number?
-                 cmp #minus_token                         ; a dash?
-                 bne l85_4   ;if it's not a dash, error (C128-03 fix ; FAB)
-                 ldy #1                                   
-                 jsr indtxt                               ; let's peek, and see what follows the dash!
-                 beq l85_4                                ; uh-oh! it's of the form 'delete -' - error
-                 cmp #':'                                 ; the other terminator
-                 beq l85_4                                ; ..still bad
-                 sec                                      ; set up for linget
+range           beq l85_1                               ; a terminator from chrgot?
+                bcc l85_1                               ; a number?
+                cmp #minus_token                        ; a dash?
+                bne l85_4   ;if it's not a dash, error (C128-03 fix; FAB)
+                ldy #1                                  
+                jsr indtxt                              ; let's peek, and see what follows the dash!
+                beq l85_4                               ; uh-oh! it's of the form 'delete -' - error
+                cmp #':'                                ; the other terminator
+                beq l85_4                               ; ..still bad
+                sec                                     ; set up for linget
 
-l85_1            jsr linget                               ; get first #
-                 jsr FindLine                             ; find it & set ptrs
-                 jsr chrgot                               ; get last char
-                 beq l85_2                                ; skip done
-                 cmp #minus_token                         ; a dash?
-                 bne l85_4                                ; no- syntax error
-                 jsr chrget                               ; yes- skip dash
-                 jsr linget                               ; get second #
-                 bne l85_4                                ; error- wasn't a number
+l85_1           jsr linget                              ; get first #
+                jsr FindLine                            ; find it & set ptrs
+                jsr chrgot                              ; get last char
+                beq l85_2                               ; skip done
+                cmp #minus_token                        ; a dash?
+                bne l85_4                               ; no- syntax error
+                jsr chrget                              ; yes- skip dash
+                jsr linget                              ; get second #
+                bne l85_4                               ; error- wasn't a number
 
-l85_2            lda endchr                               ; was a # input?
-                 bne l85_3                                ; yes
-                 lda #$ff                                 ; no - make max
-                 sta linnum                               
-                 sta linnum+1                             
-l85_3            rts                                      
+l85_2           lda endchr                              ; was a # input?
+                bne l85_3                               ; yes
+                lda #$ff                                ; no - make max
+                sta linnum                              
+                sta linnum+1                            
+l85_3           rts                                     
 
 
-l85_4            +lbra snerr                              ; syntax error
+l85_4           +lbra snerr                             ; syntax error
 
 ;.end
 ;[[command.findchange]]

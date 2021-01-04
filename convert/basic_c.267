@@ -1,19 +1,19 @@
-CheckGraphicMode                                          
-                 bit $1f4b                                ; Check draw screen allocation   [910711]
-                 bmi NoGraphicArea                        
-                 rts                                      ; ok
+CheckGraphicMode                                        
+                bit $1f4b                               ; Check draw screen allocation   [910711]
+                bmi NoGraphicArea                       
+                rts                                     ; ok
 
 
-NoGraphicArea                                             
-                 ldx #errng                               ; bad- no graphic area????
-                 +lbra error                              
+NoGraphicArea                                           
+                ldx #errng                              ; bad- no graphic area????
+                +lbra error                             
 
 
-RestoreTextScreen                                          ; [910404]
-                 lda #$ff                                 ; [910930]
-                 sta GKI__parm1                           ; leave drawscreen as is
-                 sta GKI__parm2                           ; set viewscreen to text
-                 jmp ($800e)                              ; kg65.screen
+RestoreTextScreen                                        ; [910404]
+                lda #$ff                                ; [910930]
+                sta GKI__parm1                          ; leave drawscreen as is
+                sta GKI__parm2                          ; set viewscreen to text
+                jmp ($800e)                             ; kg65.screen
 
 ; lda vic+49  ;Check graphic screen allocation
 ; and #%00010000
@@ -50,14 +50,14 @@ RestoreTextScreen                                          ; [910404]
 ; else clears the graphic screen with given value.
 ;*****************************************************************
 
-ScreenClr                                                 
-                 jsr chrget                               ; eat token & fall into SCNCLR
+ScreenClr                                               
+                jsr chrget                              ; eat token & fall into SCNCLR
 
-scnclr                                                    
-                 bne C65__screenclear                     ; have a parameter, go clear graphic screen
+scnclr                                                  
+                bne C65__screenclear                    ; have a parameter, go clear graphic screen
 
-                 lda #$93                                 
-                 jmp _bsout                               ; no parameter, clear text screen
+                lda #$93                                
+                jmp _bsout                              ; no parameter, clear text screen
 ; rts
 
 
@@ -70,12 +70,12 @@ scnclr
 ;*           parm1 = color reg#  0-255
 ;*****************************************************************
 
-C65__screenclear                                          
-                 jsr getbyt                               ; get color register # (range 0-255)?????
+C65__screenclear                                        
+                jsr getbyt                              ; get color register # (range 0-255)?????
 ;limit to range allowed by current screen def?
-                 stx GKI__parm1                           
-                 jsr CheckGraphicMode                     
-                 jmp ($800c)                              ; bra screenclear
+                stx GKI__parm1                          
+                jsr CheckGraphicMode                    
+                jmp ($800c)                             ; bra screenclear
 
 
 ;*****************************************************************
@@ -87,29 +87,29 @@ C65__screenclear
 ;*           parm2 = view screen # 0-3, 255=text
 ;*****************************************************************
 
-ScreenSet                                                 
-                 jsr chrget                               ; advance past token
+ScreenSet                                               
+                jsr chrget                              ; advance past token
 
-C65__screen                                               
+C65__screen                                             
 ; beq snerr  ;missing args??      [911017]
-                 ldx #255                                 ; [911028]
-                 cmp #','                                 
-                 beq l267_1                               ; options byte only
+                ldx #255                                ; [911028]
+                cmp #','                                
+                beq l267_1                              ; options byte only
 
-                 jsr getbyt                               ; get draw screen# in .x
+                jsr getbyt                              ; get draw screen# in .x
 ; cpx #4   ;       [910711]
 ; bcs 20$   ;  out of range error???? (255=leave alone)  [910930]
-l267_1           stx GKI__parm1                           
+l267_1          stx GKI__parm1                          
 
-                 ldx $1f69                                ; current viewscreen     [911017]
-                 jsr optbyt                               ; eat a comma, get view screen# in .x
+                ldx $1f69                               ; current viewscreen     [911017]
+                jsr optbyt                              ; eat a comma, get view screen# in .x
 ; cpx #4   ;
 ;20$ bcs fcerr  ;  out of range error???? (255=text)   [910930]
-                 stx GKI__parm2                           
+                stx GKI__parm2                          
 
-                 jsr ($800e)                              ; kg65.screen
-                 bcs NoGraphicArea                        
-                 rts                                      
+                jsr ($800e)                             ; kg65.screen
+                bcs NoGraphicArea                       
+                rts                                     
 
 
 ;*****************************************************************

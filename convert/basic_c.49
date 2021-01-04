@@ -1,11 +1,11 @@
-else             cmp #esc_command_token                   ; is this of the form "ELSE b-block"?
-                 bne l49_1                                ; no, must be an escape command
-                 iny                                      ; might be, look at escape token
-                 jsr indtxt                               
-                 cmp #begin_token                         
-                 bne l49_1                                ; no, justa plain-old "ELSE statement"
-                 jsr find_bend                            ; yes, it is a b-block. skip over the b-block.
-l49_1            +lbra rem                                
+else            cmp #esc_command_token                  ; is this of the form "ELSE b-block"?
+                bne l49_1                               ; no, must be an escape command
+                iny                                     ; might be, look at escape token
+                jsr indtxt                              
+                cmp #begin_token                        
+                bne l49_1                               ; no, justa plain-old "ELSE statement"
+                jsr find_bend                           ; yes, it is a b-block. skip over the b-block.
+l49_1           +lbra rem                               
 
 
 ;.end

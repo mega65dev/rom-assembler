@@ -1,4 +1,4 @@
-fload            jsr restore__1                           ; reset pointer for DATA statements
+fload           jsr restore__1                          ; reset pointer for DATA statements
 
 
 ;[[stack.init]]
@@ -8,33 +8,33 @@ fload            jsr restore__1                           ; reset pointer for DA
 ;   Init_Stack resets the stack pointer.  String temporaries are freed up,
 ;   SUBFLG is reset, continuing is prohibited.
 
-init_stack                                                
-                 ply                                      ; pop return address
-                 pla                                      
-                 ldx #stkend-257                          ; reset system stack pointer
-                 txs                                      
-                 pha                                      ; push return address
-                 phy                                      
-                 ldx #tempst                              ; reset string temporaries
-                 stx temppt                               
-                 lda #0                                   
-                 sta subflg                               ; allow subscripted & integer vars
-                 sta oldtxt+1                             ; disallow continuing
-                 sta bits                                 ; reset math bit/byte flag
+init_stack                                              
+                ply                                     ; pop return address
+                pla                                     
+                ldx #stkend-257                         ; reset system stack pointer
+                txs                                     
+                pha                                     ; push return address
+                phy                                     
+                ldx #tempst                             ; reset string temporaries
+                stx temppt                              
+                lda #0                                  
+                sta subflg                              ; allow subscripted & integer vars
+                sta oldtxt+1                            ; disallow continuing
+                sta bits                                ; reset math bit/byte flag
 
-stkrts           rts                                      
+stkrts          rts                                     
 
 
 
-reset_txtptr                                              
-                 clc                                      ; load (txtptr) with (txttab)-1
-                 lda txttab                               
-                 adc #$ff                                 
-                 sta txtptr                               
-                 lda txttab+1                             
-                 adc #$ff                                 
-                 sta txtptr+1                             ; set up text pointers
-                 rts                                      
+reset_txtptr                                            
+                clc                                     ; load (txtptr) with (txttab)-1
+                lda txttab                              
+                adc #$ff                                
+                sta txtptr                              
+                lda txttab+1                            
+                adc #$ff                                
+                sta txtptr+1                            ; set up text pointers
+                rts                                     
 
 ;.end
 ;[[command.return]]
@@ -49,7 +49,7 @@ reset_txtptr
 ;
 ;*********************************************************************
 
-return                                                    
+return                                                  
 
 ; Ok, pay attention: we got here by a pseudo-jsr which left a return to NEWSTT
 ; on the stack for us to return to.  There is also a return to NEWSTT left on
@@ -59,17 +59,17 @@ return
 ; trapping mechanism.  The bottom line is: we have an extra return address on
 ; the stack, which we have to get rid of before leaving.
 
-                 pla                                      ; mea culpa, mea culpa, mea culpa
-                 pla                                      
-                 lda #gosub_token                         
-                 jsr search                               ; look for GOSUB on runtime stack
-                 beq ret010                               ; found
-                 ldx #errrg                               ; else error
-                 +lbra error                              
+                pla                                     ; mea culpa, mea culpa, mea culpa
+                pla                                     
+                lda #gosub_token                        
+                jsr search                              ; look for GOSUB on runtime stack
+                beq ret010                              ; found
+                ldx #errrg                              ; else error
+                +lbra error                             
 
-ret010           jsr movfnd                               ; (fndpnt) => (tos)
-                 ldy #lengos                              
-                 jsr rlsstk                               ; effectivly pop GOSUB off run-time stack
+ret010          jsr movfnd                              ; (fndpnt) => (tos)
+                ldy #lengos                             
+                jsr rlsstk                              ; effectivly pop GOSUB off run-time stack
 ; dey
 ; lda (fndpnt),y
 ; sta txtptr+1
@@ -78,10 +78,10 @@ ret010           jsr movfnd                               ; (fndpnt) => (tos)
 ; sta txtptr
 ; dey
 ; lda (fndpnt),y
-                 jsr retpat                               ; 01/18/84 patch: correct RETURN to GOSUB from direct mode
+                jsr retpat                              ; 01/18/84 patch: correct RETURN to GOSUB from direct mode
 ; lda (fndpnt),y
 ; sta curlin ;jump to DATA to waste rest of stmt (in case of ON..GOSUB)
-                 bra data                                 
+                bra data                                
 
 ;.end
 ;[[command.data]]
@@ -89,42 +89,42 @@ ret010           jsr movfnd                               ; (fndpnt) => (tos)
 
 
 
-data                                                      
-                 jsr datan                                ; skip to end of statement- offset in .y
-addon            tya                                      
-                 clc                                      
-                 adc txtptr                               ; add offset to end to txtptr
-                 sta txtptr                               
-                 bcc remrts                               
-                 inc txtptr+1                             
-remrts           rts                                      ; NEWSTT rts addr is still there
+data                                                    
+                jsr datan                               ; skip to end of statement- offset in .y
+addon           tya                                     
+                clc                                     
+                adc txtptr                              ; add offset to end to txtptr
+                sta txtptr                              
+                bcc remrts                              
+                inc txtptr+1                            
+remrts          rts                                     ; NEWSTT rts addr is still there
 
 
 
-rem              jsr remn                                 ; skip rest of statement
-                 bra addon                                ; will always branch
+rem             jsr remn                                ; skip rest of statement
+                bra addon                               ; will always branch
 
 
-datan            ldx #':'                                 ; DATA terminates on ":" and null
-                 !text $2c                                
+datan           ldx #':'                                ; DATA terminates on ":" and null
+                !text $2c                               
 
-remn             ldx #0                                   ; REM terminates on null only
-                 stx charac                               ; preserve terminator
-                 ldy #0                                   ; this makes charac=0 after swap
-                 sty endchr                               
+remn            ldx #0                                  ; REM terminates on null only
+                stx charac                              ; preserve terminator
+                ldy #0                                  ; this makes charac=0 after swap
+                sty endchr                              
 
-l43_1            lda endchr                               
-                 ldx charac                               
-                 sta charac                               
-                 stx endchr                               
-l43_2            jsr indtxt                               
-                 beq remrts                               ; null always terminates
-                 cmp endchr                               ; is it some another terminator?
-                 beq remrts                               ; yes, it's finished
-                 iny                                      ; progress to next character
-                 cmp #'"'                                 ; is it a quote?
-                 bne l43_2                                ; no, just continue
-                 beq l43_1                                ; yes, time to change
+l43_1           lda endchr                              
+                ldx charac                              
+                sta charac                              
+                stx endchr                              
+l43_2           jsr indtxt                              
+                beq remrts                              ; null always terminates
+                cmp endchr                              ; is it some another terminator?
+                beq remrts                              ; yes, it's finished
+                iny                                     ; progress to next character
+                cmp #'"'                                ; is it a quote?
+                bne l43_2                               ; no, just continue
+                beq l43_1                               ; yes, time to change
 
 ;.end
 ;[[command.ifthenelse]]

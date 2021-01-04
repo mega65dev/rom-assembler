@@ -13,12 +13,12 @@
 ;    only if DIMFLG is off.
 
 
-dim3             jsr chkcom                               ; must be a comma
+dim3            jsr chkcom                              ; must be a comma
 
-dim              tax                                      ; make .x non-zero (.a must be non-zero to work correctly)
-                 jsr ptrgt1
-                 jsr chrgot                               ; get last character
-                 bne dim3
-                 rts
+dim             tax                                     ; make .x non-zero (.a must be non-zero to work correctly)
+                jsr ptrgt1
+                jsr chrgot                              ; get last character
+                bne dim3
+                rts
 
 ;.end

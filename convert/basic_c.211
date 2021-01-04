@@ -1,18 +1,18 @@
-pndd             lda swe                                  ; # of blanks
-                 beq zerot                                
-                 dec swe                                  ; count !
+pndd            lda swe                                 ; # of blanks
+                beq zerot                               
+                dec swe                                 ; count !
 
-l211_1           +lbne bout                               ; out blank or *
-                 lda posp                                 ; + or - in field?
-                 bmi l211_1                               ; yes...out blank or *
+l211_1          +lbne bout                              ; out blank or *
+                lda posp                                ; + or - in field?
+                bmi l211_1                              ; yes...out blank or *
 
-l211_2           jsr indfrm                               
-                 cmp #','                                 ; comma?
-                 bne ispl1                                ; no...out sign
-                 lda blfd                                 ; yes...
-                 jsr cdout                                ; out blank or *
-                 iny                                      
-                 bra l211_2                               
+l211_2          jsr indfrm                              
+                cmp #','                                ; comma?
+                bne ispl1                               ; no...out sign
+                lda blfd                                ; yes...
+                jsr cdout                               ; out blank or *
+                iny                                     
+                bra l211_2                              
 
 
 

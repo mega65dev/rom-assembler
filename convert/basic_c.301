@@ -1,17 +1,17 @@
-PushParms                                                 ; [910820]
-                 ply                                      ; Grab return address
-                 plz                                      
+PushParms                                               ; [910820]
+                ply                                     ; Grab return address
+                plz                                     
 
-                 phw linnum                               ; Save 'poker' value
+                phw linnum                              ; Save 'poker' value
 
-                 ldx #17-1                                
-l301_1           lda GKI__parm1,x                         ; Save Graphics parameters
-                 pha                                      ; [eg: CHAR x,y,1,1,2,str$(PIXEL(x,y))]
-                 dex                                      
-                 bpl l301_1                               
+                ldx #17-1                               
+l301_1          lda GKI__parm1,x                        ; Save Graphics parameters
+                pha                                     ; [eg: CHAR x,y,1,1,2,str$(PIXEL(x,y))]
+                dex                                     
+                bpl l301_1                              
 
-                 phz                                      ; Restore return address
-                 phy                                      
-                 rts                                      
+                phz                                     ; Restore return address
+                phy                                     
+                rts                                     
 
 

@@ -1,73 +1,73 @@
-let              jsr ptrget                               ; get pntr to variable into "varpnt"
-                 sta forpnt                               ; preserve pointer
-                 sty forpnt+1                             
-                 lda #equal_token                         
-                 jsr synchr                               ; "=" is necessary
+let             jsr ptrget                              ; get pntr to variable into "varpnt"
+                sta forpnt                              ; preserve pointer
+                sty forpnt+1                            
+                lda #equal_token                        
+                jsr synchr                              ; "=" is necessary
 
-                 lda intflg                               ; save type for later
-                 pha                                      
-                 lda valtyp                               ; retain the variable's value type too
-                 pha                                      
+                lda intflg                              ; save type for later
+                pha                                     
+                lda valtyp                              ; retain the variable's value type too
+                pha                                     
 
-                 jsr frmevl                               ; get value of formula into FAC
-                 pla                                      
-                 rol                                      ; carry set for string, off for numeric
-                 jsr chkval                               ; make sure VALTYP matches carry
+                jsr frmevl                              ; get value of formula into FAC
+                pla                                     
+                rol                                     ; carry set for string, off for numeric
+                jsr chkval                              ; make sure VALTYP matches carry
 ;and set zero flag for numeric
-                 bne copstr                               ; if numeric, copy it
-                 pla                                      ; get number type
+                bne copstr                              ; if numeric, copy it
+                pla                                     ; get number type
 
-qintgr           bpl copflt                               ; store a floating point number
-                 jsr round                                ; round integer
-                 jsr ayint                                ; make two-byte number
-                 ldy #0                                   
-                 lda facmo                                ; get high
-                 phx                                      
-                 ldx #forpnt                              
-                 jsr sta_far_ram1 ;sta (forpnt),y         ; store it
-                 iny                                      
-                 lda faclo                                ; get low
-                 jsr sta_far_ram1                         ; sta (forpnt),y
-                 plx                                      
-                 rts                                      
-
-
-
-copflt           ldx forpnt                               
-                 ldy forpnt+1                             
-                 +lbra movmf_ram1                         ; put number @forpnt in var bank
+qintgr          bpl copflt                              ; store a floating point number
+                jsr round                               ; round integer
+                jsr ayint                               ; make two-byte number
+                ldy #0                                  
+                lda facmo                               ; get high
+                phx                                     
+                ldx #forpnt                             
+                jsr sta_far_ram1 ;sta (forpnt),y        ; store it
+                iny                                     
+                lda faclo                               ; get low
+                jsr sta_far_ram1                        ; sta (forpnt),y
+                plx                                     
+                rts                                     
 
 
 
-copstr           pla                                      ; if string, no INTFLG
-
-inpcom           ldy forpnt+1                             ; TI$?
-                 cpy #>zero                               ; (only TI$ can be this on assign)
-                 +lbeq Set_TI_String                      ; yes
-                 bra getspt                               ; no
+copflt          ldx forpnt                              
+                ldy forpnt+1                            
+                +lbra movmf_ram1                        ; put number @forpnt in var bank
 
 
-dskx1            pla                                      
-                 iny                                      
 
-dskx2            cmp fretop+1                             
-                 bcc l51_2                                
-                 bne l51_1                                
-                 dey                                      
-                 jsr indfmo                               
-                 cmp fretop                               
-                 bcc l51_2                                
+copstr          pla                                     ; if string, no INTFLG
 
-l51_1            ldy faclo                                ; qvaria
-                 cpy vartab+1                             ; if (vartab) > (facmo), don't copy
-                 bcc l51_2                                
-                 bne copy                                 ; it is less
-                 lda facmo                                
-                 cmp vartab                               ; compare low orders
-                 bcs copy                                 
+inpcom          ldy forpnt+1                            ; TI$?
+                cpy #>zero                              ; (only TI$ can be this on assign)
+                +lbeq Set_TI_String                     ; yes
+                bra getspt                              ; no
 
-l51_2            lda facmo                                ; dntcpy
-                 ldy facmo+1                              
-                 bra copyc                                
+
+dskx1           pla                                     
+                iny                                     
+
+dskx2           cmp fretop+1                            
+                bcc l51_2                               
+                bne l51_1                               
+                dey                                     
+                jsr indfmo                              
+                cmp fretop                              
+                bcc l51_2                               
+
+l51_1           ldy faclo                               ; qvaria
+                cpy vartab+1                            ; if (vartab) > (facmo), don't copy
+                bcc l51_2                               
+                bne copy                                ; it is less
+                lda facmo                               
+                cmp vartab                              ; compare low orders
+                bcs copy                                
+
+l51_2           lda facmo                               ; dntcpy
+                ldy facmo+1                             
+                bra copyc                               
 
 

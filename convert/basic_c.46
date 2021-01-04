@@ -1,18 +1,18 @@
-if_true          jsr chrgot                               
-                 beq l46_2                                ; branch if end of statement
-                 bcs l46_1                                ; branch if not a number
-                 +lbra goto                               ; here if of the form 'THEN line#'
+if_true         jsr chrgot                              
+                beq l46_2                               ; branch if end of statement
+                bcs l46_1                               ; branch if not a number
+                +lbra goto                              ; here if of the form 'THEN line#'
 
-l46_1            cmp #esc_command_token                   ; is this the beginning of a b-block?
-                 bne l46_2                                ; no, must be an escape command
-                 iny                                      ; might be, look at escape token
-                 jsr indtxt                               
-                 cmp #begin_token                         
-                 bne l46_2                                
-                 jsr chrget                               ; skip over 'BEGIN' if so...
-                 jsr chrget                               ; ..and the second token, as well.
+l46_1           cmp #esc_command_token                  ; is this the beginning of a b-block?
+                bne l46_2                               ; no, must be an escape command
+                iny                                     ; might be, look at escape token
+                jsr indtxt                              
+                cmp #begin_token                        
+                bne l46_2                               
+                jsr chrget                              ; skip over 'BEGIN' if so...
+                jsr chrget                              ; ..and the second token, as well.
 
-l46_2            jsr chrgot                               ; get back original character, & set up flags
-                 +lbra xeqcm3                             ; ..and go execute whatever it is
+l46_2           jsr chrgot                              ; get back original character, & set up flags
+                +lbra xeqcm3                            ; ..and go execute whatever it is
 
 

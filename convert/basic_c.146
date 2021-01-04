@@ -1,22 +1,22 @@
-lpen             jsr chkcls                               ; look for closing parens
-                 jsr conint                               ; get 1 byte arg in .X
+lpen            jsr chkcls                              ; look for closing parens
+                jsr conint                              ; get 1 byte arg in .X
 ; dex   ;convert [1-2] to [0-1]
-                 cpx #2                                   
-                 +lbcs fcerr                              ; bad value
+                cpx #2                                  
+                +lbcs fcerr                             ; bad value
 
-                 lda #0                                   
-                 sei                                      
-                 ldy lightpen_xpos,x                      ; get latched light pen value (a=msb, y=lsb)
-                 sta lightpen_xpos,x                      ; reset to zero (????preserve last latched position)
-                 cli                                      
-                 cpx #0                                   
-                 bne l146_1                               ; done if y position
-                 tya                                      
-                 asl                                      ; else multiply *2 to get correct x position
-                 tay                                      ; lsb
-                 lda #0                                   
-                 rol                                      ; msb
-l146_1           +lbra nosflt                             ; float it (y,a)
+                lda #0                                  
+                sei                                     
+                ldy lightpen_xpos,x                     ; get latched light pen value (a=msb, y=lsb)
+                sta lightpen_xpos,x                     ; reset to zero (????preserve last latched position)
+                cli                                     
+                cpx #0                                  
+                bne l146_1                              ; done if y position
+                tya                                     
+                asl                                     ; else multiply *2 to get correct x position
+                tay                                     ; lsb
+                lda #0                                  
+                rol                                     ; msb
+l146_1          +lbra nosflt                            ; float it (y,a)
 
 
 ;.end

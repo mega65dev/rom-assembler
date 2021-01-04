@@ -1,36 +1,36 @@
-rrts             rts                                      
+rrts            rts                                     
 
 
 ; Using- alg: delete leading zeros of no
 
-alg              ldy point                                ; start with a .?
-                 beq szer                                 ; yes...
+alg             ldy point                               ; start with a .?
+                beq szer                                ; yes...
 
-cho              ldy bnr                                  
-cmo              lda fbuffr,y                             ; start with a 0?
-                 cmp #'0'                                 
-                 rts                                      
+cho             ldy bnr                                 
+cmo             lda fbuffr,y                            ; start with a 0?
+                cmp #'0'                                
+                rts                                     
 
 
-nbr              inc point                                ; adjust point
-                 jsr eado                                 ; and exponent
-                 inc bnr                                  ; and pointer to begin of no
-                 cpy enr                                  ; end of number?
-                 beq rrts                                 ; yes...
-                 iny                                      
+nbr             inc point                               ; adjust point
+                jsr eado                                ; and exponent
+                inc bnr                                 ; and pointer to begin of no
+                cpy enr                                 ; end of number?
+                beq rrts                                ; yes...
+                iny                                     
 
-szer             jsr cmo                                  ; zero in no?
-                 beq nbr                                  ; yes...
-                 rts                                      ; no...
+szer            jsr cmo                                 ; zero in no?
+                beq nbr                                 ; yes...
+                rts                                     ; no...
 
 
 ; Using- chout: print number
 
-chout            lda dolr                                 ; dollar flag set?
-                 bmi l208_1                               ; no...
-                 inc z_p_temp_1                           ; make room for $
+chout           lda dolr                                ; dollar flag set?
+                bmi l208_1                              ; no...
+                inc z_p_temp_1                          ; make room for $
 
-l208_1           ldx bnr                                  ; start of #
-                 dex                                      
-                 ldy begfd                                ; begin of field
+l208_1          ldx bnr                                 ; start of #
+                dex                                     
+                ldy begfd                               ; begin of field
 

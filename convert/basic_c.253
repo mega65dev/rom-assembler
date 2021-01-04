@@ -1,47 +1,47 @@
-movspr_irq                                                
-                 lda vic+21                               ; any sprites active?    [910212]
-                 +lbeq music_irq                          ; no- skip ahead
+movspr_irq                                              
+                lda vic+21                              ; any sprites active?    [910212]
+                +lbeq music_irq                         ; no- skip ahead
 
-                 ldy #7                                   ; check each of 8 sprites
-l253_1           lda vic+21                               ; is this sprite is enabled?
-                 and sbits,y                              
-                 beq l253_5                               ; sprite not enabled
+                ldy #7                                  ; check each of 8 sprites
+l253_1          lda vic+21                              ; is this sprite is enabled?
+                and sbits,y                             
+                beq l253_5                              ; sprite not enabled
 
-                 ldx sproff,y                             ; get offset to sprite info from a table
-                 lda sprite_data,x                        ; is this sprite moving (speed >0 )?
-                 beq l253_5                               ; sprite not moving
-                 bpl l253_2                               ; sprite moving, no destination
-                 bsr movspr_to_irq                        ; sprite moving to a destination [910809]
-                 bra l253_5                               
+                ldx sproff,y                            ; get offset to sprite info from a table
+                lda sprite_data,x                       ; is this sprite moving (speed >0 )?
+                beq l253_5                              ; sprite not moving
+                bpl l253_2                              ; sprite moving, no destination
+                bsr movspr_to_irq                       ; sprite moving to a destination [910809]
+                bra l253_5                              
 
-l253_2           sta sprite_data+1,x                      ; set counter
-l253_3           tya                                      ; convert sprite# to a VIC register pointer
-                 asl                                      
-                 tay                                      
-                 lda sprite_data+2,x                      ; get angle sign
-                 dec                                      ; subtract 1 for cosine
-                 inx                                      
-                 inx                                      
-                 iny                                      
-                 jsr sprsub                               ; update y position
-                 dex                                      
-                 dex                                      
-                 dey                                      
-                 lda sprite_data+2,x                      
-                 jsr sprsub                               ; update x position
-                 php                                      
-                 tya                                      
-                 lsr                                      ; restore index (.Y=sprite pointer)
-                 tay                                      
-                 plp                                      
-                 bcc l253_4                               ; skip if no overflow
-                 lda vic+16                               ; get x position msb bits ???vic_save
-                 eor sbits,y                              ; invert bit
-                 sta vic+16                               ; ???vic_save
-l253_4           dec sprite_data+1,x                      
-                 bne l253_3                               ; loop until counter done
+l253_2          sta sprite_data+1,x                     ; set counter
+l253_3          tya                                     ; convert sprite# to a VIC register pointer
+                asl                                     
+                tay                                     
+                lda sprite_data+2,x                     ; get angle sign
+                dec                                     ; subtract 1 for cosine
+                inx                                     
+                inx                                     
+                iny                                     
+                jsr sprsub                              ; update y position
+                dex                                     
+                dex                                     
+                dey                                     
+                lda sprite_data+2,x                     
+                jsr sprsub                              ; update x position
+                php                                     
+                tya                                     
+                lsr                                     ; restore index (.Y=sprite pointer)
+                tay                                     
+                plp                                     
+                bcc l253_4                              ; skip if no overflow
+                lda vic+16                              ; get x position msb bits ???vic_save
+                eor sbits,y                             ; invert bit
+                sta vic+16                              ; ???vic_save
+l253_4          dec sprite_data+1,x                     
+                bne l253_3                              ; loop until counter done
 
-l253_5           dey                                      ; check next sprite
-                 bpl l253_1                               ; loop until done moving all sprites
-                 +lbra music_irq                          ; then continue with next IRQ task
+l253_5          dey                                     ; check next sprite
+                bpl l253_1                              ; loop until done moving all sprites
+                +lbra music_irq                         ; then continue with next IRQ task
 

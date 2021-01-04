@@ -1,9 +1,9 @@
-verify           lda #1                                   ; verify flag
-                 !text $2c                                ; skip two bytes
+verify          lda #1                                  ; verify flag
+                !text $2c                               ; skip two bytes
 
-load             lda #0                                   ; load flag
-                 sta verck                                
-l193_1           bbr4 runmod,l193_2                       ; Error if in Edit mode     [910620]
-                 +lbra edit_err                           
-l193_2           jsr plsv                                 ; parse parameters, dschk
+load            lda #0                                  ; load flag
+                sta verck                               
+l193_1          bbr4 runmod,l193_2                      ; Error if in Edit mode     [910620]
+                +lbra edit_err                          
+l193_2          jsr plsv                                ; parse parameters, dschk
 

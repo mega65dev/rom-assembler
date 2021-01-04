@@ -1,32 +1,32 @@
-find_loop                                                 
-                 ldy #0                                   ; move to next line (copy link bytes to lowtr)
-                 jsr indlow                               
-                 tax                                      
-                 iny                                      
-                 jsr indlow                               
-                 stx lowtr                                
-                 sta lowtr+1                              
+find_loop                                               
+                ldy #0                                  ; move to next line (copy link bytes to lowtr)
+                jsr indlow                              
+                tax                                     
+                iny                                     
+                jsr indlow                              
+                stx lowtr                               
+                sta lowtr+1                             
 
-find_loop_1                                               
-                 ldy #1                                   
-                 jsr indlow                               ; check link
-                 bne l87_1                                ; not null- continue
-                 dey                                      
-                 jsr indlow                               
-                 +lbeq find_exit                          ; null- exit
+find_loop_1                                             
+                ldy #1                                  
+                jsr indlow                              ; check link
+                bne l87_1                               ; not null- continue
+                dey                                     
+                jsr indlow                              
+                +lbeq find_exit                         ; null- exit
 
-l87_1            ldy #2                                   
-                 jsr indlow                               ; check line number
-                 tax                                      
-                 iny                                      
-                 jsr indlow                               
-                 cmp linnum+1                             
-                 bne l87_2                                
-                 cpx linnum                               
-                 beq l87_3                                ; line is <= last line requested, continue
-l87_2            +lbcs find_exit                          ; line is >  last line requested, exit
+l87_1           ldy #2                                  
+                jsr indlow                              ; check line number
+                tax                                     
+                iny                                     
+                jsr indlow                              
+                cmp linnum+1                            
+                bne l87_2                               
+                cpx linnum                              
+                beq l87_3                               ; line is <= last line requested, continue
+l87_2           +lbcs find_exit                         ; line is >  last line requested, exit
 
-l87_3            ldx #3                                   ; set initial position - 1 (past link & line#)
-                 stx fndpnt                               
+l87_3           ldx #3                                  ; set initial position - 1 (past link & line#)
+                stx fndpnt                              
 
 

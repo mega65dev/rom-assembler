@@ -1,75 +1,75 @@
-gloop            jsr chkgrb                               ; check garbage string
-                 bne l163_2                               ; if not garbage
+gloop           jsr chkgrb                              ; check garbage string
+                bne l163_2                              ; if not garbage
 
-l163_1           dey                                      ; back up to length
-                 jsr indgrb                               
-                 jsr movpnt                               ; move grbpnt to next
-                 sec                                      
-                 ror highds                               ; indicate garbage string found
-                 bra gloop                                ; always
+l163_1          dey                                     ; back up to length
+                jsr indgrb                              
+                jsr movpnt                              ; move grbpnt to next
+                sec                                     
+                ror highds                              ; indicate garbage string found
+                bra gloop                               ; always
 
-l163_2           bit highds                               
-                 bpl l163_6                               ; if garbage string not found
-                 ldx #0                                   
-                 stx highds                               ; clear indicator
+l163_2          bit highds                              
+                bpl l163_6                              ; if garbage string not found
+                ldx #0                                  
+                stx highds                              ; clear indicator
 
-                 lda #2                                   ; skip pointers past
+                lda #2                                  ; skip pointers past
 
 ; Move a string over garbage
 
-l163_3           phx                                      
-                 ldx #grbtop                              
-                 ldy #1                                   ; move the link bytes
-                 jsr indgrb                               
-                 jsr sta_far_ram1                         ; sta (grbtop),y
-                 dey                                      
-                 jsr indgrb                               
-                 jsr sta_far_ram1                         ; sta (grbtop),y
-                 plx                                      
+l163_3          phx                                     
+                ldx #grbtop                             
+                ldy #1                                  ; move the link bytes
+                jsr indgrb                              
+                jsr sta_far_ram1                        ; sta (grbtop),y
+                dey                                     
+                jsr indgrb                              
+                jsr sta_far_ram1                        ; sta (grbtop),y
+                plx                                     
 
-                 jsr indin1_ram1                          
-                 tax                                      
-                 jsr movtop                               ; move top pointer
-                 sta frespc                               ; save in frespc
-                 sty frespc+1                             
-                 txa                                      
-                 jsr movpnt                               ; move grbpnt
-                 txa                                      ; put length-1 in .y
-                 tay                                      
+                jsr indin1_ram1                         
+                tax                                     
+                jsr movtop                              ; move top pointer
+                sta frespc                              ; save in frespc
+                sty frespc+1                            
+                txa                                     
+                jsr movpnt                              ; move grbpnt
+                txa                                     ; put length-1 in .y
+                tay                                     
 
-l163_4           dey                                      
-                 jsr indgrb                               
-                 phx                                      
-                 ldx #grbtop                              
-                 jsr sta_far_ram1                         ; sta (grbtop),y
-                 plx                                      
-                 dex                                      
-                 bne l163_4                               
+l163_4          dey                                     
+                jsr indgrb                              
+                phx                                     
+                ldx #grbtop                             
+                jsr sta_far_ram1                        ; sta (grbtop),y
+                plx                                     
+                dex                                     
+                bne l163_4                              
 
-                 ldy #2                                   ; fix the descriptor
-                 phx                                      
-                 ldx #index1                              
-l163_5           lda grbtop-1,y                           
-                 jsr sta_far_ram1                         ; sta (index1),y
-                 dey                                      
-                 bne l163_5                               
-                 plx                                      
+                ldy #2                                  ; fix the descriptor
+                phx                                     
+                ldx #index1                             
+l163_5          lda grbtop-1,y                          
+                jsr sta_far_ram1                        ; sta (index1),y
+                dey                                     
+                bne l163_5                              
+                plx                                     
 
-                 lda grbpnt                               ; check pointer
-                 ldy grbpnt+1                             
-                 jsr chkgrb                               ; check garbage string
-                 beq l163_1                               ; if garbage found
-                 bne l163_3                               ; always
+                lda grbpnt                              ; check pointer
+                ldy grbpnt+1                            
+                jsr chkgrb                              ; check garbage string
+                beq l163_1                              ; if garbage found
+                bne l163_3                              ; always
 
-l163_6           ldy #0                                   ; skip over good strings
-                 jsr indin1_ram1                          
-                 tax                                      
-                 jsr movtop                               
-                 sta frespc                               
-                 sty frespc+1                             
-                 txa                                      
-                 jsr movpnt                               
-                 bra gloop                                
+l163_6          ldy #0                                  ; skip over good strings
+                jsr indin1_ram1                         
+                tax                                     
+                jsr movtop                              
+                sta frespc                              
+                sty frespc+1                            
+                txa                                     
+                jsr movpnt                              
+                bra gloop                               
 
 ;[[string.garbage.utils]]
 

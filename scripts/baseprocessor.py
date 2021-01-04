@@ -62,7 +62,7 @@ class BaseProcessor(object):
 		#print(">>> [{0}|{1}|{2}]".format(self.label,self.body,self.comment))
 		#
 		if self.tryConvert():														# try to convert it.
-			return "{0:16} {1:40} {2}".format(self.label,self.body,self.comment)
+			return "{0:16}{1:40}{2}".format(self.label,self.body,self.comment)
 		return None
 	#
 	#		Simple converter. Handles label on its own.

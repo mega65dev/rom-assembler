@@ -1,22 +1,22 @@
-disk                                                      
-                 lda #$f6                                 ; parse:  command_string [,U#]
-                 jsr dosprs                               
-                 jsr chk1                                 ; check parameters
-                 lda #doslfn                              ; la (reserved la)
-                 sta dosla                                
-                 lda #$6f                                 
-                 sta dossa                                ; sa (command channel)
-                 ldy #fdisk                               
-                 ldx #2                                   ; add "/" [911108]
-                 jsr open_file                            ; open command channel & send command string
-                 php                                      ; save error status    [910404]
-                 pha                                      
-                 lda #doslfn                              ; close it
-                 sec                                      ; not a real close
-                 jsr _close                               ; close it
-                 pla                                      ; [910404]
-                 plp                                      
-                 +lbra exit_disk_op                       ; common error check & exit path ????
+disk                                                    
+                lda #$f6                                ; parse:  command_string [,U#]
+                jsr dosprs                              
+                jsr chk1                                ; check parameters
+                lda #doslfn                             ; la (reserved la)
+                sta dosla                               
+                lda #$6f                                
+                sta dossa                               ; sa (command channel)
+                ldy #fdisk                              
+                ldx #2                                  ; add "/" [911108]
+                jsr open_file                           ; open command channel & send command string
+                php                                     ; save error status    [910404]
+                pha                                     
+                lda #doslfn                             ; close it
+                sec                                     ; not a real close
+                jsr _close                              ; close it
+                pla                                     ; [910404]
+                plp                                     
+                +lbra exit_disk_op                      ; common error check & exit path ????
 
 
 ;.end
@@ -36,54 +36,54 @@ disk
 ; message generator.
 
 
-directory                                                 ; display disk directory (catalog)
-                 jsr chrgot                               ; get current chr
-                 cmp #esc_command_token                   ; eat dirECTORY kludge if it's there
-                 bne l216_1                               
-                 jsr chrget                               ; (esc token + another)
-                 cmp #ectory_token                        
-                 +lbne snerr                              
-                 jsr chrget                               ; yes- get next good char
+directory                                               ; display disk directory (catalog)
+                jsr chrgot                              ; get current chr
+                cmp #esc_command_token                  ; eat dirECTORY kludge if it's there
+                bne l216_1                              
+                jsr chrget                              ; (esc token + another)
+                cmp #ectory_token                       
+                +lbne snerr                             
+                jsr chrget                              ; yes- get next good char
 
-l216_1           jsr dospar                               ; parse the line
-                 lda parsts                               ; check options
-                 and #$e6                                 
-                 +lbne snerr                              
+l216_1          jsr dospar                              ; parse the line
+                lda parsts                              ; check options
+                and #$e6                                
+                +lbne snerr                             
 
-                 ldy #fdir                                ; table offset for directory
-                 bit dosflags                             ; want recoverable files? [901024]
-                 bvc l216_2                               ; no
-                 ldy #fdirr                               ; yes
-l216_2           ldx #1                                   ; just $
-                 lda parsts                               ; check for default
-                 and #$11                                 ; no drive?
-                 beq l216_4                               
-                 lsr                                      
-                 bcc l216_3                               ; just drive
-                 inx                                      ; drive and filename
-                 inx                                      
-l216_3           inx                                      
-l216_4           txa                                      ; a now has length
-                 jsr sendp                                ; build
+                ldy #fdir                               ; table offset for directory
+                bit dosflags                            ; want recoverable files? [901024]
+                bvc l216_2                              ; no
+                ldy #fdirr                              ; yes
+l216_2          ldx #1                                  ; just $
+                lda parsts                              ; check for default
+                and #$11                                ; no drive?
+                beq l216_4                              
+                lsr                                     
+                bcc l216_3                              ; just drive
+                inx                                     ; drive and filename
+                inx                                     
+l216_3          inx                                     
+l216_4          txa                                     ; a now has length
+                jsr sendp                               ; build
 
-                 ldx #sys_bank                            ; set banks????  fname in system space, bank0 [910620]
-                 txa                                      ; (load bank is don't care- we're not actually loading)
-                 jsr _setbank                             
+                ldx #sys_bank                           ; set banks????  fname in system space, bank0 [910620]
+                txa                                     ; (load bank is don't care- we're not actually loading)
+                jsr _setbank                            
 
-                 ldy #$60                                 ; sa, load floppy
-                 ldx dosfa                                
-                 lda #doslfn                              ; lfn
-                 jsr _setlfs                              ; set file parameters
-                 jsr _open                                ; open it...
-                 bcc l216_5                               ; ...ok
-                 pha                                      
-                 jsr dcat11                               ; ...error, shut down and report
-                 plx                                      
-                 sec                                      
-                 +lbra error                              
+                ldy #$60                                ; sa, load floppy
+                ldx dosfa                               
+                lda #doslfn                             ; lfn
+                jsr _setlfs                             ; set file parameters
+                jsr _open                               ; open it...
+                bcc l216_5                              ; ...ok
+                pha                                     
+                jsr dcat11                              ; ...error, shut down and report
+                plx                                     
+                sec                                     
+                +lbra error                             
 
-l216_5           lda channl                               ; determine DIR vs LDIR
-                 bne ldir                                 ; if output channel not default (screen)
+l216_5          lda channl                              ; determine DIR vs LDIR
+                bne ldir                                ; if output channel not default (screen)
 ; use LDIR
 
 ; Get length in blocks

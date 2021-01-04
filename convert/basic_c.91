@@ -1,14 +1,14 @@
-puctrl           jsr frmstr                               ; do frmevl,frestr. return with a=len, index=~string
-                 tay                                      
-                 dey                                      
-                 cpy #4                                   
-                 +lbcs fcerr                              ; len > 4 is illegal value error
+puctrl          jsr frmstr                              ; do frmevl,frestr. return with a=len, index=~string
+                tay                                     
+                dey                                     
+                cpy #4                                  
+                +lbcs fcerr                             ; len > 4 is illegal value error
 
-l91_1            jsr indin1_ram1                          ; lda (index),y
-                 sta puchrs,y                             
-                 dey                                      
-                 bpl l91_1                                
-                 rts                                      
+l91_1           jsr indin1_ram1                         ; lda (index),y
+                sta puchrs,y                            
+                dey                                     
+                bpl l91_1                               
+                rts                                     
 
 ;.end
 

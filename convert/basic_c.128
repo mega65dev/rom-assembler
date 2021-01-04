@@ -1,22 +1,22 @@
-bserr            ldx #errbs                               ; get bad sub error number
-                 !text $2c                                
+bserr           ldx #errbs                              ; get bad sub error number
+                !text $2c                               
 
-fcerr            ldx #errfc                               ; too big. Illegal Quantity error
-                 +lbra error                              
+fcerr           ldx #errfc                              ; too big. Illegal Quantity error
+                +lbra error                             
 
 
 
-gotary           ldx #errdd                               ; perhaps a "re-dimension" error
-                 lda dimflg                               ; test the DIMFLG
-                 +lbne error                              
-                 jsr fmaptr                               
-                 ldy #4                                   
-                 jsr indlow_ram1                          
-                 sta syntmp                               
-                 lda count                                ; get number of dims input.
-                 cmp syntmp                               ; # of dims the same?
-                 bne bserr                                ; same so get definition.
-                 +lbra getdef                             
+gotary          ldx #errdd                              ; perhaps a "re-dimension" error
+                lda dimflg                              ; test the DIMFLG
+                +lbne error                             
+                jsr fmaptr                              
+                ldy #4                                  
+                jsr indlow_ram1                         
+                sta syntmp                              
+                lda count                               ; get number of dims input.
+                cmp syntmp                              ; # of dims the same?
+                bne bserr                               ; same so get definition.
+                +lbra getdef                            
 
 
 ; Come here when variable is not found in the array table to build an entry.
@@ -40,115 +40,115 @@ gotary           ldx #errdd                               ; perhaps a "re-dimens
 ; If called by dimension, return.
 ;  Else index into the variable as if it were found on the initial search.
 
-notfdd                                                    
-                 jsr fmaptr                               ; form ARYPNT
-                 jsr reason                               
-                 ldy #0                                   
-                 sty curtol+1                             
-                 ldx #5                                   
-                 lda varnam                               
-                 php                                      
-                 phx                                      
-                 ldx #lowtr                               ; point to string/array bank
-                 jsr sta_far_ram1                         ; sta (lowtr),y
-                 plx                                      
-                 plp                                      
-                 bpl l128_1                               
-                 dex                                      
+notfdd                                                  
+                jsr fmaptr                              ; form ARYPNT
+                jsr reason                              
+                ldy #0                                  
+                sty curtol+1                            
+                ldx #5                                  
+                lda varnam                              
+                php                                     
+                phx                                     
+                ldx #lowtr                              ; point to string/array bank
+                jsr sta_far_ram1                        ; sta (lowtr),y
+                plx                                     
+                plp                                     
+                bpl l128_1                              
+                dex                                     
 
-l128_1           iny                                      ; notflt.
-                 lda varnam+1                             
-                 php                                      
-                 phx                                      
-                 ldx #lowtr                               ; point to string/array bank
-                 jsr sta_far_ram1                         ; sta (lowtr),y
-                 plx                                      
-                 plp                                      
-                 bpl l128_2                               
-                 dex                                      
-                 dex                                      
+l128_1          iny                                     ; notflt.
+                lda varnam+1                            
+                php                                     
+                phx                                     
+                ldx #lowtr                              ; point to string/array bank
+                jsr sta_far_ram1                        ; sta (lowtr),y
+                plx                                     
+                plp                                     
+                bpl l128_2                              
+                dex                                     
+                dex                                     
 
-l128_2           stx curtol                               
-                 lda count                                ; save number of dimensions
-                 iny                                      
-                 iny                                      
-                 iny                                      
-                 ldx #lowtr                               ; point to string/array bank
-                 jsr sta_far_ram1                         ; sta (lowtr),y
+l128_2          stx curtol                              
+                lda count                               ; save number of dimensions
+                iny                                     
+                iny                                     
+                iny                                     
+                ldx #lowtr                              ; point to string/array bank
+                jsr sta_far_ram1                        ; sta (lowtr),y
 
-l128_3           ldx #11                                  ; loppta. default size
-                 lda #0                                   
-                 bbr6 dimflg,l128_4                       ; not in a dim statement
-                 pla                                      ; get low order of indice
-                 clc                                      
-                 adc #1                                   
-                 tax                                      
-                 pla                                      ; get high order of indice
-                 adc #0                                   
+l128_3          ldx #11                                 ; loppta. default size
+                lda #0                                  
+                bbr6 dimflg,l128_4                      ; not in a dim statement
+                pla                                     ; get low order of indice
+                clc                                     
+                adc #1                                  
+                tax                                     
+                pla                                     ; get high order of indice
+                adc #0                                  
 
-l128_4           iny                                      ; notdim.
-                 phx                                      
-                 ldx #lowtr                               
-                 jsr sta_far_ram1 ;sta (lowtr),y          ; store high part of indice
-                 plx                                      
-                 iny                                      
-                 txa                                      
-                 phx                                      
-                 ldx #lowtr                               
-                 jsr sta_far_ram1 ;sta (lowtr),y          ; store low part of indice
-                 plx                                      
-                 jsr umult                                ; (a,x)+(curtol)*(lowtr,y)
-                 stx curtol                               ; save new tally
-                 sta curtol+1                             
-                 ldy index                                
-                 dec count                                ; any more indices left?
-                 bne l128_3                               ; yes
-                 adc arypnt+1                             
-                 +lbcs omerr                              ; overflow
-                 sta arypnt+1                             ; compute where to zero
-                 tay                                      
-                 txa                                      
-                 adc arypnt                               
-                 bcc l128_5                               
-                 iny                                      
-                 +lbeq omerr                              
+l128_4          iny                                     ; notdim.
+                phx                                     
+                ldx #lowtr                              
+                jsr sta_far_ram1 ;sta (lowtr),y         ; store high part of indice
+                plx                                     
+                iny                                     
+                txa                                     
+                phx                                     
+                ldx #lowtr                              
+                jsr sta_far_ram1 ;sta (lowtr),y         ; store low part of indice
+                plx                                     
+                jsr umult                               ; (a,x)+(curtol)*(lowtr,y)
+                stx curtol                              ; save new tally
+                sta curtol+1                            
+                ldy index                               
+                dec count                               ; any more indices left?
+                bne l128_3                              ; yes
+                adc arypnt+1                            
+                +lbcs omerr                             ; overflow
+                sta arypnt+1                            ; compute where to zero
+                tay                                     
+                txa                                     
+                adc arypnt                              
+                bcc l128_5                              
+                iny                                     
+                +lbeq omerr                             
 
-l128_5           jsr reason                               ; grease.  get room
-                 sta strend                               
-                 sty strend+1                             ; new end of storage
-                 lda #0                                   ; storing (a) is faster than clear
-                 inc curtol+1                             
-                 ldy curtol                               
-                 beq l128_7                               
+l128_5          jsr reason                              ; grease.  get room
+                sta strend                              
+                sty strend+1                            ; new end of storage
+                lda #0                                  ; storing (a) is faster than clear
+                inc curtol+1                            
+                ldy curtol                              
+                beq l128_7                              
 
-l128_6           dey                                      ; zero out new entry
-                 php                                      
-                 phx                                      
-                 ldx #arypnt                              
-                 jsr sta_far_ram1                         ; sta (arypnt),y
-                 plx                                      
-                 plp                                      
-                 bne l128_6                               ; no. continue
+l128_6          dey                                     ; zero out new entry
+                php                                     
+                phx                                     
+                ldx #arypnt                             
+                jsr sta_far_ram1                        ; sta (arypnt),y
+                plx                                     
+                plp                                     
+                bne l128_6                              ; no. continue
 
-l128_7           dec arypnt+1                             ; deccur.
-                 dec curtol+1                             
-                 bne l128_6                               ; do another block
-                 inc arypnt+1                             ; bump back up. will use later
-                 sec                                      
-                 lda strend                               ; restore (a)
-                 sbc lowtr                                ; determine length
-                 ldy #2                                   
-                 phx                                      
-                 ldx #lowtr                               
-                 jsr sta_far_ram1 ;sta (lowtr),y          ; low
-                 lda strend+1                             
-                 iny                                      
-                 sbc lowtr+1                              
-                 jsr sta_far_ram1 ;sta (lowtr),y          ; high
-                 plx                                      
-                 lda dimflg                               ; quit here if this is a DIM statement
-                 bne dimrts                               ; bye!
-                 iny                                      
+l128_7          dec arypnt+1                            ; deccur.
+                dec curtol+1                            
+                bne l128_6                              ; do another block
+                inc arypnt+1                            ; bump back up. will use later
+                sec                                     
+                lda strend                              ; restore (a)
+                sbc lowtr                               ; determine length
+                ldy #2                                  
+                phx                                     
+                ldx #lowtr                              
+                jsr sta_far_ram1 ;sta (lowtr),y         ; low
+                lda strend+1                            
+                iny                                     
+                sbc lowtr+1                             
+                jsr sta_far_ram1 ;sta (lowtr),y         ; high
+                plx                                     
+                lda dimflg                              ; quit here if this is a DIM statement
+                bne dimrts                              ; bye!
+                iny                                     
 
 
 ; At this point (LOWTR,y) points beyond the size to the number of dimensions.

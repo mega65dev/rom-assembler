@@ -1,40 +1,40 @@
-doffl            lda #$02                                 ; check aux status
-                 jsr prxrpt                               
-                 jsr getoff                               ; get offset value
-                 sty dosofl                               
-                 sta dosofl+1                             
-                 lda #$02                                 
-dlimx1           ora parstx                               ; set aux status bits
-                 sta parstx                               
-                 bne delim1                               ; try for next param
+doffl           lda #$02                                ; check aux status
+                jsr prxrpt                              
+                jsr getoff                              ; get offset value
+                sty dosofl                              
+                sta dosofl+1                            
+                lda #$02                                
+dlimx1          ora parstx                              ; set aux status bits
+                sta parstx                              
+                bne delim1                              ; try for next param
 
 
-doffh            lda #$04                                 
-                 jsr prxrpt                               
-                 jsr getoff                               
-                 sty dosofh                               
-                 sta dosofh+1                             
-                 lda #$04                                 
-                 bra dlimx1                               ; set aux status
+doffh           lda #$04                                
+                jsr prxrpt                              
+                jsr getoff                              
+                sty dosofh                              
+                sta dosofh+1                            
+                lda #$04                                
+                bra dlimx1                              ; set aux status
 
 
-recover          lda #$40                                 
-                 tsb dosflags                             ; set 'recover' bit
-                 +lbne snerr                              ; if repeated parameter
-                 jsr chrget                               ; continue
-                 bra delim2                               
+recover         lda #$40                                
+                tsb dosflags                            ; set 'recover' bit
+                +lbne snerr                             ; if repeated parameter
+                jsr chrget                              ; continue
+                bra delim2                              
 
 
-name1            lda #1                                   ; name1 allowed only once
-                 jsr newnam                               ; do name parsing
-                 sta dosf1l                               
+name1           lda #1                                  ; name1 allowed only once
+                jsr newnam                              ; do name parsing
+                sta dosf1l                              
 
-                 ldy #0                                   
-l236_1           jsr indin1_ram1                          
-                 sta savram,y                             ; copy name into buffer
-                 iny                                      
-                 cpy dosf1l                               
-                 bcc l236_1                               ; ...copy all of it
-                 lda #1                                   ; set name1 flag
+                ldy #0                                  
+l236_1          jsr indin1_ram1                         
+                sta savram,y                            ; copy name into buffer
+                iny                                     
+                cpy dosf1l                              
+                bcc l236_1                              ; ...copy all of it
+                lda #1                                  ; set name1 flag
 
 

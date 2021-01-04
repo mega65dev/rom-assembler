@@ -1,47 +1,47 @@
-incord                                                    
-                 stx vtemp4                               ; save offset to destination
-                 jsr cordsb                               ; get 2-byte x-parameter
-                 jsr chrgot                               
-                 cmp #','                                 
-                 beq docord                               ; skip ahead if have comma
+incord                                                  
+                stx vtemp4                              ; save offset to destination
+                jsr cordsb                              ; get 2-byte x-parameter
+                jsr chrgot                              
+                cmp #','                                
+                beq docord                              ; skip ahead if have comma
 
-                 cmp #';'                                 ; check for semi-colon
-                 +lbne snerr                              ; missing angle param- show syntax message
-                 jsr chrget       ;skip over '            ; '
-                 jsr getwrd                               ; get 2-byte angle in a,y
-                 sta z_p_temp_1                           ; swap a,y
-                 tya                                      
-                 ldy z_p_temp_1                           
-                 jsr gtang1                               ; get sine & cosine values for the angle
-                 ldx vtemp4                               
-                 lda vwork,x                              
-                 sta vwork+2,x                            ; move length to y-parameter
-                 lda vwork+1,x                            
-                 sta vwork+3,x                            
+                cmp #';'                                ; check for semi-colon
+                +lbne snerr                             ; missing angle param- show syntax message
+                jsr chrget       ;skip over '           ; '
+                jsr getwrd                              ; get 2-byte angle in a,y
+                sta z_p_temp_1                          ; swap a,y
+                tya                                     
+                ldy z_p_temp_1                          
+                jsr gtang1                              ; get sine & cosine values for the angle
+                ldx vtemp4                              
+                lda vwork,x                             
+                sta vwork+2,x                           ; move length to y-parameter
+                lda vwork+1,x                           
+                sta vwork+3,x                           
 ; jsr scalxy       ;scale the values
-                 lda #$0e                                 
-                 sta vtemp5                               
-                 clc                                      
-                 ldx vtemp4                               
+                lda #$0e                                
+                sta vtemp5                              
+                clc                                     
+                ldx vtemp4                              
 
-l309_1           jsr angmlt                               ; multiply length * angle
-                 sta vwork,x                              ; save angle result
-                 tya                                      
-                 sta vwork+1,x                            
-                 ldy #xpos-vwork                          
-                 lsr vtemp5                               
-                 bcc l309_2                               
-                 ldy #ypos-vwork                          
+l309_1          jsr angmlt                              ; multiply length * angle
+                sta vwork,x                             ; save angle result
+                tya                                     
+                sta vwork+1,x                           
+                ldy #xpos-vwork                         
+                lsr vtemp5                              
+                bcc l309_2                              
+                ldy #ypos-vwork                         
 
-l309_2           jsr dotwo                                ; add/subtract value to current position
-                 sta vwork,x                              
-                 tya                                      ; save result in destination
-                 sta vwork+1,x                            
-                 inx                                      
-                 inx                                      
-                 lsr vtemp5                               
-                 bne l309_1                               ; do y-coordinate
-                 clc                                      
-                 rts                                      
+l309_2          jsr dotwo                               ; add/subtract value to current position
+                sta vwork,x                             
+                tya                                     ; save result in destination
+                sta vwork+1,x                           
+                inx                                     
+                inx                                     
+                lsr vtemp5                              
+                bne l309_1                              ; do y-coordinate
+                clc                                     
+                rts                                     
 
 

@@ -1,41 +1,41 @@
-oknorm                                                    
-                 jsr parchk                               ; check for open parens, evaluate argument
-                 pla                                      ; restore token
+oknorm                                                  
+                jsr parchk                              ; check for open parens, evaluate argument
+                pla                                     ; restore token
 
-fingo                                                     
-                 sec                                      ; convert token to index into jump table
-                 sbc #first_function_token                
-                 asl                                      
-                 tay                                      
-                 lda fundsp+1,y                           
-                 sta jmper+2                              
-                 lda fundsp,y                             
-                 sta jmper+1                              
-                 jsr jmper                                ; dispatch
+fingo                                                   
+                sec                                     ; convert token to index into jump table
+                sbc #first_function_token               
+                asl                                     
+                tay                                     
+                lda fundsp+1,y                          
+                sta jmper+2                             
+                lda fundsp,y                            
+                sta jmper+1                             
+                jsr jmper                               ; dispatch
 ;string functions remove this ret addr
-                 +lbra chknum                             ; check for "numeric-ness" and return
+                +lbra chknum                            ; check for "numeric-ness" and return
 
 
 ; Escape Function handler
 
-do_esc_fn                                                 
-                 jsr chrget                               ; get second token
-                 +lbeq snerr                              ; error if no second token
-                 cmp #pointer_token                       
-                 beq l19_1                                ; skip pre-parse if 'POINTER()'
-                 pha                                      
-                 jsr chrget                               ; should be '('
-                 jsr chkopn                               
-                 jsr frmevl                               ; evaluate first argument
-                 pla                                      
-l19_1            cmp #first_esc_function_token            ; see if this esc fn is one of ours
-                 bcc foreign_esc_fn                       ; nope.
-                 cmp #last_esc_function_token+1           
-                 bcs foreign_esc_fn                       ; nope
+do_esc_fn                                               
+                jsr chrget                              ; get second token
+                +lbeq snerr                             ; error if no second token
+                cmp #pointer_token                      
+                beq l19_1                               ; skip pre-parse if 'POINTER()'
+                pha                                     
+                jsr chrget                              ; should be '('
+                jsr chkopn                              
+                jsr frmevl                              ; evaluate first argument
+                pla                                     
+l19_1           cmp #first_esc_function_token           ; see if this esc fn is one of ours
+                bcc foreign_esc_fn                      ; nope.
+                cmp #last_esc_function_token+1          
+                bcs foreign_esc_fn                      ; nope
 
 ; Convert to index into the function dispatch table
 
-                 adc #last_function_token-first_esc_function_token-1 
-                 bra fingo                                ; always
+                adc #last_function_token-first_esc_function_token-1
+                bra fingo                               ; always
 
 

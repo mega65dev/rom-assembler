@@ -1,19 +1,19 @@
-init_vectors                                              
-                 ldx #l4_3-l4_2-1                         
-l4_1             lda l4_2,x                               
-                 sta vectors_begin,x                      
-                 dex                                      
-                 bpl l4_1                                 
+init_vectors                                            
+                ldx #l4_3-l4_2-1                        
+l4_1            lda l4_2,x                              
+                sta vectors_begin,x                     
+                dex                                     
+                bpl l4_1                                
 
-                 rts                                      
+                rts                                     
 
 
-l4_2             !word AutoScroll                         ; autoscroll vector
-                 !word n_esc_fn_vec                       ; escape function vector
-                 !word graphic_kernel                     ; graphic extension vector
-                 !word nerror,nmain,ncrnch,nqplop,ngone,neval ; traditional vectors
-                 !word nesclk,nescpr,nescex               ; escape command vectors
-l4_3                                                      
+l4_2            !word AutoScroll                        ; autoscroll vector
+                !word n_esc_fn_vec                      ; escape function vector
+                !word graphic_kernel                    ; graphic extension vector
+                !word nerror,nmain,ncrnch,nqplop,ngone,neval; traditional vectors
+                !word nesclk,nescpr,nescex              ; escape command vectors
+l4_3                                                    
 
 
 ;; CHRGET/CHRGOT code.  It is downloaded to RAM.

@@ -1,41 +1,41 @@
-C65__box                                                  
-                 jsr CheckGraphicMode                     
-                 jsr sadwrd                               ; get x0
-                 sty GKI__parm1                           
-                 sta GKI__parm2                           
+C65__box                                                
+                jsr CheckGraphicMode                    
+                jsr sadwrd                              ; get x0
+                sty GKI__parm1                          
+                sta GKI__parm2                          
 
-                 jsr comsad                               ; get y0
-                 sty GKI__parm3                           
-                 sta GKI__parm4                           
+                jsr comsad                              ; get y0
+                sty GKI__parm3                          
+                sta GKI__parm4                          
 
-                 jsr comsad                               ; get x1
-                 sty GKI__parm5                           
-                 sta GKI__parm6                           
+                jsr comsad                              ; get x1
+                sty GKI__parm5                          
+                sta GKI__parm6                          
 
-                 jsr comsad                               ; get y1
-                 sty GKI__parm7                           
-                 sta GKI__parm8                           
+                jsr comsad                              ; get y1
+                sty GKI__parm7                          
+                sta GKI__parm8                          
 
-                 jsr comsad                               ; get x2
-                 sty GKI__parm9                           
-                 sta GKI__parm10                          
+                jsr comsad                              ; get x2
+                sty GKI__parm9                          
+                sta GKI__parm10                         
 
-                 jsr comsad                               ; get y2
-                 sty GKI__parm11                          
-                 sta GKI__parm12                          
+                jsr comsad                              ; get y2
+                sty GKI__parm11                         
+                sta GKI__parm12                         
 
-                 jsr comsad                               ; get x3
-                 sty GKI__parm13                          
-                 sta GKI__parm14                          
+                jsr comsad                              ; get x3
+                sty GKI__parm13                         
+                sta GKI__parm14                         
 
-                 jsr comsad                               ; get y3
-                 sty GKI__parm15                          
-                 sta GKI__parm16                          
+                jsr comsad                              ; get y3
+                sty GKI__parm15                         
+                sta GKI__parm16                         
 
-                 jsr optzer                               ; get solid flag
-                 stx GKI__parm17                          
+                jsr optzer                              ; get solid flag
+                stx GKI__parm17                         
 
-                 jmp ($801a)                              ; bra box
+                jmp ($801a)                             ; bra box
 
 ;[[command.circle]]
 
@@ -53,26 +53,26 @@ C65__box
 ;*         parm7 = solid flag 0=no, 1=yes
 ;*****************************************************************
 
-C65__circle                                               
-                 jsr CheckGraphicMode                     
-                 jsr sadwrd                               ; get center x
-                 sty GKI__parm1                           
-                 sta GKI__parm2                           
+C65__circle                                             
+                jsr CheckGraphicMode                    
+                jsr sadwrd                              ; get center x
+                sty GKI__parm1                          
+                sta GKI__parm2                          
 
-                 jsr comsad                               ; get center y
-                 sty GKI__parm3                           
-                 sta GKI__parm4                           
+                jsr comsad                              ; get center y
+                sty GKI__parm3                          
+                sta GKI__parm4                          
 
-                 jsr comsad                               ; get radius
-                 sty GKI__parm5                           
-                 sta GKI__parm6                           
+                jsr comsad                              ; get radius
+                sty GKI__parm5                          
+                sta GKI__parm6                          
 
-                 jsr optzer                               ; get solid flag
-                 cpx #2                                   
-                 +lbcs fcerr                              
-                 stx GKI__parm7                           
+                jsr optzer                              ; get solid flag
+                cpx #2                                  
+                +lbcs fcerr                             
+                stx GKI__parm7                          
 
-                 jmp ($801c)                              ; bra circle
+                jmp ($801c)                             ; bra circle
 
 
 ;[[command.ellipse]]
@@ -94,30 +94,30 @@ C65__circle
 ;*         parm9 = solid flag 0-1
 ;*****************************************************************
 
-C65__ellipse                                              
-                 jsr CheckGraphicMode                     
-                 jsr sadwrd                               ; get center x
-                 sty GKI__parm1                           
-                 sta GKI__parm2                           
+C65__ellipse                                            
+                jsr CheckGraphicMode                    
+                jsr sadwrd                              ; get center x
+                sty GKI__parm1                          
+                sta GKI__parm2                          
 
-                 jsr comsad                               ; get center y
-                 sty GKI__parm3                           
-                 sta GKI__parm4                           
+                jsr comsad                              ; get center y
+                sty GKI__parm3                          
+                sta GKI__parm4                          
 
-                 jsr comsad                               ; get xradius
-                 sty GKI__parm5                           
-                 sta GKI__parm6                           
+                jsr comsad                              ; get xradius
+                sty GKI__parm5                          
+                sta GKI__parm6                          
 
-                 jsr comsad                               ; get yradius
-                 sty GKI__parm7                           
-                 sta GKI__parm8                           
+                jsr comsad                              ; get yradius
+                sty GKI__parm7                          
+                sta GKI__parm8                          
 
-                 jsr optzer                               ; get solid flag
-                 cpx #2                                   
-                 +lbcs fcerr                              
-                 stx GKI__parm9                           
+                jsr optzer                              ; get solid flag
+                cpx #2                                  
+                +lbcs fcerr                             
+                stx GKI__parm9                          
 
-                 jmp ($8020)                              ; bra ellipse
+                jmp ($8020)                             ; bra ellipse
 
 ;[[command.polygon]]
 
@@ -144,55 +144,55 @@ C65__ellipse
 ;*         parm14 = subtend flag 0-1
 ;****************************************************************
 
-C65__polygon                                              ; changed BASIC syntax to something more reasonable [910923] FAB
-                 jsr CheckGraphicMode                     
-                 jsr sadwrd                               ; get center x
-                 sty GKI__parm1                           
-                 sta GKI__parm2                           
+C65__polygon                                            ; changed BASIC syntax to something more reasonable [910923] FAB
+                jsr CheckGraphicMode                    
+                jsr sadwrd                              ; get center x
+                sty GKI__parm1                          
+                sta GKI__parm2                          
 
-                 jsr comsad                               ; get center y
-                 sty GKI__parm3                           
-                 sta GKI__parm4                           
+                jsr comsad                              ; get center y
+                sty GKI__parm3                          
+                sta GKI__parm4                          
 
-                 jsr comwrd                               ; get x radius
-                 sty GKI__parm5                           
-                 sta GKI__parm6                           
+                jsr comwrd                              ; get x radius
+                sty GKI__parm5                          
+                sta GKI__parm6                          
 
-                 jsr comwrd                               ; get y radius
-                 sty GKI__parm7                           
-                 sta GKI__parm8                           
+                jsr comwrd                              ; get y radius
+                sty GKI__parm7                          
+                sta GKI__parm8                          
 
-                 jsr combyt                               ; get number of sides
-                 cpx #3                                   
-                 bcc l274_2                               ; too few
-                 cpx #128                                 
-l274_1           +lbcs fcerr                              ; too many
-                 stx GKI__parm13                          
+                jsr combyt                              ; get number of sides
+                cpx #3                                  
+                bcc l274_2                              ; too few
+                cpx #128                                
+l274_1          +lbcs fcerr                             ; too many
+                stx GKI__parm13                         
 
 ; ldx GKI__parm13  ;get number of sides to draw (default=#sides)
-                 jsr optbyt                               
-                 cpx #1                                   ; must be at least 1 side
-l274_2           +lbcc fcerr                              
-                 stx GKI__parm12                          
-                 dex                                      
-                 cpx GKI__parm13                          ; draw sides must be <= #sides
-                 bcs l274_1                               
+                jsr optbyt                              
+                cpx #1                                  ; must be at least 1 side
+l274_2          +lbcc fcerr                             
+                stx GKI__parm12                         
+                dex                                     
+                cpx GKI__parm13                         ; draw sides must be <= #sides
+                bcs l274_1                              
 
-                 jsr optzer                               ; get subtend flag
+                jsr optzer                              ; get subtend flag
 ; cpx #2
 ; bcs l274_1
-                 stx GKI__parm14                          
+                stx GKI__parm14                         
 
-                 jsr optwrd                               ; get starting angle (default=0 degrees)
-                 sty GKI__parm10                          ; lo
-                 sta GKI__parm11                          ; hi
+                jsr optwrd                              ; get starting angle (default=0 degrees)
+                sty GKI__parm10                         ; lo
+                sta GKI__parm11                         ; hi
 
-                 jsr optzer                               ; get solid flag
+                jsr optzer                              ; get solid flag
 ; cpx #2
 ; bcs l274_1
-                 stx GKI__parm9                           
+                stx GKI__parm9                          
 
-                 jmp ($801e)                              ; bra polygon
+                jmp ($801e)                             ; bra polygon
 
 ;[[command.set]]
 

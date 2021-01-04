@@ -1,33 +1,33 @@
-pream            jsr chkcls                               ; param list should end
-                 ply                                      
-                 pla                                      
-                 sta jmper+1                              ; get return address
-                 pla                                      ; get rid of fingo's jsr ret addr
-                 pla                                      
-                 plx                                      ; get length
-                 pla                                      
-                 sta dscpnt                               
-                 pla                                      
-                 sta dscpnt+1                             
-                 lda jmper+1                              
-                 pha                                      
-                 phy                                      
-                 ldy #0                                   
-                 txa                                      
-                 rts                                      
+pream           jsr chkcls                              ; param list should end
+                ply                                     
+                pla                                     
+                sta jmper+1                             ; get return address
+                pla                                     ; get rid of fingo's jsr ret addr
+                pla                                     
+                plx                                     ; get length
+                pla                                     
+                sta dscpnt                              
+                pla                                     
+                sta dscpnt+1                            
+                lda jmper+1                             
+                pha                                     
+                phy                                     
+                ldy #0                                  
+                txa                                     
+                rts                                     
 
 
 
 ; The function LEN$() returns the length of the string passed as an argument.
 
-len              bsr len1                                 
-                 +lbra sngflt                             
+len             bsr len1                                
+                +lbra sngflt                            
 
-len1             jsr frestr                               ; free up string
-                 ldx #0                                   
-                 stx valtyp                               ; force numeric
-                 tay                                      ; set condition codes
-                 rts                                      ; done
+len1            jsr frestr                              ; free up string
+                ldx #0                                  
+                stx valtyp                              ; force numeric
+                tay                                     ; set condition codes
+                rts                                     ; done
 
 
 
@@ -36,12 +36,12 @@ len1             jsr frestr                               ; free up string
 ; The following is the ASC$() function.  It returns an integer which is the
 ; decimal equivalent of the PETSCII string argument.
 
-asc              jsr len1                                 
-                 beq l155_1                               ; it was null (zero length)
-                 ldy #0                                   
-                 jsr indin1_ram1                          ; get 1st character
-                 tay                                      
-l155_1           +lbra sngflt                             
+asc             jsr len1                                
+                beq l155_1                              ; it was null (zero length)
+                ldy #0                                  
+                jsr indin1_ram1                         ; get 1st character
+                tay                                     
+l155_1          +lbra sngflt                            
 
 ;.end
 

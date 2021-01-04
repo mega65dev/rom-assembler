@@ -1,47 +1,47 @@
-form_line                                                 
-                 jsr n1_reset                             
-find_it                                                   
-                 jsr chargt_x2                            ; new line, skip over link
-                 bne l80_1                                ; if we get to end-of-text without finding the
-                 ldx #err_ref                             ; line # then 'unresolved reference' error
-                 lda forpnt                               
-                 sta curlin                               ; fake error routine into saying 'in line xxxxx'
-                 lda forpnt+1                             
-                 sta curlin+1                             
-                 +lbra error                              
+form_line                                               
+                jsr n1_reset                            
+find_it                                                 
+                jsr chargt_x2                           ; new line, skip over link
+                bne l80_1                               ; if we get to end-of-text without finding the
+                ldx #err_ref                            ; line # then 'unresolved reference' error
+                lda forpnt                              
+                sta curlin                              ; fake error routine into saying 'in line xxxxx'
+                lda forpnt+1                            
+                sta curlin+1                            
+                +lbra error                             
 
-l80_1            jsr chargt                               ; get line number low
-                 sta highds                               ; highds = current line# in loop
-                 cmp linnum                               
-                 bne l80_4                                
-                 jsr chargt                               ; get line number high
-                 sta highds+1                             
-                 cmp linnum+1                             
-                 bne l80_5                                
-                 sec                                      ; if linnum < start#, no remapping
-                 sbc hightr+1                             
-                 bcc l80_2                                
-                 bne l80_3                                
-                 lda linnum                               
-                 sbc hightr                               
-                 bcs l80_3                                
+l80_1           jsr chargt                              ; get line number low
+                sta highds                              ; highds = current line# in loop
+                cmp linnum                              
+                bne l80_4                               
+                jsr chargt                              ; get line number high
+                sta highds+1                            
+                cmp linnum+1                            
+                bne l80_5                               
+                sec                                     ; if linnum < start#, no remapping
+                sbc hightr+1                            
+                bcc l80_2                               
+                bne l80_3                               
+                lda linnum                              
+                sbc hightr                              
+                bcs l80_3                               
 
-l80_2            lda linnum                               ; use same line#
-                 sta facho+1                              
-                 lda linnum+1                             
-                 sta facho                                
+l80_2           lda linnum                              ; use same line#
+                sta facho+1                             
+                lda linnum+1                            
+                sta facho                               
 
-l80_3            ldx #$90                                 ; make replacement string
-                 sec                                      
-                 jsr floatc                               
-                 +lbra fout                               
+l80_3           ldx #$90                                ; make replacement string
+                sec                                     
+                jsr floatc                              
+                +lbra fout                              
 
 
-l80_4            jsr chargt                               
-                 sta highds+1                             ; (** 01/27/84 fix)
+l80_4           jsr chargt                              
+                sta highds+1                            ; (** 01/27/84 fix)
 
-l80_5            jsr line_add                             ; scan to end of line
-                 bra find_it                              ; always
+l80_5           jsr line_add                            ; scan to end of line
+                bra find_it                             ; always
 
 
 ;*************************** N1_RESET **********************************

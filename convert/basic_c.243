@@ -1,16 +1,16 @@
-rdfn             lda dosf2a                               
-                 sta index1                               
-                 lda dosf2a+1                             
-                 sta index1+1                             
-                 ldy dosf2l                               
-                 beq rdrt0                                ; if null string
+rdfn            lda dosf2a                              
+                sta index1                              
+                lda dosf2a+1                            
+                sta index1+1                            
+                ldy dosf2l                              
+                beq rdrt0                               ; if null string
 
-                 ldy #0                                   ; move name to dosstr
-l243_1           jsr indin1_ram1                          
-                 sta dosstr,x                             
-                 inx                                      
-                 iny                                      
-                 cpy dosf2l                               
-                 bne l243_1                               ; if move not complete
-                 !text $89                                ; hop
+                ldy #0                                  ; move name to dosstr
+l243_1          jsr indin1_ram1                         
+                sta dosstr,x                            
+                inx                                     
+                iny                                     
+                cpy dosf2l                              
+                bne l243_1                              ; if move not complete
+                !text $89                               ; hop
 

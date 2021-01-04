@@ -14,23 +14,23 @@
 ;*****************************************************************
 
 C65__circle
-                 jsr CheckGraphicMode
-                 jsr sadwrd                               ; get center x
-                 sty GKI__parm1
-                 sta GKI__parm2
+                jsr CheckGraphicMode
+                jsr sadwrd                              ; get center x
+                sty GKI__parm1
+                sta GKI__parm2
 
-                 jsr comsad                               ; get center y
-                 sty GKI__parm3
-                 sta GKI__parm4
+                jsr comsad                              ; get center y
+                sty GKI__parm3
+                sta GKI__parm4
 
-                 jsr comsad                               ; get radius
-                 sty GKI__parm5
-                 sta GKI__parm6
+                jsr comsad                              ; get radius
+                sty GKI__parm5
+                sta GKI__parm6
 
-                 jsr optzer                               ; get solid flag
-                 cpx #2
-                 +lbcs fcerr
-                 stx GKI__parm7
+                jsr optzer                              ; get solid flag
+                cpx #2
+                +lbcs fcerr
+                stx GKI__parm7
 
-                 jmp ($801c)                              ; bra circle
+                jmp ($801c)                             ; bra circle
 

@@ -1,18 +1,18 @@
-incor2                                                    ; enter here for optional argument
-                 jsr chrgot                               ; end of line?
-                 beq l308_1                               ; yes, use defaults
-                 jsr chkcom                               
-                 cmp #','                                 ; is there really an arg?
-                 bne incord                               ; yes, let'er rip
+incor2                                                  ; enter here for optional argument
+                jsr chrgot                              ; end of line?
+                beq l308_1                              ; yes, use defaults
+                jsr chkcom                              
+                cmp #','                                ; is there really an arg?
+                bne incord                              ; yes, let'er rip
 
-l308_1           ldy #0                                   ; set default pos = current pos
-l308_2           lda xpos,y                               
-                 sta vwork,x                              
-                 inx                                      
-                 iny                                      
-                 cpy #4                                   
-                 bcc l308_2                               
-                 rts                                      
+l308_1          ldy #0                                  ; set default pos = current pos
+l308_2          lda xpos,y                              
+                sta vwork,x                             
+                inx                                     
+                iny                                     
+                cpy #4                                  
+                bcc l308_2                              
+                rts                                     
 
 
 ;incor3    ;enter here for non-optional arg preceded by a comma

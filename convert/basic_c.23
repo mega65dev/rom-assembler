@@ -1,8 +1,8 @@
-errfin           ldy curlin+1                             ; direct mode?
-                 iny                                      
-                 beq l23_1                                ; yes...no line #
-                 jsr inprt                                
-l23_1            jsr highlight_done                       ; restore normal text color????    [910624]
+errfin          ldy curlin+1                            ; direct mode?
+                iny                                     
+                beq l23_1                               ; yes...no line #
+                jsr inprt                               
+l23_1           jsr highlight_done                      ; restore normal text color????    [910624]
 
 ;[[system.interface]]
 

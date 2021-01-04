@@ -1,57 +1,57 @@
-C65__set                                                  
-                 cmp #verify_token                        ; SET VERIFY <ON | OFF>  new [910429]
-                 +lbeq verify_mode                        
-                 cmp #def_token                           ; SET DEF unit
-                 bne l275_1                               
-                 jsr getdisknum_1                         
-                 stx _default_drive                       
-                 stx dosfa                                ; Make last DOS device = current device
-                 +lbra Clear_DS                           
+C65__set                                                
+                cmp #verify_token                       ; SET VERIFY <ON | OFF>  new [910429]
+                +lbeq verify_mode                       
+                cmp #def_token                          ; SET DEF unit
+                bne l275_1                              
+                jsr getdisknum_1                        
+                stx _default_drive                      
+                stx dosfa                               ; Make last DOS device = current device
+                +lbra Clear_DS                          
 
 
 
-l275_1           jsr chkesc                               ; Must be ESCape token
-                 cmp #disk_token                          ; ok so far
-                 +lbne bad_command                        ; unknown command
+l275_1          jsr chkesc                              ; Must be ESCape token
+                cmp #disk_token                         ; ok so far
+                +lbne bad_command                       ; unknown command
 
 
 
 
-                 jsr getdisknum_1                         ; SET DISK # [<,|TO> #]
-                 stx dosfa                                ; got current disk unit #
+                jsr getdisknum_1                        ; SET DISK # [<,|TO> #]
+                stx dosfa                               ; got current disk unit #
 
-                 jsr chrgot                               ; check delimiter (comma, 'TO', or eos)
-                 +lbeq Clear_DS                           ; eos- just change DOS' current drive [910417]
-                 cmp #','                                 ; not eos, must be comma or 'TO'
-                 beq l275_2                               
-                 cmp #to_token                            
-                 +lbne snerr                              
+                jsr chrgot                              ; check delimiter (comma, 'TO', or eos)
+                +lbeq Clear_DS                          ; eos- just change DOS' current drive [910417]
+                cmp #','                                ; not eos, must be comma or 'TO'
+                beq l275_2                              
+                cmp #to_token                           
+                +lbne snerr                             
 
-l275_2           jsr getdisknum_1                         ; skip delimiter
-                 stx dosds2                               ; got new disk unit #
+l275_2          jsr getdisknum_1                        ; skip delimiter
+                stx dosds2                              ; got new disk unit #
 
 
 
 ;  Open disk command channel & pass it 'renumber' command
 
-                 jsr dclall                               ; Close any open files????
+                jsr dclall                              ; Close any open files????
 
-                 ldx #6-1                                 
-l275_3           lda disk_renum_cmd,x                     ; move command to RAM, setup for open
-                 sta savram,x                             
-                 dex                                      
-                 bpl l275_3                               
-                 lda dosds2                               
-                 ora #32                                  ; make new # a talk/listen address
-                 sta savram+6                             
-                 lda dosds2                               
-                 ora #64                                  
-                 sta savram+7                             
+                ldx #6-1                                
+l275_3          lda disk_renum_cmd,x                    ; move command to RAM, setup for open
+                sta savram,x                            
+                dex                                     
+                bpl l275_3                              
+                lda dosds2                              
+                ora #32                                 ; make new # a talk/listen address
+                sta savram+6                            
+                lda dosds2                              
+                ora #64                                 
+                sta savram+7                            
 
-                 lda #8                                   ; command string length
-                 jsr SendDiskCmd                          ; Send command
-                 lda dosds2                               
-                 sta dosfa                                ; Make last DOS device = current device
-                 +lbra close_out_1                        ; common error check & exit path ????
+                lda #8                                  ; command string length
+                jsr SendDiskCmd                         ; Send command
+                lda dosds2                              
+                sta dosfa                               ; Make last DOS device = current device
+                +lbra close_out_1                       ; common error check & exit path ????
 
 

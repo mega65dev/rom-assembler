@@ -1,58 +1,58 @@
-MaxTimeValues                                             
-                 !text $10,$60,$60,$24                    ; t,s,m,h in packed BCD
+MaxTimeValues                                           
+                !text $10,$60,$60,$24                   ; t,s,m,h in packed BCD
 
 
 ; x$=TI$  Return a string of the form "hh:mm:ss.t", including colons.
 
-Get_TI_String                                             
-                 jsr ReadSystemClock                      ; get time as packed BCD
+Get_TI_String                                           
+                jsr ReadSystemClock                     ; get time as packed BCD
 
-                 lda #10                                  ; get string space for 10 characters
-                 jsr strspa                               
-                 tay                                      ; length
-                 dey                                      ; index
+                lda #10                                 ; get string space for 10 characters
+                jsr strspa                              
+                tay                                     ; length
+                dey                                     ; index
 
-                 lda time                                 ; build TI$ string in 'fbuffr'
-                 ora #'0'                                 ; (build string backwards, from last chr to first)
-                 ldx #dsctmp+1                            
-                 jsr sta_far_ram1                         ; put tenths (special case- only 1 digit)
-                 dey                                      
-                 lda #'.'                                 
-                 jsr sta_far_ram1                         ; put period (special case)   [910103]
-                 dey                                      
-                 ldx #1                                   
-                 bra l133_2                               
+                lda time                                ; build TI$ string in 'fbuffr'
+                ora #'0'                                ; (build string backwards, from last chr to first)
+                ldx #dsctmp+1                           
+                jsr sta_far_ram1                        ; put tenths (special case- only 1 digit)
+                dey                                     
+                lda #'.'                                
+                jsr sta_far_ram1                        ; put period (special case)   [910103]
+                dey                                     
+                ldx #1                                  
+                bra l133_2                              
 
-l133_1           phx                                      ; element pointer (1=secs, 2=mins, 3=hrs)
-                 ldx #dsctmp+1                            
-                 lda #':'                                 
-                 jsr sta_far_ram1                         ; put colon
-                 dey                                      
-                 plx                                      
+l133_1          phx                                     ; element pointer (1=secs, 2=mins, 3=hrs)
+                ldx #dsctmp+1                           
+                lda #':'                                
+                jsr sta_far_ram1                        ; put colon
+                dey                                     
+                plx                                     
 
-l133_2           lda time,x                               
-                 taz                                      
-                 and #$0f                                 ; do lsd first, since we're working backwards
-                 ora #'0'                                 
-                 phx                                      
-                 ldx #dsctmp+1                            
-                 jsr sta_far_ram1                         ; put lsd
-                 dey                                      
-                 tza                                      ; then do msd
-                 lsr                                      
-                 lsr                                      
-                 lsr                                      
-                 lsr                                      
-                 ora #'0'                                 
-                 jsr sta_far_ram1                         ; put msd
-                 plx                                      
-                 inx                                      ; next packed element
-                 dey                                      
-                 bpl l133_1                               ; loop until done
+l133_2          lda time,x                              
+                taz                                     
+                and #$0f                                ; do lsd first, since we're working backwards
+                ora #'0'                                
+                phx                                     
+                ldx #dsctmp+1                           
+                jsr sta_far_ram1                        ; put lsd
+                dey                                     
+                tza                                     ; then do msd
+                lsr                                     
+                lsr                                     
+                lsr                                     
+                lsr                                     
+                ora #'0'                                
+                jsr sta_far_ram1                        ; put msd
+                plx                                     
+                inx                                     ; next packed element
+                dey                                     
+                bpl l133_1                              ; loop until done
 
-                 lda #10                                  ; length
-                 jsr mvdone                               ; update frespc ????
-                 +lbra putnew                             ; make descriptor in dsctmp real
+                lda #10                                 ; length
+                jsr mvdone                              ; update frespc ????
+                +lbra putnew                            ; make descriptor in dsctmp real
 
 
 ;[[system.time]]

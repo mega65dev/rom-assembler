@@ -1,8 +1,8 @@
-isletc           cmp #'A'                                 
-                 bcc l120_1                               ; if less than "a", return
-                 sbc #'Z'+1                               ; $5a + 1
-                 sec                                      
-                 sbc #$a5                                 ; reset carry if (a) .gt. "z".
-l120_1           rts                                      
+isletc          cmp #'A'                                
+                bcc l120_1                              ; if less than "a", return
+                sbc #'Z'+1                              ; $5a + 1
+                sec                                     
+                sbc #$a5                                ; reset carry if (a) .gt. "z".
+l120_1          rts                                     
 
 

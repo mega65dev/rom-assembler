@@ -1,28 +1,28 @@
-angval                                                    
-                 !text $00,$00                            ; sine 00 degrees -  .0000
-                 !text $2c,$71                            ; sine 10 degrees -  .1736
-                 !text $57,$8d                            ; sine 20 degrees -  .3420
-                 !text $80,$00                            ; sine 30 degrees -  .5000
-                 !text $a4,$8f                            ; sine 40 degrees -  .6428
-                 !text $c4,$19                            ; sine 50 degrees -  .7660
-                 !text $dd,$b2                            ; sine 60 degrees -  .8660
-                 !text $f0,$90                            ; sine 70 degrees -  .9397
-                 !text $fc,$1c                            ; sine 80 degrees -  .9848
-                 !text $ff,$ff                            ; sine 90 degrees - 1.0000
+angval                                                  
+                !text $00,$00                           ; sine 00 degrees -  .0000
+                !text $2c,$71                           ; sine 10 degrees -  .1736
+                !text $57,$8d                           ; sine 20 degrees -  .3420
+                !text $80,$00                           ; sine 30 degrees -  .5000
+                !text $a4,$8f                           ; sine 40 degrees -  .6428
+                !text $c4,$19                           ; sine 50 degrees -  .7660
+                !text $dd,$b2                           ; sine 60 degrees -  .8660
+                !text $f0,$90                           ; sine 70 degrees -  .9397
+                !text $fc,$1c                           ; sine 80 degrees -  .9848
+                !text $ff,$ff                           ; sine 90 degrees - 1.0000
 
 ;  INCVAL  -- Table of incremental values between 10 degrees
 ;  Values based on fraction of 65536
 
-incval                                                    
-                 !text $04,$72                            ; 01 - 09 degrees -  .01739
-                 !text $04,$50                            ; 11 - 19 degrees -  .01692
-                 !text $04,$0b                            ; 21 - 29 degrees -  .01592
-                 !text $03,$a8                            ; 31 - 39 degrees -  .01443
-                 !text $03,$28                            ; 41 - 49 degrees -  .01252
-                 !text $02,$90                            ; 51 - 59 degrees -  .01023
-                 !text $01,$e3                            ; 61 - 69 degrees -  .00762
-                 !text $01,$28                            ; 71 - 79 degrees -  .00477
-                 !text $00,$63                            ; 81 - 89 degrees -  .00179
+incval                                                  
+                !text $04,$72                           ; 01 - 09 degrees -  .01739
+                !text $04,$50                           ; 11 - 19 degrees -  .01692
+                !text $04,$0b                           ; 21 - 29 degrees -  .01592
+                !text $03,$a8                           ; 31 - 39 degrees -  .01443
+                !text $03,$28                           ; 41 - 49 degrees -  .01252
+                !text $02,$90                           ; 51 - 59 degrees -  .01023
+                !text $01,$e3                           ; 61 - 69 degrees -  .00762
+                !text $01,$28                           ; 71 - 79 degrees -  .00477
+                !text $00,$63                           ; 81 - 89 degrees -  .00179
 
 ;.end
 
@@ -40,20 +40,20 @@ incval
 ;
 ; F. Bowen        [910620]
 
-edit             jsr errind                               ; direct mode only command
-                 cmp #on_token                            
-                 bne l311_1                               
-                 lda #%00010000                           ; EDIT ON
-                 bra l311_3                               ; (this kills trace mode, too)
+edit            jsr errind                              ; direct mode only command
+                cmp #on_token                           
+                bne l311_1                              
+                lda #%00010000                          ; EDIT ON
+                bra l311_3                              ; (this kills trace mode, too)
 
-l311_1           jsr chkesc                               ; [910930]
+l311_1          jsr chkesc                              ; [910930]
 ; cmp #esc_command_token
 ; bne l311_2
 ; jsr chrget
-                 cmp #off_token                           
-l311_2           +lbne snerr                              
-                 lda #0                                   ; EDIT OFF
-l311_3           sta runmod                               
-                 jmp chrget                               ; exit
+                cmp #off_token                          
+l311_2          +lbne snerr                             
+                lda #0                                  ; EDIT OFF
+l311_3          sta runmod                              
+                jmp chrget                              ; exit
 
 

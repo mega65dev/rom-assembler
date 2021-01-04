@@ -1,9 +1,9 @@
-fast                                                      
-                 +lbne snerr                              ; no args      [910410]
+fast                                                    
+                +lbne snerr                             ; no args      [910410]
 ; jsr put_io_in_map
-                 lda #%01000000                           
-                 tsb vic+49                               ; set FAST (4MHz?) mode
-                 rts                                      
+                lda #%01000000                          
+                tsb vic+49                              ; set FAST (4MHz?) mode
+                rts                                     
 
 
 
@@ -13,12 +13,12 @@ fast
 ;
 ;***********************************************************************
 
-slow                                                      
-                 +lbne snerr                              ; no args      [910410]
+slow                                                    
+                +lbne snerr                             ; no args      [910410]
 ; jsr put_io_in_map
-                 lda #%01000000                           
-                 trb vic+49                               
-                 rts                                      
+                lda #%01000000                          
+                trb vic+49                              
+                rts                                     
 
 ;.end
 
@@ -28,27 +28,27 @@ slow
 
 
 
-frmnum           jsr frmevl                               
+frmnum          jsr frmevl                              
 
-chknum           clc                                      
-                 !text $89                                
+chknum          clc                                     
+                !text $89                               
 
-chkstr           sec                                      
+chkstr          sec                                     
 
-chkval                                                    
+chkval                                                  
 ; bbs7 valtyp,docstr ;cannot do this- return status +/-/= needed!
-                 bit valtyp                               
-                 bmi docstr                               
-                 bcs chkerr                               
-chkok            rts                                      
+                bit valtyp                              
+                bmi docstr                              
+                bcs chkerr                              
+chkok           rts                                     
 
-docstr           bcs chkok                                
+docstr          bcs chkok                               
 
-chkerr           ldx #errtm                               
-                 !text $2c                                
+chkerr          ldx #errtm                              
+                !text $2c                               
 
-sterr            ldx #errst                               
-                 +lbra error                              
+sterr           ldx #errst                              
+                +lbra error                             
 
 ;.end
 
@@ -70,245 +70,245 @@ sterr            ldx #errst
 ;     * The precedence of the operator.
 
 
-frmevl           dew txtptr                               ; txtptr points to 1st char. in formula
-                 ldx #0                                   ; dummy precedence = 0
-                 !text $89                                
+frmevl          dew txtptr                              ; txtptr points to 1st char. in formula
+                ldx #0                                  ; dummy precedence = 0
+                !text $89                               
 
-lpoper           pha                                      ; save precedence
-                 phx                                      
-                 tsx                                      ; confirm enough system stack available (recursive calls)
-                 cpx #<sysstk+44                          ; bottom of stack + room for error handling
-                 bcc sterr                                ; formula too complex
-                 jsr eval                                 
-                 lda #0                                   
-                 sta opmask                               
+lpoper          pha                                     ; save precedence
+                phx                                     
+                tsx                                     ; confirm enough system stack available (recursive calls)
+                cpx #<sysstk+44                         ; bottom of stack + room for error handling
+                bcc sterr                               ; formula too complex
+                jsr eval                                
+                lda #0                                  
+                sta opmask                              
 
-tstop            jsr chrgot                               ; last char
-loprel           sec                                      ; prepare to subtract
-                 sbc #greater_token                       ; is current character a relation?
-                 bcc endrel                               ; no, relations all through
-                 cmp #less_token-greater_token+1          
-                 bcs endrel                               ; really relational?  no, just big
-                 cmp #1                                   ; reset carry for zero only
-                 rol                                      ; 0 to 1, 1 to 2, 2 to 4
-                 eor #1                                   
-                 eor opmask                               ; bring in the old bits
-                 cmp opmask                               ; make sure that the new mask is bigger
-                 +lbcc snerr                              ; syntax error, because two of the same
-                 sta opmask                               ; save mask
-                 jsr chrget                               
-                 bra loprel                               ; get the next candidate
-
-
-endrel           ldx opmask                               ; were there any?
-                 bne finrel                               ; yes, handle as special op
-                 +lbcs qop                                ; not an operator
-                 adc #greater_token-plus_token            
-                 +lbcc qop                                ; not an operator
-                 adc valtyp                               ; (c)=1
-                 +lbeq cat                                ; only if (a)=0 and VALTYP=$FF (a string)
-
-                 adc #$ff                                 ; get back original (a)
-                 sta index1                               
-                 asl                                      ; multiply by two
-                 adc index1                               ; by three
-                 tay                                      ; set up for later
-
-qprec            pla                                      ; get previous precedence
-                 cmp optab,y                              ; is old precedence greater or equal?
-                 bcs qchnum                               ; yes, go operate
-                 jsr chknum                               ; can't be string here
-
-doprec           pha                                      ; save old precedence
-
-negprc           jsr dopre1                               ; save a return for op
-                 pla                                      ; pull off previous precedence
-                 ldy opptr                                ; get pointer to op
-                 bpl qprec1                               ; that's a real operator
-                 tax                                      ; done?
-                 beq qopgo                                ; done!
-                 bra pulstk                               
+tstop           jsr chrgot                              ; last char
+loprel          sec                                     ; prepare to subtract
+                sbc #greater_token                      ; is current character a relation?
+                bcc endrel                              ; no, relations all through
+                cmp #less_token-greater_token+1         
+                bcs endrel                              ; really relational?  no, just big
+                cmp #1                                  ; reset carry for zero only
+                rol                                     ; 0 to 1, 1 to 2, 2 to 4
+                eor #1                                  
+                eor opmask                              ; bring in the old bits
+                cmp opmask                              ; make sure that the new mask is bigger
+                +lbcc snerr                             ; syntax error, because two of the same
+                sta opmask                              ; save mask
+                jsr chrget                              
+                bra loprel                              ; get the next candidate
 
 
-finrel           lsr valtyp                               ; get value type into (c)
-                 txa                                      
-                 rol                                      ; put VALTYP into low order bit of mask
-                 dew txtptr                               ; decrement text pointer
-                 ldy #ptdorl-optab                        ; make (y) point at operator entry
-                 sta opmask                               ; save the operation mask
-                 bra qprec                                ; branch always
+endrel          ldx opmask                              ; were there any?
+                bne finrel                              ; yes, handle as special op
+                +lbcs qop                               ; not an operator
+                adc #greater_token-plus_token           
+                +lbcc qop                               ; not an operator
+                adc valtyp                              ; (c)=1
+                +lbeq cat                               ; only if (a)=0 and VALTYP=$FF (a string)
+
+                adc #$ff                                ; get back original (a)
+                sta index1                              
+                asl                                     ; multiply by two
+                adc index1                              ; by three
+                tay                                     ; set up for later
+
+qprec           pla                                     ; get previous precedence
+                cmp optab,y                             ; is old precedence greater or equal?
+                bcs qchnum                              ; yes, go operate
+                jsr chknum                              ; can't be string here
+
+doprec          pha                                     ; save old precedence
+
+negprc          jsr dopre1                              ; save a return for op
+                pla                                     ; pull off previous precedence
+                ldy opptr                               ; get pointer to op
+                bpl qprec1                              ; that's a real operator
+                tax                                     ; done?
+                beq qopgo                               ; done!
+                bra pulstk                              
 
 
-qprec1                                                    ; note b7(VALTYP)=0 so CHKNUM call is ok
-                 cmp optab,y                              ; last precedence is greater?
-                 bcs pulstk                               ; yes, go operate
-                 bcc doprec                               ; no, save argument and get other operand
+finrel          lsr valtyp                              ; get value type into (c)
+                txa                                     
+                rol                                     ; put VALTYP into low order bit of mask
+                dew txtptr                              ; decrement text pointer
+                ldy #ptdorl-optab                       ; make (y) point at operator entry
+                sta opmask                              ; save the operation mask
+                bra qprec                               ; branch always
 
 
-dopre1           lda optab+2,y                            
-                 pha                                      ; disp addr goes on stack
-                 lda optab+1,y                            
-                 pha                                      
-                 jsr pushf1                               ; save FAC on stack unpacked, precedence in (x)
-                 lda opmask                               ; (a) may be mask for rel
-                 bra lpoper                               
+qprec1                                                  ; note b7(VALTYP)=0 so CHKNUM call is ok
+                cmp optab,y                             ; last precedence is greater?
+                bcs pulstk                              ; yes, go operate
+                bcc doprec                              ; no, save argument and get other operand
 
 
-pushf1                                                    ; save FAC on stack unpacked
-                 pla                                      ; first grab return address off stack
-                 sta index1                               
-                 pla                                      
-                 sta index1+1                             
-                 inw index1                               
-
-                 ldx optab,y                              ; precedence
-                 ldy facsgn                               
-                 phy                                      
-                 jsr round                                ; put rounded FAC on stack
-                 lda faclo                                
-                 pha                                      
-                 lda facmo                                
-                 pha                                      
-                 lda facmoh                               
-                 pha                                      
-                 lda facho                                
-                 pha                                      
-                 lda facexp                               
-                 pha                                      
-                 jmp (index1)                             ; return
+dopre1          lda optab+2,y                           
+                pha                                     ; disp addr goes on stack
+                lda optab+1,y                           
+                pha                                     
+                jsr pushf1                              ; save FAC on stack unpacked, precedence in (x)
+                lda opmask                              ; (a) may be mask for rel
+                bra lpoper                              
 
 
-pullf1                                                    ; retrieve FAC from stack unpacked  [910402]
-                 pla                                      ; first grab return address off stack
-                 sta index1                               
-                 pla                                      
-                 sta index1+1                             
-                 inw index1                               
+pushf1                                                  ; save FAC on stack unpacked
+                pla                                     ; first grab return address off stack
+                sta index1                              
+                pla                                     
+                sta index1+1                            
+                inw index1                              
 
-                 lda #0                                   ; it's been rounded
-                 sta facov                                
-                 pla                                      
-                 sta facexp                               
-                 pla                                      
-                 sta facho                                
-                 pla                                      
-                 sta facmoh                               
-                 pla                                      
-                 sta facmo                                
-                 pla                                      
-                 sta faclo                                
-                 pla                                      
-                 sta facsgn                               
-                 jmp (index1)                             ; return
-
-
-qop              ldy #255                                 
-                 pla                                      ; get high precedence of last op
-qopgo            beq qoprts                               ; done!
-
-qchnum           cmp #100                                 ; relational operator?
-                 beq unpstk                               ; yes, don't check operand
-                 jsr chknum                               ; must be number
-
-unpstk           sty opptr                                ; save operator's pointer for next time
-pulstk           pla                                      ; get mask for rel op if it is one
-                 lsr                                      ; setup .c for dorel's chkval
-                 sta domask                               ; save for "docmp"
-                 pla                                      ; unpack stack into arg
-                 sta argexp                               
-                 pla                                      
-                 sta argho                                
-                 pla                                      
-                 sta argmoh                               
-                 pla                                      
-                 sta argmo                                
-                 pla                                      
-                 sta arglo                                
-                 pla                                      
-                 sta argsgn                               
-                 eor facsgn                               ; get probable result sign
-                 sta arisgn                               ; sign used by add, sub, mul, div
-
-qoprts           lda facexp                               ; get it and set codes
-                 rts                                      ; return
-
-eval             jmp (ieval)                              
-
-neval            lda #0                                   ; assume numeric
-                 sta valtyp                               
-
-eval0            jsr chrget                               ; get a character
-                 bcs eval2                                
-eval1            ldx #0                                   ; flag 'bank 0' (text bank)
-                 +lbra fin                                ; it is a number
-
-eval2            jsr isletc                               ; variable name?
-                 bcs is_variable                          ; yes.
-                 cmp #pi                                  ; pi?
-                 bne qdot                                 
-                 lda #<pival                              
-                 ldy #>pival                              
-                 jsr movfm                                ; put value in for p1.
-                 jmp chrget                               
+                ldx optab,y                             ; precedence
+                ldy facsgn                              
+                phy                                     
+                jsr round                               ; put rounded FAC on stack
+                lda faclo                               
+                pha                                     
+                lda facmo                               
+                pha                                     
+                lda facmoh                              
+                pha                                     
+                lda facho                               
+                pha                                     
+                lda facexp                              
+                pha                                     
+                jmp (index1)                            ; return
 
 
-qdot             cmp #'.'                                 ; constant?
-                 beq eval1                                
-                 cmp #minus_token                         ; negation?
-                 beq domin                                ; yes.
-                 cmp #plus_token                          
-                 beq eval0                                
-                 cmp #'"'                                 ; string?
-                 bne eval3                                
+pullf1                                                  ; retrieve FAC from stack unpacked  [910402]
+                pla                                     ; first grab return address off stack
+                sta index1                              
+                pla                                     
+                sta index1+1                            
+                inw index1                              
 
-strtxt           lda txtptr                               
-                 ldy txtptr+1                             
-                 adc #0                                   ; c=1
-                 bcc strtx2                               
-                 iny                                      
-strtx2           jsr strlit                               ; process string
-
-st2txt           ldx strng2                               
-                 ldy strng2+1                             
-                 stx txtptr                               
-                 sty txtptr+1                             
-                 rts                                      
-
-
-eval3            cmp #not_token                           ; not?
-                 bne eval4                                
-                 ldy #24                                  
-                 bne gonprc                               ; branch always
+                lda #0                                  ; it's been rounded
+                sta facov                               
+                pla                                     
+                sta facexp                              
+                pla                                     
+                sta facho                               
+                pla                                     
+                sta facmoh                              
+                pla                                     
+                sta facmo                               
+                pla                                     
+                sta faclo                               
+                pla                                     
+                sta facsgn                              
+                jmp (index1)                            ; return
 
 
-notop            jsr ayint                                ; integerize
-                 lda faclo                                ; get argument
-                 eor #$ff                                 
-                 tay                                      
-                 lda facmo                                
-                 eor #$ff                                 
+qop             ldy #255                                
+                pla                                     ; get high precedence of last op
+qopgo           beq qoprts                              ; done!
 
-givayf           jsr stoint                               ; integer to float routine
-                 +lbra floats                             
+qchnum          cmp #100                                ; relational operator?
+                beq unpstk                              ; yes, don't check operand
+                jsr chknum                              ; must be number
+
+unpstk          sty opptr                               ; save operator's pointer for next time
+pulstk          pla                                     ; get mask for rel op if it is one
+                lsr                                     ; setup .c for dorel's chkval
+                sta domask                              ; save for "docmp"
+                pla                                     ; unpack stack into arg
+                sta argexp                              
+                pla                                     
+                sta argho                               
+                pla                                     
+                sta argmoh                              
+                pla                                     
+                sta argmo                               
+                pla                                     
+                sta arglo                               
+                pla                                     
+                sta argsgn                              
+                eor facsgn                              ; get probable result sign
+                sta arisgn                              ; sign used by add, sub, mul, div
+
+qoprts          lda facexp                              ; get it and set codes
+                rts                                     ; return
+
+eval            jmp (ieval)                             
+
+neval           lda #0                                  ; assume numeric
+                sta valtyp                              
+
+eval0           jsr chrget                              ; get a character
+                bcs eval2                               
+eval1           ldx #0                                  ; flag 'bank 0' (text bank)
+                +lbra fin                               ; it is a number
+
+eval2           jsr isletc                              ; variable name?
+                bcs is_variable                         ; yes.
+                cmp #pi                                 ; pi?
+                bne qdot                                
+                lda #<pival                             
+                ldy #>pival                             
+                jsr movfm                               ; put value in for p1.
+                jmp chrget                              
 
 
-eval4            cmp #fn_token                            ; user defined function?
-                 +lbeq fndoer                             ; yes
-                 cmp #first_function_token                ; function name?
-                 +lbcs isfun                              ; yes
+qdot            cmp #'.'                                ; constant?
+                beq eval1                               
+                cmp #minus_token                        ; negation?
+                beq domin                               ; yes.
+                cmp #plus_token                         
+                beq eval0                               
+                cmp #'"'                                ; string?
+                bne eval3                               
+
+strtxt          lda txtptr                              
+                ldy txtptr+1                            
+                adc #0                                  ; c=1
+                bcc strtx2                              
+                iny                                     
+strtx2          jsr strlit                              ; process string
+
+st2txt          ldx strng2                              
+                ldy strng2+1                            
+                stx txtptr                              
+                sty txtptr+1                            
+                rts                                     
+
+
+eval3           cmp #not_token                          ; not?
+                bne eval4                               
+                ldy #24                                 
+                bne gonprc                              ; branch always
+
+
+notop           jsr ayint                               ; integerize
+                lda faclo                               ; get argument
+                eor #$ff                                
+                tay                                     
+                lda facmo                               
+                eor #$ff                                
+
+givayf          jsr stoint                              ; integer to float routine
+                +lbra floats                            
+
+
+eval4           cmp #fn_token                           ; user defined function?
+                +lbeq fndoer                            ; yes
+                cmp #first_function_token               ; function name?
+                +lbcs isfun                             ; yes
 ; (functions are the highest numbered
 ; tokens so no need to check further)
 
-parchk           jsr chkopn                               ; only thing left is formula in parens
-                 jsr frmevl                               ; a formula in parens
+parchk          jsr chkopn                              ; only thing left is formula in parens
+                jsr frmevl                              ; a formula in parens
 
-chkcls           lda #')'                                 ; close paren?
-                 !text $2c                                
+chkcls          lda #')'                                ; close paren?
+                !text $2c                               
 
-chkopn           lda #'('                                 ; open paren?
-                 !text $2c                                
+chkopn          lda #'('                                ; open paren?
+                !text $2c                               
 
-chkcom           lda #','                                 ; comma?
+chkcom          lda #','                                ; comma?
 
 
 ; SYNCHR looks at the current character to make sure it is the specific
@@ -318,16 +318,16 @@ chkcom           lda #','                                 ; comma?
 ; (a)=new char and TXTPTR is advanced by CHRGET.
 
 
-synchr           ldy #0                                   
-                 sta syntmp                               
-                 jsr indtxt                               
-                 cmp syntmp                               
-                 +lbne snerr                              
-                 jmp chrget                               ; ok
+synchr          ldy #0                                  
+                sta syntmp                              
+                jsr indtxt                              
+                cmp syntmp                              
+                +lbne snerr                             
+                jmp chrget                              ; ok
 
 
 
-domin                                                     
-l117_1           =negtab-optab                            ; negoff
-                 ldy #l117_1                              ; precedence below '-'
+domin                                                   
+l117_1          =negtab-optab                           ; negoff
+                ldy #l117_1                             ; precedence below '-'
 

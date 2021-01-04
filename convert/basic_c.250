@@ -1,47 +1,47 @@
-optzer           ldx #0                                   ; optional byte, with default=0
+optzer          ldx #0                                  ; optional byte, with default=0
 
-optbyt           jsr chrgot                               
-                 beq optw99                               ; EOL: clc/rts
-                 jsr chkcom                               
-                 cmp #','                                 
-                 beq optw99                               ; Comma: clc/rts
-                 jsr getbyt                               
-                 sec                                      
-                 rts                                      
-
-
-prtdec                                                    
-                 phy                                      
-                 phx                                      
-                 tax                                      ; prints decimal value of chr in .a
-                 lda #0                                   
-                 jsr linprt                               
-                 plx                                      
-                 ply                                      
-                 rts                                      
+optbyt          jsr chrgot                              
+                beq optw99                              ; EOL: clc/rts
+                jsr chkcom                              
+                cmp #','                                
+                beq optw99                              ; Comma: clc/rts
+                jsr getbyt                              
+                sec                                     
+                rts                                     
 
 
+prtdec                                                  
+                phy                                     
+                phx                                     
+                tax                                     ; prints decimal value of chr in .a
+                lda #0                                  
+                jsr linprt                              
+                plx                                     
+                ply                                     
+                rts                                     
 
-retpat                                                    ; f.bowen
-                 dey                                      ; [910828]
-                 lda (fndpnt),y                           ; restore pointers
-                 sta txtptr+1                             
-                 dey                                      
-                 lda (fndpnt),y                           
-                 sta txtptr                               
-                 dey                                      
-                 lda (fndpnt),y                           
 
-                 sta curlin+1                             ; fixes a problem when RETURNing to a GOSUB in direct mode
-                 dey                                      ; or LOOPing to a DO in direct mode. 'curlin+1' must not be
-                 tax                                      ; restored to $ff without also resetting 'runmod'
-                 inx                                      
-                 bne l250_1                               ; branch if GOSUB or DO was from a program
-                 lda #%11000000                           
-                 trb runmod                               ; else force return to direct mode
 
-l250_1           lda (fndpnt),y                           
-                 sta curlin                               
-                 rts                                      
+retpat                                                  ; f.bowen
+                dey                                     ; [910828]
+                lda (fndpnt),y                          ; restore pointers
+                sta txtptr+1                            
+                dey                                     
+                lda (fndpnt),y                          
+                sta txtptr                              
+                dey                                     
+                lda (fndpnt),y                          
+
+                sta curlin+1                            ; fixes a problem when RETURNing to a GOSUB in direct mode
+                dey                                     ; or LOOPing to a DO in direct mode. 'curlin+1' must not be
+                tax                                     ; restored to $ff without also resetting 'runmod'
+                inx                                     
+                bne l250_1                              ; branch if GOSUB or DO was from a program
+                lda #%11000000                          
+                trb runmod                              ; else force return to direct mode
+
+l250_1          lda (fndpnt),y                          
+                sta curlin                              
+                rts                                     
 
 

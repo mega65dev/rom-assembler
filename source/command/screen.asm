@@ -1,7 +1,7 @@
 
 
 
-                 * = $af00                                ; [911001]
+                * = $af00                               ; [911001]
 
 ;*****************************************************************
 ; SCREEN DEF      define a screen
@@ -12,40 +12,40 @@
 ;*****************************************************************
 
 Screen
-                 cmp #open_token                          ; else dispatch per secondary token...
-                 +lbeq ScreenOpen
-                 cmp #close_token
-                 +lbeq ScreenClose
-                 cmp #def_token
-                 beq ScreenDef
-                 cmp #clr_token
-                 beq ScreenClr
+                cmp #open_token                         ; else dispatch per secondary token...
+                +lbeq ScreenOpen
+                cmp #close_token
+                +lbeq ScreenClose
+                cmp #def_token
+                beq ScreenDef
+                cmp #clr_token
+                beq ScreenClr
 
-                 jsr chkesc                               ; [910930]
+                jsr chkesc                              ; [910930]
 ; cmp #esc_command_token
 ; bne l266_1
 ; jsr chrget  ; get past escape token
-                 cmp #set_token
-                 beq ScreenSet
-l266_1           +lbra snerr                              ; report syntax error
+                cmp #set_token
+                beq ScreenSet
+l266_1          +lbra snerr                             ; report syntax error
 
 
 CheckGraphicMode
-                 bit $1f4b                                ; Check draw screen allocation   [910711]
-                 bmi NoGraphicArea
-                 rts                                      ; ok
+                bit $1f4b                               ; Check draw screen allocation   [910711]
+                bmi NoGraphicArea
+                rts                                     ; ok
 
 
 NoGraphicArea
-                 ldx #errng                               ; bad- no graphic area????
-                 +lbra error
+                ldx #errng                              ; bad- no graphic area????
+                +lbra error
 
 
-RestoreTextScreen                                          ; [910404]
-                 lda #$ff                                 ; [910930]
-                 sta GKI__parm1                           ; leave drawscreen as is
-                 sta GKI__parm2                           ; set viewscreen to text
-                 jmp ($800e)                              ; kg65.screen
+RestoreTextScreen                                        ; [910404]
+                lda #$ff                                ; [910930]
+                sta GKI__parm1                          ; leave drawscreen as is
+                sta GKI__parm2                          ; set viewscreen to text
+                jmp ($800e)                             ; kg65.screen
 
 ; lda vic+49  ;Check graphic screen allocation
 ; and #%00010000
@@ -83,13 +83,13 @@ RestoreTextScreen                                          ; [910404]
 ;*****************************************************************
 
 ScreenClr
-                 jsr chrget                               ; eat token & fall into SCNCLR
+                jsr chrget                              ; eat token & fall into SCNCLR
 
 scnclr
-                 bne C65__screenclear                     ; have a parameter, go clear graphic screen
+                bne C65__screenclear                    ; have a parameter, go clear graphic screen
 
-                 lda #$93
-                 jmp _bsout                               ; no parameter, clear text screen
+                lda #$93
+                jmp _bsout                              ; no parameter, clear text screen
 ; rts
 
 
@@ -103,11 +103,11 @@ scnclr
 ;*****************************************************************
 
 C65__screenclear
-                 jsr getbyt                               ; get color register # (range 0-255)?????
+                jsr getbyt                              ; get color register # (range 0-255)?????
 ;limit to range allowed by current screen def?
-                 stx GKI__parm1
-                 jsr CheckGraphicMode
-                 jmp ($800c)                              ; bra screenclear
+                stx GKI__parm1
+                jsr CheckGraphicMode
+                jmp ($800c)                             ; bra screenclear
 
 
 ;*****************************************************************
@@ -120,28 +120,28 @@ C65__screenclear
 ;*****************************************************************
 
 ScreenSet
-                 jsr chrget                               ; advance past token
+                jsr chrget                              ; advance past token
 
 C65__screen
 ; beq snerr  ;missing args??      [911017]
-                 ldx #255                                 ; [911028]
-                 cmp #','
-                 beq l267_1                               ; options byte only
+                ldx #255                                ; [911028]
+                cmp #','
+                beq l267_1                              ; options byte only
 
-                 jsr getbyt                               ; get draw screen# in .x
+                jsr getbyt                              ; get draw screen# in .x
 ; cpx #4   ;       [910711]
 ; bcs 20$   ;  out of range error???? (255=leave alone)  [910930]
-l267_1           stx GKI__parm1
+l267_1          stx GKI__parm1
 
-                 ldx $1f69                                ; current viewscreen     [911017]
-                 jsr optbyt                               ; eat a comma, get view screen# in .x
+                ldx $1f69                               ; current viewscreen     [911017]
+                jsr optbyt                              ; eat a comma, get view screen# in .x
 ; cpx #4   ;
 ;20$ bcs fcerr  ;  out of range error???? (255=text)   [910930]
-                 stx GKI__parm2
+                stx GKI__parm2
 
-                 jsr ($800e)                              ; kg65.screen
-                 bcs NoGraphicArea
-                 rts
+                jsr ($800e)                             ; kg65.screen
+                bcs NoGraphicArea
+                rts
 
 
 ;*****************************************************************
@@ -156,31 +156,31 @@ l267_1           stx GKI__parm1
 ;*****************************************************************
 
 ScreenDef
-                 jsr chrget                               ; advance past token
+                jsr chrget                              ; advance past token
 
 C65__screendef
-                 jsr getbyt                               ; get screen number
-                 cpx #4                                   ; range 0-3   [910711]
-                 bcs l268_1
-                 stx GKI__parm1                           ; screen#
+                jsr getbyt                              ; get screen number
+                cpx #4                                  ; range 0-3   [910711]
+                bcs l268_1
+                stx GKI__parm1                          ; screen#
 
-                 jsr combyt                               ; get width
-                 cpx #3                                   ; range 0-2 ???? 1280 mode ????
-                 bcs l268_1
-                 stx GKI__parm2                           ; width
+                jsr combyt                              ; get width
+                cpx #3                                  ; range 0-2 ???? 1280 mode ????
+                bcs l268_1
+                stx GKI__parm2                          ; width
 
-                 jsr combyt                               ; get height
-                 cpx #2                                   ; range 0-1
-                 bcs l268_1
-                 stx GKI__parm3                           ; height
+                jsr combyt                              ; get height
+                cpx #2                                  ; range 0-1
+                bcs l268_1
+                stx GKI__parm3                          ; height
 
-                 jsr combyt                               ; get depth (# bitplanes)
-                 dex                                      ; convert 1-8 to 0-7
-                 cpx #8                                   ; range 0-7
-l268_1           +lbcs fcerr                              ; illegal quantity error
-                 stx GKI__parm4                           ; depth
+                jsr combyt                              ; get depth (# bitplanes)
+                dex                                     ; convert 1-8 to 0-7
+                cpx #8                                  ; range 0-7
+l268_1          +lbcs fcerr                             ; illegal quantity error
+                stx GKI__parm4                          ; depth
 
-                 jmp ($8006)                              ; bra screendef
+                jmp ($8006)                             ; bra screendef
 
 
 ;*****************************************************************
@@ -193,15 +193,15 @@ l268_1           +lbcs fcerr                              ; illegal quantity err
 
 
 ScreenOpen
-                 jsr chrget                               ; advance past Open token
+                jsr chrget                              ; advance past Open token
 
 C65__screenopen
-                 jsr getbyt                               ; get screen# in .x
-                 cpx #4                                   ; range 0-3   [910711]
-                 +lbcs fcerr                              ; branch if out of range
+                jsr getbyt                              ; get screen# in .x
+                cpx #4                                  ; range 0-3   [910711]
+                +lbcs fcerr                             ; branch if out of range
 
-                 stx GKI__parm1
-                 jmp ($8008)                              ; screenopen    [910826]
+                stx GKI__parm1
+                jmp ($8008)                             ; screenopen    [910826]
 
 ; bcs NoGraphicArea ; bad ???? let user catch via RGRAPHIC
 ; rts
@@ -217,12 +217,12 @@ C65__screenopen
 
 
 ScreenClose
-                 jsr chrget                               ; advance past Close token
+                jsr chrget                              ; advance past Close token
 
 C65__screenclose
-                 jsr getbyt                               ; get screen#
-                 cpx #4                                   ; range 0-3   [910711]
-                 +lbcs fcerr                              ; branch if out of range
-                 stx GKI__parm1
+                jsr getbyt                              ; get screen#
+                cpx #4                                  ; range 0-3   [910711]
+                +lbcs fcerr                             ; branch if out of range
+                stx GKI__parm1
 
-                 jmp ($800a)                              ; bra screenclose
+                jmp ($800a)                             ; bra screenclose

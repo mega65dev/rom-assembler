@@ -1,31 +1,31 @@
-strfre           sta frespc                               
-                 sty frespc+1                             
-                 ldy #1                                   ; flag string as garbage
-                 lda #$ff                                 
-                 phx                                      ; set up string bank
-                 ldx #index1                              
-                 jsr sta_far_ram1 ;sta (index1),y         ; flag
-                 plx                                      
-                 dey                                      
-                 pla                                      ; length
-                 phx                                      ; set up string bank
-                 ldx #index1                              
-                 jsr sta_far_ram1 ;sta (index1),y         ; length
-                 plx                                      
-                 ldx frespc                               
-                 ldy frespc+1                             
-                 stx fretop                               
-                 sty fretop+1                             ; save new (fretop)
-getrts           rts                                      
+strfre          sta frespc                              
+                sty frespc+1                            
+                ldy #1                                  ; flag string as garbage
+                lda #$ff                                
+                phx                                     ; set up string bank
+                ldx #index1                             
+                jsr sta_far_ram1 ;sta (index1),y        ; flag
+                plx                                     
+                dey                                     
+                pla                                     ; length
+                phx                                     ; set up string bank
+                ldx #index1                             
+                jsr sta_far_ram1 ;sta (index1),y        ; length
+                plx                                     
+                ldx frespc                              
+                ldy frespc+1                            
+                stx fretop                              
+                sty fretop+1                            ; save new (fretop)
+getrts          rts                                     
 
 
-garbag           lda garbfl                               
-                 +lbmi omerr                              ; if out of memory
-                 jsr garba2                               
-                 sec                                      
-                 ror garbfl                               
-                 pla                                      ; get back string length
-                 bra tryag2                               ; always branches
+garbag          lda garbfl                              
+                +lbmi omerr                             ; if out of memory
+                jsr garba2                              
+                sec                                     
+                ror garbfl                              
+                pla                                     ; get back string length
+                bra tryag2                              ; always branches
 
 
 
@@ -34,34 +34,34 @@ garbag           lda garbfl
 ; only when BASIC needs space or the FRE() function is used.
 
 
-garba2           ldx temppt                               ; ptr to temp. strings
-l162_1           cpx #tempst                              ; any out there?
-                 beq l162_2                               ; none
-                 jsr slr1                                 ; setup ptr (tempf2) to temp. string's bkptr
-                 beq l162_1                               ; (skip if null string!)
-                 txa                                      ; .x = lsb of ptr to descriptor
-                 phx                                      ; set up string bank
-                 ldx #tempf2                              
-                 ldy #0                                   
-                 jsr sta_far_ram1 ;(tempf2),y             ; place backpointer on string to temp. descr
-                 tya                                      ; .a = msb of ptr (0)
-                 iny                                      
-                 jsr sta_far_ram1                         ; (tempf2),y
-                 plx                                      
-                 bra l162_1                               ; always
+garba2          ldx temppt                              ; ptr to temp. strings
+l162_1          cpx #tempst                             ; any out there?
+                beq l162_2                              ; none
+                jsr slr1                                ; setup ptr (tempf2) to temp. string's bkptr
+                beq l162_1                              ; (skip if null string!)
+                txa                                     ; .x = lsb of ptr to descriptor
+                phx                                     ; set up string bank
+                ldx #tempf2                             
+                ldy #0                                  
+                jsr sta_far_ram1 ;(tempf2),y            ; place backpointer on string to temp. descr
+                tya                                     ; .a = msb of ptr (0)
+                iny                                     
+                jsr sta_far_ram1                        ; (tempf2),y
+                plx                                     
+                bra l162_1                              ; always
 
 
-l162_2           ldy #0                                   ; set up flag
-                 sty highds                               
-                 ldx max_mem_1                            
-                 ldy max_mem_1+1                          
-                 stx grbtop                               ; set both pointers
-                 stx grbpnt                               
-                 stx frespc                               
-                 sty grbtop+1                             
-                 sty grbpnt+1                             
-                 sty frespc+1                             
-                 txa                                      
+l162_2          ldy #0                                  ; set up flag
+                sty highds                              
+                ldx max_mem_1                           
+                ldy max_mem_1+1                         
+                stx grbtop                              ; set both pointers
+                stx grbpnt                              
+                stx frespc                              
+                sty grbtop+1                            
+                sty grbpnt+1                            
+                sty frespc+1                            
+                txa                                     
 
 
 ; do while (grbpnt <= fretop)

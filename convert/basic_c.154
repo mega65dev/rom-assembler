@@ -1,12 +1,12 @@
-rightd           jsr pream                                
-                 pha                                      
-                 jsr inddpt                               
-                 sta syntmp                               
-                 pla                                      
-                 clc                                      ; (length des'd)-(length)-1
-                 sbc syntmp                               
-                 eor #$ff                                 ; negate
-                 bra rleft                                
+rightd          jsr pream                               
+                pha                                     
+                jsr inddpt                              
+                sta syntmp                              
+                pla                                     
+                clc                                     ; (length des'd)-(length)-1
+                sbc syntmp                              
+                eor #$ff                                ; negate
+                bra rleft                               
 
 
 ; MID$($,#) returns string with chars from # position onward. If # > LEN($)
@@ -14,32 +14,32 @@ rightd           jsr pream
 ; # position for #2 characters.  If #2 goes past end of string return as much
 ; as possible.
 
-midd             lda #255                                 ; default
-                 sta faclo                                ; save for later compare
-                 jsr chrgot                               ; get current character
-                 cmp #')'                                 ; is it a right paren )?
-                 beq l154_1                               ; no third paren.
+midd            lda #255                                ; default
+                sta faclo                               ; save for later compare
+                jsr chrgot                              ; get current character
+                cmp #')'                                ; is it a right paren )?
+                beq l154_1                              ; no third paren.
 ; jsr chkcom  ;must have comma
 ; jsr getbyt  ;get the length into "faclo"
-                 jsr combyt                               ; [910820]
+                jsr combyt                              ; [910820]
 
-l154_1           jsr pream                                ; check it out
-                 +lbeq fcerr                              ; illegal qty error
-                 dex                                      ; compute offset
-                 phx                                      
-                 phx                                      ; preserve a while (2 copies)
-                 ldx #0                                   
-                 jsr inddpt                               ; get length of what's left
-                 sta syntmp                               
-                 pla                                      
-                 clc                                      
-                 sbc syntmp                               
-                 bcs rleft2                               ; give null string
-                 eor #$ff                                 ; in sub c was 0 so just complement
-                 cmp faclo                                ; greater than what's desired
-                 bcc rleft3                               ; no, just copy that much
-                 lda faclo                                ; get length of what's desired
-                 bcs rleft3                               ; copy it
+l154_1          jsr pream                               ; check it out
+                +lbeq fcerr                             ; illegal qty error
+                dex                                     ; compute offset
+                phx                                     
+                phx                                     ; preserve a while (2 copies)
+                ldx #0                                  
+                jsr inddpt                              ; get length of what's left
+                sta syntmp                              
+                pla                                     
+                clc                                     
+                sbc syntmp                              
+                bcs rleft2                              ; give null string
+                eor #$ff                                ; in sub c was 0 so just complement
+                cmp faclo                               ; greater than what's desired
+                bcc rleft3                              ; no, just copy that much
+                lda faclo                               ; get length of what's desired
+                bcs rleft3                              ; copy it
 
 
 

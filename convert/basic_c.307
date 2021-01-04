@@ -1,98 +1,98 @@
-dotwo2                                                    
-                 bcc addtw2                               ; go do addition
-                 bcs subtw2                               ; go do subtraction
-dotwo                                                     
-                 bcs subtwo                               ; go do subtraction
+dotwo2                                                  
+                bcc addtw2                              ; go do addition
+                bcs subtw2                              ; go do subtraction
+dotwo                                                   
+                bcs subtwo                              ; go do subtraction
 
 ;***************************************************************
 ;  ADDTWO  - Add vwork+y and vwork+x  Result in y/a
 ;***************************************************************
 
-addtwo                                                    
-                 jsr settwo                               ; put vwrok+y into y/a
+addtwo                                                  
+                jsr settwo                              ; put vwrok+y into y/a
 
-addtw2                                                    ; enter here to add y/a to vwork+x
-                 clc                                      
-                 adc vwork,x                              
-                 pha                                      
-                 tya                                      
-                 adc vwork+1,x                            
-                 tay                                      
-                 pla                                      
-                 rts                                      
+addtw2                                                  ; enter here to add y/a to vwork+x
+                clc                                     
+                adc vwork,x                             
+                pha                                     
+                tya                                     
+                adc vwork+1,x                           
+                tay                                     
+                pla                                     
+                rts                                     
 
 
 ;****************************************************************
 ;  SUBTWO  - Subtract vwork+y - vwork+x Result in y/a
 ;****************************************************************
 
-subtwo                                                    
-                 jsr settwo                               ; move vwork+y into y/a
+subtwo                                                  
+                jsr settwo                              ; move vwork+y into y/a
 
-subtw2                                                    ; enter here with 1st value in y/a
-                 sec                                      
-                 sbc vwork,x                              
-                 sta tempf1                               
-                 tya                                      
-                 sbc vwork+1,x                            
-                 tay                                      
-                 php                                      
-                 lda tempf1                               
-                 plp                                      
-                 rts                                      
+subtw2                                                  ; enter here with 1st value in y/a
+                sec                                     
+                sbc vwork,x                             
+                sta tempf1                              
+                tya                                     
+                sbc vwork+1,x                           
+                tay                                     
+                php                                     
+                lda tempf1                              
+                plp                                     
+                rts                                     
 
 
-subtwo_savram                                             
-                 lda savram,y                             ; load value into y,a
-                 pha                                      
-                 lda savram+1,y                           
-                 tay                                      
-                 pla                                      
-                 sec                                      
-                 sbc savram,x                             
-                 sta tempf1                               
-                 tya                                      
-                 sbc savram+1,x                           
-                 tay                                      
-                 php                                      
-                 lda tempf1                               
-                 plp                                      
-                 rts                                      
+subtwo_savram                                           
+                lda savram,y                            ; load value into y,a
+                pha                                     
+                lda savram+1,y                          
+                tay                                     
+                pla                                     
+                sec                                     
+                sbc savram,x                            
+                sta tempf1                              
+                tya                                     
+                sbc savram+1,x                          
+                tay                                     
+                php                                     
+                lda tempf1                              
+                plp                                     
+                rts                                     
 
 
 ;************************************************************
 ;  SETTWO  - Move value in vwork+y into y/a
 ;************************************************************
 
-settwo                                                    
-                 lda vwork,y                              
-                 pha                                      
-                 lda vwork+1,y                            
-                 tay                                      
-                 pla                                      
-                 rts                                      
+settwo                                                  
+                lda vwork,y                             
+                pha                                     
+                lda vwork+1,y                           
+                tay                                     
+                pla                                     
+                rts                                     
 
 ;******************************************************************
 ;  ABSTWO  - Get absolute value of vwork+y - vwork+x
 ;  Result in y/a  -  carry === vwork+y >= vwork+x
 ;******************************************************************
 
-abstwo                                                    ; movspr_to [910809]
-                 jsr subtwo                               ; subtract vwork+y - vwork+x
-abstw2                                                    ; entrance with vwork+y in y/a
-                 bpl absrts                               ; done if result is positive
-invert           php                                      
-                 clc                                      
-                 eor #$ff                                 ; invert low byte result and add 1
-                 adc #1                                   
-                 pha                                      
-                 tya                                      
-                 eor #$ff                                 ; invert high byte result
-                 adc #0                                   ; add back any carry
-                 tay                                      
-                 pla                                      
-                 plp                                      
-absrts           rts                                      
+abstwo                                                  ; movspr_to [910809]
+                jsr subtwo                              ; subtract vwork+y - vwork+x
+abstw2                                                  ; entrance with vwork+y in y/a
+                bpl absrts                              ; done if result is positive
+invert          php                                     
+                clc                                     
+                eor #$ff                                ; invert low byte result and add 1
+                adc #1                                  
+                pha                                     
+                tya                                     
+                eor #$ff                                ; invert high byte result
+                adc #0                                  ; add back any carry
+                tay                                     
+                pla                                     
+                plp                                     
+absrts          rts                                     
 
 
 ;****************************************************************
@@ -100,42 +100,42 @@ absrts           rts
 ;  Integer found in vwork+x-reg.  Result = y/a
 ;****************************************************************
 
-twobyt                                                    
-                 sty vtemp1                               ; save fraction
-                 sta vtemp2                               
-                 lda vwork,x                              
-                 ldy vwork+1,x                            
-                 php                                      ; save sign of integer
-                 jsr abstw2                               ; absolute value
-                 sta vwork,x                              
-                 tya                                      
-                 sta vwork+1,x                            
-                 lda #0                                   
-                 sta vtemp3                               ; initialize result to zero
+twobyt                                                  
+                sty vtemp1                              ; save fraction
+                sta vtemp2                              
+                lda vwork,x                             
+                ldy vwork+1,x                           
+                php                                     ; save sign of integer
+                jsr abstw2                              ; absolute value
+                sta vwork,x                             
+                tya                                     
+                sta vwork+1,x                           
+                lda #0                                  
+                sta vtemp3                              ; initialize result to zero
 
-                 ldy #16                                  ; initialize count
-l307_1           lsr vtemp1                               
-                 ror vtemp2                               
-                 bcc l307_2                               ; skip if no bit set
-                 clc                                      
-                 adc vwork,x                              ; add integer low byte
-                 pha                                      
-                 lda vtemp3                               
-                 adc vwork+1,x                            ; add integer high byte to total
-                 sta vtemp3                               
-                 pla                                      
+                ldy #16                                 ; initialize count
+l307_1          lsr vtemp1                              
+                ror vtemp2                              
+                bcc l307_2                              ; skip if no bit set
+                clc                                     
+                adc vwork,x                             ; add integer low byte
+                pha                                     
+                lda vtemp3                              
+                adc vwork+1,x                           ; add integer high byte to total
+                sta vtemp3                              
+                pla                                     
 
-l307_2           lsr vtemp3                               ; divide by 2
-                 ror                                      
-                 dey                                      
-                 bne l307_1                               ; loop 16 times - test all bits in 2 bytes
+l307_2          lsr vtemp3                              ; divide by 2
+                ror                                     
+                dey                                     
+                bne l307_1                              ; loop 16 times - test all bits in 2 bytes
 
-                 adc #0                                   ; add back round factor
-                 ldy vtemp3                               
-                 bcc l307_3                               
-                 iny                                      
-l307_3           plp                                      ; pop sign
-                 bra abstw2                               ; return with signed product in y/a
+                adc #0                                  ; add back round factor
+                ldy vtemp3                              
+                bcc l307_3                              
+                iny                                     
+l307_3          plp                                     ; pop sign
+                bra abstw2                              ; return with signed product in y/a
 
 
 ;******************************************************************

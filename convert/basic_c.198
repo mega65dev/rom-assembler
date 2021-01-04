@@ -1,34 +1,34 @@
-pudefs           !text " ,.$"                             ; default:  fill, comma, dec pnt, money symbol
+pudefs          !text " ,.$"                            ; default:  fill, comma, dec pnt, money symbol
 
-using            ldx #$ff                                 
-                 stx endfd                                
-                 jsr chrget                               
-                 jsr frmevl                               ; evaluate format string
-                 jsr chkstr                               ; must be string type...
+using           ldx #$ff                                
+                stx endfd                               
+                jsr chrget                              
+                jsr frmevl                              ; evaluate format string
+                jsr chkstr                              ; must be string type...
 
-                 lda facmo                                ; save temp descriptor
-                 pha                                      
-                 lda facmo+1                              
-                 pha                                      
+                lda facmo                               ; save temp descriptor
+                pha                                     
+                lda facmo+1                             
+                pha                                     
 
-                 ldy #2                                   ; move (facmo),1&2 to form,form+1
-l198_1           jsr indfmo                               
-                 dey                                      
-                 sta form,y                               
-                 bne l198_1                               
+                ldy #2                                  ; move (facmo),1&2 to form,form+1
+l198_1          jsr indfmo                              
+                dey                                     
+                sta form,y                              
+                bne l198_1                              
 
-                 jsr indfmo                               ; get length
-                 sta lfor                                 
-                 tay                                      
-                 beq l198_3                               ; syntax error if length is zero
+                jsr indfmo                              ; get length
+                sta lfor                                
+                tay                                     
+                beq l198_3                              ; syntax error if length is zero
 
-l198_2           dey                                      
-                 jsr indfrm                               
-                 cmp #'#'                                 ; at least one # in format?
-                 beq l198_4                               ; yes...
-                 tya                                      ; no...end of format
-                 bne l198_2                               ; no...
-l198_3           +lbra snerr                              ; yes...syntax error
+l198_2          dey                                     
+                jsr indfrm                              
+                cmp #'#'                                ; at least one # in format?
+                beq l198_4                              ; yes...
+                tya                                     ; no...end of format
+                bne l198_2                              ; no...
+l198_3          +lbra snerr                             ; yes...syntax error
 
 
-l198_4           lda #';'                                 ; '
+l198_4          lda #';'                                ; '

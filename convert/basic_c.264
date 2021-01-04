@@ -1,43 +1,43 @@
-AutoScrolldn                                              ; wanting to scroll down
-                 ldx #0                                   ; put cursor at top of screen
-                 jsr AutoSearch                           ; search for a line number on screen, put it in linnum
-                 ldx #0                                   ; get a blank line to print on
-                 ldy #0                                   ; put cursor at top of screen
-                 clc                                      
-                 jsr _plot                                
-l264_1           jsr _primm                               ; and scroll screen (kill any pending Editor modes, too)
-                 !text esc,esc,esc,"W",0                  
-                 jsr FindLine                             ; find the line in program whose number we found on screen
-                 lda lowtr                                ; (does not matter if it or next higher line is found)
-                 cmp txttab                               
-                 bne l264_2                               
-                 lda lowtr+1                              
-                 cmp txttab+1                             
-                 bne l264_2                               
-                 lda #$ff                                 ; special case- it's the very first line, want to wrap to last line
-                 sta linnum+1                             ; fake pointer to the last line,
-                 jsr _primm                               ; scroll screen to insert extra space,
-                 !text esc,"W",0                          
-                 bra l264_1                               ; and go around again
+AutoScrolldn                                            ; wanting to scroll down
+                ldx #0                                  ; put cursor at top of screen
+                jsr AutoSearch                          ; search for a line number on screen, put it in linnum
+                ldx #0                                  ; get a blank line to print on
+                ldy #0                                  ; put cursor at top of screen
+                clc                                     
+                jsr _plot                               
+l264_1          jsr _primm                              ; and scroll screen (kill any pending Editor modes, too)
+                !text esc,esc,esc,"W",0                 
+                jsr FindLine                            ; find the line in program whose number we found on screen
+                lda lowtr                               ; (does not matter if it or next higher line is found)
+                cmp txttab                              
+                bne l264_2                              
+                lda lowtr+1                             
+                cmp txttab+1                            
+                bne l264_2                              
+                lda #$ff                                ; special case- it's the very first line, want to wrap to last line
+                sta linnum+1                            ; fake pointer to the last line,
+                jsr _primm                              ; scroll screen to insert extra space,
+                !text esc,"W",0                         
+                bra l264_1                              ; and go around again
 
-l264_2           lda txttab                               ; start at beginning of program (txttab) and find the line which points at (lowtr)
-                 ldx txttab+1                             
-l264_3           sta index                                ; pointer to link bytes
-                 stx index+1                              
-                 ldy #1                                   
-                 jsr indin1                               ; get link bytes
-                 tax                                      
-                 dey                                      
-                 jsr indin1                               
-                 cpx lowtr+1                              ; do link bytes point at target line?
-                 bne l264_3                               
-                 cmp lowtr                                
-                 bne l264_3                               ; no- use these link bytes to find next line
+l264_2          lda txttab                              ; start at beginning of program (txttab) and find the line which points at (lowtr)
+                ldx txttab+1                            
+l264_3          sta index                               ; pointer to link bytes
+                stx index+1                             
+                ldy #1                                  
+                jsr indin1                              ; get link bytes
+                tax                                     
+                dey                                     
+                jsr indin1                              
+                cpx lowtr+1                             ; do link bytes point at target line?
+                bne l264_3                              
+                cmp lowtr                               
+                bne l264_3                              ; no- use these link bytes to find next line
 
-                 lda index                                ; yes- copy pointer
-                 ldx index+1                              
-                 sta lowtr                                
-                 stx lowtr+1                              
+                lda index                               ; yes- copy pointer
+                ldx index+1                             
+                sta lowtr                               
+                stx lowtr+1                             
 ; bra AutoScrollprint ; print the line & exit
 
 

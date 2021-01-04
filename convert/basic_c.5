@@ -1,15 +1,15 @@
-chrget           inw txtptr                               ; get next character from text
-chrgot           ldy #0                                   ; re-get current character from text
-                 jsr indtxt                               ; lda (txtptr),y from RAM0
-qnum             cmp #' '                                 
-                 beq chrget                               ; skip spaces
-chrtst           cmp #':'                                 ; [910513]
-                 bcs l5_1                                 ; eol
-                 sec                                      
-                 sbc #'0'                                 ; alpha or numeric?
-                 sec                                      
-                 sbc #$d0                                 
-l5_1             rts                                      
+chrget          inw txtptr                              ; get next character from text
+chrgot          ldy #0                                  ; re-get current character from text
+                jsr indtxt                              ; lda (txtptr),y from RAM0
+qnum            cmp #' '                                
+                beq chrget                              ; skip spaces
+chrtst          cmp #':'                                ; [910513]
+                bcs l5_1                                ; eol
+                sec                                     
+                sbc #'0'                                ; alpha or numeric?
+                sec                                     
+                sbc #$d0                                
+l5_1            rts                                     
 
 
 ;.end

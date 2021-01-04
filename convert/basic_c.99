@@ -1,23 +1,23 @@
-lsloop           lda _pky_buffer,y                        ; print key definition
-                 iny                                      
-                 pha                                      ; save character
-                 phx                                      ; save position in output string
+lsloop          lda _pky_buffer,y                       ; print key definition
+                iny                                     
+                pha                                     ; save character
+                phx                                     ; save position in output string
 
-                 ldx #4                                   ; check for special (non-printable) characters
-l99_1            cmp keychr-1,x                           
-                 beq list_special                         ; yes, display it as 'CHR$(...)'
-                 dex                                      
-                 bne l99_1                                
+                ldx #4                                  ; check for special (non-printable) characters
+l99_1           cmp keychr-1,x                          
+                beq list_special                        ; yes, display it as 'CHR$(...)'
+                dex                                     
+                bne l99_1                               
 
-                 plx                                      ; restore position
-                 cpx #8                                   
-                 bcc l99_2                                ; 1st time thru- display leading quote
-                 bne l99_3                                ; previous was a character- no additions needed
-                 lda #'+'                                 ; add since previous was quote or return
-                 jsr _bsout                               
-l99_2            lda #'"'                                 
-                 jsr _bsout                               ; add leading quote
-l99_3            pla                                      ; restore character
-                 jsr _bsout                               ; display it
-                 ldx #9                                   ; mark normal character
+                plx                                     ; restore position
+                cpx #8                                  
+                bcc l99_2                               ; 1st time thru- display leading quote
+                bne l99_3                               ; previous was a character- no additions needed
+                lda #'+'                                ; add since previous was quote or return
+                jsr _bsout                              
+l99_2           lda #'"'                                
+                jsr _bsout                              ; add leading quote
+l99_3           pla                                     ; restore character
+                jsr _bsout                              ; display it
+                ldx #9                                  ; mark normal character
 

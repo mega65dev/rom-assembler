@@ -1,22 +1,22 @@
-rdcn             lda poker                                
-                 sta dosstr,x                             
-                 lda poker+1                              
-                 inx                                      
-                 bra sdp5                                 ; always
+rdcn            lda poker                               
+                sta dosstr,x                            
+                lda poker+1                             
+                inx                                     
+                bra sdp5                                ; always
 
 
 ; Move file names
 
-rsfn             ldy dosf1l                               ; file name 1: get length
-                 beq rdrt0                                ; if null string
+rsfn            ldy dosf1l                              ; file name 1: get length
+                beq rdrt0                               ; if null string
 
-                 ldy #0                                   ; move name to dosstr
-l242_1           lda savram,y                             
-                 sta dosstr,x                             
-                 inx                                      
-                 iny                                      
-                 cpy dosf1l                               
-                 bne l242_1                               ; if move not complete
-                 bra rdrt1                                ; always
+                ldy #0                                  ; move name to dosstr
+l242_1          lda savram,y                            
+                sta dosstr,x                            
+                inx                                     
+                iny                                     
+                cpy dosf1l                              
+                bne l242_1                              ; if move not complete
+                bra rdrt1                               ; always
 
 

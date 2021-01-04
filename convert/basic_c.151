@@ -1,80 +1,80 @@
-rmulc            !text 152,53,68,122,0                    
-raddc            !text 104,40,177,70,0                    
+rmulc           !text 152,53,68,122,0                   
+raddc           !text 104,40,177,70,0                   
 
 ;.end
 
 ;[[math.ext1]]
 
 
-n32768           !text $90,$80,0,0,0                      
+n32768          !text $90,$80,0,0,0                     
 
 
-flpint           jsr ayint                                
-                 lda facmo                                
-                 ldy  faclo                               
-                 rts                                      
+flpint          jsr ayint                               
+                lda facmo                               
+                ldy  faclo                              
+                rts                                     
 
 
-intidx           jsr chrget                               
-                 jsr frmevl                               ; get a number
+intidx          jsr chrget                              
+                jsr frmevl                              ; get a number
 
 
-posint           jsr chknum                               
-                 lda facsgn                               
-                 bmi nonono                               ; if negative, blow him out
+posint          jsr chknum                              
+                lda facsgn                              
+                bmi nonono                              ; if negative, blow him out
 
 
-ayint            lda facexp                               
-                 cmp #$90                                 ; FAC > 32767?
-                 bcc qintgo                               
-                 lda #<n32768                             ; get address of -32768
-                 ldy #>n32768                             
-                 jsr fcomp                                ; see if FAC=((x))
+ayint           lda facexp                              
+                cmp #$90                                ; FAC > 32767?
+                bcc qintgo                              
+                lda #<n32768                            ; get address of -32768
+                ldy #>n32768                            
+                jsr fcomp                               ; see if FAC=((x))
 
-nonono           +lbne fcerr                              ; no, FAC is too big
-qintgo           +lbra qint                               ; go shove it
+nonono          +lbne fcerr                             ; no, FAC is too big
+qintgo          +lbra qint                              ; go shove it
 
 
 ; Float an unsigned double byte integer
 ; Entry:  MSB in (a), LSB in (y)
 
-nosflt           jsr stoint                               
-                 sec                                      ; sign is positive
-                 +lbra floatc                             
+nosflt          jsr stoint                              
+                sec                                     ; sign is positive
+                +lbra floatc                            
 
 
 
-pos              sec                                      
-                 jsr _plot                                ; get tab pos in .y
+pos             sec                                     
+                jsr _plot                               ; get tab pos in .y
 
-sngflt           lda #0                                   
-                 +lbra givayf                             ; float it
+sngflt          lda #0                                  
+                +lbra givayf                            ; float it
 
 
 
-stoint           ldx #0                                   ; move int to fac & compute proper exponents
-                 stx valtyp                               
-                 sta facho                                
-                 sty facho+1                              
-                 ldx #$90                                 
-storts           rts                                      
+stoint          ldx #0                                  ; move int to fac & compute proper exponents
+                stx valtyp                              
+                sta facho                               
+                sty facho+1                             
+                ldx #$90                                
+storts          rts                                     
 
 
 
 ; See if we are in direct mode, and complain if so.
 
-errdir           bbs7 runmod,storts                       ; goto error if not in run mode
+errdir          bbs7 runmod,storts                      ; goto error if not in run mode
 
-                 ldx #errid                               ; input direct error code
-                 !text $2c                                
+                ldx #errid                              ; input direct error code
+                !text $2c                               
 
-errguf           ldx #erruf                               
-                 +lbra error                              
+errguf          ldx #erruf                              
+                +lbra error                             
 
 
-errind           bbr7 runmod,storts                       ; goto error if not in direct mode
-                 ldx #erroid                              
-                 +lbra error                              
+errind          bbr7 runmod,storts                      ; goto error if not in direct mode
+                ldx #erroid                             
+                +lbra error                             
 
 ;.end
 
@@ -96,107 +96,107 @@ errind           bbr7 runmod,storts                       ; goto error if not in
 ;  A text pointer to the formula
 ;  A pointer to the argument variable
 
-def              jsr getfnm                               ; get a pointer to the function
-                 jsr errdir                               
-                 jsr chkopn                               ; must have a (
-                 lda #$80                                 
-                 sta subflg                               ; prohibit subscripted & integer variables
-                 jsr ptrget                               ; get pointer to argument
-                 jsr chknum                               ; is it a number?
-                 jsr chkcls                               ; must have )
-                 lda #equal_token                         ; followed by =
-                 jsr synchr                               
-                 pha                                      
-                 lda varpnt+1                             
-                 pha                                      
-                 lda varpnt                               
-                 pha                                      
-                 lda txtptr+1                             
-                 pha                                      
-                 lda txtptr                               
-                 pha                                      
-                 jsr data                                 
-                 bra deffin                               
+def             jsr getfnm                              ; get a pointer to the function
+                jsr errdir                              
+                jsr chkopn                              ; must have a (
+                lda #$80                                
+                sta subflg                              ; prohibit subscripted & integer variables
+                jsr ptrget                              ; get pointer to argument
+                jsr chknum                              ; is it a number?
+                jsr chkcls                              ; must have )
+                lda #equal_token                        ; followed by =
+                jsr synchr                              
+                pha                                     
+                lda varpnt+1                            
+                pha                                     
+                lda varpnt                              
+                pha                                     
+                lda txtptr+1                            
+                pha                                     
+                lda txtptr                              
+                pha                                     
+                jsr data                                
+                bra deffin                              
 
 
 ; Subroutine to get a pointer to a function name
 
-getfnm           lda #fn_token                            ; must start with fn
-                 jsr synchr                               
-                 ora #$80                                 ; put function bit on
-                 sta subflg                               ; (disallows array & integer variables)
-                 jsr ptrgt2                               ; get pointer to function or create anew
-                 sta defpnt                               
-                 sty defpnt+1                             
-                 +lbra chknum                             ; make sure it's not a string, and return
+getfnm          lda #fn_token                           ; must start with fn
+                jsr synchr                              
+                ora #$80                                ; put function bit on
+                sta subflg                              ; (disallows array & integer variables)
+                jsr ptrgt2                              ; get pointer to function or create anew
+                sta defpnt                              
+                sty defpnt+1                            
+                +lbra chknum                            ; make sure it's not a string, and return
 
 
-fndoer           jsr getfnm                               ; get the function's name
-                 lda defpnt+1                             
-                 pha                                      
-                 lda defpnt                               
-                 pha                                      
-                 jsr parchk                               ; evaluate parameter
-                 jsr chknum                               
-                 pla                                      
-                 sta defpnt                               
-                 pla                                      
-                 sta defpnt+1                             
-                 ldy #2                                   
-                 jsr inddef                               ; get pointer to the variable
-                 sta varpnt                               ; save variable pointer
-                 tax                                      
-                 iny                                      
-                 jsr inddef                               
-                 beq errguf                               
-                 sta varpnt+1                             
-                 iny                                      ; since def uses only 4
+fndoer          jsr getfnm                              ; get the function's name
+                lda defpnt+1                            
+                pha                                     
+                lda defpnt                              
+                pha                                     
+                jsr parchk                              ; evaluate parameter
+                jsr chknum                              
+                pla                                     
+                sta defpnt                              
+                pla                                     
+                sta defpnt+1                            
+                ldy #2                                  
+                jsr inddef                              ; get pointer to the variable
+                sta varpnt                              ; save variable pointer
+                tax                                     
+                iny                                     
+                jsr inddef                              
+                beq errguf                              
+                sta varpnt+1                            
+                iny                                     ; since def uses only 4
 
 
-defstf           lda #varpnt                              
-                 jsr lda_far_ram1                         
-                 pha                                      ; push it all on the stack, since we might be recursing
-                 dey                                      
-                 bpl defstf                               
-                 ldy varpnt+1                             
+defstf          lda #varpnt                             
+                jsr lda_far_ram1                        
+                pha                                     ; push it all on the stack, since we might be recursing
+                dey                                     
+                bpl defstf                              
+                ldy varpnt+1                            
 
-                 jsr movmf_ram1                           ; put current FAC into our argument variable
-                 lda txtptr+1                             ; save variable pointer
-                 pha                                      
-                 lda txtptr                               
-                 pha                                      
-                 jsr inddef                               ; get pointer to function
-                 sta txtptr                               
-                 iny                                      
-                 jsr inddef                               
-                 sta txtptr+1                             
-                 lda varpnt+1                             ; save variable pointer
-                 pha                                      
-                 lda varpnt                               
-                 pha                                      
-                 jsr frmnum                               ; evaluate variable, and check numeric
-                 pla                                      
-                 sta defpnt                               
-                 pla                                      
-                 sta defpnt+1                             
-                 jsr chrgot                               
-                 +lbne snerr                              ; it didn't terminate, syntax error
+                jsr movmf_ram1                          ; put current FAC into our argument variable
+                lda txtptr+1                            ; save variable pointer
+                pha                                     
+                lda txtptr                              
+                pha                                     
+                jsr inddef                              ; get pointer to function
+                sta txtptr                              
+                iny                                     
+                jsr inddef                              
+                sta txtptr+1                            
+                lda varpnt+1                            ; save variable pointer
+                pha                                     
+                lda varpnt                              
+                pha                                     
+                jsr frmnum                              ; evaluate variable, and check numeric
+                pla                                     
+                sta defpnt                              
+                pla                                     
+                sta defpnt+1                            
+                jsr chrgot                              
+                +lbne snerr                             ; it didn't terminate, syntax error
 
-                 pla                                      ; restore text pointer
-                 sta txtptr                               
-                 pla                                      
-                 sta txtptr+1                             
+                pla                                     ; restore text pointer
+                sta txtptr                              
+                pla                                     
+                sta txtptr+1                            
 
-deffin           ldy #0                                   
-l151_1           pla                                      ; get old arg value off stack,
-                 phx                                      
-                 ldx #defpnt                              
-                 jsr sta_far_ram1 ;sta (defpnt),y         ; and put it back in variable
-                 plx                                      
-                 iny                                      
-                 cpy #5                                   
-                 bne l151_1                               
-                 rts                                      
+deffin          ldy #0                                  
+l151_1          pla                                     ; get old arg value off stack,
+                phx                                     
+                ldx #defpnt                             
+                jsr sta_far_ram1 ;sta (defpnt),y        ; and put it back in variable
+                plx                                     
+                iny                                     
+                cpy #5                                  
+                bne l151_1                              
+                rts                                     
 
 ;.end
 ;[[function.stringmisc]]

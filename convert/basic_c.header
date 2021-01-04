@@ -110,127 +110,127 @@
 ;[[data.constants]]
 ; General assignments and equates
 
-doslfn           = 0                                      ; DOS' private logical file number
-dosffn           = 8                                      ; DOS' default drive number
+doslfn          = 0                                     ; DOS' private logical file number
+dosffn          = 8                                     ; DOS' default drive number
 
-strsiz           = 3                                      ; string descriptor size in temps. and arrays
-lengos           = 5                                      ; length of a GOSUB entry on the runtime stack
-lenfor           = 18                                     ; length of a FOR entry in the runtime stack
+strsiz          = 3                                     ; string descriptor size in temps. and arrays
+lengos          = 5                                     ; length of a GOSUB entry on the runtime stack
+lenfor          = 18                                    ; length of a FOR entry in the runtime stack
 
 ; maxchr = 80  ;misc. command equates
 ; llen  = 40
 ; nlines = 25
-column_width     = 10                                     ; print comma spacing
+column_width    = 10                                    ; print comma spacing
 
-beats_pal        = 1200                                   ; whole note (4/4 time = 2sec.)    [910724]
-beats_ntsc       = 1440                                   ; 
+beats_pal       = 1200                                  ; whole note (4/4 time = 2sec.)    [910724]
+beats_ntsc      = 1440                                  ; 
 
-lf               = $0a                                    ; line feed
-cr               = $0d                                    ; carriage return
-esc              = $1b                                    ; escape
-pi               = $ff                                    
+lf              = $0a                                   ; line feed
+cr              = $0d                                   ; carriage return
+esc             = $1b                                   ; escape
+pi              = $ff                                   
 
-basbgn           = $2000                                  ; bottom of BASIC text bank
-baswrk           = basbgn+1                               ; where BASIC text starts
-varbgn           = $2000                                  ; bottom of BASIC data bank (C65: DOS RAM below $12000)
-bank_0_top       = $8000                                  ; top of BASIC text bank ($FF00)    [910528]
-bank_1_top       = $8000                                  ; top of BASIC data bank ($f800, VIC attributes)  [910528]
+basbgn          = $2000                                 ; bottom of BASIC text bank
+baswrk          = basbgn+1                              ; where BASIC text starts
+varbgn          = $2000                                 ; bottom of BASIC data bank (C65: DOS RAM below $12000)
+bank_0_top      = $8000                                 ; top of BASIC text bank ($FF00)    [910528]
+bank_1_top      = $8000                                 ; top of BASIC data bank ($f800, VIC attributes)  [910528]
 
 ; graphic_base = $2000
 ; color_ram_lo = $1c00
 ; color_ram_hi = $d800
 
-vic              = $d000                                  ; Video controller
+vic             = $d000                                 ; Video controller
 
-fdc              = $d080                                  ; Built-in floppy disk controller
+fdc             = $d080                                 ; Built-in floppy disk controller
 
-sid1             = $d400                                  ; Audio processors (right)
-sid2             = $d420                                  ; (left)
+sid1            = $d400                                 ; Audio processors (right)
+sid2            = $d420                                 ; (left)
 
-d1_6526          = $dc00                                  ; Ports, peripheral control
-d1pra            = d1_6526                                
-d2_6526          = $dd00                                  
-d2pra            = d2_6526                                
+d1_6526         = $dc00                                 ; Ports, peripheral control
+d1pra           = d1_6526                               
+d2_6526         = $dd00                                 
+d2pra           = d2_6526                               
 
-dma_ctlr         = $d700                                  ; DMA Controller
+dma_ctlr        = $d700                                 ; DMA Controller
 
 
 ;  BASIC base page storage
 ;[[data.zeropage]]
 
-                 * = $0000                                
+                * = $0000                               
 
-                 !fill 2                                  ; '4510' registers (not used in C65 mode)
-srchtk           !fill 1                                  ; token 'search' looks for (run-time stack) / SYS 'bank#'
+                !fill 2                                 ; '4510' registers (not used in C65 mode)
+srchtk          !fill 1                                 ; token 'search' looks for (run-time stack) / SYS 'bank#'
 
-                 * = $000a                                ; skip over SYS address, status, a/x/y/z registers
+                * = $000a                               ; skip over SYS address, status, a/x/y/z registers
 
-integr                                                    ; used by math routines (this & following location)
-charac           !fill 1                                  
-endchr           !fill 1                                  
-verck            !fill 1                                  ; LOAD/VERIFY flag
-count            !fill 1                                  ; temp used all over
-dimflg           !fill 1                                  ; DIM flag used by variable search
-valtyp           !fill 1                                  ; 0=numeric, $FF=string
-intflg           !fill 1                                  ; b7: (0=float,1=integer), b6: (1=get flag)
-garbfl                                                    ; garbage collection temporary
-dores            !fill 1                                  ; b7: P1LINE quote flag
-subflg           !fill 1                                  ; b7: subscript flag (set to disallow subscripts() & integers%)
-input_flag       !fill 1                                  ; READ($98), GET($40), or INPUT($00)
-domask                                                    
-tansgn           !fill 1                                  
-channl           !fill 1                                  ; active I/O channel
-poker                                                     ; temp used all over
-linnum           !fill 2                                  ; line number
+integr                                                  ; used by math routines (this & following location)
+charac          !fill 1                                 
+endchr          !fill 1                                 
+verck           !fill 1                                 ; LOAD/VERIFY flag
+count           !fill 1                                 ; temp used all over
+dimflg          !fill 1                                 ; DIM flag used by variable search
+valtyp          !fill 1                                 ; 0=numeric, $FF=string
+intflg          !fill 1                                 ; b7: (0=float,1=integer), b6: (1=get flag)
+garbfl                                                  ; garbage collection temporary
+dores           !fill 1                                 ; b7: P1LINE quote flag
+subflg          !fill 1                                 ; b7: subscript flag (set to disallow subscripts() & integers%)
+input_flag      !fill 1                                 ; READ($98), GET($40), or INPUT($00)
+domask                                                  
+tansgn          !fill 1                                 
+channl          !fill 1                                 ; active I/O channel
+poker                                                   ; temp used all over
+linnum          !fill 2                                 ; line number
 
-temppt           !fill 1                                  ; pointer to next temporary descriptor in tempst
-lastpt           !fill 2                                  ; pointer to last used temporary string
-tempst           !fill 9                                  ; temporary descriptor pointers (3 at 3 bytes each)
+temppt          !fill 1                                 ; pointer to next temporary descriptor in tempst
+lastpt          !fill 2                                 ; pointer to last used temporary string
+tempst          !fill 9                                 ; temporary descriptor pointers (3 at 3 bytes each)
 
-index                                                     
-index1           !fill 2                                  
-index2           !fill 2                                  
+index                                                   
+index1          !fill 2                                 
+index2          !fill 2                                 
 
-multiplicand                                              ; 2 bytes wide, for unsigned integer multiply
-resho            !fill 1                                  
-resmoh           !fill 1                                  
-product                                                   ; 3 bytes wide, for unsigned integer multiply
-addend                                                    
-resmo            !fill 1                                  
-reslo            !fill 1                                  
-                 !fill 1                                  
-txttab           !fill 2                                  ; where BASIC program begins   (text_bank)
-vartab           !fill 2                                  ; where variable descriptors begin  (var_bank)
-arytab           !fill 2                                  ; where array table begins   (var_bank)
-strend           !fill 2                                  ; where arrays table ends   (var_bank)
-fretop           !fill 2                                  ; bottom of string storage   (var_bank)
-frespc           !fill 2                                  ; where temporary strings begin   (var_bank)
-max_mem_1        !fill 2                                  ; highest address available to BASIC in RAM 1 (var_bank)
-curlin           !fill 2                                  
-txtptr           !fill 2                                  ; pointer to BASIC text used by CHRGET, etc.
-form                                                      ; used by print using
-fndpnt           !fill 2                                  ; pointer to item found by search
-datlin           !fill 2                                  
-datptr           !fill 2                                  
-inpptr           !fill 2                                  
-varnam           !fill 2                                  
-fdecpt                                                    
-varpnt           !fill 2                                  
-lstpnt                                                    
-andmsk                                                    
-forpnt           !fill 2                                  
-eormsk           =forpnt+1                                
-vartxt                                                    
-opptr            !fill 2                                  
-opmask           !fill 1                                  
-grbpnt                                                    
-tempf3                                                    
-defpnt           !fill 2                                  
-dscpnt           !fill 2                                  
-token_saver                                               ; temp used by P1LINE/HELPSB (was spare????) [910628]
-trmpos           !fill 1                                  ; temp used by SPC(), TAB()   [910628]
+multiplicand                                            ; 2 bytes wide, for unsigned integer multiply
+resho           !fill 1                                 
+resmoh          !fill 1                                 
+product                                                 ; 3 bytes wide, for unsigned integer multiply
+addend                                                  
+resmo           !fill 1                                 
+reslo           !fill 1                                 
+                !fill 1                                 
+txttab          !fill 2                                 ; where BASIC program begins   (text_bank)
+vartab          !fill 2                                 ; where variable descriptors begin  (var_bank)
+arytab          !fill 2                                 ; where array table begins   (var_bank)
+strend          !fill 2                                 ; where arrays table ends   (var_bank)
+fretop          !fill 2                                 ; bottom of string storage   (var_bank)
+frespc          !fill 2                                 ; where temporary strings begin   (var_bank)
+max_mem_1       !fill 2                                 ; highest address available to BASIC in RAM 1 (var_bank)
+curlin          !fill 2                                 
+txtptr          !fill 2                                 ; pointer to BASIC text used by CHRGET, etc.
+form                                                    ; used by print using
+fndpnt          !fill 2                                 ; pointer to item found by search
+datlin          !fill 2                                 
+datptr          !fill 2                                 
+inpptr          !fill 2                                 
+varnam          !fill 2                                 
+fdecpt                                                  
+varpnt          !fill 2                                 
+lstpnt                                                  
+andmsk                                                  
+forpnt          !fill 2                                 
+eormsk          =forpnt+1                               
+vartxt                                                  
+opptr           !fill 2                                 
+opmask          !fill 1                                 
+grbpnt                                                  
+tempf3                                                  
+defpnt          !fill 2                                 
+dscpnt          !fill 2                                 
+token_saver                                             ; temp used by P1LINE/HELPSB (was spare????) [910628]
+trmpos          !fill 1                                 ; temp used by SPC(), TAB()   [910628]
 
-helper           !fill 1                                  ; P1LINE flag b7: HELP vs. LIST
+helper          !fill 1                                 ; P1LINE flag b7: HELP vs. LIST
 ;  b6: memory vs. file
 ;  b5: FIND/CHANGE
 ;  b4: highlight tokens
@@ -238,185 +238,185 @@ helper           !fill 1                                  ; P1LINE flag b7: HELP
 ;  b1: LINGET flag for AUTOSCROLL
 ;  b0: token in progress
 
-jmper            !fill 1                                  ; 3 locations used by Function handler
-                 !fill 1                                  ; 
-oldov            !fill 1                                  ; 
+jmper           !fill 1                                 ; 3 locations used by Function handler
+                !fill 1                                 ; 
+oldov           !fill 1                                 ; 
 
-tempf1           !fill 1                                  ; used by math routines
-ptarg1           =tempf1                                  ; multiply defined for INSTR thru FACexp
-ptarg2           =tempf1+2                                ; (also used by Monitor Utility, thru lowtr)
-str1             =tempf1+4                                
-str2             =tempf1+7                                
-positn           =tempf1+10                               
-match            =tempf1+11                               
+tempf1          !fill 1                                 ; used by math routines
+ptarg1          =tempf1                                 ; multiply defined for INSTR thru FACexp
+ptarg2          =tempf1+2                               ; (also used by Monitor Utility, thru lowtr)
+str1            =tempf1+4                               
+str2            =tempf1+7                               
+positn          =tempf1+10                              
+match           =tempf1+11                              
 
-arypnt                                                    
-highds           !fill 2                                  
-hightr           !fill 2                                  
+arypnt                                                  
+highds          !fill 2                                 
+hightr          !fill 2                                 
 
-tempf2           !fill 1                                  ; used by math routines
-deccnt           !fill 2                                  
-tenexp           = deccnt+1                               
-grbtop                                                    
-dptflg                                                    
-lowtr            !fill 1                                  
-expsgn           !fill 1                                  
+tempf2          !fill 1                                 ; used by math routines
+deccnt          !fill 2                                 
+tenexp          = deccnt+1                              
+grbtop                                                  
+dptflg                                                  
+lowtr           !fill 1                                 
+expsgn          !fill 1                                 
 
-fac                                                       ; Floating point accumulator (primary) FAC1
-dsctmp                                                    
-facexp           !fill 1                                  
-facho            !fill 1                                  
-facmoh           !fill 1                                  
-indice                                                    
-facmo            !fill 1                                  
-faclo            !fill 1                                  
-facsgn           !fill 1                                  
-degree                                                    
-sgnflg           !fill 1                                  
+fac                                                     ; Floating point accumulator (primary) FAC1
+dsctmp                                                  
+facexp          !fill 1                                 
+facho           !fill 1                                 
+facmoh          !fill 1                                 
+indice                                                  
+facmo           !fill 1                                 
+faclo           !fill 1                                 
+facsgn          !fill 1                                 
+degree                                                  
+sgnflg          !fill 1                                 
 
-argexp           !fill 1                                  ; Floating point accumulator (secondary) FAC2
-argho            !fill 1                                  
-argmoh           !fill 1                                  
-argmo            !fill 1                                  
-arglo            !fill 1                                  
-argsgn           !fill 1                                  
+argexp          !fill 1                                 ; Floating point accumulator (secondary) FAC2
+argho           !fill 1                                 
+argmoh          !fill 1                                 
+argmo           !fill 1                                 
+arglo           !fill 1                                 
+argsgn          !fill 1                                 
 
-strng1                                                    
-arisgn           !fill 1                                  
-facov            !fill 1                                  
+strng1                                                  
+arisgn          !fill 1                                 
+facov           !fill 1                                 
 
-strng2                                                    
-polypt                                                    
-curtol                                                    
-fbufpt           !fill 2                                  
+strng2                                                  
+polypt                                                  
+curtol                                                  
+fbufpt          !fill 2                                 
 
-autinc           !fill 2                                  ; incremental value for AUTO (0=off)
+autinc          !fill 2                                 ; incremental value for AUTO (0=off)
 
-z_p_temp_1       !fill 1                                  ; USING's leading zero counter
+z_p_temp_1      !fill 1                                 ; USING's leading zero counter
 ;GET, RENUMBER, KEY temporary
 ;MOVSPR, SPRITE, PLAY, VOL temporary
 ;MID$= temporary
 
-hulp                                                      ; counter
-keysiz           !fill 1                                  
+hulp                                                    ; counter
+keysiz          !fill 1                                 
 
-syntmp           !fill 1                                  ; used as temp all over the place
-dsdesc           !fill 3                                  ; descriptor for DS$
-tos              !fill 2                                  ; top of run time stack
-runmod           !fill 1                                  ; flags run/direct(b7), load(b6), trace(b5), edit(b4) modes
+syntmp          !fill 1                                 ; used as temp all over the place
+dsdesc          !fill 3                                 ; descriptor for DS$
+tos             !fill 2                                 ; top of run time stack
+runmod          !fill 1                                 ; flags run/direct(b7), load(b6), trace(b5), edit(b4) modes
 ; autoboot wedge (b0)
-point                                                     ; USING's pointer to decimal point, 2 bytes used by AutoScroll
-parsts           !fill 1                                  ; DOS parser status word
-parstx           !fill 1                                  ; DOS parser status extensions
+point                                                   ; USING's pointer to decimal point, 2 bytes used by AutoScroll
+parsts          !fill 1                                 ; DOS parser status word
+parstx          !fill 1                                 ; DOS parser status extensions
 
-oldstk           !fill 1                                  ; BASIC saves uP stack pointer here
+oldstk          !fill 1                                 ; BASIC saves uP stack pointer here
 
-text_top         !fill 2                                  ; top of BASIC text pointer  (in text_bank)
-text_bank        !fill 1                                  ; where BASIC text lives   (RAM0 default)
-var_bank         !fill 1                                  ; where BASIC vars live   (RAM1 default)
-sys_bank         = 0                                      ; where system space is  ???? (RAM0, make this a var?)
+text_top        !fill 2                                 ; top of BASIC text pointer  (in text_bank)
+text_bank       !fill 1                                 ; where BASIC text lives   (RAM0 default)
+var_bank        !fill 1                                 ; where BASIC vars live   (RAM1 default)
+sys_bank        = 0                                     ; where system space is  ???? (RAM0, make this a var?)
 
-sid_speed_flag   !fill 1                                  ; saves system speed during SID ops (used during IRQ)
+sid_speed_flag  !fill 1                                 ; saves system speed during SID ops (used during IRQ)
 
-time                                                      ; temporaries for TI, TI$, SLEEP (4 bytes)
-grapnt                                                    ; used by SPRSAV, RMOUSE, RCOLOR
-op                                                        
-column           !fill 1                                  ; temporaries for FIND/CHANGE, [L]INPUT, [L]READ, CURSOR
-srow                                                      
-fstr1            !fill 3                                  ; 
-fstr2            !fill 3                                  ; 
+time                                                    ; temporaries for TI, TI$, SLEEP (4 bytes)
+grapnt                                                  ; used by SPRSAV, RMOUSE, RCOLOR
+op                                                      
+column          !fill 1                                 ; temporaries for FIND/CHANGE, [L]INPUT, [L]READ, CURSOR
+srow                                                    
+fstr1           !fill 3                                 ; 
+fstr2           !fill 3                                 ; 
 
 
 ;[[system.stackdata]]
 
-                 * = $00ff                                
+                * = $00ff                               
 
-lofbuf           !fill 1                                  
-fbuffr           !fill 16                                 ; MathPack builds numbers here, USING, RENUMBER
+lofbuf          !fill 1                                 
+fbuffr          !fill 16                                ; MathPack builds numbers here, USING, RENUMBER
 
 ;  Kernel MAP configurations & DMA lists
 
-                 !fill 16+36                              ; (4 configs + 3 DMA lists)
+                !fill 16+36                             ; (4 configs + 3 DMA lists)
 
 ;  BASIC DMA lists  (2 @ 12bytes each = 24 bytes)
 
-dma1_cmd         !fill 1                                  ; This list is used by BASIC OS
-dma1_cnt_lo      !fill 1                                  
-dma1_cnt_hi      !fill 1                                  
-dma1_src_lo      !fill 1                                  
-dma1_src_hi      !fill 1                                  
-dma1_src_bank    !fill 1                                  
-dma1_dest_lo     !fill 1                                  
-dma1_dest_hi     !fill 1                                  
-dma1_dest_bank   !fill 1                                  
-dma1_subcmd      !fill 1                                  ; (from here on not supported until F018A) [910520] F018A
-dma1_mod_lo      !fill 1                                  
-dma1_mod_hi      !fill 1                                  
+dma1_cmd        !fill 1                                 ; This list is used by BASIC OS
+dma1_cnt_lo     !fill 1                                 
+dma1_cnt_hi     !fill 1                                 
+dma1_src_lo     !fill 1                                 
+dma1_src_hi     !fill 1                                 
+dma1_src_bank   !fill 1                                 
+dma1_dest_lo    !fill 1                                 
+dma1_dest_hi    !fill 1                                 
+dma1_dest_bank  !fill 1                                 
+dma1_subcmd     !fill 1                                 ; (from here on not supported until F018A) [910520] F018A
+dma1_mod_lo     !fill 1                                 
+dma1_mod_hi     !fill 1                                 
 
-dma2_cmd         !fill 1                                  ; This list is used by DMA command & Graphics
-dma2_cnt_lo      !fill 1                                  
-dma2_cnt_hi      !fill 1                                  
-dma2_src_lo      !fill 1                                  
-dma2_src_hi      !fill 1                                  
-dma2_src_bank    !fill 1                                  
-dma2_dest_lo     !fill 1                                  
-dma2_dest_hi     !fill 1                                  
-dma2_dest_bank   !fill 1                                  
-dma2_subcmd      !fill 1                                  ; (from here on not supported until F018A) [910520] F018A
-dma2_mod_lo      !fill 1                                  
-dma2_mod_hi      !fill 1                                  
+dma2_cmd        !fill 1                                 ; This list is used by DMA command & Graphics
+dma2_cnt_lo     !fill 1                                 
+dma2_cnt_hi     !fill 1                                 
+dma2_src_lo     !fill 1                                 
+dma2_src_hi     !fill 1                                 
+dma2_src_bank   !fill 1                                 
+dma2_dest_lo    !fill 1                                 
+dma2_dest_hi    !fill 1                                 
+dma2_dest_bank  !fill 1                                 
+dma2_subcmd     !fill 1                                 ; (from here on not supported until F018A) [910520] F018A
+dma2_mod_lo     !fill 1                                 
+dma2_mod_hi     !fill 1                                 
 
-                 !fill 1                                  ; Kernel's dma_byte
+                !fill 1                                 ; Kernel's dma_byte
 
-sysstk                                                    ; bottom of system stack
-stkend           = $1fb                                   ; top of system stack
+sysstk                                                  ; bottom of system stack
+stkend          = $1fb                                  ; top of system stack
 
 ;[[data.memory]]
 
 
-                 * = $0200                                
+                * = $0200                               
 
-buflen           = 161                                    ; input buffer size (2 80-column lines + 1)
-buf              !fill buflen                             ; BASIC/Monitor line input buffer
-buf_txtptr       = buf-1                                  
+buflen          = 161                                   ; input buffer size (2 80-column lines + 1)
+buf             !fill buflen                            ; BASIC/Monitor line input buffer
+buf_txtptr      = buf-1                                 
 
 
-                 * = $02c0                                
+                * = $02c0                               
 ; BASIC RAM code  (RAM code not needed- following moved to ROM)
 ;
 ; chrget *=*+42  ;get byte from text bank after incrementing TXTPTR
 ; chrgot = chrget+2 ;get byte from text bank at TXTPTR
 ; qnum  = chrget+27 ;evaluate byte as a number & set flags accordingly
 
-adray1           !fill 2                                  ; ptr to routine:  convert float -> integer ???? why keep
-adray2           !fill 2                                  ; ptr to routine:  convert integer -> float ???? why keep
-zero             !fill 3                                  ; numeric constant for BASIC, downloaded from ROM
+adray1          !fill 2                                 ; ptr to routine:  convert float -> integer ???? why keep
+adray2          !fill 2                                 ; ptr to routine:  convert integer -> float ???? why keep
+zero            !fill 3                                 ; numeric constant for BASIC, downloaded from ROM
 
-errnum           !fill 1                                  ; used by error trapping routine-last error number
-errlin           !fill 2                                  ; line # of last error ($FFFF if no error)
-trapno           !fill 2                                  ; line to go to on error ($FFxx if none set)
-tmptrp           !fill 1                                  ; hold trap # temporary
-errtxt           !fill 2                                  ; pointer to statement causing last error
-max_mem_0        !fill 2                                  ; highest address available to BASIC in RAM 0 (text bank)
+errnum          !fill 1                                 ; used by error trapping routine-last error number
+errlin          !fill 2                                 ; line # of last error ($FFFF if no error)
+trapno          !fill 2                                 ; line to go to on error ($FFxx if none set)
+tmptrp          !fill 1                                 ; hold trap # temporary
+errtxt          !fill 2                                 ; pointer to statement causing last error
+max_mem_0       !fill 2                                 ; highest address available to BASIC in RAM 0 (text bank)
 
-current_bank     !fill 1                                  ; context for PEEK,POKE,BOOT,SYS,WAIT,BLOAD/SAVE set by BANK.
-fin_bank         !fill 1                                  ; bank pointer for string->number conversion routine FIN
-tmpdes           !fill 4                                  ; pointers to temporary descriptors for INSTR
-bits             !fill 1                                  ; flag for math bit/byte shifter
-highlight_color  !fill 1                                  ; color for highlighting text
-highlight_save   !fill 1                                  ; saves normal color during highlighting, msb=flag
-find_count       !fill 1                                  ; count for LIST to highlight FIND text
+current_bank    !fill 1                                 ; context for PEEK,POKE,BOOT,SYS,WAIT,BLOAD/SAVE set by BANK.
+fin_bank        !fill 1                                 ; bank pointer for string->number conversion routine FIN
+tmpdes          !fill 4                                 ; pointers to temporary descriptors for INSTR
+bits            !fill 1                                 ; flag for math bit/byte shifter
+highlight_color !fill 1                                 ; color for highlighting text
+highlight_save  !fill 1                                 ; saves normal color during highlighting, msb=flag
+find_count      !fill 1                                 ; count for LIST to highlight FIND text
 
 ; Interrupt stuff
 
-irq_wrap_flag    !fill 1                                  ; used by BASIC_IRQ to block all but one IRQ call
-intval           !fill 1                                  ; BASIC interrupts enabled (via collision command)
-int_trip_flag    !fill 3                                  ; flags which interrupts occurred
-int_adr_lo       !fill 3                                  ; where to go for each type of collision (line number)
-int_adr_hi       !fill 3                                  ; 
-collisions       !fill 2                                  ; sprite collisions, s/s and s/bgnd, recorded during IRQ
-lightpen_xpos    !fill 1                                  ; lightpen position recorded during IRQ
-lightpen_ypos    !fill 1                                  
+irq_wrap_flag   !fill 1                                 ; used by BASIC_IRQ to block all but one IRQ call
+intval          !fill 1                                 ; BASIC interrupts enabled (via collision command)
+int_trip_flag   !fill 3                                 ; flags which interrupts occurred
+int_adr_lo      !fill 3                                 ; where to go for each type of collision (line number)
+int_adr_hi      !fill 3                                 ; 
+collisions      !fill 2                                 ; sprite collisions, s/s and s/bgnd, recorded during IRQ
+lightpen_xpos   !fill 1                                 ; lightpen position recorded during IRQ
+lightpen_ypos   !fill 1                                 
 
 ; dejavu *=*+1  ;'cold' or 'warm' reset status (must be in page 5!)????
 
@@ -426,125 +426,125 @@ lightpen_ypos    !fill 1
 
 ; BASIC indirect vectors
 
-                 * = $02f7                                
+                * = $02f7                               
 
-usrpok           !fill 3                                  ; USR vector (must be set by application)
+usrpok          !fill 3                                 ; USR vector (must be set by application)
 
-vectors_begin                                             
-iAutoScroll      !fill 2                                  ; AutoScroll vector
-esc_fn_vec       !fill 2                                  ; Escape Function vector
-graphic_vector   !fill 2                                  ; Graphic Kernel vector (was 'bnkvec')
-ierror           !fill 2                                  ; indirect error (output error in .x)
-imain            !fill 2                                  ; indirect main (system direct loop)
-icrnch           !fill 2                                  ; indirect crunch (tokenization routine)
-iqplop           !fill 2                                  ; indirect list (char list)
-igone            !fill 2                                  ; indirect gone (char dispatch)
-ieval            !fill 2                                  ; indirect eval (symbol evaluation)
-iesclk           !fill 2                                  ; escape token crunch
-iescpr           !fill 2                                  ; escape token list
-iescex           !fill 2                                  ; escape token execute
-itime            !fill 2                                  ; 60Hz interrupt vector (before jiffy)
-cinv             !fill 2                                  ; IRQ RAM vector
-cbinv            !fill 2                                  ; BRK RAM vector
+vectors_begin                                           
+iAutoScroll     !fill 2                                 ; AutoScroll vector
+esc_fn_vec      !fill 2                                 ; Escape Function vector
+graphic_vector  !fill 2                                 ; Graphic Kernel vector (was 'bnkvec')
+ierror          !fill 2                                 ; indirect error (output error in .x)
+imain           !fill 2                                 ; indirect main (system direct loop)
+icrnch          !fill 2                                 ; indirect crunch (tokenization routine)
+iqplop          !fill 2                                 ; indirect list (char list)
+igone           !fill 2                                 ; indirect gone (char dispatch)
+ieval           !fill 2                                 ; indirect eval (symbol evaluation)
+iesclk          !fill 2                                 ; escape token crunch
+iescpr          !fill 2                                 ; escape token list
+iescex          !fill 2                                 ; escape token execute
+itime           !fill 2                                 ; 60Hz interrupt vector (before jiffy)
+cinv            !fill 2                                 ; IRQ RAM vector
+cbinv           !fill 2                                 ; BRK RAM vector
 
 ; Remainder of this area reserved for Kernel indirects & Kernel RAM code
 
 
-                 * = $0400                                ; BASIC's run-time stack (2 pages)
-stktop                                                    ; (also used by BOOT SYS and Monitor)
-stkbot           = $05ff                                  
+                * = $0400                               ; BASIC's run-time stack (2 pages)
+stktop                                                  ; (also used by BOOT SYS and Monitor)
+stkbot          = $05ff                                 
 
 
-                 * = $0600                                ; Sprite definitions (2 pages, must be below $1000)
-sprite_base                                               
+                * = $0600                               ; Sprite definitions (2 pages, must be below $1000)
+sprite_base                                             
 
 
-                 * = $0800                                
-screen_start                                              ; Text display screen
-                 * = *+2000                               
+                * = $0800                               
+screen_start                                            ; Text display screen
+                * = *+2000                              
 
-sprite_ptrs_40   = screen_start+$3f8                      
-sprite_ptrs_80   = screen_start+$7f8                      
+sprite_ptrs_40  = screen_start+$3f8                     
+sprite_ptrs_80  = screen_start+$7f8                     
 
 
-                 * = $1170                                ; previous to this used by Kernel
+                * = $1170                               ; previous to this used by Kernel
 
-oldlin           !fill 2                                  ; BASIC storage
-oldtxt           !fill 2                                  ; BASIC storage
-rndx             !fill 5                                  ; Floating Point representation of last random #
+oldlin          !fill 2                                 ; BASIC storage
+oldtxt          !fill 2                                 ; BASIC storage
+rndx            !fill 5                                 ; Floating Point representation of last random #
 
 
 ; Yet more temporaries shared by various routines
 
-window_temp                                               ; window  (4 bytes)
-t3                                                        ; dcat  (1 byte)
-renum_tmp_1                                               ; renumber (2 bytes)
-tmptxt           !fill 2                                  ; do/loop (2 bytes)
+window_temp                                             ; window  (4 bytes)
+t3                                                      ; dcat  (1 byte)
+renum_tmp_1                                             ; renumber (2 bytes)
+tmptxt          !fill 2                                 ; do/loop (2 bytes)
 
-t4                                                        ; dcat  (2 bytes)
-renum_tmp_2                                               ; renumber (2 bytes)
-tmplin           !fill 2                                  ; do/loop (2 bytes)
+t4                                                      ; dcat  (2 bytes)
+renum_tmp_2                                             ; renumber (2 bytes)
+tmplin          !fill 2                                 ; do/loop (2 bytes)
 
 
 ;  BASIC/DOS interface vars  (20 bytes)
 
-dosofl           !fill 2                                  ; BLOAD/BSAVE starting addr
-dosofh           !fill 2                                  ; BSAVE ending addr
-dosla            !fill 1                                  ; DOS logical addr
-dosfa            !fill 1                                  ; DOS physical addr
-dossa            !fill 1                                  ; DOS secondary addr
+dosofl          !fill 2                                 ; BLOAD/BSAVE starting addr
+dosofh          !fill 2                                 ; BSAVE ending addr
+dosla           !fill 1                                 ; DOS logical addr
+dosfa           !fill 1                                 ; DOS physical addr
+dossa           !fill 1                                 ; DOS secondary addr
 
-xcnt             !fill 1                                  ; DOS loop counter------ this area zeroed-out each DOS call -----
-dosf1l           !fill 1                                  ; DOS filename 1 len
-dosds1           !fill 1                                  ; DOS disk drive 1
-dosf2l           !fill 1                                  ; DOS filename 2 len
-dosds2           !fill 1                                  ; DOS disk drive 2
-dosf2a           !fill 2                                  ; DOS filename 2 addr
-dosrcl           !fill 1                                  ; DOS record length
-dosbnk           !fill 1                                  ; DOS load/save bank
-dosdid           !fill 2                                  ; DOS ID identifier
-dosflags         !fill 1                                  ; DOS flags  7:ID,  6:recover
-dossa_temp       !fill 1                                  ; temp storage for file's sa during RECORD command
-dosspc           = *-xcnt                                 ; space used by DOS routines-------------------------------------
+xcnt            !fill 1                                 ; DOS loop counter------ this area zeroed-out each DOS call -----
+dosf1l          !fill 1                                 ; DOS filename 1 len
+dosds1          !fill 1                                 ; DOS disk drive 1
+dosf2l          !fill 1                                 ; DOS filename 2 len
+dosds2          !fill 1                                 ; DOS disk drive 2
+dosf2a          !fill 2                                 ; DOS filename 2 addr
+dosrcl          !fill 1                                 ; DOS record length
+dosbnk          !fill 1                                 ; DOS load/save bank
+dosdid          !fill 2                                 ; DOS ID identifier
+dosflags        !fill 1                                 ; DOS flags  7:ID,  6:recover
+dossa_temp      !fill 1                                 ; temp storage for file's sa during RECORD command
+dosspc          = *-xcnt                                ; space used by DOS routines-------------------------------------
 
-savram           !fill 67                                 ; buffer used by MOVSPR, SPRDEF, SAVSPR, and DOS parser
+savram          !fill 67                                ; buffer used by MOVSPR, SPRDEF, SAVSPR, and DOS parser
 
-xabs             = savram                                 ; movspr_line calculations   [910809]
-yabs             = savram+2                               
-xsgn             = savram+4                               
-ysgn             = savram+6                               
-fct              = savram+8                               
-errval           = savram+12                              
+xabs            = savram                                ; movspr_line calculations   [910809]
+yabs            = savram+2                              
+xsgn            = savram+4                              
+ysgn            = savram+6                              
+fct             = savram+8                              
+errval          = savram+12                             
 
 
 ; PRINT USING definitions & storage  (24 bytes)
 
-puchrs                                                    ; Declarations for PRINT USING...
-pufill           !fill 1                                  ; print using fill symbol
-pucoma           !fill 1                                  ; print using comma symbol
-pudot            !fill 1                                  ; print using decimal point symbol
-pumony           !fill 1                                  ; print using monetary symbol
+puchrs                                                  ; Declarations for PRINT USING...
+pufill          !fill 1                                 ; print using fill symbol
+pucoma          !fill 1                                 ; print using comma symbol
+pudot           !fill 1                                 ; print using decimal point symbol
+pumony          !fill 1                                 ; print using monetary symbol
 
-bnr              !fill 1                                  ; pointer to begin #
-enr              !fill 1                                  ; pointer to end #
-dolr             !fill 1                                  ; dollar flag
-flag             !fill 1                                  ; comma flag (also used by PLAY)????
-swe              !fill 1                                  ; counter
-usgn             !fill 1                                  ; sign exponent
-uexp             !fill 1                                  ; pointer to exponent
-vn               !fill 1                                  ; # of digits before decimal point
-chsn             !fill 1                                  ; justify flag
-vf               !fill 1                                  ; # of positions before decimal point (field)
-nf               !fill 1                                  ; # of positions after decimal point (field)
-posp             !fill 1                                  ; +/- flag (field)
-fesp             !fill 1                                  ; exponent flag (field)
-etof             !fill 1                                  ; switch
-cform            !fill 1                                  ; char counter (field)
-sno              !fill 1                                  ; sign no
-blfd             !fill 1                                  ; blank/star flag
-begfd            !fill 1                                  ; pointer to begin of field
-lfor             !fill 1                                  ; length of format
-endfd            !fill 1                                  ; pointer to end of field
+bnr             !fill 1                                 ; pointer to begin #
+enr             !fill 1                                 ; pointer to end #
+dolr            !fill 1                                 ; dollar flag
+flag            !fill 1                                 ; comma flag (also used by PLAY)????
+swe             !fill 1                                 ; counter
+usgn            !fill 1                                 ; sign exponent
+uexp            !fill 1                                 ; pointer to exponent
+vn              !fill 1                                 ; # of digits before decimal point
+chsn            !fill 1                                 ; justify flag
+vf              !fill 1                                 ; # of positions before decimal point (field)
+nf              !fill 1                                 ; # of positions after decimal point (field)
+posp            !fill 1                                 ; +/- flag (field)
+fesp            !fill 1                                 ; exponent flag (field)
+etof            !fill 1                                 ; switch
+cform           !fill 1                                 ; char counter (field)
+sno             !fill 1                                 ; sign no
+blfd            !fill 1                                 ; blank/star flag
+begfd           !fill 1                                 ; pointer to begin of field
+lfor            !fill 1                                 ; length of format
+endfd           !fill 1                                 ; pointer to end of field
 
 
 ;  * = $1200 ;BASIC Graphic, Sprite, Music, & Sound storage
@@ -622,18 +622,18 @@ endfd            !fill 1                                  ; pointer to end of fi
 
 ;  General graphic storage (used by C128-type sprite routines in C65)
 
-vwork                                                     ; graphics & sprite vars
-xpos             !fill 2                                  ; current x position
-ypos             !fill 2                                  ; current y position
-xdest            !fill 2                                  ; x-coordinate destination
-ydest            !fill 2                                  ; y-coordinate destination
+vwork                                                   ; graphics & sprite vars
+xpos            !fill 2                                 ; current x position
+ypos            !fill 2                                 ; current y position
+xdest           !fill 2                                 ; x-coordinate destination
+ydest           !fill 2                                 ; y-coordinate destination
 
-numcnt           !fill 1                                  ; temp, usually coordinate type
-vtemp1           !fill 1                                  ; used by sprite math stuff ????was base page
-vtemp2           !fill 1                                  ; ????was base page
-vtemp3           !fill 1                                  ; misc. graphic temp storage
-vtemp4           !fill 1                                  
-vtemp5           !fill 1                                  
+numcnt          !fill 1                                 ; temp, usually coordinate type
+vtemp1          !fill 1                                 ; used by sprite math stuff ????was base page
+vtemp2          !fill 1                                 ; ????was base page
+vtemp3          !fill 1                                 ; misc. graphic temp storage
+vtemp4          !fill 1                                 
+vtemp5          !fill 1                                 
 
 ; mvdflg *=*+1  ;flag if 10k hires allocated ???? this stuff was base page
 ; colsel *=*+1  ;current color selected
@@ -670,21 +670,21 @@ vtemp5           !fill 1
 
 ;  Angle stuff (used by sprites)
 
-angsgn           !fill 1                                  ; sign of angle
-sinval           !fill 2                                  ; sine of value of angle
-cosval           !fill 2                                  ; cosine of value of angle
+angsgn          !fill 1                                 ; sign of angle
+sinval          !fill 2                                 ; sine of value of angle
+cosval          !fill 2                                 ; cosine of value of angle
 ; angcnt *=*+2  ;temps for angle distance routines
 
 
 ; Sprite stuff
 
-savsiz           !fill 4                                  ; temp work locations for SSHAPE, SPRSAV, MOVSPR_TO
-lesser                                                    
-sprtmp_1         !fill 1                                  ; temp for SPRSAV
-greatr                                                    
-sprtmp_2         !fill 1                                  
+savsiz          !fill 4                                 ; temp work locations for SSHAPE, SPRSAV, MOVSPR_TO
+lesser                                                  
+sprtmp_1        !fill 1                                 ; temp for SPRSAV
+greatr                                                  
+sprtmp_2        !fill 1                                 
 
-sprite_data      !fill 88                                 ; speed/direction tables for 8 sprites, 11 bytes each
+sprite_data     !fill 88                                ; speed/direction tables for 8 sprites, 11 bytes each
 ;   move ang/dist move line
 ; offset= 0 b7=0+speed b7=1+speed
 ;  1 counter  counter lo
@@ -694,7 +694,7 @@ sprite_data      !fill 88                                 ; speed/direction tabl
 ;  7,8 total-X  fct2
 ;  9,10 total-Y  error
 
-init_as_0        = *-sprite_data-1                        
+init_as_0       = *-sprite_data-1                       
 
 ; vic_save *=*+21  ;copy of VIC reg's, used to update chip during retrace
 
@@ -705,121 +705,121 @@ init_as_0        = *-sprite_data-1
 
 ; Music stuff driving stereo SIDs, 3 voices each
 
-voices           !fill 12                                 ; Voice counters (activity flags)  [910612] stereo
-waveform         !fill 6                                  ; Waveforms for each voice   [910612] stereo
+voices          !fill 12                                ; Voice counters (activity flags)  [910612] stereo
+waveform        !fill 6                                 ; Waveforms for each voice   [910612] stereo
 
-voice            !fill 1                                  ; Play note parameters
-octave           !fill 1                                  
-sharp            !fill 1                                  
-dnote            !fill 1                                  
-tempo_rate       !fill 1                                  ; duration of whole note 4/4 time = 24/rate
-pitch            !fill 2                                  
-ntime            !fill 2                                  
+voice           !fill 1                                 ; Play note parameters
+octave          !fill 1                                 
+sharp           !fill 1                                 
+dnote           !fill 1                                 
+tempo_rate      !fill 1                                 ; duration of whole note 4/4 time = 24/rate
+pitch           !fill 2                                 
+ntime           !fill 2                                 
 
-filters1         !fill 4                                  ; Volume & Filter parameters   [910612] was 5
-filters2         !fill 4                                  ; [910612] stereo
-fltsav           !fill 4                                  ; temps
-fltflg           !fill 1                                  ; temp
+filters1        !fill 4                                 ; Volume & Filter parameters   [910612] was 5
+filters2        !fill 4                                 ; [910612] stereo
+fltsav          !fill 4                                 ; temps
+fltflg          !fill 1                                 ; temp
 
-tonnum           !fill 1                                  ; Tune Envelope stuff
-tonval           !fill 3                                  
+tonnum          !fill 1                                 ; Tune Envelope stuff
+tonval          !fill 3                                 
 
-atktab           !fill 10                                 ; Tune Envelopes
-sustab           !fill 10                                 
-wavtab           !fill 10                                 
-pulslw           !fill 10                                 
-pulshi           !fill 10                                 
+atktab          !fill 10                                ; Tune Envelopes
+sustab          !fill 10                                
+wavtab          !fill 10                                
+pulslw          !fill 10                                
+pulshi          !fill 10                                
 
-parcnt           !fill 1                                  ; temp: envelope
-nibble           !fill 1                                  ; temp: envelope, filter
+parcnt          !fill 1                                 ; temp: envelope
+nibble          !fill 1                                 ; temp: envelope, filter
 
 
 ; SOUND command stuff
 
-sound_voice      !fill 1                                  
-sound_time_lo    !fill 3+3                                ; [910612] stereo
-sound_time_hi    !fill 3+3                                ; [910612] stereo
-sound_max_lo     !fill 3+3                                ; [910612] stereo
-sound_max_hi     !fill 3+3                                ; [910612] stereo
-sound_min_lo     !fill 3+3                                ; [910612] stereo
-sound_min_hi     !fill 3+3                                ; [910612] stereo
-sound_direction  !fill 3+3                                ; [910612] stereo
-sound_step_lo    !fill 3+3                                ; [910612] stereo
-sound_step_hi    !fill 3+3                                ; [910612] stereo
-sound_freq_lo    !fill 3+3                                ; [910612] stereo
-sound_freq_hi    !fill 3+3                                ; [910612] stereo
+sound_voice     !fill 1                                 
+sound_time_lo   !fill 3+3                               ; [910612] stereo
+sound_time_hi   !fill 3+3                               ; [910612] stereo
+sound_max_lo    !fill 3+3                               ; [910612] stereo
+sound_max_hi    !fill 3+3                               ; [910612] stereo
+sound_min_lo    !fill 3+3                               ; [910612] stereo
+sound_min_hi    !fill 3+3                               ; [910612] stereo
+sound_direction !fill 3+3                               ; [910612] stereo
+sound_step_lo   !fill 3+3                               ; [910612] stereo
+sound_step_hi   !fill 3+3                               ; [910612] stereo
+sound_freq_lo   !fill 3+3                               ; [910612] stereo
+sound_freq_hi   !fill 3+3                               ; [910612] stereo
 
 ;above must end before $1300
-                 * = $1160                                
+                * = $1160                               
 ;below must end before $1170
 
-temp_time_lo     !fill 1                                  
-temp_time_hi     !fill 1                                  
-temp_max_lo      !fill 1                                  
-temp_max_hi      !fill 1                                  
-temp_min_lo      !fill 1                                  
-temp_min_hi      !fill 1                                  
-temp_direction   !fill 1                                  
-temp_step_lo     !fill 1                                  
-temp_step_hi     !fill 1                                  
-temp_freq_lo     !fill 1                                  
-temp_freq_hi     !fill 1                                  
-temp_pulse_lo    !fill 1                                  
-temp_pulse_hi    !fill 1                                  
-temp_waveform    !fill 1                                  
+temp_time_lo    !fill 1                                 
+temp_time_hi    !fill 1                                 
+temp_max_lo     !fill 1                                 
+temp_max_hi     !fill 1                                 
+temp_min_lo     !fill 1                                 
+temp_min_hi     !fill 1                                 
+temp_direction  !fill 1                                 
+temp_step_lo    !fill 1                                 
+temp_step_hi    !fill 1                                 
+temp_freq_lo    !fill 1                                 
+temp_freq_hi    !fill 1                                 
+temp_pulse_lo   !fill 1                                 
+temp_pulse_hi   !fill 1                                 
+temp_waveform   !fill 1                                 
 
-pot_temp_1       !fill 1                                  ; temporaries for 'POT' function
-pot_temp_2       !fill 1                                  
-
-
-                 * = $1300                                
-
-dosstr           !fill 256                                ; DOS input/output string buffer
+pot_temp_1      !fill 1                                 ; temporaries for 'POT' function
+pot_temp_2      !fill 1                                 
 
 
-                 * = $1f00                                ; Graphics Kernel Interface
+                * = $1300                               
 
-GKI__parm1       !fill 1                                  ; ml interface parm values
-GKI__parm2       !fill 1                                  
-GKI__parm3       !fill 1                                  
-GKI__parm4       !fill 1                                  
-GKI__parm5       !fill 1                                  
-GKI__parm6       !fill 1                                  
-GKI__parm7       !fill 1                                  
-GKI__parm8       !fill 1                                  
-GKI__parm9       !fill 1                                  
-GKI__parm10      !fill 1                                  
-GKI__parm11      !fill 1                                  
-GKI__parm12      !fill 1                                  
-GKI__parm13      !fill 1                                  
-GKI__parm14      !fill 1                                  
-GKI__parm15      !fill 1                                  
-GKI__parm16      !fill 1                                  
-GKI__parm17      !fill 1                                  
+dosstr          !fill 256                               ; DOS input/output string buffer
 
-GKI__subparm1    !fill 1                                  ; subroutine parm values
-GKI__subparm2    !fill 1                                  
-GKI__subparm3    !fill 1                                  
-GKI__subparm4    !fill 1                                  
-GKI__subparm5    !fill 1                                  
 
-GKI__temp1       !fill 1                                  ; local variables within subroutines
-GKI__temp2       !fill 1                                  
-GKI__temp3       !fill 1                                  
-GKI__temp4       !fill 1                                  
-GKI__temp5       !fill 1                                  
-GKI__temp6       !fill 1                                  
-GKI__temp7       !fill 1                                  
-GKI__temp8       !fill 1                                  
-GKI__temp9       !fill 1                                  
-GKI__temp10      !fill 1                                  
-GKI__temp11      !fill 1                                  
-GKI__temp12      !fill 1                                  
-GKI__temp13      !fill 1                                  
-GKI__temp14      !fill 1                                  
-GKI__temp15      !fill 1                                  
-GKI__temp16      !fill 1                                  
-GKI__temp17      !fill 1                                  
+                * = $1f00                               ; Graphics Kernel Interface
+
+GKI__parm1      !fill 1                                 ; ml interface parm values
+GKI__parm2      !fill 1                                 
+GKI__parm3      !fill 1                                 
+GKI__parm4      !fill 1                                 
+GKI__parm5      !fill 1                                 
+GKI__parm6      !fill 1                                 
+GKI__parm7      !fill 1                                 
+GKI__parm8      !fill 1                                 
+GKI__parm9      !fill 1                                 
+GKI__parm10     !fill 1                                 
+GKI__parm11     !fill 1                                 
+GKI__parm12     !fill 1                                 
+GKI__parm13     !fill 1                                 
+GKI__parm14     !fill 1                                 
+GKI__parm15     !fill 1                                 
+GKI__parm16     !fill 1                                 
+GKI__parm17     !fill 1                                 
+
+GKI__subparm1   !fill 1                                 ; subroutine parm values
+GKI__subparm2   !fill 1                                 
+GKI__subparm3   !fill 1                                 
+GKI__subparm4   !fill 1                                 
+GKI__subparm5   !fill 1                                 
+
+GKI__temp1      !fill 1                                 ; local variables within subroutines
+GKI__temp2      !fill 1                                 
+GKI__temp3      !fill 1                                 
+GKI__temp4      !fill 1                                 
+GKI__temp5      !fill 1                                 
+GKI__temp6      !fill 1                                 
+GKI__temp7      !fill 1                                 
+GKI__temp8      !fill 1                                 
+GKI__temp9      !fill 1                                 
+GKI__temp10     !fill 1                                 
+GKI__temp11     !fill 1                                 
+GKI__temp12     !fill 1                                 
+GKI__temp13     !fill 1                                 
+GKI__temp14     !fill 1                                 
+GKI__temp15     !fill 1                                 
+GKI__temp16     !fill 1                                 
+GKI__temp17     !fill 1                                 
 
 ;.end
 
@@ -827,108 +827,108 @@ GKI__temp17      !fill 1
 ;[[data.kernal]]
 ; Addresses of OS parameters referenced by BASIC:
 
-_6510_data_reg   = $01                                    
-_bank            = $02                                    ; reg's for Kernel xxx_FAR routines (used by SYS)
-_pchi            = $03                                    
-_pclo            = $04                                    
-_s_reg           = $05                                    
-_a_reg           = $06                                    
-_x_reg           = $07                                    
-_y_reg           = $08                                    
-_z_reg           = $09                                    
+_6510_data_reg  = $01                                   
+_bank           = $02                                   ; reg's for Kernel xxx_FAR routines (used by SYS)
+_pchi           = $03                                   
+_pclo           = $04                                   
+_s_reg          = $05                                   
+_a_reg          = $06                                   
+_x_reg          = $07                                   
+_y_reg          = $08                                   
+_z_reg          = $09                                   
 
-_vicIRQ          = $a0                                    ; VIC IRQ flag register at time of IRQ
-_starting_addr   = $ac                                    ; address BLOAD loaded to
-_sa              = $b9                                    ; I/O channel secondary address
-_fa              = $ba                                    ; I/O channel device number
-_ndx             = $d0                                    ; number of characters in keyboard buffer
-_kyndx           = $d1                                    ; fkey active flag
-_mode            = $d7                                    ; 40/80 mode
-_graphm          = $d8                                    ; graphic mode switch (multi/hires/split)
-_pnt             = $e0                                    ; Editor screen address at cursor
+_vicIRQ         = $a0                                   ; VIC IRQ flag register at time of IRQ
+_starting_addr  = $ac                                   ; address BLOAD loaded to
+_sa             = $b9                                   ; I/O channel secondary address
+_fa             = $ba                                   ; I/O channel device number
+_ndx            = $d0                                   ; number of characters in keyboard buffer
+_kyndx          = $d1                                   ; fkey active flag
+_mode           = $d7                                   ; 40/80 mode
+_graphm         = $d8                                   ; graphic mode switch (multi/hires/split)
+_pnt            = $e0                                   ; Editor screen address at cursor
 
-_screen_bottom   = $e4                                    ; these describe the current window
-_screen_top      = $e5                                    
-_screen_left     = $e6                                    
-_screen_right    = $e7                                    
+_screen_bottom  = $e4                                   ; these describe the current window
+_screen_top     = $e5                                   
+_screen_left    = $e6                                   
+_screen_right   = $e7                                   
 
-_color           = $f1                                    ; text color      [910722]
-_autoinsert      = $f6                                    ; enable/disable auto insert mode
-_locks           = $f7                                    ; Editor keyboard locks     [910722]
+_color          = $f1                                   ; text color      [910722]
+_autoinsert     = $f6                                   ; enable/disable auto insert mode
+_locks          = $f7                                   ; Editor keyboard locks     [910722]
 
-_keyd            = $02b0                                  ; keyboard buffer     [910710]
+_keyd           = $02b0                                 ; keyboard buffer     [910710]
 ;_split = $0a34  ;line to start split at
 
-number_fkeys     = 16                                     ; max of 14 prog. fn. keys
-_pky_lengths     = $1000                                  ; table of prog. fn. key sizes
-_pky_buffer      = _pky_lengths+number_fkeys              ; actual buffer
+number_fkeys    = 16                                    ; max of 14 prog. fn. keys
+_pky_lengths    = $1000                                 ; table of prog. fn. key sizes
+_pky_buffer     = _pky_lengths+number_fkeys             ; actual buffer
 
-_restart_vector  = $1100                                  ; Kernel restart vector
-_pal_ntsc        = $1103                                  ; PAL=$ff, NTSC=$00 indicator    [910107]
-_init_status     = $1104                                  ; msb set tells Kernel to let BASIC have IRQs
-_default_drive   = $1106                                  ; system default disk drive
-_expansion       = $1107                                  ; expansion RAM (# banks????)    [910107]
-_sleep_counter   = $110c                                  ; binary frame counter maintained by Kernel  [910730]
-_mouse_enable    = $1135                                  ; port# used by mouse (b7=port2, b6=port1, or both) [910107]
-_mouse_pointer   = $1136                                  ; sprite pointer (sprite*2) by Kernel mouse driver "
-_mouse_top       = $113b                                  ; margins for mouse pointer    "
-_mouse_bottom    = $113c                                  ; "
-_mouse_left      = $113d                                  ; "
-_mouse_right     = $113e                                  ; "
+_restart_vector = $1100                                 ; Kernel restart vector
+_pal_ntsc       = $1103                                 ; PAL=$ff, NTSC=$00 indicator    [910107]
+_init_status    = $1104                                 ; msb set tells Kernel to let BASIC have IRQs
+_default_drive  = $1106                                 ; system default disk drive
+_expansion      = $1107                                 ; expansion RAM (# banks????)    [910107]
+_sleep_counter  = $110c                                 ; binary frame counter maintained by Kernel  [910730]
+_mouse_enable   = $1135                                 ; port# used by mouse (b7=port2, b6=port1, or both) [910107]
+_mouse_pointer  = $1136                                 ; sprite pointer (sprite*2) by Kernel mouse driver "
+_mouse_top      = $113b                                 ; margins for mouse pointer    "
+_mouse_bottom   = $113c                                 ; "
+_mouse_left     = $113d                                 ; "
+_mouse_right    = $113e                                 ; "
 
 ; Addresses of I/O areas referenced by BASIC:
 
-_red             = $d100                                  ; VIC palette (I/O block)
-_green           = $d200                                  
-_blue            = $d300                                  
+_red            = $d100                                 ; VIC palette (I/O block)
+_green          = $d200                                 
+_blue           = $d300                                 
 
 ; Addresses of Kernel entry points referenced by BASIC:
 
-_print           = $e00c                                  
-_mouse           = $e01b                                  ; [910122]
-_set_window      = $e02d                                  
-_palette_init    = $e027                                  
-_cursor          = $e030                                  ; [910228]
+_print          = $e00c                                 
+_mouse          = $e01b                                 ; [910122]
+_set_window     = $e02d                                 
+_palette_init   = $e027                                 
+_cursor         = $e030                                 ; [910228]
 ;_ldtb2 = $e033
 ;_ldtb1 = $e04c
 
-_close_all       = $ff50                                  ; close all channels assigned to device .a
-_go_64           = $ff53                                  ; C64 mode
-_monitor         = $ff56                                  ; ML Monitor
-_bootsys         = $ff59                                  ; Boot alternate OS     [910110]
-_phoenix         = $ff5c                                  ; jump to 'post-BASIC initialize' routine
-_lkupla          = $ff5f                                  ; find an available Logical Address
-_lkupsa          = $ff62                                  ; find an available Secondary Address
-_swapper         = $ff65                                  ; switch 80/40 column
-_doakey          = $ff68                                  ; add/remove a definition from the p.f. key table
-_setbank         = $ff6b                                  ; set bank for load/save/verify/open
-_jsr_far         = $ff6e                                  ; call a subroutine in any bank
-_jmp_far         = $ff71                                  ; jump to code in any bank
-_lda_far         = $ff74                                  ; write a byte to any bank
-_sta_far         = $ff77                                  ; read a byte from any bank
-_cmp_far         = $ff7a                                  ; compare a byte to any bank
-_primm           = $ff7d                                  ; print immediate
+_close_all      = $ff50                                 ; close all channels assigned to device .a
+_go_64          = $ff53                                 ; C64 mode
+_monitor        = $ff56                                 ; ML Monitor
+_bootsys        = $ff59                                 ; Boot alternate OS     [910110]
+_phoenix        = $ff5c                                 ; jump to 'post-BASIC initialize' routine
+_lkupla         = $ff5f                                 ; find an available Logical Address
+_lkupsa         = $ff62                                 ; find an available Secondary Address
+_swapper        = $ff65                                 ; switch 80/40 column
+_doakey         = $ff68                                 ; add/remove a definition from the p.f. key table
+_setbank        = $ff6b                                 ; set bank for load/save/verify/open
+_jsr_far        = $ff6e                                 ; call a subroutine in any bank
+_jmp_far        = $ff71                                 ; jump to code in any bank
+_lda_far        = $ff74                                 ; write a byte to any bank
+_sta_far        = $ff77                                 ; read a byte from any bank
+_cmp_far        = $ff7a                                 ; compare a byte to any bank
+_primm          = $ff7d                                 ; print immediate
 
-_setmsg          = $ff90                                  
-_readst          = $ffb7                                  
-_setlfs          = $ffba                                  
-_setnam          = $ffbd                                  
-_open            = $ffc0                                  
-_close           = $ffc3                                  
-_chkin           = $ffc6                                  
-_chkout          = $ffc9                                  
-_clrch           = $ffcc                                  
-_basin           = $ffcf                                  
-_bsout           = $ffd2                                  
-_loadsp          = $ffd5                                  
-_savesp          = $ffd8                                  
-_SetTime         = $ffdb                                  
-_ReadTime        = $ffde                                  
-_stop            = $ffe1                                  
-_getin           = $ffe4                                  
-_clall           = $ffe7                                  
-_screen_org      = $ffed                                  
-_plot            = $fff0                                  
+_setmsg         = $ff90                                 
+_readst         = $ffb7                                 
+_setlfs         = $ffba                                 
+_setnam         = $ffbd                                 
+_open           = $ffc0                                 
+_close          = $ffc3                                 
+_chkin          = $ffc6                                 
+_chkout         = $ffc9                                 
+_clrch          = $ffcc                                 
+_basin          = $ffcf                                 
+_bsout          = $ffd2                                 
+_loadsp         = $ffd5                                 
+_savesp         = $ffd8                                 
+_SetTime        = $ffdb                                 
+_ReadTime       = $ffde                                 
+_stop           = $ffe1                                 
+_getin          = $ffe4                                 
+_clall          = $ffe7                                 
+_screen_org     = $ffed                                 
+_plot           = $fff0                                 
 
 ;.end
 

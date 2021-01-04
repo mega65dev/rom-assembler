@@ -1,6 +1,6 @@
-nescpr           +lbcs p1l015                             ; no takers, print a funny graphic character
-                 ldy #0                                   
-                 bra p1l070                               
+nescpr          +lbcs p1l015                            ; no takers, print a funny graphic character
+                ldy #0                                  
+                bra p1l070                              
 
 
 ;.end
@@ -12,52 +12,52 @@ nescpr           +lbcs p1l015                             ; no takers, print a f
 ; The NEW command clears the program text as well as variable space.
 ;
 
-new              beq init_text                            ; Erase program in memory
-                 cmp #restore_token                       ; Restore an erased program?    [910103]
-                 +lbne snerr                              ; no- syntax error    [910410]
-                 jsr chkeos                               ; yes- eat token, error if not eos  [910429]
-                 lda txttab                               ; "seed" first link to fool 'chead'
-                 ldx txttab+1                             
-                 sta index                                
-                 stx index+1                              
-                 lda #0                                   
-                 ldy #1                                   
-                 ldx #index                               
-                 jsr sta_far_ram0                         ; clear msb  (bleed-thru)
-                 dey                                      
-                 inc                                      
-                 jsr sta_far_ram0                         ; set lsb   (bleed-thru)
-                 +lbra renumber                           ; make renumber check it for us (not 100%) & relink
+new             beq init_text                           ; Erase program in memory
+                cmp #restore_token                      ; Restore an erased program?    [910103]
+                +lbne snerr                             ; no- syntax error    [910410]
+                jsr chkeos                              ; yes- eat token, error if not eos  [910429]
+                lda txttab                              ; "seed" first link to fool 'chead'
+                ldx txttab+1                            
+                sta index                               
+                stx index+1                             
+                lda #0                                  
+                ldy #1                                  
+                ldx #index                              
+                jsr sta_far_ram0                        ; clear msb  (bleed-thru)
+                dey                                     
+                inc                                     
+                jsr sta_far_ram0                        ; set lsb   (bleed-thru)
+                +lbra renumber                          ; make renumber check it for us (not 100%) & relink
 
 
-init_text                                                 
-                 lda txttab                               ; find the bottom of basic text
-                 ldx txttab+1                             
-                 sta index                                
-                 stx index+1                              
-                 dew index                                ; (the absolute bottom)
+init_text                                               
+                lda txttab                              ; find the bottom of basic text
+                ldx txttab+1                            
+                sta index                               
+                stx index+1                             
+                dew index                               ; (the absolute bottom)
 
-                 lda #0                                   
-                 tay                                      
-                 ldx #index                               
-                 jsr sta_far_ram0                         ; clear bottom     (bleed-thru)
-                 iny                                      
-                 jsr sta_far_ram0                         ; clear first link bytes    (bleed-thru)
-                 iny                                      
-                 jsr sta_far_ram0                         ; (bleed-thru)
-                 clc                                      
-                 lda txttab                               
-                 adc #2                                   
-                 sta text_top                             ; set up (text_top), the end of text
-                 lda txttab+1                             
-                 adc #0                                   
-                 sta text_top+1                           
+                lda #0                                  
+                tay                                     
+                ldx #index                              
+                jsr sta_far_ram0                        ; clear bottom     (bleed-thru)
+                iny                                     
+                jsr sta_far_ram0                        ; clear first link bytes    (bleed-thru)
+                iny                                     
+                jsr sta_far_ram0                        ; (bleed-thru)
+                clc                                     
+                lda txttab                              
+                adc #2                                  
+                sta text_top                            ; set up (text_top), the end of text
+                lda txttab+1                            
+                adc #0                                  
+                sta text_top+1                          
 
-                 rmb5 runmod                              ; trcflg. reset trace flag
+                rmb5 runmod                             ; trcflg. reset trace flag
 
 
-runc             jsr reset_txtptr                         ; load (txtptr) with (txttab)-1
-                 bra clearc                               ; "CLR" to clear vars    [910410]
+runc            jsr reset_txtptr                        ; load (txtptr) with (txttab)-1
+                bra clearc                              ; "CLR" to clear vars    [910410]
 
 
 ; CLeaR Routines
@@ -71,23 +71,23 @@ runc             jsr reset_txtptr                         ; load (txtptr) with (
 ; CLR DS$  Clears the currently buffered DS,DS$ messages.  The next
 ;   use of DS or DS$ will make BASIC re a new message from DOS.
 
-clear            beq clearc                               ; branch if no args    [910410]
+clear           beq clearc                              ; branch if no args    [910410]
 
-                 cmp #err_token                           ; CLR ERR$
-                 bne l41_1                                ; no
-                 jsr chkeos                               ; yes- eat token & error if not eos
-                 +lbra error_clear                        ; and go clear ERR$
+                cmp #err_token                          ; CLR ERR$
+                bne l41_1                               ; no
+                jsr chkeos                              ; yes- eat token & error if not eos
+                +lbra error_clear                       ; and go clear ERR$
 
-l41_1            cmp #'D'                                 ; CLR DS$     [910717]
-                 bne l41_2                                ; no- error
-                 jsr chrget                               
-                 cmp #'S'                                 
-                 bne l41_2                                
-                 jsr chrget                               
-                 cmp #'$'                                 
-l41_2            +lbne snerr                              ; no- error
-                 jsr chkeos                               
-                 +lbra Clear_DS                           ; yes- clear current DS$
+l41_1           cmp #'D'                                ; CLR DS$     [910717]
+                bne l41_2                               ; no- error
+                jsr chrget                              
+                cmp #'S'                                
+                bne l41_2                               
+                jsr chrget                              
+                cmp #'$'                                
+l41_2           +lbne snerr                             ; no- error
+                jsr chkeos                              
+                +lbra Clear_DS                          ; yes- clear current DS$
 
 
 ; Clearc is a subroutine which initializes the variable and array space by

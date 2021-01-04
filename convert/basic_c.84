@@ -1,15 +1,15 @@
-fix_links                                                 ; <<<<<<<<<<<<<<<<<<<<<<<<<<< entry from renumber
+fix_links                                               ; <<<<<<<<<<<<<<<<<<<<<<<<<<< entry from renumber
 
-                 jsr link_program                         ; relink program
-                 lda index1                               
-                 ldx index1+1                             
-                 clc                                      
-                 adc #2                                   
-                 bcc l84_1                                
-                 inx                                      
-l84_1            sta text_top                             ; set eot pointer
-                 stx text_top+1                           
-                 rts                                      ; C128-04 fix: was 'jmp ready' (FAB)
+                jsr link_program                        ; relink program
+                lda index1                              
+                ldx index1+1                            
+                clc                                     
+                adc #2                                  
+                bcc l84_1                               
+                inx                                     
+l84_1           sta text_top                            ; set eot pointer
+                stx text_top+1                          
+                rts                                     ; C128-04 fix: was 'jmp ready' (FAB)
 
 
 ;********************************

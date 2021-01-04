@@ -1,31 +1,31 @@
-edit_crunch                                               ; Edit mode only, find end of plain text in input buffer
-                 phw txtptr                               ; save current position in input buffer
-                 jsr rem                                  ; find the end of the line
-                 ldx txtptr                               
-                 pla                                      ; restore buffer pointer
-                 sta txtptr+1                             
-                 pla                                      
-                 sta txtptr                               
-                 sec                                      ; compute length of line
-                 txa                                      
-                 sbc txtptr                               
-                 tay                                      
-                 iny                                      
-                 rts                                      ; done
+edit_crunch                                             ; Edit mode only, find end of plain text in input buffer
+                phw txtptr                              ; save current position in input buffer
+                jsr rem                                 ; find the end of the line
+                ldx txtptr                              
+                pla                                     ; restore buffer pointer
+                sta txtptr+1                            
+                pla                                     
+                sta txtptr                              
+                sec                                     ; compute length of line
+                txa                                     
+                sbc txtptr                              
+                tay                                     
+                iny                                     
+                rts                                     ; done
 
 
-edit_p1line                                               ; Edit mode only, list a line of plain text
-                 jsr linprt                               ; print line number in (a,x)
-                 lda #' '                                 ; print a space
+edit_p1line                                             ; Edit mode only, list a line of plain text
+                jsr linprt                              ; print line number in (a,x)
+                lda #' '                                ; print a space
 
-                 ldy #3                                   ; start printing at text following line number
-l312_1           jsr outch                                ; print character
-                 iny                                      
-                 bbr5 helper,l312_2                       ; if called from FIND/CHANGE check for highlighting
-                 jsr helpsb                               
-l312_2           jsr indlow                               ; get next character
-                 bne l312_1                               ; loop until eol
-                 rts                                      ; done
+                ldy #3                                  ; start printing at text following line number
+l312_1          jsr outch                               ; print character
+                iny                                     
+                bbr5 helper,l312_2                      ; if called from FIND/CHANGE check for highlighting
+                jsr helpsb                              
+l312_2          jsr indlow                              ; get next character
+                bne l312_1                              ; loop until eol
+                rts                                     ; done
 
 
 ;.end

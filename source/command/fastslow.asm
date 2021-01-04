@@ -8,11 +8,11 @@
 ;***********************************************************************
 
 fast
-                 +lbne snerr                              ; no args      [910410]
+                +lbne snerr                             ; no args      [910410]
 ; jsr put_io_in_map
-                 lda #%01000000
-                 tsb vic+49                               ; set FAST (4MHz?) mode
-                 rts
+                lda #%01000000
+                tsb vic+49                              ; set FAST (4MHz?) mode
+                rts
 
 
 
@@ -23,11 +23,11 @@ fast
 ;***********************************************************************
 
 slow
-                 +lbne snerr                              ; no args      [910410]
+                +lbne snerr                             ; no args      [910410]
 ; jsr put_io_in_map
-                 lda #%01000000
-                 trb vic+49
-                 rts
+                lda #%01000000
+                trb vic+49
+                rts
 
 ;.end
 
@@ -37,26 +37,26 @@ slow
 
 
 
-frmnum           jsr frmevl
+frmnum          jsr frmevl
 
-chknum           clc
-                 !text $89
+chknum          clc
+                !text $89
 
-chkstr           sec
+chkstr          sec
 
 chkval
 ; bbs7 valtyp,docstr ;cannot do this- return status +/-/= needed!
-                 bit valtyp
-                 bmi docstr
-                 bcs chkerr
-chkok            rts
+                bit valtyp
+                bmi docstr
+                bcs chkerr
+chkok           rts
 
-docstr           bcs chkok
+docstr          bcs chkok
 
-chkerr           ldx #errtm
-                 !text $2c
+chkerr          ldx #errtm
+                !text $2c
 
-sterr            ldx #errst
-                 +lbra error
+sterr           ldx #errst
+                +lbra error
 
 ;.end

@@ -1,28 +1,28 @@
-movtos           lda tos                                  
-                 sta fndpnt                               
-                 lda tos+1                                
-                 sta fndpnt+1                             
-                 rts                                      
+movtos          lda tos                                 
+                sta fndpnt                              
+                lda tos+1                               
+                sta fndpnt+1                            
+                rts                                     
 
 
 
 ; move (fndpnt) to (tos)
 
-movfnd           lda fndpnt                               
-                 sta tos                                  
-                 lda fndpnt+1                             
-                 sta tos+1                                
-                 rts                                      
+movfnd          lda fndpnt                              
+                sta tos                                 
+                lda fndpnt+1                            
+                sta tos+1                               
+                rts                                     
 
 ; Reduce size of run-time stack by (y).  No error checking performed!
 
-rlsstk           tya                                      
-                 clc                                      
-                 adc tos                                  
-                 sta tos                                  
-                 bcc l32_1                                
-                 inc tos+1                                
-l32_1            rts                                      
+rlsstk          tya                                     
+                clc                                     
+                adc tos                                 
+                sta tos                                 
+                bcc l32_1                               
+                inc tos+1                               
+l32_1           rts                                     
 
 ;.end
 ;[[system.linesearch]]

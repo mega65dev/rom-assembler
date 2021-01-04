@@ -1,64 +1,64 @@
-movrts           rts                                      
+movrts          rts                                     
 
 
 
-round            lda facexp                               ; zero?
-                 beq movrts                               ; yes, done rounding
-                 asl facov                                ; round?
-                 bcc movrts                               ; no, msb off
+round           lda facexp                              ; zero?
+                beq movrts                              ; yes, done rounding
+                asl facov                               ; round?
+                bcc movrts                              ; no, msb off
 
-incrnd           jsr incfac                               ; yes, add one to lsb(FAC) /// entry from EXP
+incrnd          jsr incfac                              ; yes, add one to lsb(FAC) /// entry from EXP
 ;note .c=1 since incfac doesn't touch .c
-                 +lbeq rndshf                             ; carry:   squeeze msb in and rts
-                 rts                                      ; no carry: rts now
+                +lbeq rndshf                            ; carry:   squeeze msb in and rts
+                rts                                     ; no carry: rts now
 
 
 
 ; Put sign in FAC into (a).
 
-sign             lda facexp                               
-                 beq signrt                               ; if number is zero, so is result
+sign            lda facexp                              
+                beq signrt                              ; if number is zero, so is result
 
-fcsign           lda facsgn                               
-fcomps           rol                                      
-                 lda #$ff                                 ; assume negative
-                 bcs signrt                               
-                 lda #1                                   ; get +1
-signrt           rts                                      
+fcsign          lda facsgn                              
+fcomps          rol                                     
+                lda #$ff                                ; assume negative
+                bcs signrt                              
+                lda #1                                  ; get +1
+signrt          rts                                     
 
 
 
 ; SGN function
 
-sgn              jsr sign                                 
+sgn             jsr sign                                
 
 ;float the signed integer in accb
-float            sta facho                                ; put (accb) in high order
-                 lda #0                                   
-                 sta facho+1                              
-                 ldx #$88                                 ; get the exponent
+float           sta facho                               ; put (accb) in high order
+                lda #0                                  
+                sta facho+1                             
+                ldx #$88                                ; get the exponent
 ;float the signed number in FAC
 
 
-floats           lda facho                                
-                 eor #$ff                                 
-                 rol                                      ; get comp of sign in carry
-floatc           lda #0                                   ; zero (a) but not carry
-                 sta faclo                                
-                 sta facmo                                
+floats          lda facho                               
+                eor #$ff                                
+                rol                                     ; get comp of sign in carry
+floatc          lda #0                                  ; zero (a) but not carry
+                sta faclo                               
+                sta facmo                               
 
-floatb           stx facexp                               
-                 sta facov                                
-                 sta facsgn                               
-                 +lbra fadflt                             
+floatb          stx facexp                              
+                sta facov                               
+                sta facsgn                              
+                +lbra fadflt                            
 
 
 
 
 ; Absolute value of FAC
 
-abs              lsr facsgn                               
-                 rts                                      
+abs             lsr facsgn                              
+                rts                                     
 
 
 
@@ -68,42 +68,42 @@ abs              lsr facsgn
 ; a=0  if  ARG = FAC
 ; a=-1 if  ARG > FAC
 
-fcomp            sta index2                               
-                 sty index2+1                             
-                 ldy #0                                   
-                 lda (index2),y                           ; has argexp
-                 iny                                      ; bump pointer up
-                 tax                                      ; save a in x and reset codes
-                 beq sign                                 
-                 lda (index2),y                           
-                 eor facsgn                               ; signs the same
-                 bmi fcsign                               ; signs differ so result is
-                 cpx facexp                               ; sign of FAC again
-                 bne l175_1                               
+fcomp           sta index2                              
+                sty index2+1                            
+                ldy #0                                  
+                lda (index2),y                          ; has argexp
+                iny                                     ; bump pointer up
+                tax                                     ; save a in x and reset codes
+                beq sign                                
+                lda (index2),y                          
+                eor facsgn                              ; signs the same
+                bmi fcsign                              ; signs differ so result is
+                cpx facexp                              ; sign of FAC again
+                bne l175_1                              
 
-                 lda (index2),y                           
-                 ora #$80                                 
-                 cmp facho                                
-                 bne l175_1                               
-                 iny                                      
-                 lda (index2),y                           
-                 cmp facmoh                               
-                 bne l175_1                               
-                 iny                                      
-                 lda (index2),y                           
-                 cmp facmo                                
-                 bne l175_1                               
-                 iny                                      
-                 lda #$7f                                 
-                 cmp facov                                
-                 lda (index2),y                           
-                 sbc faclo                                ; get zero if equal
-                 beq qintrt                               ; rts
+                lda (index2),y                          
+                ora #$80                                
+                cmp facho                               
+                bne l175_1                              
+                iny                                     
+                lda (index2),y                          
+                cmp facmoh                              
+                bne l175_1                              
+                iny                                     
+                lda (index2),y                          
+                cmp facmo                               
+                bne l175_1                              
+                iny                                     
+                lda #$7f                                
+                cmp facov                               
+                lda (index2),y                          
+                sbc faclo                               ; get zero if equal
+                beq qintrt                              ; rts
 
-l175_1           lda facsgn                               
-                 bcc l175_2                               
-                 eor #$ff                                 
-l175_2           bra fcomps                               ; a part of sign sets up (a)
+l175_1          lda facsgn                              
+                bcc l175_2                              
+                eor #$ff                                
+l175_2          bra fcomps                              ; a part of sign sets up (a)
 
 ;.end
 ;[[math.ext4]]

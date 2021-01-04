@@ -1,26 +1,26 @@
-datlop           jsr datan                                ; skip some text
-                 iny                                      
-                 tax                                      ; end of line?
-                 bne l61_1                                ; no
-                 ldx #errod                               ; yes, "no data" error
-                 iny                                      
-                 jsr indtxt                               
-                 +lbeq error                              
+datlop          jsr datan                               ; skip some text
+                iny                                     
+                tax                                     ; end of line?
+                bne l61_1                               ; no
+                ldx #errod                              ; yes, "no data" error
+                iny                                     
+                jsr indtxt                              
+                +lbeq error                             
 
-                 iny                                      
-                 jsr indtxt                               ; get high byte of line number
-                 sta datlin                               
-                 iny                                      
-                 jsr indtxt                               ; get low byte
-                 iny                                      
-                 sta datlin+1                             
+                iny                                     
+                jsr indtxt                              ; get high byte of line number
+                sta datlin                              
+                iny                                     
+                jsr indtxt                              ; get low byte
+                iny                                     
+                sta datlin+1                            
 
-l61_1            jsr addon                                ; nowlin.  txtptr+.y
-                 jsr chrgot                               ; span blanks
-                 tax                                      ; used later
-                 cpx #data_token                          ; is it a DATA statement?
-                 bne datlop                               ; not quite right, keep looking
-                 +lbra datbk1                             ; this is the one
+l61_1           jsr addon                               ; nowlin.  txtptr+.y
+                jsr chrgot                              ; span blanks
+                tax                                     ; used later
+                cpx #data_token                         ; is it a DATA statement?
+                bne datlop                              ; not quite right, keep looking
+                +lbra datbk1                            ; this is the one
 
 
 ;.end

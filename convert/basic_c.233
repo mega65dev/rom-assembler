@@ -1,18 +1,18 @@
-trans            jsr sendp                                ; build string to output
-                 jsr _clrch                               
-                 ldx #sys_bank                            ; name is in system space, bank0 ????  [910620]
-                 txa                                      
-                 jsr _setbank                             
-                 jsr _open                                ; send it...
-                 php                                      ; save error status (.c)
-                 pha                                      ; save error code (if any)
-                 lda dosla                                
-                 sec                                      
-                 jsr _close                               ; special close...
-                 pla                                      ; pop error
-                 plp                                      ; pop error status
-                 +lbcs erexit                             ; ...branch if there was an error opening
-                 rts                                      
+trans           jsr sendp                               ; build string to output
+                jsr _clrch                              
+                ldx #sys_bank                           ; name is in system space, bank0 ????  [910620]
+                txa                                     
+                jsr _setbank                            
+                jsr _open                               ; send it...
+                php                                     ; save error status (.c)
+                pha                                     ; save error code (if any)
+                lda dosla                               
+                sec                                     
+                jsr _close                              ; special close...
+                pla                                     ; pop error
+                plp                                     ; pop error status
+                +lbcs erexit                            ; ...branch if there was an error opening
+                rts                                     
 
 ;.end
 ;[[dos.parser]]
@@ -111,40 +111,40 @@ trans            jsr sendp                                ; build string to outp
 ;      "1" bits are required to be set
 ;      "*" bits are optional parameters
 
-dostbl           !word $ffff,$ffff                        ; default start/end address
-                 !text doslfn,dosffn,$6f                  ; default la/fa/sa
+dostbl          !word $ffff,$ffff                       ; default start/end address
+                !text doslfn,dosffn,$6f                 ; default la/fa/sa
 
 
-dospar           lda #0                                   ; DOS Parser
+dospar          lda #0                                  ; DOS Parser
 
-dosprs                                                    ; special error flag entry
-                 ldx #$ff                                 ; no aux options!
+dosprs                                                  ; special error flag entry
+                ldx #$ff                                ; no aux options!
 
-dosprx                                                    ; spec aux error flag entry
-                 pha                                      ; save error flags
-                 phx                                      
-                 lda #0                                   
-                 sta parsts                               ; reset parser status/option words
-                 sta parstx                               
+dosprx                                                  ; spec aux error flag entry
+                pha                                     ; save error flags
+                phx                                     
+                lda #0                                  
+                sta parsts                              ; reset parser status/option words
+                sta parstx                              
 
-                 ldx #dosspc                              ; clear DOS scratch area   [900522]
-l233_1           sta xcnt-1,x                             
-                 dex                                      ; no filenames, null lengths
-                 bne l233_1                               
+                ldx #dosspc                             ; clear DOS scratch area   [900522]
+l233_1          sta xcnt-1,x                            
+                dex                                     ; no filenames, null lengths
+                bne l233_1                              
 
-                 ldx #dossa-dosofl                        ; set some defaults from table
-l233_2           lda dostbl,x                             
-                 sta dosofl,x                             ; start/end adr = $FFFF, la/fa/sa
-                 dex                                      
-                 bpl l233_2                               
+                ldx #dossa-dosofl                       ; set some defaults from table
+l233_2          lda dostbl,x                            
+                sta dosofl,x                            ; start/end adr = $FFFF, la/fa/sa
+                dex                                     
+                bpl l233_2                              
 
-                 ldx _default_drive                       ; set default device   [900522]
-                 stx dosfa                                
-                 ldx current_bank                         ; set current bank
-                 stx dosbnk                               
+                ldx _default_drive                      ; set default device   [900522]
+                stx dosfa                               
+                ldx current_bank                        ; set current bank
+                stx dosbnk                              
 
-                 jsr chrgot                               ; get next character from command string
-                 bne parse1                               ; if eol stick with defaults, else begin parsing
+                jsr chrgot                              ; get next character from command string
+                bne parse1                              ; if eol stick with defaults, else begin parsing
 
 
 ; Done parsing, check for errors, return if everything okay

@@ -1,9 +1,9 @@
-mvdone           clc                                      ; update frespc pointer
-                 adc frespc                               
-                 sta frespc                               
-                 bcc l159_1                               
-                 inc frespc+1                             
-l159_1           rts                                      
+mvdone          clc                                     ; update frespc pointer
+                adc frespc                              
+                sta frespc                              
+                bcc l159_1                              
+                inc frespc+1                            
+l159_1          rts                                     
 
 
 ;[[string.manager]]

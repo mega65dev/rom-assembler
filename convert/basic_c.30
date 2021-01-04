@@ -1,17 +1,17 @@
-getstk           eor #$ff                                 ; make value 2's comp.
-                 sec                                      
-                 adc tos                                  
-                 sta tos                                  
-                 ldy tos+1                                
-                 bcs l30_1                                
-                 dey                                      
-l30_1            sty tos+1                                
-                 cpy #>stktop                             
-                 +lbcc omerr                              
-                 bne l30_2                                
-                 cmp tos                                  
-                 +lbcc omerr                              
-l30_2            rts                                      
+getstk          eor #$ff                                ; make value 2's comp.
+                sec                                     
+                adc tos                                 
+                sta tos                                 
+                ldy tos+1                               
+                bcs l30_1                               
+                dey                                     
+l30_1           sty tos+1                               
+                cpy #>stktop                            
+                +lbcc omerr                             
+                bne l30_2                               
+                cmp tos                                 
+                +lbcc omerr                             
+l30_2           rts                                     
 
 
 ; (a,y) is a certain address.  REASON makes sure it is less than (fretop).

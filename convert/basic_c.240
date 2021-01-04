@@ -1,21 +1,21 @@
-lenchk           pla                                      ; [901115]
-                 txa                                      ; Check filename length
-                 beq err_mfn                              ; too small, missing filename  [901115]
+lenchk          pla                                     ; [901115]
+                txa                                     ; Check filename length
+                beq err_mfn                             ; too small, missing filename  [901115]
 ; cmp #17  ;  ???? (problem if name has ',P')
 ; bcs errlen ; too long
-                 ldx index1                               
-                 ldy index1+1                             ; ok- return pointer to filename
-                 rts                                      
+                ldx index1                              
+                ldy index1+1                            ; ok- return pointer to filename
+                rts                                     
 
 
-err_mfn          ldx #err_missing_fname                   
-                 !text $2c                                
+err_mfn         ldx #err_missing_fname                  
+                !text $2c                               
 
-err_ild          ldx #err_illegal_device                  
-                 !text $2c                                
+err_ild         ldx #err_illegal_device                 
+                !text $2c                               
 
-errlen           ldx #errls                               ; string or filename too long
-                 +lbra error                              
+errlen          ldx #errls                              ; string or filename too long
+                +lbra error                             
 
 
 
@@ -34,15 +34,15 @@ errlen           ldx #errls                               ; string or filename t
 
 ; Get next 2-byte expression.  Exit: .a,.y (high,low) value
 
-getoff           jsr chrget                               ; get nxt chr
-                 +lbeq snerr                              ; if end of statement
-                 +lbcc getwrd                             ; can be num. const, go evaluate it
-                 jsr chkopn                               ; or a "("
-                 jsr getwrd                               ; expr
-                 jsr chkcls                               ; need closing ")"
-                 ldy poker                                
-                 lda poker+1                              
-                 rts                                      
+getoff          jsr chrget                              ; get nxt chr
+                +lbeq snerr                             ; if end of statement
+                +lbcc getwrd                            ; can be num. const, go evaluate it
+                jsr chkopn                              ; or a "("
+                jsr getwrd                              ; expr
+                jsr chkcls                              ; need closing ")"
+                ldy poker                               
+                lda poker+1                             
+                rts                                     
 
 
 
@@ -51,9 +51,9 @@ getoff           jsr chrget                               ; get nxt chr
 ; Entry: .a contains parsts flag to check
 
 
-prmrpt           and parsts                               ; compare mask with status
-                 +lbne snerr                              ; error if bit previously set
-                 rts                                      
+prmrpt          and parsts                              ; compare mask with status
+                +lbne snerr                             ; error if bit previously set
+                rts                                     
 
 
 
@@ -62,9 +62,9 @@ prmrpt           and parsts                               ; compare mask with st
 ; Entry: .a contains parstx flag to check
 
 
-prxrpt           and parstx                               ; and with parstx
-                 +lbne snerr                              ; if bit previously set
-                 rts                                      
+prxrpt          and parstx                              ; and with parstx
+                +lbne snerr                             ; if bit previously set
+                rts                                     
 
 ;.end
 
@@ -74,71 +74,71 @@ prxrpt           and parstx                               ; and with parstx
 ;
 ; Token Table Definitions
 
-xsca             =$c2                                     ; send dossca
-xid              =$d0                                     ; sends disk id
-xd1              =$d1                                     ; sends dosds1
-xd2              =$d2                                     ; sends dosds2
-xrec             =$e0                                     ; sends S for SEQ, or dosrcl
-xwrt             =$e1                                     ; sends W or L
-xrcl             =$e2                                     ; send low ((poker))
-xfat             =$f0                                     ; sends "@" or "/" if specified
-xfn1             =$f1                                     ; sends filename1
-xfn2             =$f2                                     ; sends filename2
+xsca            =$c2                                    ; send dossca
+xid             =$d0                                    ; sends disk id
+xd1             =$d1                                    ; sends dosds1
+xd2             =$d2                                    ; sends dosds2
+xrec            =$e0                                    ; sends S for SEQ, or dosrcl
+xwrt            =$e1                                    ; sends W or L
+xrcl            =$e2                                    ; send low ((poker))
+xfat            =$f0                                    ; sends "@" or "/" if specified
+xfn1            =$f1                                    ; sends filename1
+xfn2            =$f2                                    ; sends filename2
 
 
 ; Tabld - used to build disk command strings
 
-tabld                                                     
-finit            = $ff                                    ; Dclear
-                 !text "I",xd1                            
+tabld                                                   
+finit           = $ff                                   ; Dclear
+                !text "I",xd1                           
 
-fdir             = *-tabld-1                              ; Dir
-                 !text "$",xd1,":",xfn1                   
+fdir            = *-tabld-1                             ; Dir
+                !text "$",xd1,":",xfn1                  
 
-fdirr            = *-tabld-1                              ; Recover Dir  [901024]
-                 !text "_",xd1,":",xfn1                   ; ('_'=CBM backarrow, $5F)
+fdirr           = *-tabld-1                             ; Recover Dir  [901024]
+                !text "_",xd1,":",xfn1                  ; ('_'=CBM backarrow, $5F)
 
-fopn             = *-tabld-1                              ; Dopen
-                 !text xfat,xd1,":",xfn1,",",xwrt,",",xrec 
+fopn            = *-tabld-1                             ; Dopen
+                !text xfat,xd1,":",xfn1,",",xwrt,",",xrec
 
-fopnseq          = *-tabld-1                              ; Type   [900801]
-                 !text xfat,xd1,":",xfn1,",S"             
+fopnseq         = *-tabld-1                             ; Type   [900801]
+                !text xfat,xd1,":",xfn1,",S"            
 
-fsavseq          = *-tabld-1                              ; EDIT_SAVE  [910620]
-                 !text xfat,xd1,":",xfn1,",S,W"           
+fsavseq         = *-tabld-1                             ; EDIT_SAVE  [910620]
+                !text xfat,xd1,":",xfn1,",S,W"          
 
-fconc            = *-tabld-1                              ; Concat
-                 !text "C",xd2,":",xfn2,"=",xd2,":",xfn2,"," 
+fconc           = *-tabld-1                             ; Concat
+                !text "C",xd2,":",xfn2,"=",xd2,":",xfn2,","
 
-fapn             = *-tabld-1                              ; Append
-                 !text xd1,":",xfn1,",A"                  
+fapn            = *-tabld-1                             ; Append
+                !text xd1,":",xfn1,",A"                 
 
-fhed             = *-tabld-1                              ; Header
-                 !text "N",xd1,":",xfn1,",",xid           
+fhed            = *-tabld-1                             ; Header
+                !text "N",xd1,":",xfn1,",",xid          
 
-fcoll            = *-tabld-1                              ; Collect
-                 !text "V",xd1                            
+fcoll           = *-tabld-1                             ; Collect
+                !text "V",xd1                           
 
-fbak             = *-tabld-1                              ; Backup
-                 !text "D",xd2,"=",xd1                    
+fbak            = *-tabld-1                             ; Backup
+                !text "D",xd2,"=",xd1                   
 
-fcopy            = *-tabld-1                              ; Copy
-                 !text "C",xd2,":",xfn2,"=",xd1,":",xfn1  
+fcopy           = *-tabld-1                             ; Copy
+                !text "C",xd2,":",xfn2,"=",xd1,":",xfn1 
 
-fren             = *-tabld-1                              ; Rename
-                 !text "R",xd1,":",xfn2,"=",xd1,":",xfn1  
+fren            = *-tabld-1                             ; Rename
+                !text "R",xd1,":",xfn2,"=",xd1,":",xfn1 
 
-fscr             = *-tabld-1                              ; Scratch
-                 !text "S",xd1,":",xfn1                   
+fscr            = *-tabld-1                             ; Scratch
+                !text "S",xd1,":",xfn1                  
 
-frscr            = *-tabld-1                              ; Recover Del  [901024]
-                 !text "F-R",xd1,":",xfn1                 
+frscr           = *-tabld-1                             ; Recover Del  [901024]
+                !text "F-R",xd1,":",xfn1                
 
-fdisk            = *-tabld-1                              ; Disk command  [910123]
-                 !text xfat,xfn1                          ; pass '/' [911030]
+fdisk           = *-tabld-1                             ; Disk command  [910123]
+                !text xfat,xfn1                         ; pass '/' [911030]
 
-frec             = *-tabld-1                              ; Record
-                 !text "P",xsca,xrcl,xrec                 
+frec            = *-tabld-1                             ; Record
+                !text "P",xsca,xrcl,xrec                
 
 
 ;[[dos.sendparam]]
@@ -147,86 +147,86 @@ frec             = *-tabld-1                              ; Record
 ; Entry: .a = number of bytes in format
 ;  .y = pointer to TABLD entry
 
-sendp            sta xcnt                                 ; save number of string bytes
-                 phy                                      
-                 jsr Clear_DS                             ; clear old status
+sendp           sta xcnt                                ; save number of string bytes
+                phy                                     
+                jsr Clear_DS                            ; clear old status
 
-                 ldx #0                                   
-sdp1             pla                                      
-                 dec xcnt                                 
-                 bmi tranr                                
-                 tay                                      
-                 iny                                      ; move down table
-                 phy                                      
-                 lda tabld,y                              ; get next entry
-                 bpl sdp5                                 ; if not escape code
-                 cmp #xsca                                ; if not secondary address
-                 beq rsca                                 
-                 cmp #xid                                 
-                 beq rid                                  ; if disk id
-                 cmp #xrcl                                
-                 +lbeq rdcn                               ; if record number
-                 cmp #xwrt                                
-                 beq rwrt                                 ; if W or L
-                 cmp #xfat                                
-                 beq rfat                                 ; if "@" symbol request
-                 cmp #xfn1                                
-                 +lbeq rsfn                               ; if filename 1
-                 cmp #xfn2                                
-                 +lbeq rdfn                               ; if filename 2
-                 cmp #xrec                                
-                 bne sdp2                                 ; if not record type
-                 lda dosrcl                               ; get rec #
-                 cmp #1                                   ; kludge to allow DOPEN#lf,"relfile",L  [911024]
-                 bne sdp5                                 ; (note RECORD byte 0 = byte 1 anyhow)
-                 dec                                      
-                 bra sdp5                                 ; always branch
+                ldx #0                                  
+sdp1            pla                                     
+                dec xcnt                                
+                bmi tranr                               
+                tay                                     
+                iny                                     ; move down table
+                phy                                     
+                lda tabld,y                             ; get next entry
+                bpl sdp5                                ; if not escape code
+                cmp #xsca                               ; if not secondary address
+                beq rsca                                
+                cmp #xid                                
+                beq rid                                 ; if disk id
+                cmp #xrcl                               
+                +lbeq rdcn                              ; if record number
+                cmp #xwrt                               
+                beq rwrt                                ; if W or L
+                cmp #xfat                               
+                beq rfat                                ; if "@" symbol request
+                cmp #xfn1                               
+                +lbeq rsfn                              ; if filename 1
+                cmp #xfn2                               
+                +lbeq rdfn                              ; if filename 2
+                cmp #xrec                               
+                bne sdp2                                ; if not record type
+                lda dosrcl                              ; get rec #
+                cmp #1                                  ; kludge to allow DOPEN#lf,"relfile",L  [911024]
+                bne sdp5                                ; (note RECORD byte 0 = byte 1 anyhow)
+                dec                                     
+                bra sdp5                                ; always branch
 
-sdp2             cmp #xd1                                 
-                 bne sdp3                                 ; if not drive 1
-                 lda dosds1                               
-                 bra sdp4                                 ; always branch
+sdp2            cmp #xd1                                
+                bne sdp3                                ; if not drive 1
+                lda dosds1                              
+                bra sdp4                                ; always branch
 
-sdp3             cmp #xd2                                 
-                 bne sdp1                                 ; if not drive 2, continue
-                 lda dosds2                               
-sdp4             ora #'0'                                 ; change # to PETSCII
+sdp3            cmp #xd2                                
+                bne sdp1                                ; if not drive 2, continue
+                lda dosds2                              
+sdp4            ora #'0'                                ; change # to PETSCII
 
-sdp5             sta dosstr,x                             ; else into buffer
-                 inx                                      
-                 bra sdp1                                 ; always
-
-
-tranr            txa                                      ; length to a
-                 pha                                      
-                 ldx #<dosstr                             ; set filename
-                 ldy #>dosstr                             
-                 jsr _setnam                              
-
-                 lda dosla                                ; set channel
-                 ldx dosfa                                
-                 ldy dossa                                
-                 jsr _setlfs                              
-
-                 pla                                      
-                 rts                                      
+sdp5            sta dosstr,x                            ; else into buffer
+                inx                                     
+                bra sdp1                                ; always
 
 
+tranr           txa                                     ; length to a
+                pha                                     
+                ldx #<dosstr                            ; set filename
+                ldy #>dosstr                            
+                jsr _setnam                             
+
+                lda dosla                               ; set channel
+                ldx dosfa                               
+                ldy dossa                               
+                jsr _setlfs                             
+
+                pla                                     
+                rts                                     
 
 
-rsca             lda dossa_temp                           ; secondary address (record)
-                 bra sdp5                                 ; always
 
 
-rfat             bbr7 parsts,l240_1                       ; if "@" not encountered
-                 lda #'@'                                 
-                 bra sdp5                                 ; always
+rsca            lda dossa_temp                          ; secondary address (record)
+                bra sdp5                                ; always
 
-l240_1           lda dosflags                             
-                 lsr                                      
-                 bcc sdp1                                 ; if "/" not encountered
-                 lda #'/'                                 
-                 bra sdp5                                 
+
+rfat            bbr7 parsts,l240_1                      ; if "@" not encountered
+                lda #'@'                                
+                bra sdp5                                ; always
+
+l240_1          lda dosflags                            
+                lsr                                     
+                bcc sdp1                                ; if "/" not encountered
+                lda #'/'                                
+                bra sdp5                                
 
 
 ; ID subroutine

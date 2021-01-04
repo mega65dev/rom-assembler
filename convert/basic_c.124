@@ -1,24 +1,24 @@
-dvarts           lda #strsiz                              
-                 clc                                      
-                 adc index1                               
-                 sta index1                               
-                 bcc aryget                               
-                 inc index1+1                             
-                 bra aryget                               ; branch always
+dvarts          lda #strsiz                             
+                clc                                     
+                adc index1                              
+                sta index1                              
+                bcc aryget                              
+                inc index1+1                            
+                bra aryget                              ; branch always
 
 
-arydon           phx                                      
-                 ldx #lowtr                               
-                 ldy #0                                   
-                 lda varnam                               
-                 jsr sta_far_ram1                         ; sta (lowtr),y
-                 iny                                      ; .y=1
-                 lda varnam+1                             
-                 jsr sta_far_ram1                         ; sta (lowtr),y
-                 lda #0                                   
-l124_1           iny                                      
-                 jsr sta_far_ram1                         ; sta (lowtr),y
-                 cpy #6                                   
-                 bne l124_1                               
-                 plx                                      
+arydon          phx                                     
+                ldx #lowtr                              
+                ldy #0                                  
+                lda varnam                              
+                jsr sta_far_ram1                        ; sta (lowtr),y
+                iny                                     ; .y=1
+                lda varnam+1                            
+                jsr sta_far_ram1                        ; sta (lowtr),y
+                lda #0                                  
+l124_1          iny                                     
+                jsr sta_far_ram1                        ; sta (lowtr),y
+                cpy #6                                  
+                bne l124_1                              
+                plx                                     
 

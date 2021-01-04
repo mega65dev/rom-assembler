@@ -1,10 +1,10 @@
-negop                                                     ; /// entry point
-                 lda facexp                               
-                 beq negrts                               
-                 lda facsgn                               
-                 eor #$ff                                 
-                 sta facsgn                               
-negrts           rts                                      
+negop                                                   ; /// entry point
+                lda facexp                              
+                beq negrts                              
+                lda facsgn                              
+                eor #$ff                                
+                sta facsgn                              
+negrts          rts                                     
 
 ;.end
 ;[[math.ext6]]
@@ -32,52 +32,52 @@ negrts           rts
 ; power of two previously saved.  Re: Taylor expansion.
 
 
-exp              lda #<logeb2                             ; multiply by LOG(e) base 2
-                 ldy #>logeb2                             
-                 jsr rommlt                               ; LOGEB2->ARG, FAC=FAC*ARG
-                 lda facov                                
-                 adc #$50                                 ; ????
-                 bcc l184_1                               
-                 jsr incrnd                               
+exp             lda #<logeb2                            ; multiply by LOG(e) base 2
+                ldy #>logeb2                            
+                jsr rommlt                              ; LOGEB2->ARG, FAC=FAC*ARG
+                lda facov                               
+                adc #$50                                ; ????
+                bcc l184_1                              
+                jsr incrnd                              
 
-l184_1           sta oldov                                
-                 jsr movef                                ; to save in ARG without round.  ARG=FAC, facov=0)
-                 lda facexp                               
-                 cmp #$88                                 ; if ABS(FAC) >= 128, too big
-                 bcc l184_3                               
+l184_1          sta oldov                               
+                jsr movef                               ; to save in ARG without round.  ARG=FAC, facov=0)
+                lda facexp                              
+                cmp #$88                                ; if ABS(FAC) >= 128, too big
+                bcc l184_3                              
 
-l184_2           jsr mldvex                               ; overflow or overflow
-l184_3           jsr int                                  ; FAC=INT(FAC), uses facov
-                 lda integr                               ; get low part
-                 clc                                      
-                 adc #$81                                 
-                 beq l184_2                               ; overflow or overflow!!
+l184_2          jsr mldvex                              ; overflow or overflow
+l184_3          jsr int                                 ; FAC=INT(FAC), uses facov
+                lda integr                              ; get low part
+                clc                                     
+                adc #$81                                
+                beq l184_2                              ; overflow or overflow!!
 
-                 sec                                      
-                 sbc #1                                   ; subtract it
-                 pha                                      ; save a while
+                sec                                     
+                sbc #1                                  ; subtract it
+                pha                                     ; save a while
 
-                 ldx #5                                   ; swap FAC and ARG
-l184_4           lda argexp,x                             
-                 ldy facexp,x                             
-                 sta facexp,x                             
-                 sty argexp,x                             
-                 dex                                      
-                 bpl l184_4                               
+                ldx #5                                  ; swap FAC and ARG
+l184_4          lda argexp,x                            
+                ldy facexp,x                            
+                sta facexp,x                            
+                sty argexp,x                            
+                dex                                     
+                bpl l184_4                              
 
-                 lda oldov                                
-                 sta facov                                
-                 jsr fsubt                                ; FAC=ARG-FAC
-                 jsr negop                                ; negate FAC
-                 lda #<expcon                             
-                 ldy #>expcon                             
-                 jsr poly                                 
-                 lda #0                                   
-                 sta arisgn                               ; multiply by positive 1.0
+                lda oldov                               
+                sta facov                               
+                jsr fsubt                               ; FAC=ARG-FAC
+                jsr negop                               ; negate FAC
+                lda #<expcon                            
+                ldy #>expcon                            
+                jsr poly                                
+                lda #0                                  
+                sta arisgn                              ; multiply by positive 1.0
 
-                 pla                                      ; recall scale factor
-                 jsr mldexp                               ; modify facexp and check for overflow
-                 rts                                      ; (has to do jsr due to pla's in muldiv)
+                pla                                     ; recall scale factor
+                jsr mldexp                              ; modify facexp and check for overflow
+                rts                                     ; (has to do jsr due to pla's in muldiv)
 
 ;[[math.polyeval]]
 

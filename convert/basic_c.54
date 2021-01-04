@@ -1,18 +1,18 @@
-printn           jsr cmd                                  ; docmd
-                 +lbra release_channels                   ; restore terminal
+printn          jsr cmd                                 ; docmd
+                +lbra release_channels                  ; restore terminal
 
 
-cmd              jsr getbyt                               
-                 beq l54_1                                
-                 lda #','                                 ; comma?
-                 jsr synchr                               
+cmd             jsr getbyt                              
+                beq l54_1                               
+                lda #','                                ; comma?
+                jsr synchr                              
 
-l54_1            php                                      ; save stat (beq=eof)
-                 pha                                      ; save char
-                 stx channl                               ; channel to output on
-                 jsr coout                                
-                 pla                                      ; get char back
-                 plp                                      ; get stat back
-                 bra print                                
+l54_1           php                                     ; save stat (beq=eof)
+                pha                                     ; save char
+                stx channl                              ; channel to output on
+                jsr coout                               
+                pla                                     ; get char back
+                plp                                     ; get stat back
+                bra print                               
 
 

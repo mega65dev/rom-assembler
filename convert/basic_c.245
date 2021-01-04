@@ -1,22 +1,22 @@
-Clear_DS                                                  ; oldclr.
-                 lda dsdesc                               ; check for allocation
-                 beq l245_1                               ; branch if not allocated
+Clear_DS                                                ; oldclr.
+                lda dsdesc                              ; check for allocation
+                beq l245_1                              ; branch if not allocated
 
-                 phy                                      ; mark current DS$ string as garbage
-                 phx                                      
+                phy                                     ; mark current DS$ string as garbage
+                phx                                     
 ; lda #40   ;   standard DS$ allocation
-                 tay                                      
-                 ldx #dsdesc+1                            
-                 jsr sta_far_ram1                         ; sta (dsdesc+1),y length of garbage
-                 iny                                      
-                 lda #$ff                                 
-                 jsr sta_far_ram1                         ; sta (dsdesc+1),y garbage flagged
-                 inc                                      
-                 sta dsdesc                               ; (0)    kill DS$
-                 plx                                      
-                 ply                                      
+                tay                                     
+                ldx #dsdesc+1                           
+                jsr sta_far_ram1                        ; sta (dsdesc+1),y length of garbage
+                iny                                     
+                lda #$ff                                
+                jsr sta_far_ram1                        ; sta (dsdesc+1),y garbage flagged
+                inc                                     
+                sta dsdesc                              ; (0)    kill DS$
+                plx                                     
+                ply                                     
 
-l245_1           rts                                      
+l245_1          rts                                     
 
 
 ; Read DOS error message, but don't care what it is.  Want to stop disk LED blink.

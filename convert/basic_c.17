@@ -1,16 +1,16 @@
-stop             bcs stopc                                ; STOP: .c=1
+stop            bcs stopc                               ; STOP: .c=1
 
-end              clc                                      ; END: .c=0
-stopc            +lbne snerr                              ; error if args present   [910410]
+end             clc                                     ; END: .c=0
+stopc           +lbne snerr                             ; error if args present   [910410]
 
-stop_1           bbr7 runmod,l17_1                        ; branch if direct mode
-                 jsr tto                                  ; transfer txtptr to oldtxt
-                 lda curlin                               
-                 ldy curlin+1                             
-                 sta oldlin                               
-                 sty oldlin+1                             
-l17_1            pla                                      ; .diris
-                 pla                                      
-                 +lbcc ready                              ; say 'ready' if END, say 'break' if STOP
+stop_1          bbr7 runmod,l17_1                       ; branch if direct mode
+                jsr tto                                 ; transfer txtptr to oldtxt
+                lda curlin                              
+                ldy curlin+1                            
+                sta oldlin                              
+                sty oldlin+1                            
+l17_1           pla                                     ; .diris
+                pla                                     
+                +lbcc ready                             ; say 'ready' if END, say 'break' if STOP
 
 

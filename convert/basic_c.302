@@ -1,22 +1,22 @@
-PopParms                                                  ; [910820]
-                 ply                                      ; Grab return address
-                 plz                                      
+PopParms                                                ; [910820]
+                ply                                     ; Grab return address
+                plz                                     
 
-                 ldx #0                                   
-l302_1           pla                                      ; Restore Graphics parameters
-                 sta GKI__parm1,x                         
-                 inx                                      
-                 cpx #17                                  
-                 bcc l302_1                               
+                ldx #0                                  
+l302_1          pla                                     ; Restore Graphics parameters
+                sta GKI__parm1,x                        
+                inx                                     
+                cpx #17                                 
+                bcc l302_1                              
 
-                 pla                                      ; Restore 'poker' value
-                 sta linnum+1                             
-                 pla                                      
-                 sta linnum                               
+                pla                                     ; Restore 'poker' value
+                sta linnum+1                            
+                pla                                     
+                sta linnum                              
 
-                 phz                                      ; Restore return address
-                 phy                                      
-                 rts                                      
+                phz                                     ; Restore return address
+                phy                                     
+                rts                                     
 
 ;.end
 ;[[function.rsprite]]

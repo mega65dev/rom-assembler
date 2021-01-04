@@ -11,18 +11,18 @@
 ;*   2 : sprite/background collision
 ;******************************************************************
 
-bump             jsr chkcls
-                 jsr conint                               ; get arg in .X
-                 dex                                      ; adjust [1..2] to [0..1]
-                 cpx #2
-                 +lbcs fcerr                              ; value error
+bump            jsr chkcls
+                jsr conint                              ; get arg in .X
+                dex                                     ; adjust [1..2] to [0..1]
+                cpx #2
+                +lbcs fcerr                             ; value error
 
-                 sei
-                 ldy collisions,x                         ; get recorded collisions
-                 lda #0                                   ; reset them
-                 sta collisions,x
-                 cli
-                 +lbra sngflt                             ; float 1 byte arg in .Y
+                sei
+                ldy collisions,x                        ; get recorded collisions
+                lda #0                                  ; reset them
+                sta collisions,x
+                cli
+                +lbra sngflt                            ; float 1 byte arg in .Y
 
 ;.end
 
@@ -38,62 +38,62 @@ bump             jsr chkcls
 ;***************************************************************
 
 getang
-                 jsr settwo                               ; move angle value into y/a
+                jsr settwo                              ; move angle value into y/a
 
-gtang1           ldx #0                                   ; init count of phase
+gtang1          ldx #0                                  ; init count of phase
 
-l305_1           inx
-                 sec
-                 sbc #90                                  ; subtract 90 until less than 0
-                 bcs l305_1
-                 dey
-                 bpl l305_1
-                 stx angsgn                               ; save phase (here it is 1-4)
-                 pha
-                 adc #90                                  ; make positive
-                 jsr l305_2                               ; do division by 10
-                 pla                                      ; get 2's comp of angle
-                 clc
-                 eor #$ff
-                 adc #1                                   ; make positive
-                 dec angsgn                               ; correct phase
+l305_1          inx
+                sec
+                sbc #90                                 ; subtract 90 until less than 0
+                bcs l305_1
+                dey
+                bpl l305_1
+                stx angsgn                              ; save phase (here it is 1-4)
+                pha
+                adc #90                                 ; make positive
+                jsr l305_2                              ; do division by 10
+                pla                                     ; get 2's comp of angle
+                clc
+                eor #$ff
+                adc #1                                  ; make positive
+                dec angsgn                              ; correct phase
 
-l305_2           ldx #$ff
-l305_3           inx                                      ; do division by 10
-                 sec
-                 sbc #10
-                 bcs l305_3
-                 adc #10                                  ; make positive
-                 sta vtemp1                               ; save remainder
-                 txa
-                 asl                                      ; get quotient*2 as index
-                 tax
-                 lda angval+1,x                           ; get low byte base
-                 ldy angval,x                             ; get high byte value
+l305_2          ldx #$ff
+l305_3          inx                                     ; do division by 10
+                sec
+                sbc #10
+                bcs l305_3
+                adc #10                                 ; make positive
+                sta vtemp1                              ; save remainder
+                txa
+                asl                                     ; get quotient*2 as index
+                tax
+                lda angval+1,x                          ; get low byte base
+                ldy angval,x                            ; get high byte value
 
-l305_4           clc
-                 dec vtemp1
-                 bmi l305_5                               ; done - remainder = 0
-                 adc incval+1,x                           ; add low byte increment
-                 pha
-                 tya
-                 adc incval,x                             ; add high byte increment
-                 tay
-                 pla
-                 bcc l305_4                               ; ...always
+l305_4          clc
+                dec vtemp1
+                bmi l305_5                              ; done - remainder = 0
+                adc incval+1,x                          ; add low byte increment
+                pha
+                tya
+                adc incval,x                            ; add high byte increment
+                tay
+                pla
+                bcc l305_4                              ; ...always
 
-l305_5           pha                                      ; save low byte of result
-                 ldx #0                                   ; point to sinval
-                 lda angsgn
-                 lsr
-                 bcs l305_6                               ; skip if sine value
-                 ldx #2                                   ; point to cosval
+l305_5          pha                                     ; save low byte of result
+                ldx #0                                  ; point to sinval
+                lda angsgn
+                lsr
+                bcs l305_6                              ; skip if sine value
+                ldx #2                                  ; point to cosval
 
-l305_6           pla
-                 sta sinval,x                             ; save low byte result
-                 tya
-                 sta sinval+1,x                           ; save high byte result
-                 rts
+l305_6          pla
+                sta sinval,x                            ; save low byte result
+                tya
+                sta sinval+1,x                          ; save high byte result
+                rts
 
 
 ;*************************************************************
@@ -105,27 +105,27 @@ l305_6           pla
 ;*************************************************************
 
 angmlt
-                 ldy #sinval-vwork                        ; get offset to angle value
-                 bcc l306_1                               ; get cosine/sine offset
-                 ldy #cosval-vwork
+                ldy #sinval-vwork                       ; get offset to angle value
+                bcc l306_1                              ; get cosine/sine offset
+                ldy #cosval-vwork
 
-l306_1           lda angsgn
-                 adc #2                                   ; correct phase for cosine to look as sine
-                 lsr
-                 lsr
-                 php                                      ; save if carry - means negative angle value
-                 jsr settwo                               ; get angle fraction in y/a
-                 cpy #$ff                                 ; test if value should be 1
-                 bcc l306_2                               ; skip if not
-                 txa
-                 tay                                      ; get offset to integer
-                 jsr settwo                               ; just get integer - multiplied by 1
-                 bcs l306_3
+l306_1          lda angsgn
+                adc #2                                  ; correct phase for cosine to look as sine
+                lsr
+                lsr
+                php                                     ; save if carry - means negative angle value
+                jsr settwo                              ; get angle fraction in y/a
+                cpy #$ff                                ; test if value should be 1
+                bcc l306_2                              ; skip if not
+                txa
+                tay                                     ; get offset to integer
+                jsr settwo                              ; just get integer - multiplied by 1
+                bcs l306_3
 
-l306_2           jsr twobyt                               ; multiply integer times angle value
-l306_3           plp                                      ; get sign of angle
-                 bcc invert                               ; invert result if negative,do rts
-                 rts
+l306_2          jsr twobyt                              ; multiply integer times angle value
+l306_3          plp                                     ; get sign of angle
+                bcc invert                              ; invert result if negative,do rts
+                rts
 
 
 ;*************************************************************
@@ -359,27 +359,27 @@ l306_3           plp                                      ; get sign of angle
 ;***************************************************************
 
 dotwo2
-                 bcc addtw2                               ; go do addition
-                 bcs subtw2                               ; go do subtraction
+                bcc addtw2                              ; go do addition
+                bcs subtw2                              ; go do subtraction
 dotwo
-                 bcs subtwo                               ; go do subtraction
+                bcs subtwo                              ; go do subtraction
 
 ;***************************************************************
 ;  ADDTWO  - Add vwork+y and vwork+x  Result in y/a
 ;***************************************************************
 
 addtwo
-                 jsr settwo                               ; put vwrok+y into y/a
+                jsr settwo                              ; put vwrok+y into y/a
 
-addtw2                                                    ; enter here to add y/a to vwork+x
-                 clc
-                 adc vwork,x
-                 pha
-                 tya
-                 adc vwork+1,x
-                 tay
-                 pla
-                 rts
+addtw2                                                  ; enter here to add y/a to vwork+x
+                clc
+                adc vwork,x
+                pha
+                tya
+                adc vwork+1,x
+                tay
+                pla
+                rts
 
 
 ;****************************************************************
@@ -387,37 +387,37 @@ addtw2                                                    ; enter here to add y/
 ;****************************************************************
 
 subtwo
-                 jsr settwo                               ; move vwork+y into y/a
+                jsr settwo                              ; move vwork+y into y/a
 
-subtw2                                                    ; enter here with 1st value in y/a
-                 sec
-                 sbc vwork,x
-                 sta tempf1
-                 tya
-                 sbc vwork+1,x
-                 tay
-                 php
-                 lda tempf1
-                 plp
-                 rts
+subtw2                                                  ; enter here with 1st value in y/a
+                sec
+                sbc vwork,x
+                sta tempf1
+                tya
+                sbc vwork+1,x
+                tay
+                php
+                lda tempf1
+                plp
+                rts
 
 
 subtwo_savram
-                 lda savram,y                             ; load value into y,a
-                 pha
-                 lda savram+1,y
-                 tay
-                 pla
-                 sec
-                 sbc savram,x
-                 sta tempf1
-                 tya
-                 sbc savram+1,x
-                 tay
-                 php
-                 lda tempf1
-                 plp
-                 rts
+                lda savram,y                            ; load value into y,a
+                pha
+                lda savram+1,y
+                tay
+                pla
+                sec
+                sbc savram,x
+                sta tempf1
+                tya
+                sbc savram+1,x
+                tay
+                php
+                lda tempf1
+                plp
+                rts
 
 
 ;************************************************************
@@ -425,34 +425,34 @@ subtwo_savram
 ;************************************************************
 
 settwo
-                 lda vwork,y
-                 pha
-                 lda vwork+1,y
-                 tay
-                 pla
-                 rts
+                lda vwork,y
+                pha
+                lda vwork+1,y
+                tay
+                pla
+                rts
 
 ;******************************************************************
 ;  ABSTWO  - Get absolute value of vwork+y - vwork+x
 ;  Result in y/a  -  carry === vwork+y >= vwork+x
 ;******************************************************************
 
-abstwo                                                    ; movspr_to [910809]
-                 jsr subtwo                               ; subtract vwork+y - vwork+x
-abstw2                                                    ; entrance with vwork+y in y/a
-                 bpl absrts                               ; done if result is positive
-invert           php
-                 clc
-                 eor #$ff                                 ; invert low byte result and add 1
-                 adc #1
-                 pha
-                 tya
-                 eor #$ff                                 ; invert high byte result
-                 adc #0                                   ; add back any carry
-                 tay
-                 pla
-                 plp
-absrts           rts
+abstwo                                                  ; movspr_to [910809]
+                jsr subtwo                              ; subtract vwork+y - vwork+x
+abstw2                                                  ; entrance with vwork+y in y/a
+                bpl absrts                              ; done if result is positive
+invert          php
+                clc
+                eor #$ff                                ; invert low byte result and add 1
+                adc #1
+                pha
+                tya
+                eor #$ff                                ; invert high byte result
+                adc #0                                  ; add back any carry
+                tay
+                pla
+                plp
+absrts          rts
 
 
 ;****************************************************************
@@ -461,41 +461,41 @@ absrts           rts
 ;****************************************************************
 
 twobyt
-                 sty vtemp1                               ; save fraction
-                 sta vtemp2
-                 lda vwork,x
-                 ldy vwork+1,x
-                 php                                      ; save sign of integer
-                 jsr abstw2                               ; absolute value
-                 sta vwork,x
-                 tya
-                 sta vwork+1,x
-                 lda #0
-                 sta vtemp3                               ; initialize result to zero
+                sty vtemp1                              ; save fraction
+                sta vtemp2
+                lda vwork,x
+                ldy vwork+1,x
+                php                                     ; save sign of integer
+                jsr abstw2                              ; absolute value
+                sta vwork,x
+                tya
+                sta vwork+1,x
+                lda #0
+                sta vtemp3                              ; initialize result to zero
 
-                 ldy #16                                  ; initialize count
-l307_1           lsr vtemp1
-                 ror vtemp2
-                 bcc l307_2                               ; skip if no bit set
-                 clc
-                 adc vwork,x                              ; add integer low byte
-                 pha
-                 lda vtemp3
-                 adc vwork+1,x                            ; add integer high byte to total
-                 sta vtemp3
-                 pla
+                ldy #16                                 ; initialize count
+l307_1          lsr vtemp1
+                ror vtemp2
+                bcc l307_2                              ; skip if no bit set
+                clc
+                adc vwork,x                             ; add integer low byte
+                pha
+                lda vtemp3
+                adc vwork+1,x                           ; add integer high byte to total
+                sta vtemp3
+                pla
 
-l307_2           lsr vtemp3                               ; divide by 2
-                 ror
-                 dey
-                 bne l307_1                               ; loop 16 times - test all bits in 2 bytes
+l307_2          lsr vtemp3                              ; divide by 2
+                ror
+                dey
+                bne l307_1                              ; loop 16 times - test all bits in 2 bytes
 
-                 adc #0                                   ; add back round factor
-                 ldy vtemp3
-                 bcc l307_3
-                 iny
-l307_3           plp                                      ; pop sign
-                 bra abstw2                               ; return with signed product in y/a
+                adc #0                                  ; add back round factor
+                ldy vtemp3
+                bcc l307_3
+                iny
+l307_3          plp                                     ; pop sign
+                bra abstw2                              ; return with signed product in y/a
 
 
 ;******************************************************************
@@ -558,118 +558,118 @@ l307_3           plp                                      ; pop sign
 ;******************************************************************
 
 
-incor2                                                    ; enter here for optional argument
-                 jsr chrgot                               ; end of line?
-                 beq l308_1                               ; yes, use defaults
-                 jsr chkcom
-                 cmp #','                                 ; is there really an arg?
-                 bne incord                               ; yes, let'er rip
+incor2                                                  ; enter here for optional argument
+                jsr chrgot                              ; end of line?
+                beq l308_1                              ; yes, use defaults
+                jsr chkcom
+                cmp #','                                ; is there really an arg?
+                bne incord                              ; yes, let'er rip
 
-l308_1           ldy #0                                   ; set default pos = current pos
-l308_2           lda xpos,y
-                 sta vwork,x
-                 inx
-                 iny
-                 cpy #4
-                 bcc l308_2
-                 rts
+l308_1          ldy #0                                  ; set default pos = current pos
+l308_2          lda xpos,y
+                sta vwork,x
+                inx
+                iny
+                cpy #4
+                bcc l308_2
+                rts
 
 
 ;incor3    ;enter here for non-optional arg preceded by a comma
 ; jsr chkcom
 incord
-                 stx vtemp4                               ; save offset to destination
-                 jsr cordsb                               ; get 2-byte x-parameter
-                 jsr chrgot
-                 cmp #','
-                 beq docord                               ; skip ahead if have comma
+                stx vtemp4                              ; save offset to destination
+                jsr cordsb                              ; get 2-byte x-parameter
+                jsr chrgot
+                cmp #','
+                beq docord                              ; skip ahead if have comma
 
-                 cmp #';'                                 ; check for semi-colon
-                 +lbne snerr                              ; missing angle param- show syntax message
-                 jsr chrget       ;skip over '            ; '
-                 jsr getwrd                               ; get 2-byte angle in a,y
-                 sta z_p_temp_1                           ; swap a,y
-                 tya
-                 ldy z_p_temp_1
-                 jsr gtang1                               ; get sine & cosine values for the angle
-                 ldx vtemp4
-                 lda vwork,x
-                 sta vwork+2,x                            ; move length to y-parameter
-                 lda vwork+1,x
-                 sta vwork+3,x
+                cmp #';'                                ; check for semi-colon
+                +lbne snerr                             ; missing angle param- show syntax message
+                jsr chrget       ;skip over '           ; '
+                jsr getwrd                              ; get 2-byte angle in a,y
+                sta z_p_temp_1                          ; swap a,y
+                tya
+                ldy z_p_temp_1
+                jsr gtang1                              ; get sine & cosine values for the angle
+                ldx vtemp4
+                lda vwork,x
+                sta vwork+2,x                           ; move length to y-parameter
+                lda vwork+1,x
+                sta vwork+3,x
 ; jsr scalxy       ;scale the values
-                 lda #$0e
-                 sta vtemp5
-                 clc
-                 ldx vtemp4
+                lda #$0e
+                sta vtemp5
+                clc
+                ldx vtemp4
 
-l309_1           jsr angmlt                               ; multiply length * angle
-                 sta vwork,x                              ; save angle result
-                 tya
-                 sta vwork+1,x
-                 ldy #xpos-vwork
-                 lsr vtemp5
-                 bcc l309_2
-                 ldy #ypos-vwork
+l309_1          jsr angmlt                              ; multiply length * angle
+                sta vwork,x                             ; save angle result
+                tya
+                sta vwork+1,x
+                ldy #xpos-vwork
+                lsr vtemp5
+                bcc l309_2
+                ldy #ypos-vwork
 
-l309_2           jsr dotwo                                ; add/subtract value to current position
-                 sta vwork,x
-                 tya                                      ; save result in destination
-                 sta vwork+1,x
-                 inx
-                 inx
-                 lsr vtemp5
-                 bne l309_1                               ; do y-coordinate
-                 clc
-                 rts
+l309_2          jsr dotwo                               ; add/subtract value to current position
+                sta vwork,x
+                tya                                     ; save result in destination
+                sta vwork+1,x
+                inx
+                inx
+                lsr vtemp5
+                bne l309_1                              ; do y-coordinate
+                clc
+                rts
 
 
-docord           jsr chrget                               ; skip over comma
-                 inc vtemp4                               ; point to y-destination
-                 inc vtemp4
-                 jsr cordsb                               ; get y-paramter
+docord          jsr chrget                              ; skip over comma
+                inc vtemp4                              ; point to y-destination
+                inc vtemp4
+                jsr cordsb                              ; get y-paramter
 ; ldx vtemp4
 ; dex
 ; dex
 ; jsr scalxy       ;scale the values
-                 ldy #ypos-vwork
-                 ldx vtemp4
-                 inx
-                 inx
+                ldy #ypos-vwork
+                ldx vtemp4
+                inx
+                inx
 
-docor1           dex
-                 dex
-                 lsr vtemp5
-                 bcc docor2                               ; skip if not relative
-                 jsr addtwo                               ; add to current position
-                 sta vwork,x
-                 tya
-                 sta vwork+1,x
+docor1          dex
+                dex
+                lsr vtemp5
+                bcc docor2                              ; skip if not relative
+                jsr addtwo                              ; add to current position
+                sta vwork,x
+                tya
+                sta vwork+1,x
 
-docor2           ldy #xpos-vwork
-                 cpx vtemp4
-                 beq docor1                               ; loop to do x-coordinate
-                 clc
-                 rts
+docor2          ldy #xpos-vwork
+                cpx vtemp4
+                beq docor1                              ; loop to do x-coordinate
+                clc
+                rts
 
 ;
 ; CORDSB -- Get the next 2-byte parameter
 ;
 
-cordsb           jsr chrgot                               ; read character
-                 cmp #plus_token                          ; check if relative - plus sign
-                 beq l310_1                               ; skip if yes
-                 cmp #minus_token
-                 beq l310_1                               ; skip if relative - minus sign
-                 clc                                      ; .c=1 if relative coord, .c=0 if absolute
-l310_1           rol vtemp5                               ; save coord type for later
-                 jsr frmnum
-                 jsr getsad                               ; get signed 2 byte coordinate (y,a), do rts
-                 ldx vtemp4
-                 sta vwork+1,x                            ; save 2-byte parameter
-                 tya
-                 sta vwork,x
-                 rts
+cordsb          jsr chrgot                              ; read character
+                cmp #plus_token                         ; check if relative - plus sign
+                beq l310_1                              ; skip if yes
+                cmp #minus_token
+                beq l310_1                              ; skip if relative - minus sign
+                clc                                     ; .c=1 if relative coord, .c=0 if absolute
+l310_1          rol vtemp5                              ; save coord type for later
+                jsr frmnum
+                jsr getsad                              ; get signed 2 byte coordinate (y,a), do rts
+                ldx vtemp4
+                sta vwork+1,x                           ; save 2-byte parameter
+                tya
+                sta vwork,x
+                rts
 
 ;.end
 
@@ -679,29 +679,29 @@ l310_1           rol vtemp5                               ; save coord type for 
 ;  Values based as fraction of 65536
 
 angval
-                 !text $00,$00                            ; sine 00 degrees -  .0000
-                 !text $2c,$71                            ; sine 10 degrees -  .1736
-                 !text $57,$8d                            ; sine 20 degrees -  .3420
-                 !text $80,$00                            ; sine 30 degrees -  .5000
-                 !text $a4,$8f                            ; sine 40 degrees -  .6428
-                 !text $c4,$19                            ; sine 50 degrees -  .7660
-                 !text $dd,$b2                            ; sine 60 degrees -  .8660
-                 !text $f0,$90                            ; sine 70 degrees -  .9397
-                 !text $fc,$1c                            ; sine 80 degrees -  .9848
-                 !text $ff,$ff                            ; sine 90 degrees - 1.0000
+                !text $00,$00                           ; sine 00 degrees -  .0000
+                !text $2c,$71                           ; sine 10 degrees -  .1736
+                !text $57,$8d                           ; sine 20 degrees -  .3420
+                !text $80,$00                           ; sine 30 degrees -  .5000
+                !text $a4,$8f                           ; sine 40 degrees -  .6428
+                !text $c4,$19                           ; sine 50 degrees -  .7660
+                !text $dd,$b2                           ; sine 60 degrees -  .8660
+                !text $f0,$90                           ; sine 70 degrees -  .9397
+                !text $fc,$1c                           ; sine 80 degrees -  .9848
+                !text $ff,$ff                           ; sine 90 degrees - 1.0000
 
 ;  INCVAL  -- Table of incremental values between 10 degrees
 ;  Values based on fraction of 65536
 
 incval
-                 !text $04,$72                            ; 01 - 09 degrees -  .01739
-                 !text $04,$50                            ; 11 - 19 degrees -  .01692
-                 !text $04,$0b                            ; 21 - 29 degrees -  .01592
-                 !text $03,$a8                            ; 31 - 39 degrees -  .01443
-                 !text $03,$28                            ; 41 - 49 degrees -  .01252
-                 !text $02,$90                            ; 51 - 59 degrees -  .01023
-                 !text $01,$e3                            ; 61 - 69 degrees -  .00762
-                 !text $01,$28                            ; 71 - 79 degrees -  .00477
-                 !text $00,$63                            ; 81 - 89 degrees -  .00179
+                !text $04,$72                           ; 01 - 09 degrees -  .01739
+                !text $04,$50                           ; 11 - 19 degrees -  .01692
+                !text $04,$0b                           ; 21 - 29 degrees -  .01592
+                !text $03,$a8                           ; 31 - 39 degrees -  .01443
+                !text $03,$28                           ; 41 - 49 degrees -  .01252
+                !text $02,$90                           ; 51 - 59 degrees -  .01023
+                !text $01,$e3                           ; 61 - 69 degrees -  .00762
+                !text $01,$28                           ; 71 - 79 degrees -  .00477
+                !text $00,$63                           ; 81 - 89 degrees -  .00179
 
 ;.end

@@ -1,20 +1,20 @@
-loadiff                                                   
-                 jsr CheckGraphicMode                     
-                 lda #$e6                                 ; parse:  filename [,U#] [,D#]
-                 jsr dosprs                               ; (like dopen:  0 0 0 *  * 0 0 1 )
-                 jsr chk1                                 ; check parameters
-                 lda #0                                   
-                 sta dossa                                ; setup as dload would (0 = load channel)
-                 jsr find_la                              ; find an available la to use (cannot use reserved one)
-                 ldy #fopn                                
-                 ldx #4                                   
-                 jsr open_file                            ; open the file
-                 bcs l279_1                               ; exit if error
+loadiff                                                 
+                jsr CheckGraphicMode                    
+                lda #$e6                                ; parse:  filename [,U#] [,D#]
+                jsr dosprs                              ; (like dopen:  0 0 0 *  * 0 0 1 )
+                jsr chk1                                ; check parameters
+                lda #0                                  
+                sta dossa                               ; setup as dload would (0 = load channel)
+                jsr find_la                             ; find an available la to use (cannot use reserved one)
+                ldy #fopn                               
+                ldx #4                                  
+                jsr open_file                           ; open the file
+                bcs l279_1                              ; exit if error
 
-                 ldx dosla                                
+                ldx dosla                               
 ; stx GKI__parm1
-                 jsr _chkin                               ; get input channel
-l279_1           +lbcs list_err                           ; exit if error
+                jsr _chkin                              ; get input channel
+l279_1          +lbcs list_err                          ; exit if error
 
-                 jsr ($802a)                              ; Load it
+                jsr ($802a)                             ; Load it
 

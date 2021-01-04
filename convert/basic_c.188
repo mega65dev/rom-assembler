@@ -1,31 +1,31 @@
-atn              lda facsgn                               ; what is sign?
-                 pha                                      ; save for later
-                 bpl l188_1                               
-                 jsr negop                                ; if negative, negate FAC
+atn             lda facsgn                              ; what is sign?
+                pha                                     ; save for later
+                bpl l188_1                              
+                jsr negop                               ; if negative, negate FAC
 ;use arctan(x)=-arctan(-x)
-l188_1           lda facexp                               
-                 pha                                      ; save this too for later
-                 cmp #$81                                 ; see if FAC >= 1.0
-                 bcc l188_2                               ; it is less than 1
-                 lda #<fone                               ; get pntr to 1.0
-                 ldy #>fone                               
-                 jsr romdiv                               ; compute reciprocal
+l188_1          lda facexp                              
+                pha                                     ; save this too for later
+                cmp #$81                                ; see if FAC >= 1.0
+                bcc l188_2                              ; it is less than 1
+                lda #<fone                              ; get pntr to 1.0
+                ldy #>fone                              
+                jsr romdiv                              ; compute reciprocal
 ;use aectan(x)=pi/2-arctan(1/x)
-l188_2           lda #<atncon                             ; pointer to arctan constants
-                 ldy #>atncon                             
-                 jsr polyx                                
-                 pla                                      
-                 cmp #$81                                 ; was original argument < 1?
-                 bcc l188_3                               ; yes
-                 lda #<pi2                                
-                 ldy #>pi2                                
-                 jsr romsub                               ; subtract arctan from pi/2
+l188_2          lda #<atncon                            ; pointer to arctan constants
+                ldy #>atncon                            
+                jsr polyx                               
+                pla                                     
+                cmp #$81                                ; was original argument < 1?
+                bcc l188_3                              ; yes
+                lda #<pi2                               
+                ldy #>pi2                               
+                jsr romsub                              ; subtract arctan from pi/2
 
-l188_3           pla                                      ; was original aurgument positive?
-                 bpl l188_4                               ; yes
-                 +lbra negop                              ; if negative, negate result
+l188_3          pla                                     ; was original aurgument positive?
+                bpl l188_4                              ; yes
+                +lbra negop                             ; if negative, negate result
 
-l188_4           rts                                      ; all done
+l188_4          rts                                     ; all done
 
 ;.end
 ;[[system.boot]]

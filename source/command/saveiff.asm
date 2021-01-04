@@ -6,25 +6,25 @@
 ;*****************************************************************
 
 saveiff
-                 jsr CheckGraphicMode
-                 lda #$66                                 ; set error flags
-                 jsr dosprs                               ; parse the line
-                 jsr chk2                                 ; check required parameters
-                 lda #1
-                 sta dossa                                ; setup as dsave would (1 = save channel)
-                 jsr find_la                              ; find an available la to use (cannot use reserved one)
-                 ldy #fopn
-                 ldx #4
-                 jsr open_file                            ; open the file
-                 bcs l280_1                               ; exit if error
+                jsr CheckGraphicMode
+                lda #$66                                ; set error flags
+                jsr dosprs                              ; parse the line
+                jsr chk2                                ; check required parameters
+                lda #1
+                sta dossa                               ; setup as dsave would (1 = save channel)
+                jsr find_la                             ; find an available la to use (cannot use reserved one)
+                ldy #fopn
+                ldx #4
+                jsr open_file                           ; open the file
+                bcs l280_1                              ; exit if error
 
-                 ldx dosla
+                ldx dosla
 ; stx GKI__parm1
-                 jsr _chkout                              ; get output channel
-l280_1           +lbcs list_err                           ; exit if error
+                jsr _chkout                             ; get output channel
+l280_1          +lbcs list_err                          ; exit if error
 
-                 jsr ($803a)                              ; Save it
-                 bra exit_GKI_disk_op
+                jsr ($803a)                             ; Save it
+                bra exit_GKI_disk_op
 
 ; php   ;preserve completion status
 ; pha

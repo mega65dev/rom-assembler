@@ -1,10 +1,10 @@
-get_sprite_number                                          
-                 jsr getbyt                               
+get_sprite_number                                        
+                jsr getbyt                              
 ; dex        [910221]
-                 cpx #8                                   
-                 +lbcs fcerr                              
-                 stx z_p_temp_1                           
-                 rts                                      
+                cpx #8                                  
+                +lbcs fcerr                             
+                stx z_p_temp_1                          
+                rts                                     
 
 ;.end
 ;[[command.movspr]]
@@ -23,58 +23,58 @@ get_sprite_number
 ; x#y = Constant movement at an angle-x with speed-y.
 ;****************************************************************
 
-movspr           lda #0                                   ; flag 'movspr' initial coord   [910808]
-                 sta op                                   ; (0=movspr, $80=movspr_to, $7f=mouse)
-                 jsr get_sprite_number                    ; get sprite #
-                 jsr sprcor                               ; get first coordinate (y,a)
-movspr_1                                                  ; entry to eval destination coordinate  [910808]
-                 bit numcnt                               ; test coordinate type
-                 +lbvs snerr                              ; syntax error
-                 sty xdest                                ; save coordinate value
-                 sty xdest+2                              
-                 sta xdest+1                              
-                 sta xdest+3                              
+movspr          lda #0                                  ; flag 'movspr' initial coord   [910808]
+                sta op                                  ; (0=movspr, $80=movspr_to, $7f=mouse)
+                jsr get_sprite_number                   ; get sprite #
+                jsr sprcor                              ; get first coordinate (y,a)
+movspr_1                                                ; entry to eval destination coordinate  [910808]
+                bit numcnt                              ; test coordinate type
+                +lbvs snerr                             ; syntax error
+                sty xdest                               ; save coordinate value
+                sty xdest+2                             
+                sta xdest+1                             
+                sta xdest+3                             
 
-                 jsr sprcor                               ; get second coordinate (y,a)
-                 bit numcnt                               ; test coordinate type & dispatch accordingly
-                 bvc movspr_normal                        ; normal coordinates
-                 bmi movspr_angle                         ; angular coordinates
+                jsr sprcor                              ; get second coordinate (y,a)
+                bit numcnt                              ; test coordinate type & dispatch accordingly
+                bvc movspr_normal                       ; normal coordinates
+                bmi movspr_angle                        ; angular coordinates
 
-                 bit op                                   ; angle#speed, test if allowed
-                 +lbmi snerr                              ; ng- movspr_to call
-                 phy                                      ; ok- save speed value
-                 ldy #xdest-vwork                         
-                 jsr getang                               ; get angle of movement
-                 ldx z_p_temp_1                           ; get sprite number
-                 ldy sproff,x                             ; get offset to speed data
-                 lda #0                                   
-                 sta sprite_data,y                        ; turn off sprite speed
-                 iny                                      
+                bit op                                  ; angle#speed, test if allowed
+                +lbmi snerr                             ; ng- movspr_to call
+                phy                                     ; ok- save speed value
+                ldy #xdest-vwork                        
+                jsr getang                              ; get angle of movement
+                ldx z_p_temp_1                          ; get sprite number
+                ldy sproff,x                            ; get offset to speed data
+                lda #0                                  
+                sta sprite_data,y                       ; turn off sprite speed
+                iny                                     
 
-                 ldx #3                                   
-l287_1           lsr sinval,x                             
-                 dex                                      
-                 ror sinval,x                             
-                 dex                                      
-                 bpl l287_1                               
+                ldx #3                                  
+l287_1          lsr sinval,x                            
+                dex                                     
+                ror sinval,x                            
+                dex                                     
+                bpl l287_1                              
 
-l287_2           sei                                      
-                 inx                                      ; x=0
-                 lda angsgn,x                             ; move angle data to speed data
-                 iny                                      
-                 sta sprite_data,y                        
-                 cpx #4                                   
-                 bne l287_2                               
+l287_2          sei                                     
+                inx                                     ; x=0
+                lda angsgn,x                            ; move angle data to speed data
+                iny                                     
+                sta sprite_data,y                       
+                cpx #4                                  
+                bne l287_2                              
 
-                 lda #0                                   ; clear speed angle counts
-l287_3           iny                                      
-                 sta sprite_data,y                        
-                 dex                                      
-                 bne l287_3                               
+                lda #0                                  ; clear speed angle counts
+l287_3          iny                                     
+                sta sprite_data,y                       
+                dex                                     
+                bne l287_3                              
 
-                 pla                                      ; restore speed value
-                 and #$3f                                 ; limit range (0-63) ????  [910806]
-                 sta sprite_data-10,y                     ; start sprite movement
-                 cli                                      
-                 rts                                      
+                pla                                     ; restore speed value
+                and #$3f                                ; limit range (0-63) ????  [910806]
+                sta sprite_data-10,y                    ; start sprite movement
+                cli                                     
+                rts                                     
 

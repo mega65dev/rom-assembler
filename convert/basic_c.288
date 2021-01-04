@@ -1,27 +1,27 @@
-movspr_angle                                              
+movspr_angle                                            
 ; jsr swapxy  ;swap y and a (eventually) : y ==> x
 ; tay   ;        a ==> y
 ; txa   ;        x ==> a
-                 pha                                      
-                 tya                                      
-                 ply                                      
+                pha                                     
+                tya                                     
+                ply                                     
 
-                 jsr gtang1                               ; get angle values
+                jsr gtang1                              ; get angle values
 ; ldx #xdest-vwork
 ; jsr scalxy  ;scale lengths
-                 ldx #xdest-vwork                         
-                 clc                                      
+                ldx #xdest-vwork                        
+                clc                                     
 
-l288_1           jsr angmlt                               ; multiply lengths*angles for x and y
-                 sta vwork,x                              
-                 tya                                      
-                 sta vwork+1,x                            
-                 inx                                      
-                 inx                                      
-                 cpx #ydest-vwork                         
-                 beq l288_1                               ; loop to do y-position
+l288_1          jsr angmlt                              ; multiply lengths*angles for x and y
+                sta vwork,x                             
+                tya                                     
+                sta vwork+1,x                           
+                inx                                     
+                inx                                     
+                cpx #ydest-vwork                        
+                beq l288_1                              ; loop to do y-position
 
-                 ror numcnt                               ; shift in carry to set msb
-                 bra movspr_position                      ; go place sprite
+                ror numcnt                              ; shift in carry to set msb
+                bra movspr_position                     ; go place sprite
 
 

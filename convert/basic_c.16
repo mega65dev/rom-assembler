@@ -1,30 +1,30 @@
-nescex           bcc xeqchr                               ; jmp chrget
+nescex          bcc xeqchr                              ; jmp chrget
 
-snerr1           +lbra snerr                              
+snerr1          +lbra snerr                             
 
-morsts           cmp #':'                                 
-                 +lbeq xeqcm                              ; if ':', continue statement
-                 bra snerr1                               
+morsts          cmp #':'                                
+                +lbeq xeqcm                             ; if ':', continue statement
+                bra snerr1                              
 
 
 ;[[command.set1]]
 ; STOP, STOP KEY, and END handlers
 ;
 
-is_stop_key_down                                          
-                 jsr _stop                                ; test stop key
-                 bne do_rts                               ; not down, exit
+is_stop_key_down                                        
+                jsr _stop                               ; test stop key
+                bne do_rts                              ; not down, exit
 
 ; ldy trapno+1  ;test if trap on????   removed [910925]
 ; iny
 ; beq stop_1  ;no, do a normal stop
 
 
-break_exit                                                ; STOP KEY:     [910104]
-l16_1            jsr _stop                                ; wait for the user to release the key
-                 beq l16_1                                
-                 ldx #erbrk                               ; take the vector thru error to ready
-                 +lbra error                              
+break_exit                                              ; STOP KEY:     [910104]
+l16_1           jsr _stop                               ; wait for the user to release the key
+                beq l16_1                               
+                ldx #erbrk                              ; take the vector thru error to ready
+                +lbra error                             
 
 
 

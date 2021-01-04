@@ -1,45 +1,45 @@
-LoadERR                                                   
-                 ldx #erload                              ; Load Error
-                 sec                                      
-                 !text $89                                
+LoadERR                                                 
+                ldx #erload                             ; Load Error
+                sec                                     
+                !text $89                               
 
-LoadEOF                                                   
-                 clc                                      
-                 +lbra list_err                           ; release channel, close file, return to main
+LoadEOF                                                 
+                clc                                     
+                +lbra list_err                          ; release channel, close file, return to main
 
 
 ;************************************************************************
 ;   Key_Save  Save function key definitions (from disk)   [900725]
 ;************************************************************************
 
-Key_Save                                                  
-                 jsr GetSaveChannel                       ; [910930]
-                 lda #highds                              ; set starting & ending addresses
-                 ldy #>_pky_lengths                       ; start address & pointer to it
-                 ldx #<_pky_lengths                       
-                 sty highds+1                             
-                 stx highds                               
-                 iny                                      ; end address = start address + 256 + 1
-                 inx                                      
-                 +lbra savenb                             ; [910925]
+Key_Save                                                
+                jsr GetSaveChannel                      ; [910930]
+                lda #highds                             ; set starting & ending addresses
+                ldy #>_pky_lengths                      ; start address & pointer to it
+                ldx #<_pky_lengths                      
+                sty highds+1                            
+                stx highds                              
+                iny                                     ; end address = start address + 256 + 1
+                inx                                     
+                +lbra savenb                            ; [910925]
 ; jsr _savesp  ;save it
 ;; clc   ; return no error  ????why not  [910404]
 ; bra exit_disk_op ; but if direct mode print DOS error  [910404]
 
 
 
-GetSaveChannel                                            ; Used by KeySave and SpriteSave    [910930]
-                 jsr chrget                               ; eat SAVE token
-                 lda #$66                                 ; parse:  filename [,U#] [,D#]
-                 jsr dosprs                               ; parse options
-                 jsr chk2                                 ; check required parameters
+GetSaveChannel                                          ; Used by KeySave and SpriteSave    [910930]
+                jsr chrget                              ; eat SAVE token
+                lda #$66                                ; parse:  filename [,U#] [,D#]
+                jsr dosprs                              ; parse options
+                jsr chk2                                ; check required parameters
 
-                 ldy #fopn                                ; DOS table offset
-                 lda #4                                   ; length
-                 jsr sendp                                
-                 lda #sys_bank                            ; set banks ???? buffer in system bank ????
-                 ldx #sys_bank                            
-                 jmp _setbank                             
+                ldy #fopn                               ; DOS table offset
+                lda #4                                  ; length
+                jsr sendp                               
+                lda #sys_bank                           ; set banks ???? buffer in system bank ????
+                ldx #sys_bank                           
+                jmp _setbank                            
 
 ;.end
 
@@ -64,9 +64,9 @@ GetSaveChannel                                            ; Used by KeySave and 
 ;*  Idea: BANK SCREEN n  when REC is finalized????
 ;************************************************************************
 
-bank             jsr getbyt                               ; get bank number in .x
-                 stx current_bank                         
-                 rts                                      
+bank            jsr getbyt                              ; get bank number in .x
+                stx current_bank                        
+                rts                                     
 
 
 ;.end
@@ -94,16 +94,16 @@ bank             jsr getbyt                               ; get bank number in .
 ; $   : flat
 
 
-play             jsr frmstr                               ; frmevl,frestr,return w/ .A=len, (index)=>string
+play            jsr frmstr                              ; frmevl,frestr,return w/ .A=len, (index)=>string
 ; sta sw_rom_ram0  ;????
-                 sta z_p_temp_1                           ; save number of characters
-                 jsr clear_play_flags                     ; set 'dot' and 'sharp' to 0. return with Acc=0
-                 sta hulp                                 ; zero counter
+                sta z_p_temp_1                          ; save number of characters
+                jsr clear_play_flags                    ; set 'dot' and 'sharp' to 0. return with Acc=0
+                sta hulp                                ; zero counter
 
-l103_1           ldy hulp                                 
-                 cpy z_p_temp_1                           
-                 beq play_rts                             ; done!
-                 jsr indin1_ram1                          
-                 jsr play_one_character                   
-                 inc hulp                                 
-                 bne l103_1                               ; always
+l103_1          ldy hulp                                
+                cpy z_p_temp_1                          
+                beq play_rts                            ; done!
+                jsr indin1_ram1                         
+                jsr play_one_character                  
+                inc hulp                                
+                bne l103_1                              ; always

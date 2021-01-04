@@ -19,52 +19,52 @@
 
 rgraphic
 ; jsr CheckGraphicMode ;verify screen open
-                 pla                                      ; remove token from stack
-                 jsr PushParms                            ; preserve Graphics parameters & LINNUM  [910820]
+                pla                                     ; remove token from stack
+                jsr PushParms                           ; preserve Graphics parameters & LINNUM  [910820]
 
-                 jsr chkopn                               ; check for open paren
-                 jsr getbyt                               ; get screen # in .X
-                 stx GKI__parm1
-                 jsr combyt                               ; get param # in .X
-                 cpx #10+1                                ; [911028]
-                 bcs l298_1                               ; illegal param #
-                 phx
-                 jsr chkcls                               ; check for closing parens
+                jsr chkopn                              ; check for open paren
+                jsr getbyt                              ; get screen # in .X
+                stx GKI__parm1
+                jsr combyt                              ; get param # in .X
+                cpx #10+1                               ; [911028]
+                bcs l298_1                              ; illegal param #
+                phx
+                jsr chkcls                              ; check for closing parens
 
-                 jsr ($8038)                              ; read screen params
-l298_1           +lbcs fcerr                              ; bad input????
+                jsr ($8038)                             ; read screen params
+l298_1          +lbcs fcerr                             ; bad input????
 
-                 lda GKI__parm2
-                 plx                                      ; get back desired param #
-                 dex
-                 bpl l298_2
-                 eor #$80                                 ; make 0=closed, 1=open, >1=invalid
-                 lsr
-                 lsr
-                 bra l298_3                               ; return screen open status
+                lda GKI__parm2
+                plx                                     ; get back desired param #
+                dex
+                bpl l298_2
+                eor #$80                                ; make 0=closed, 1=open, >1=invalid
+                lsr
+                lsr
+                bra l298_3                              ; return screen open status
 
-l298_2           dex
-                 bpl l298_5
-l298_3           lsr
-l298_4           lsr
-                 lsr
-                 lsr
-                 and #3
-                 bra l298_8                               ; return width, height
+l298_2          dex
+                bpl l298_5
+l298_3          lsr
+l298_4          lsr
+                lsr
+                lsr
+                and #3
+                bra l298_8                              ; return width, height
 
-l298_5           dex
-                 bpl l298_6
-                 and #8
-                 bra l298_4
-l298_6           dex
-                 bpl l298_7
-                 and #7                                   ; return depth
-                 inc                                      ; make depth 1-8
-                 bra l298_8
+l298_5          dex
+                bpl l298_6
+                and #8
+                bra l298_4
+l298_6          dex
+                bpl l298_7
+                and #7                                  ; return depth
+                inc                                     ; make depth 1-8
+                bra l298_8
 
-l298_7           lda GKI__parm3,x                         ; return bp bask, banks, etc.
-l298_8           tay
-                 jsr sngflt                               ; float 1 byte arg in .y
+l298_7          lda GKI__parm3,x                        ; return bp bask, banks, etc.
+l298_8          tay
+                jsr sngflt                              ; float 1 byte arg in .y
 
-                 jsr PopParms                             ; restore Graphics parameters & LINNUM
-                 rts
+                jsr PopParms                            ; restore Graphics parameters & LINNUM
+                rts

@@ -1,22 +1,22 @@
-fadflt           bcs normal                               ; here if signs differ. if carry, FAC is set ok
-                 jsr negfac                               ; negate (FAC)
+fadflt          bcs normal                              ; here if signs differ. if carry, FAC is set ok
+                jsr negfac                              ; negate (FAC)
 
-normal           ldy #0                                   
-                 tya                                      
-                 clc                                      
+normal          ldy #0                                  
+                tya                                     
+                clc                                     
 
-l169_1           ldx facho                                
-                 bne norm1                                
-                 ldx facho+1                              ; shift 8 bits at a time for speed
-                 stx facho                                
-                 ldx facmoh+1                             
-                 stx facmoh                               
-                 ldx facmo+1                              
-                 stx facmo                                
-                 ldx facov                                
-                 stx faclo                                
-                 sty facov                                
-                 adc #8                                   
-                 cmp #32                                  
-                 bne l169_1                               
+l169_1          ldx facho                               
+                bne norm1                               
+                ldx facho+1                             ; shift 8 bits at a time for speed
+                stx facho                               
+                ldx facmoh+1                            
+                stx facmoh                              
+                ldx facmo+1                             
+                stx facmo                               
+                ldx facov                               
+                stx faclo                               
+                sty facov                               
+                adc #8                                  
+                cmp #32                                 
+                bne l169_1                              
 

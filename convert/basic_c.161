@@ -1,12 +1,12 @@
-fretms           cpy lastpt+1                             ; last entry to temp?
-                 bne frerts                               
-                 cmp lastpt                               
-                 bne frerts                               
-                 sta temppt                               
-                 sbc #strsiz                              ; point to lst one
-                 sta lastpt                               ; update temp pointer
-                 ldy #0                                   ; also clears zflg so we do rest of fretmp
-frerts           rts                                      ; all done
+fretms          cpy lastpt+1                            ; last entry to temp?
+                bne frerts                              
+                cmp lastpt                              
+                bne frerts                              
+                sta temppt                              
+                sbc #strsiz                             ; point to lst one
+                sta lastpt                              ; update temp pointer
+                ldy #0                                  ; also clears zflg so we do rest of fretmp
+frerts          rts                                     ; all done
 
 ;.end
 ;[[string.garbage]]
@@ -21,29 +21,29 @@ frerts           rts                                      ; all done
 ;          (also preserves .a and sets frespc= y,x = -> at space.)
 
 
-getspa           lsr garbfl                               ; signal no garbage collection yet
+getspa          lsr garbfl                              ; signal no garbage collection yet
 
-tryag2           tax                                      ; save in x also
-                 beq getrts                               ; length of 0 no go...
-                 pha                                      ; save a (length) on stack
-                 lda fretop                               ; lo byte
-                 sec                                      ; for subtract
-                 sbc #2                                   ; minus 2 (link bytes)
-                 ldy fretop+1                             
-                 bcs l161_1                               
-                 dey                                      
-l161_1           sta index1                               ; save for later
-                 sty index1+1                             
-                 txa                                      
-                 eor #$ff                                 
-                 sec                                      
-                 adc index1                               
-                 bcs l161_2                               
-                 dey                                      
-l161_2           cpy strend+1                             
-                 bcc garbag                               
-                 bne strfre                               
-                 cmp strend                               
-                 bcc garbag                               ; clean up
+tryag2          tax                                     ; save in x also
+                beq getrts                              ; length of 0 no go...
+                pha                                     ; save a (length) on stack
+                lda fretop                              ; lo byte
+                sec                                     ; for subtract
+                sbc #2                                  ; minus 2 (link bytes)
+                ldy fretop+1                            
+                bcs l161_1                              
+                dey                                     
+l161_1          sta index1                              ; save for later
+                sty index1+1                            
+                txa                                     
+                eor #$ff                                
+                sec                                     
+                adc index1                              
+                bcs l161_2                              
+                dey                                     
+l161_2          cpy strend+1                            
+                bcc garbag                              
+                bne strfre                              
+                cmp strend                              
+                bcc garbag                              ; clean up
 
 

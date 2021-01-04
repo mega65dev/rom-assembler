@@ -1,17 +1,17 @@
-kloop            clc                                      ; compute source address
-                 tya                                      
-                 adc txtptr                               
-                 sta index1                               
-                 lda txtptr+1                             
-                 adc #0                                   
-                 sta index1+1                             
-                 ldy #$ff                                 
+kloop           clc                                     ; compute source address
+                tya                                     
+                adc txtptr                              
+                sta index1                              
+                lda txtptr+1                            
+                adc #0                                  
+                sta index1+1                            
+                ldy #$ff                                
 
-l9_1             iny                                      
-                 lda (index1),y                           ; move source..  ????assumes text in common area
-                 sta (txtptr),y                           ; to destination offset ????assumes text in common area
-                 bne l9_1                                 ; not end of line
-                 rts                                      
+l9_1            iny                                     
+                lda (index1),y                          ; move source..  ????assumes text in common area
+                sta (txtptr),y                          ; to destination offset ????assumes text in common area
+                bne l9_1                                ; not end of line
+                rts                                     
 
 
 ;      RESER

@@ -1,37 +1,37 @@
-clear_play_flags                                          
-                 lda #0                                   
-                 sta sharp                                ; clear flags
-                 sta dnote                                
-                 cli                                      
-                 rts                                      
+clear_play_flags                                        
+                lda #0                                  
+                sta sharp                               ; clear flags
+                sta dnote                               
+                cli                                     
+                rts                                     
 
 
-tempo            jsr getbyt                               ; duration of whole note 4/4 time = 24/rate
-                 txa                                      
-                 +lbeq fcerr                              ; can't be zero- illegal quantity error
-                 stx tempo_rate                           
-                 rts                                      
+tempo           jsr getbyt                              ; duration of whole note 4/4 time = 24/rate
+                txa                                     
+                +lbeq fcerr                             ; can't be zero- illegal quantity error
+                stx tempo_rate                          
+                rts                                     
 
 
-times2           !text 0,2,4,6,8,10                       ; [910612] stereo
+times2          !text 0,2,4,6,8,10                      ; [910612] stereo
 
-notes            !text "WHQIS"                            ; sixteenth,eigth,quarter,half,and whole notes
+notes           !text "WHQIS"                           ; sixteenth,eigth,quarter,half,and whole notes
 
-mutabl           !text "VOTXUM"                           ; voice,octave,envelope,filter,volume,& measure
+mutabl          !text "VOTXUM"                          ; voice,octave,envelope,filter,volume,& measure
 
-scalen           !text 9,11,0,2,4,5,7                     ; a,b,c,d,e,f,g
+scalen          !text 9,11,0,2,4,5,7                    ; a,b,c,d,e,f,g
 
-scalel           !text $0f,$0c,$46,$bf,$7d,$83            ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (NTSC, octave 6)
-                 !text $d6,$7a,$73,$c8,$7c,$97            ; [910729]
+scalel          !text $0f,$0c,$46,$bf,$7d,$83           ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (NTSC, octave 6)
+                !text $d6,$7a,$73,$c8,$7c,$97           ; [910729]
 
-scaleh           !text $43,$47,$4b,$4f,$54,$59            ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (NTSC, octave 6)
-                 !text $5e,$64,$6a,$70,$77,$7e            ; [910729]
+scaleh          !text $43,$47,$4b,$4f,$54,$59           ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (NTSC, octave 6)
+                !text $5e,$64,$6a,$70,$77,$7e           ; [910729]
 
-scalelp          !text $87,$8b,$cc,$4e,$14,$24            ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (PAL,  octave 6)
-                 !text $80,$2d,$32,$91,$52,$7a            ; [910729]
+scalelp         !text $87,$8b,$cc,$4e,$14,$24           ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (PAL,  octave 6)
+                !text $80,$2d,$32,$91,$52,$7a           ; [910729]
 
-scalehp          !text $43,$47,$4b,$50,$55,$5a            ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (PAL,  octave 6)
-                 !text $5f,$65,$6b,$71,$78,$7f            ; [910729]
+scalehp         !text $43,$47,$4b,$50,$55,$5a           ; c,c#,d,d#,e,f,f#,g,g#,a,a#,b (PAL,  octave 6)
+                !text $5f,$65,$6b,$71,$78,$7f           ; [910729]
 
 ;  Music envelope tables, default values downloaded to RAM:
 ;
@@ -40,30 +40,30 @@ scalehp          !text $43,$47,$4b,$50,$55,$5a            ; c,c#,d,d#,e,f,f#,g,g
 
 ;  Attack/decay rates
 
-atkmus           !text $09,$c0,$00,$05,$94,$09,$09,$09,$89,$09 
+atkmus          !text $09,$c0,$00,$05,$94,$09,$09,$09,$89,$09
 
 ;  Sustain/release rates
 
-susmus           !text $00,$c0,$f0,$50,$40,$21,$00,$90,$41,$00 
+susmus          !text $00,$c0,$f0,$50,$40,$21,$00,$90,$41,$00
 
 ;  Waveform table
 
-wavmus           !text $41,$21,$11,$81,$11,$21,$41,$41,$41,$11 
+wavmus          !text $41,$21,$11,$81,$11,$21,$41,$41,$41,$11
 
 ;  Pulse width hi table
 
-pwhmus           !text $06,$00,$00,$00,$00,$00,$02,$08,$02,$00 
+pwhmus          !text $06,$00,$00,$00,$00,$00,$02,$08,$02,$00
 
 ;  Offset tables
 
-SID_offset                                                
-                 !text $00,$07,$0e,$20,$27,$2e            ; [910612] stereo
-filter_offset                                             
-                 !text 0,0,0,4,4,4                        
+SID_offset                                              
+                !text $00,$07,$0e,$20,$27,$2e           ; [910612] stereo
+filter_offset                                           
+                !text 0,0,0,4,4,4                       
 
 ;  Volume levels
 
-voltab           !text 0,1,3,5,7,8,10,12,14,15            
+voltab          !text 0,1,3,5,7,8,10,12,14,15           
 
 ;.end
 ;[[command.filter]]
@@ -83,83 +83,83 @@ voltab           !text 0,1,3,5,7,8,10,12,14,15
 ;
 ;******************************************************************
 
-filter           jsr getbyt                               ; get left/right SID    [910612]
-                 dex                                      
-                 cpx #2                                   
-                 +lbcs fcerr                              
-                 lda filter_offset+2,x                    ; get filter offset for specified SID
-                 sta z_p_temp_1                           
-                 tax                                      
+filter          jsr getbyt                              ; get left/right SID    [910612]
+                dex                                     
+                cpx #2                                  
+                +lbcs fcerr                             
+                lda filter_offset+2,x                   ; get filter offset for specified SID
+                sta z_p_temp_1                          
+                tax                                     
 
-                 ldy #0                                   
-l112_1           lda filters1,x                           ; save current voice's filter params
-                 sta fltsav,y                             
-                 inx                                      
-                 iny                                      
-                 cpy #4                                   
-                 bcc l112_1                               
+                ldy #0                                  
+l112_1          lda filters1,x                          ; save current voice's filter params
+                sta fltsav,y                            
+                inx                                     
+                iny                                     
+                cpy #4                                  
+                bcc l112_1                              
 
-                 jsr optwrd                               ; get filter frequency
-                 bcc l112_2                               ; skip if no value given
-                 cmp #8                                   ; test m.s. byte
-                 +lbcs fcerr                              ; error if > 2047
-                 sty fltsav                               ; save lower byte
+                jsr optwrd                              ; get filter frequency
+                bcc l112_2                              ; skip if no value given
+                cmp #8                                  ; test m.s. byte
+                +lbcs fcerr                             ; error if > 2047
+                sty fltsav                              ; save lower byte
 
 ; Idea: shift lower 3 bits of upper byte into lower byte, forming bits 10-3
 
-                 sty fltsav+1                             
-                 lsr                                      
-                 ror fltsav+1                             
-                 lsr                                      
-                 ror fltsav+1                             ; save upper 7 bits (10-3)
-                 lsr                                      
-                 ror fltsav+1                             
+                sty fltsav+1                            
+                lsr                                     
+                ror fltsav+1                            
+                lsr                                     
+                ror fltsav+1                            ; save upper 7 bits (10-3)
+                lsr                                     
+                ror fltsav+1                            
 
-l112_2           lda #$10                                 ; start at type=LP
-                 sta fltflg                               
-                 lda fltsav                               
+l112_2          lda #$10                                ; start at type=LP
+                sta fltflg                              
+                lda fltsav                              
 
-l112_3           jsr optbyt                               ; get filter types (LP,BP,HP)
-                 bcc l112_6                               ; skip if no value input
-                 cpx #1                                   ; (set .c: 0=0, 1=1)
-                 bcc l112_4                               
-                 beq l112_4                               
-                 +lbra fcerr                              ; error if >1
+l112_3          jsr optbyt                              ; get filter types (LP,BP,HP)
+                bcc l112_6                              ; skip if no value input
+                cpx #1                                  ; (set .c: 0=0, 1=1)
+                bcc l112_4                              
+                beq l112_4                              
+                +lbra fcerr                             ; error if >1
 
-l112_4           lda fltsav+3                             ; get filter flags byte
-                 ora fltflg                               ; set filter on
-                 bcs l112_5                               ; skip if it should be on
-                 eor fltflg                               ; turn filter off
-l112_5           sta fltsav+3                             ; save value
+l112_4          lda fltsav+3                            ; get filter flags byte
+                ora fltflg                              ; set filter on
+                bcs l112_5                              ; skip if it should be on
+                eor fltflg                              ; turn filter off
+l112_5          sta fltsav+3                            ; save value
 
-l112_6           asl fltflg                               ; shift for next filter
-                 bpl l112_3                               ; loop 3 times
+l112_6          asl fltflg                              ; shift for next filter
+                bpl l112_3                              ; loop 3 times
 
-                 jsr optbyt                               ; get resonance value
-                 bcc l112_7                               ; skip if no value given
+                jsr optbyt                              ; get resonance value
+                bcc l112_7                              ; skip if no value given
 ; cpx #16
 ; bcs fcerr  ;error if >15
-                 jsr chknyb                               ; [910930]
-                 txa                                      
-                 asl                                      ; shift to upper nibble
-                 asl                                      
-                 asl                                      
-                 asl                                      
-                 sta nibble                               
-                 lda fltsav+2                             ; get current value
-                 and #$0f                                 ; mask it out
-                 ora nibble                               ; add new value
-                 sta fltsav+2                             ; save it
+                jsr chknyb                              ; [910930]
+                txa                                     
+                asl                                     ; shift to upper nibble
+                asl                                     
+                asl                                     
+                asl                                     
+                sta nibble                              
+                lda fltsav+2                            ; get current value
+                and #$0f                                ; mask it out
+                ora nibble                              ; add new value
+                sta fltsav+2                            ; save it
 
-l112_7           ldx z_p_temp_1                           ; hardware offset for this voice's filter [910612]
-                 ldy #0                                   
-l112_8           lda fltsav,y                             ; copy new filter params to hardware
-                 sta filters1,x                           
-                 inx                                      
-                 iny                                      
-                 cpy #4                                   
-                 bcc l112_8                               
-                 rts                                      
+l112_7          ldx z_p_temp_1                          ; hardware offset for this voice's filter [910612]
+                ldy #0                                  
+l112_8          lda fltsav,y                            ; copy new filter params to hardware
+                sta filters1,x                          
+                inx                                     
+                iny                                     
+                cpy #4                                  
+                bcc l112_8                              
+                rts                                     
 
 ;.end
 

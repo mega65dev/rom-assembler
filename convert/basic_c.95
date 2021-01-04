@@ -1,40 +1,40 @@
-resend           ldx tmptrp                               ; restore trap line to allow traps again
-                 stx trapno+1                             
-error_clear                                               
-                 ldx #$ff                                 
-                 stx errnum                               ; reset error status- he's saying he's fixed it
-                 stx errlin                               
-                 stx errlin+1                             ; flag 'no further resumes until next error'
-                 rts                                      
+resend          ldx tmptrp                              ; restore trap line to allow traps again
+                stx trapno+1                            
+error_clear                                             
+                ldx #$ff                                
+                stx errnum                              ; reset error status- he's saying he's fixed it
+                stx errlin                              
+                stx errlin+1                            ; flag 'no further resumes until next error'
+                rts                                     
 
 
-rescnt           ldx #errcr                               
-                 +lbra error                              
+rescnt          ldx #errcr                              
+                +lbra error                             
 
 ;.end
 
 ;[[command.loops]]
 
 
-do               ldy #1                                   
-l95_1            lda txtptr,y                             ; save current pointers for stack entry
-                 sta tmptxt,y                             
-                 lda curlin,y                             
-                 sta tmplin,y                             
-                 dey                                      
-                 bpl l95_1                                
+do              ldy #1                                  
+l95_1           lda txtptr,y                            ; save current pointers for stack entry
+                sta tmptxt,y                            
+                lda curlin,y                            
+                sta tmplin,y                            
+                dey                                     
+                bpl l95_1                               
 
-                 jsr chrgot                               ; look for 'while' or 'until'
-                 beq doyes                                ; unconditional
-                 cmp #until_token                         
-                 beq do10                                 
-                 cmp #while_token                         
-                 bne snrjmp                               
+                jsr chrgot                              ; look for 'while' or 'until'
+                beq doyes                               ; unconditional
+                cmp #until_token                        
+                beq do10                                
+                cmp #while_token                        
+                bne snrjmp                              
 
 
 ;  Here for WHILE
 
-                 jsr frmjmp                               
-                 lda facexp                               
-                 bne doyes                                ; conditional evaluated true
+                jsr frmjmp                              
+                lda facexp                              
+                bne doyes                               ; conditional evaluated true
 

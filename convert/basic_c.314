@@ -1,70 +1,70 @@
-edit_load_done                                            
-                 lda #0                                   ; EOF: terminate memory with a pair of nulls
-                 tay                                      
-                 jsr sta_far_in1                          
-                 iny                                      
-                 jsr sta_far_in1                          
-                 inw index                                
-                 inw index                                
-                 ldx index                                ; set top
-                 ldy index+1                              
-                 stx text_top                             
-                 sty text_top+1                           
-                 +lbra link_program                       ; relink & RTS
+edit_load_done                                          
+                lda #0                                  ; EOF: terminate memory with a pair of nulls
+                tay                                     
+                jsr sta_far_in1                         
+                iny                                     
+                jsr sta_far_in1                         
+                inw index                               
+                inw index                               
+                ldx index                               ; set top
+                ldy index+1                             
+                stx text_top                            
+                sty text_top+1                          
+                +lbra link_program                      ; relink & RTS
 
 
-edit_save                                                 
-                 lda #$e6                                 ; parse:  filename [,U#] [,D#]
-                 jsr dosprs                               ; (like dopen:      0 0 0 *  * 0 0 1 )
-                 jsr chk1                                 ; check parameters
-                 jsr find_la                              ; find an available LA
-                 jsr find_sa                              ; find an available SA
-                 ldy #fsavseq                             
-                 ldx #8                                   
-                 jsr open_file                            ; open the file
-                 +lbcs list_err                           ; exit if error
-                 ldx dosla                                
-                 jsr _chkout                              ; get output channel
-                 bcs l314_5                               ; error
+edit_save                                               
+                lda #$e6                                ; parse:  filename [,U#] [,D#]
+                jsr dosprs                              ; (like dopen:      0 0 0 *  * 0 0 1 )
+                jsr chk1                                ; check parameters
+                jsr find_la                             ; find an available LA
+                jsr find_sa                             ; find an available SA
+                ldy #fsavseq                            
+                ldx #8                                  
+                jsr open_file                           ; open the file
+                +lbcs list_err                          ; exit if error
+                ldx dosla                               
+                jsr _chkout                             ; get output channel
+                bcs l314_5                              ; error
 
-                 lda txttab                               ; save address
-                 ldx txttab+1                             
-                 sta index                                
-                 stx index+1                              
+                lda txttab                              ; save address
+                ldx txttab+1                            
+                sta index                               
+                stx index+1                             
 
-l314_1           jsr _stop                                ; check stop key
-                 beq l314_5                               ; exit if down
-                 jsr _readst                              ; check channel status
-                 bne l314_5                               ; exit if eof or error????
+l314_1          jsr _stop                               ; check stop key
+                beq l314_5                              ; exit if down
+                jsr _readst                             ; check channel status
+                bne l314_5                              ; exit if eof or error????
 
-                 ldy #3                                   ; save a line, starting past links & line#
-l314_2           iny                                      ; bump buffer pointer
+                ldy #3                                  ; save a line, starting past links & line#
+l314_2          iny                                     ; bump buffer pointer
 ; cpy #buflen  ;check buffer (160 max. input buffer size to edit)
 ; beq ??$   ; split long lines into two????
-                 jsr indin1                               
-                 tax                                      ; save character for eol check
-                 bne l314_3                               
-                 lda #cr                                  ; eol: substitute CR ???? allow some other terminator
-l314_3           jsr _bsout                               ; write file data
-                 txa                                      
-                 bne l314_2                               ; loop until eol
+                jsr indin1                              
+                tax                                     ; save character for eol check
+                bne l314_3                              
+                lda #cr                                 ; eol: substitute CR ???? allow some other terminator
+l314_3          jsr _bsout                              ; write file data
+                txa                                     
+                bne l314_2                              ; loop until eol
 
-                 iny                                      ; advance text index to start of next line
-                 tya                                      
-                 clc                                      
-                 adc index                                
-                 sta index                                
-                 bcc l314_4                               
-                 inc index+1                              
+                iny                                     ; advance text index to start of next line
+                tya                                     
+                clc                                     
+                adc index                               
+                sta index                               
+                bcc l314_4                              
+                inc index+1                             
 
-l314_4           ldy #0                                   ; check for EOF: a pair of null links
-                 jsr indin1                               
-                 bne l314_1                               
-                 iny                                      
-                 jsr indin1                               
-                 bne l314_1                               ; loop until end of text
+l314_4          ldy #0                                  ; check for EOF: a pair of null links
+                jsr indin1                              
+                bne l314_1                              
+                iny                                     
+                jsr indin1                              
+                bne l314_1                              ; loop until end of text
 
-l314_5           +lbra list_exit                          ; release channel, close file, exit
+l314_5          +lbra list_exit                         ; release channel, close file, exit
 
 ;.end
 

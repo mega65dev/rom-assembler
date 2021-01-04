@@ -18,9 +18,9 @@
 ;*  Idea: BANK SCREEN n  when REC is finalized????
 ;************************************************************************
 
-bank             jsr getbyt                               ; get bank number in .x
-                 stx current_bank
-                 rts
+bank            jsr getbyt                              ; get bank number in .x
+                stx current_bank
+                rts
 
 
 ;.end

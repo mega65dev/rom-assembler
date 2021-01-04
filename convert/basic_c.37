@@ -1,9 +1,9 @@
-p1line           bbr4 runmod,l37_1                        ; [910620]
-                 +lbra edit_p1line                        ; handle things differently for plain text
+p1line          bbr4 runmod,l37_1                       ; [910620]
+                +lbra edit_p1line                       ; handle things differently for plain text
 
-l37_1            ldy #3                                   
-                 sty lstpnt                               
-                 sty dores                                ; reset quote-switch
-                 jsr linprt                               ; print line number
-                 lda #' '                                 ; print a space
+l37_1           ldy #3                                  
+                sty lstpnt                              
+                sty dores                               ; reset quote-switch
+                jsr linprt                              ; print line number
+                lda #' '                                ; print a space
 
