@@ -35,7 +35,7 @@ andop            ldy #0
                  +lbra givayf                             ; float (a,y) and return to user
 
 
-;[[relational]]
+;[[operator.relational]]
 
 ; Time to perform a relational operator.
 ; (domask) contains the bits as to which relational operator it was.
@@ -115,6 +115,6 @@ l20_1            +lbra float                              ; float the one-byte r
 
 ;.end
 
-;[[readyerror]]
+;[[system.readyerror]]
 
 

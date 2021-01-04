@@ -3,7 +3,7 @@ raddc            !text 104,40,177,70,0
 
 ;.end
 
-;[[math]]
+;[[math.ext1]]
 
 
 n32768           !text $90,$80,0,0,0                      

@@ -19,7 +19,7 @@ decblt           dec hightr+1
                  rts                                      
 
 ;.end
-;[[arrays]]
+;[[system.arrays]]
 
 
 

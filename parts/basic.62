@@ -85,7 +85,8 @@ next bne 10$  ;hop if 'next' variable given
 45$ rts 
  
 ;.end 
-;[[command.dim]] .page 
+;[[command.dim]] 
+ .page 
  .subttl DIM 
  
 ; The DIMension code sets DIMFLG and then falls into the variable search 

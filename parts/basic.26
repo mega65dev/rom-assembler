@@ -185,6 +185,6 @@ nodel jsr init_stack  ;'clearc' removed since text changes don't require trashin
  
 120$ bra main 
  
-;[[linkprogram]] 
+;[[system.linkprogram]] 
  
  .page 

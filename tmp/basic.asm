@@ -1,4 +1,4 @@
-;[[header]]
+;[[system.header]]
 
 
 
@@ -107,7 +107,7 @@
 
 
 
-;[[constants]]
+;[[data.constants]]
 ; General assignments and equates
 
 doslfn           = 0                                      ; DOS' private logical file number
@@ -327,7 +327,7 @@ fstr1            !fill 3                                  ;
 fstr2            !fill 3                                  ;
 
 
-;[[stackdata]]
+;[[system.stackdata]]
 
                  * = $00ff
 
@@ -371,7 +371,7 @@ dma2_mod_hi      !fill 1
 sysstk                                                    ; bottom of system stack
 stkend           = $1fb                                   ; top of system stack
 
-;[[data]]
+;[[data.memory]]
 
 
                  * = $0200
@@ -824,7 +824,7 @@ GKI__temp17      !fill 1
 ;.end
 
 
-;[[kernal]]
+;[[data.kernal]]
 ; Addresses of OS parameters referenced by BASIC:
 
 _6510_data_reg   = $01
@@ -934,7 +934,7 @@ _plot            = $fff0
 
 
 
-;[[initialise]]
+;[[initialise.initialise]]
 ; ***************************************************************************************************************
 ; ***************************************************************************************************************
 ;
@@ -1371,7 +1371,7 @@ l5_1             rts
 
 
 ;.end
-;[[indirection]]
+;[[system.indirection]]
 
 ; C65 BASIC Indirect Load Subroutines
 
@@ -1516,7 +1516,7 @@ indcmp_in1                                                ; [910620]
 
 
 
-;[[tokeniser]]
+;[[system.tokeniser]]
 ;        CRUNCH
 ;
 ;  Entry:  TXTPTR points to start of text to crunch
@@ -2310,7 +2310,7 @@ pointer_token    = $0a
 last_esc_function_token = $0d                                    ; [910820]
 
 
-;[[errors]]
+;[[error.messages]]
 
 
 ok_error_message
@@ -2362,7 +2362,7 @@ error_message_list
 
 
 
-;[[errors/constants]]
+;[[error.constants]]
 
 errtmf           = 1
 errfno           = 3
@@ -2406,7 +2406,7 @@ last_error_message = 42                                     ; # of last error ms
 
 ;.end
 
-;[[error.handler]]
+;[[error.message]]
 
 
 ; Routine to translate error message # in .a
@@ -2431,7 +2431,7 @@ l11_2            lda (index2),y                           ; look at msg, and fin
 l11_3            rts
 
 ;.end
-;[[dispatcher]]
+;[[system.dispatcher]]
 
 
 
@@ -2663,7 +2663,7 @@ break            jsr release_channels                     ; make sure we're in t
 do_rts           rts
 
 ;.end
-;[[functions]]
+;[[function.dispatch]]
 
 
 
@@ -2806,7 +2806,7 @@ andop            ldy #0
                  +lbra givayf                             ; float (a,y) and return to user
 
 
-;[[relational]]
+;[[operator.relational]]
 
 ; Time to perform a relational operator.
 ; (domask) contains the bits as to which relational operator it was.
@@ -2886,7 +2886,7 @@ l20_1            +lbra float                              ; float the one-byte r
 
 ;.end
 
-;[[readyerror]]
+;[[system.readyerror]]
 
 
 bad_command
@@ -2983,7 +2983,7 @@ errfin           ldy curlin+1                             ; direct mode?
                  jsr inprt
 l23_1            jsr highlight_done                       ; restore normal text color????    [910624]
 
-;[[interface]]
+;[[system.interface]]
 
 
 ready_1
@@ -3008,7 +3008,7 @@ nmain            ldx #$ff                                 ; set direct mode flag
                  stx curlin+1
                  jsr InputLine                            ; get a line of input & buffer it
 
-;[[execute]]
+;[[system.execute]]
 
 execute_a_line                                            ; EXECUTE PLAIN TEXT IN BUFFER
                  stx txtptr                               ; init buffer pointer
@@ -3309,7 +3309,7 @@ l26_11           lda #29                                  ; cursor right
 
 l26_12           +lbra main
 
-;[[linkprogram]]
+;[[system.linkprogram]]
 
 
 link_program
@@ -3397,7 +3397,7 @@ l28_2            lda #0                                   ; fininl.  terminate i
 
 ;.end
 
-;[[stack]]
+;[[system.stack]]
 
 
 
@@ -3570,7 +3570,7 @@ rlsstk           tya
 l32_1            rts
 
 ;.end
-;[[linesearch]]
+;[[system.linesearch]]
 
 
 
@@ -5199,7 +5199,8 @@ l62_6
 l62_7            rts
 
 ;.end
-;[[command.dim]] .page
+;[[command.dim]]
+
 
 
 ; The DIMension code sets DIMFLG and then falls into the variable search
@@ -8575,7 +8576,7 @@ sterr            ldx #errst
 
 ;.end
 
-;[[evaluate]]
+;[[system.evaluate]]
 
 
 ; Formula Evaluator Routine
@@ -9388,7 +9389,7 @@ decblt           dec hightr+1
                  rts
 
 ;.end
-;[[arrays]]
+;[[system.arrays]]
 
 
 
@@ -9909,7 +9910,7 @@ l133_2           lda time,x
                  +lbra putnew                             ; make descriptor in dsctmp real
 
 
-;[[time]]
+;[[system.time]]
 ; TI. Convert 24-hour TOD into tenths of seconds.  901010 F.Bowen
 
 Get_TI
@@ -10831,7 +10832,7 @@ raddc            !text 104,40,177,70,0
 
 ;.end
 
-;[[math]]
+;[[math.ext1]]
 
 
 n32768           !text $90,$80,0,0,0
@@ -13451,7 +13452,7 @@ l188_3           pla                                      ; was original aurgume
 l188_4           rts                                      ; all done
 
 ;.end
-;[[boot]]
+;[[system.boot]]
 
 
 
@@ -15489,7 +15490,7 @@ record           lda #'#'
 l229_1           ldx #errfno                              ; file not found err (file not open)   [910404]
                  +lbra error
 
-;[[command.DCLEAR]]
+;[[command.dclear]]
 
 ; DCLEAR - reinitilaize the drive
 
@@ -20960,7 +20961,7 @@ basic_nmi                                                 ; removed [910826]
 
 
 ;.end
-;[[jumptable]]
+;[[system.jumptable]]
 
 
 

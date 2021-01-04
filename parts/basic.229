@@ -36,7 +36,7 @@ record lda #'#'
 20$ ldx #errfno  ;file not found err (file not open)   [910404] 
  bra error 
  
-;[[command.DCLEAR]] 
+;[[command.dclear]] 
  .page 
 ; DCLEAR - reinitilaize the drive 
  

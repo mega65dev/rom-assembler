@@ -34,6 +34,7 @@ if errorCount != 0:
 #
 #		Throw first 8k and pad to 40960
 #
+print("Writing the new ROM image.")
 newROM = newROM[0x2000:]				
 while len(newROM) != 40960:
 	newROM += bytes([0])

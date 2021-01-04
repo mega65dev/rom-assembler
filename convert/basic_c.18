@@ -8,7 +8,7 @@ break            jsr release_channels                     ; make sure we're in t
 do_rts           rts                                      
 
 ;.end
-;[[functions]]
+;[[function.dispatch]]
 
 
 

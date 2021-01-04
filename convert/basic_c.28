@@ -46,7 +46,7 @@ l28_2            lda #0                                   ; fininl.  terminate i
 
 ;.end
 
-;[[stack]]
+;[[system.stack]]
 
 
 

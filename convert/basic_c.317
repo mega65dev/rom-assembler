@@ -13,7 +13,7 @@ basic_nmi                                                 ; removed [910826]
 
 
 ;.end
-;[[jumptable]]
+;[[system.jumptable]]
 
 
 

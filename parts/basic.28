@@ -46,7 +46,7 @@ InputLine   ;inlin.
  
 ;.end 
  .page 
-;[[stack]] 
+;[[system.stack]] 
  
  .subttl Runtime Stack Routines 
  

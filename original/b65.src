@@ -1,4 +1,4 @@
-;[[header]]
+;[[system.header]]
 	.nam C65 Development BASIC 10.0 (C)1991 CBM
 	.subttl *** Copyright (C) 1991  by  Commodore Business Machines, Inc. ***
 
@@ -107,7 +107,7 @@
 	.page
 	.subttl C65 BASIC 10.0 Declarations
 
-;[[constants]]
+;[[data.constants]]
 ; General assignments and equates
 
 doslfn		= 0		;DOS' private logical file number
@@ -327,7 +327,7 @@ fstr1		*=*+3		;
 fstr2		*=*+3		;
 
 
-;[[stackdata]]
+;[[system.stackdata]]
 	.page
 		* = $00ff
 
@@ -371,7 +371,7 @@ dma2_mod_hi	*=*+1
 sysstk				;bottom of system stack
 stkend		= $1fb		;top of system stack
 
-;[[data]]
+;[[data.memory]]
 
 	.page
 		* = $0200
@@ -824,7 +824,7 @@ GKI.temp17	*=*+1
 ;.end
 	.page
 	.subttl C65 Kernal Entry Points
-;[[kernal]]
+;[[data.kernal]]
 ; Addresses of OS parameters referenced by BASIC:
 
 _6510_data_reg	= $01
@@ -934,7 +934,7 @@ _plot		= $fff0
 	.page
 	.subttl C65 BASIC 10.0 Initilaization
 
-;[[initialise]]
+;[[initialise.initialise]]
 	* = $2000
 
 basic
@@ -1310,7 +1310,7 @@ chrtst	cmp #':'		;						[910513]
 
 
 ;.end
-;[[indirection]]
+;[[system.indirection]]
 	.page
 ; C65 BASIC Indirect Load Subroutines
 
@@ -1455,7 +1455,7 @@ indcmp_in1		;							[910620]
 	.page
 	.subttl Crunch - Tokenization Routine
 
-;[[tokeniser]]
+;[[system.tokeniser]]
 ;        CRUNCH
 ;
 ;  Entry:  TXTPTR points to start of text to crunch
@@ -2249,7 +2249,7 @@ pointer_token		= $0a
 last_esc_function_token	= $0d				;			[910820]
 
 	.page
-;[[errors]]	
+;[[error.messages]]	
 	.subttl Error Messages
 
 ok_error_message
@@ -2301,7 +2301,7 @@ error_message_list
 
 	.page
 	.subttl  Error Message Numbers
-;[[errors/constants]]
+;[[error.constants]]
 
 errtmf			= 1
 errfno			= 3
@@ -2345,7 +2345,7 @@ last_error_message	= 42	;# of last error msg
 
 ;.end
 	.page
-;[[error.handler]]
+;[[error.message]]
 	.subttl Error message output
 
 ; Routine to translate error message # in .a
@@ -2370,7 +2370,7 @@ erstup	tax			;error set up
 4$	rts
 
 ;.end
-;[[dispatcher]]
+;[[system.dispatcher]]
 	.page
 	.subttl Execute Dispatcher
 
@@ -2602,7 +2602,7 @@ break	jsr release_channels	;make sure we're in text mode????		[910909]
 do_rts	rts
 
 ;.end
-;[[functions]]
+;[[function.dispatch]]
 	.page
 	.subttl Function Handler
 
@@ -2745,7 +2745,7 @@ andop	ldy #0
 	bra givayf	;float (a,y) and return to user
 
 
-;[[relational]]
+;[[operator.relational]]
 
 ; Time to perform a relational operator.
 ; (domask) contains the bits as to which relational operator it was.
@@ -2825,7 +2825,7 @@ docmp
 
 ;.end
 	.page
-;[[readyerror]]
+;[[system.readyerror]]
 	.subttl  Ready, Error, Main (CODE 0)
 
 bad_command
@@ -2922,7 +2922,7 @@ errfin	ldy curlin+1		;direct mode?
 	jsr inprt
 10$	jsr highlight_done	;restore normal text color????				[910624]
 
-;[[interface]]
+;[[system.interface]]
 
 	.page
 ready_1
@@ -2947,7 +2947,7 @@ nmain	ldx #$ff		;set direct mode flag
 	stx curlin+1
 	jsr InputLine		;get a line of input & buffer it
 
-;[[execute]]
+;[[system.execute]]
 
 execute_a_line			;EXECUTE PLAIN TEXT IN BUFFER
 	stx txtptr		;init buffer pointer
@@ -3248,7 +3248,7 @@ nodel	jsr init_stack		;'clearc' removed since text changes don't require trashin
 
 120$	bra main
 
-;[[linkprogram]]
+;[[system.linkprogram]]
 
 	.page
 link_program
@@ -3336,7 +3336,7 @@ InputLine			;inlin.
 
 ;.end
 	.page
-;[[stack]]
+;[[system.stack]]
 
 	.subttl Runtime Stack Routines
 
@@ -3509,7 +3509,7 @@ rlsstk	tya
 10$	rts
 
 ;.end
-;[[linesearch]]
+;[[system.linesearch]]
 
 	.page
 	.subttl FindLine
@@ -5138,7 +5138,8 @@ next	bne 10$		;hop if 'next' variable given
 45$	rts
 
 ;.end
-;[[command.dim]]	.page
+;[[command.dim]]	
+	.page
 	.subttl DIM
 
 ;	The DIMension code sets DIMFLG and then falls into the variable search
@@ -8514,7 +8515,7 @@ sterr	ldx #errst
 
 ;.end
 	.page
-;[[evaluate]]
+;[[system.evaluate]]
 	.subttl Formula Evaluator
 
 ; Formula Evaluator Routine
@@ -9327,7 +9328,7 @@ decblt	dec hightr+1
 	rts
 
 ;.end
-;[[arrays]]
+;[[system.arrays]]
 	.page
 	.subttl Array Routines
 
@@ -9848,7 +9849,7 @@ Get_TI_String
 	bra putnew		;make descriptor in dsctmp real
 
 	.page
-;[[time]]
+;[[system.time]]
 ; TI.	Convert 24-hour TOD into tenths of seconds.		901010 F.Bowen
 
 Get_TI
@@ -13390,7 +13391,7 @@ atn	lda facsgn	;what is sign?
 40$	rts		;all done
 
 ;.end
-;[[boot]]
+;[[system.boot]]
 	.page
 	.subttl  BOOT
 
@@ -15428,7 +15429,7 @@ record	lda #'#'
 20$	ldx #errfno		;file not found err (file not open)			[910404]
 	bra error
 
-;[[command.DCLEAR]]
+;[[command.dclear]]
 	.page
 ; DCLEAR - reinitilaize the drive
 
@@ -20899,7 +20900,7 @@ basic_nmi			;					removed	[910826]
 	.messg ***ROM OVERFLOW: $C000
 	.endif
 ;.end
-;[[jumptable]]
+;[[system.jumptable]]
 	.page
 	.subttl C65 BASIC Jump Table
 

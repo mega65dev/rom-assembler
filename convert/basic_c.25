@@ -4,7 +4,7 @@ nmain            ldx #$ff                                 ; set direct mode flag
                  stx curlin+1                             
                  jsr InputLine                            ; get a line of input & buffer it
 
-;[[execute]]
+;[[system.execute]]
 
 execute_a_line                                            ; EXECUTE PLAIN TEXT IN BUFFER
                  stx txtptr                               ; init buffer pointer

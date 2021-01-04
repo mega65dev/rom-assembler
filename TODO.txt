@@ -1,6 +1,5 @@
 
 Todo
-	Split the code into sections
 	Start renaming things.
 
 Later

@@ -28,7 +28,7 @@ atn lda facsgn ;what is sign?
 40$ rts  ;all done 
  
 ;.end 
-;[[boot]] 
+;[[system.boot]] 
  .page 
  .subttl  BOOT 
  

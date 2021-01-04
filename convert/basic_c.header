@@ -1,4 +1,4 @@
-;[[header]]
+;[[system.header]]
 
 
 
@@ -107,7 +107,7 @@
 
 
 
-;[[constants]]
+;[[data.constants]]
 ; General assignments and equates
 
 doslfn           = 0                                      ; DOS' private logical file number
@@ -327,7 +327,7 @@ fstr1            !fill 3                                  ;
 fstr2            !fill 3                                  ; 
 
 
-;[[stackdata]]
+;[[system.stackdata]]
 
                  * = $00ff                                
 
@@ -371,7 +371,7 @@ dma2_mod_hi      !fill 1
 sysstk                                                    ; bottom of system stack
 stkend           = $1fb                                   ; top of system stack
 
-;[[data]]
+;[[data.memory]]
 
 
                  * = $0200                                
@@ -824,7 +824,7 @@ GKI__temp17      !fill 1
 ;.end
 
 
-;[[kernal]]
+;[[data.kernal]]
 ; Addresses of OS parameters referenced by BASIC:
 
 _6510_data_reg   = $01                                    
@@ -934,4 +934,4 @@ _plot            = $fff0
 
 
 
-;[[initialise]]
+;[[initialise.initialise]]

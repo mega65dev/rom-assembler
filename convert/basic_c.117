@@ -52,7 +52,7 @@ sterr            ldx #errst
 
 ;.end
 
-;[[evaluate]]
+;[[system.evaluate]]
 
 
 ; Formula Evaluator Routine

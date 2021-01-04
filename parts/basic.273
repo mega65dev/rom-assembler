@@ -39,7 +39,7 @@ C65__line
  bcs 1$   ; yes, continue 
  rts 
  
- ;[[command.box]] 
+;[[command.box]] 
  .page 
 ;***************************************************************** 
 ;* BOX   draw a 4-sided figure 

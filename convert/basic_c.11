@@ -538,7 +538,7 @@ pointer_token    = $0a
 last_esc_function_token = $0d                                    ; [910820]
 
 
-;[[errors]]
+;[[error.messages]]
 
 
 ok_error_message                                          
@@ -590,7 +590,7 @@ error_message_list
 
 
 
-;[[errors/constants]]
+;[[error.constants]]
 
 errtmf           = 1                                      
 errfno           = 3                                      
@@ -634,7 +634,7 @@ last_error_message = 42                                     ; # of last error ms
 
 ;.end
 
-;[[error.handler]]
+;[[error.message]]
 
 
 ; Routine to translate error message # in .a
@@ -659,7 +659,7 @@ l11_2            lda (index2),y                           ; look at msg, and fin
 l11_3            rts                                      
 
 ;.end
-;[[dispatcher]]
+;[[system.dispatcher]]
 
 
 

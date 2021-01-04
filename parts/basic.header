@@ -1,4 +1,4 @@
-;[[header]] 
+;[[system.header]] 
  .nam C65 Development BASIC 10.0 (C)1991 CBM 
  .subttl *** Copyright (C) 1991  by  Commodore Business Machines, Inc. *** 
  
@@ -107,7 +107,7 @@
  .page 
  .subttl C65 BASIC 10.0 Declarations 
  
-;[[constants]] 
+;[[data.constants]] 
 ; General assignments and equates 
  
 doslfn  = 0  ;DOS' private logical file number 
@@ -327,7 +327,7 @@ fstr1  *=*+3  ;
 fstr2  *=*+3  ; 
  
  
-;[[stackdata]] 
+;[[system.stackdata]] 
  .page 
   * = $00ff 
  
@@ -371,7 +371,7 @@ dma2_mod_hi *=*+1
 sysstk    ;bottom of system stack 
 stkend  = $1fb  ;top of system stack 
  
-;[[data]] 
+;[[data.memory]] 
  
  .page 
   * = $0200 
@@ -824,7 +824,7 @@ GKI__temp17 *=*+1
 ;.end 
  .page 
  .subttl C65 Kernal Entry Points 
-;[[kernal]] 
+;[[data.kernal]] 
 ; Addresses of OS parameters referenced by BASIC: 
  
 _6510_data_reg = $01 
@@ -934,4 +934,4 @@ _plot  = $fff0
  .page 
  .subttl C65 BASIC 10.0 Initilaization 
  
-;[[initialise]] 
+;[[initialise.initialise]] 

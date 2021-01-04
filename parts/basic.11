@@ -538,7 +538,7 @@ pointer_token  = $0a
 last_esc_function_token = $0d    ;   [910820] 
  
  .page 
-;[[errors]] 
+;[[error.messages]] 
  .subttl Error Messages 
  
 ok_error_message 
@@ -590,7 +590,7 @@ error_message_list
  
  .page 
  .subttl  Error Message Numbers 
-;[[errors/constants]] 
+;[[error.constants]] 
  
 errtmf   = 1 
 errfno   = 3 
@@ -634,7 +634,7 @@ last_error_message = 42 ;# of last error msg
  
 ;.end 
  .page 
-;[[error.handler]] 
+;[[error.message]] 
  .subttl Error message output 
  
 ; Routine to translate error message # in .a 
@@ -659,7 +659,7 @@ erstup tax   ;error set up
 4$ rts 
  
 ;.end 
-;[[dispatcher]] 
+;[[system.dispatcher]] 
  .page 
  .subttl Execute Dispatcher 
  

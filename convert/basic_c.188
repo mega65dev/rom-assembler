@@ -28,7 +28,7 @@ l188_3           pla                                      ; was original aurgume
 l188_4           rts                                      ; all done
 
 ;.end
-;[[boot]]
+;[[system.boot]]
 
 
 

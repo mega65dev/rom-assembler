@@ -4,6 +4,6 @@ errfin ldy curlin+1  ;direct mode?
  jsr inprt 
 10$ jsr highlight_done ;restore normal text color????    [910624] 
  
-;[[interface]] 
+;[[system.interface]] 
  
  .page 

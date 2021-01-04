@@ -55,6 +55,6 @@ l133_2           lda time,x
                  +lbra putnew                             ; make descriptor in dsctmp real
 
 
-;[[time]]
+;[[system.time]]
 ; TI. Convert 24-hour TOD into tenths of seconds.  901010 F.Bowen
 

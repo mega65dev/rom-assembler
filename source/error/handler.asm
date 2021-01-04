@@ -1,0 +1,35 @@
+errisd           dex
+                 txa
+                 jsr erstup                               ; set up address of error msg in .a in index2
+
+                 bbs7 runmod,l22_1                        ; reset error line if direct mode error
+                 lda #$ff
+                 sta errlin                               ;
+                 sta errlin+1
+
+l22_1            jsr release_channels                     ; restore output to screen    [910909]
+                 jsr RestoreTextScreen                    ; make sure we're in text mode    [910404]
+                 jsr init_stack
+
+l22_2            jsr crdo                                 ; Print error message- start a new line with '?'
+                 jsr highlight_text                       ; use highlight color????    [910624]
+                 jsr outqst
+                 ldy #0
+l22_3            lda (index2),y                           ; Read error msg from ROM  (ind.ok????)
+                 pha
+                 and #$7f
+                 jsr outch                                ; Print it
+                 iny
+                 pla
+                 bpl l22_3
+                 ldx errnum                               ; retrieve error #     [910925]
+                 cpx #erbrk
+                 beq errfin                               ; skip 'error' crap if 'break'
+                 jsr _primm
+                 !text " ERROR",0
+
+errfin           ldy curlin+1                             ; direct mode?
+                 iny
+                 beq l23_1                                ; yes...no line #
+                 jsr inprt
+l23_1            jsr highlight_done                       ; restore normal text color????    [910624]

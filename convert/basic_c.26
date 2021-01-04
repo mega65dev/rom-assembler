@@ -185,6 +185,6 @@ l26_11           lda #29                                  ; cursor right
 
 l26_12           +lbra main                               
 
-;[[linkprogram]]
+;[[system.linkprogram]]
 
 
