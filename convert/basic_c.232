@@ -30,10 +30,10 @@ backup           lda #$c7                                 ; set error flags
                  cmp #$30                                 
                  +lbne snerr                              
                  jsr are_you_sure                         
-                 beq _local_1231_10                       ; if run mode or not 'yes'
+                 beq l232_1                               ; if run mode or not 'yes'
                  rts                                      
 
-_local_1231_10   jsr dclall                               ; close disk
+l232_1           jsr dclall                               ; close disk
                  ldy #fbak                                
                  lda #4                                   ; length
                  jsr trans                                ; send command

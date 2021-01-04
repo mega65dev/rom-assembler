@@ -1,5 +1,5 @@
 mouse            cmp #on_token                            ; new [910122]
-                 beq _local_1258_10                       
+                 beq l259_1                               
                  jsr chkesc                               
                  cmp #off_token                           
                  +lbne snerr                              
@@ -14,7 +14,7 @@ mouse            cmp #on_token                            ; new [910122]
                  +lbra chkeos                             ; eat token & exit after checking for eos
 
 ;TURN MOUSE ON
-_local_1258_10   jsr chrget                               ; eat token
+l259_1           jsr chrget                               ; eat token
                  ldx #2                                   ; get (optional) port# in .X
                  jsr optbyt                               ; if not present default to port 2
                  cpx #4                                   ; 
@@ -38,7 +38,7 @@ _local_1258_10   jsr chrget                               ; eat token
 
 ; .page
                  jsr optbyt                               ; get (optional) hotspot, x  new [910307]
-                 bcc _local_1258_20                       ; not given
+                 bcc l259_2                               ; not given
                  cpx #24                                  
                  +lbcs fcerr                              ; out of range (0-23)
                  txa                                      
@@ -51,8 +51,8 @@ _local_1258_10   jsr chrget                               ; eat token
                  adc #87                                  
                  sta _mouse_right                         
 
-_local_1258_20   jsr optbyt                               ; get (optional) hotspot, y
-                 bcc _local_1258_30                       ; not given
+l259_2           jsr optbyt                               ; get (optional) hotspot, y
+                 bcc l259_3                               ; not given
                  cpx #21                                  
                  +lbcs fcerr                              ; out of range (0-20)
                  txa                                      
@@ -65,8 +65,8 @@ _local_1258_20   jsr optbyt                               ; get (optional) hotsp
                  adc #250                                 
                  sta _mouse_bottom                        
 
-_local_1258_30   jsr chrgot                               ; get (optional) position coordinate  [910123]
-                 beq _local_1258_40                       ; eol, use this sprite's last position
+l259_3           jsr chrgot                               ; get (optional) position coordinate  [910123]
+                 beq l259_4                               ; eol, use this sprite's last position
                  jsr sprcor                               ; else get first coordinate
                  bit numcnt                               ; test coordinate type
                  +lbvs snerr                              ; syntax error
@@ -83,7 +83,7 @@ _local_1258_30   jsr chrgot                               ; get (optional) posit
                  +lbmi movspr_angle                       ; angular coordinates
                  +lbra snerr                              ; else error
 
-_local_1258_40   rts                                      
+l259_4           rts                                      
 
 ;.end
 ; .page

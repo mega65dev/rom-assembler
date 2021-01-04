@@ -16,12 +16,12 @@ print_line
 ; Options are  'Y' (yes),  '*' (do all),  'CR' (quit),  anything else means no.
 
 change_line                                               
-                 bbs6 op,_local_1088_100                  ; branch if change-all mode set
+                 bbs6 op,l89_1                            ; branch if change-all mode set
                  jsr _primm                               ; prompt & get response
                  !text cr," CHANGE? ",0                   
                  jsr response_get                         
                  cmp #'Y'                                 
-                 beq _local_1088_100                      ; yes, change it
+                 beq l89_1                                ; yes, change it
                  cmp #cr                                  
                  +lbeq find_exit                          ; cr only, abort entire operation
                  cmp #'*'                                 
@@ -32,7 +32,7 @@ change_line
 ; LOWTR+FNDPNT+(LEN(string1)-LEN(string2)) through TEXT_TOP and copying
 ; string1 into text beginning at LOWTR+FNDPNT for LEN(string2) characters.
 
-_local_1088_100  lda text_top                             ; setup upper address of text to move (index2)
+l89_1            lda text_top                             ; setup upper address of text to move (index2)
                  sta index2                               
                  lda text_top+1                           ; TEXT_TOP
                  sta index2+1                             
@@ -49,8 +49,8 @@ _local_1088_100  lda text_top                             ; setup upper address 
                  sec                                      ; calc number of chars to insert/delete
                  lda fstr1+2                              ; LEN(string1)-LEN(string2)
                  sbc fstr2+2                              
-                 beq _local_1088_20                       ; branch if string1 = string2 (no move)
-                 bpl _local_1088_10                       ; branch if string1 > string2 (delete)
+                 beq l89_6                                ; branch if string1 = string2 (no move)
+                 bpl l89_4                                ; branch if string1 > string2 (delete)
 ; else      string1 < string2 (insert)
 
                  neg                                      ; Move memory up to make room for larger string2
@@ -74,43 +74,43 @@ _local_1088_100  lda text_top                             ; setup upper address 
                  ldy text_top+1                           
                  lda count                                
                  adc text_top                             
-                 bcc _local_1088_1                        
+                 bcc l89_2                                
                  iny                                      
-_local_1088_1    cpy max_mem_0+1                          
-                 bcc _local_1088_2                        ; result is less than top-of-memory: ok
+l89_2            cpy max_mem_0+1                          
+                 bcc l89_3                                ; result is less than top-of-memory: ok
                  +lbne omerr                              ; msb >  top, overflow
                  cmp max_mem_0                            ; msb's the same, test lsb's
                  +lbcs omerr                              ; lsb >= top, overflow
-_local_1088_2    sta text_top                             
+l89_3            sta text_top                             
                  sty text_top+1                           ; set new top of text pointer
                  jsr moveup                               ; make room
-                 bra _local_1088_20                       ; go copy string2 into area
+                 bra l89_6                                ; go copy string2 into area
 
-_local_1088_10   sta count                                ; Move memory down for smaller string2
+l89_4            sta count                                ; Move memory down for smaller string2
                  ldy text_top+1                           
                  lda text_top                             
                  sec                                      
                  sbc count                                
-                 bcs _local_1088_11                       
+                 bcs l89_5                                
                  dey                                      
-_local_1088_11   sta text_top                             
+l89_5            sta text_top                             
                  sty text_top+1                           ; set new top of text pointer
                  jsr movedown                             ; squish out excess space
 
-_local_1088_20   lda fstr2+2                              ; Copy string2 into text
-                 beq _local_1088_40                       ; branch if null, nothing to copy
+l89_6            lda fstr2+2                              ; Copy string2 into text
+                 beq l89_8                                ; branch if null, nothing to copy
                  sta find_count                           ; how many characters to copy
                  ldx #lowtr                               
                  ldy fndpnt                               ; index into text
                  ldz #0                                   ; index into string2
-_local_1088_30   lda (fstr2),z                            ; ind okay- buffer
+l89_7            lda (fstr2),z                            ; ind okay- buffer
                  jsr sta_far_ram0                         ; do the copy
                  iny                                      
                  inz                                      
                  dec find_count                           
-                 bne _local_1088_30                       
+                 bne l89_7                                
 
-_local_1088_40   jsr link_program                         ; relink program
+l89_8            jsr link_program                         ; relink program
                  clc                                      
                  lda fndpnt                               ; place find position after new text
                  adc fstr2+2                              

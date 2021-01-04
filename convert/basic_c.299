@@ -24,11 +24,11 @@ rpen             jsr CheckGraphicMode                     ; verify screen open
 
                  jsr conint                               ; get 1 byte arg in .x (old style single arg function)
                  cpx #3                                   
-                 bcs _local_1298_10                       ; illegal pen #?
+                 bcs l299_1                               ; illegal pen #?
                  stx GKI__parm1                           
 
                  jsr ($8036)                              ; convert to logical color# (palette index#)
-_local_1298_10   +lbcs fcerr                              ; drawscreen not set or illegal quantity somewhere
+l299_1           +lbcs fcerr                              ; drawscreen not set or illegal quantity somewhere
 
                  jsr sngflt                               ; go float 1 byte arg in .Y
 

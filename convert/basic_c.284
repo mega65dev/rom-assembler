@@ -8,20 +8,20 @@ foreground
 highlight                                                 
                  +lbeq snerr                              ; missing args??     [911017]
                  cmp #','                                 
-                 beq _local_1283_10                       ; options byte only
+                 beq l284_1                               ; options byte only
 
                  jsr getbyt                               ; Set text highlight color
                  stx highlight_color                      
 
-_local_1283_10   jsr optzer                               ; set options:     [911001]
-                 bcc _local_1283_20                       ; comma but no value not given??
+l284_1           jsr optzer                               ; set options:     [911001]
+                 bcc l284_2                               ; comma but no value not given??
                  txa                                      
                  and #3                                   ; 0= error msgs only
                  asl                                      ; 1= REMs
                  asl                                      ; 2= tokens
                  asl                                      
                  sta helper                               
-_local_1283_20   rts                                      
+l284_2           rts                                      
 
 
 

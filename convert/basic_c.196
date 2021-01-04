@@ -70,9 +70,9 @@ paoc             lda #sys_bank                            ; ????      [910620]
                  ldy #0                                   ; default sa (command)
                  lda andmsk                               ; get la
                  cpx #3                                   
-                 bcc _local_1195_10                       
+                 bcc l196_1                               
                  dey                                      ; if sa not given and fa=serial bus, default to $ff
-_local_1195_10   jsr _setlfs                              ; store them
+l196_1           jsr _setlfs                              ; store them
                  jsr paoc20                               ; skip junk
                  jsr plsv7                                ; get sa
                  txa                                      

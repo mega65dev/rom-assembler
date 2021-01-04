@@ -46,17 +46,17 @@ xeqcm4           sec                                      ; convert adjusted tok
 
 xeqcm5           asl                                      ; *2 to convert into word pointer
                  tay                                      
-                 bcs _local_1013_10                       ; dispatch table 1 or 2?     [901212]
+                 bcs l14_1                                ; dispatch table 1 or 2?     [901212]
                  lda stmdsp+1,y                           ; one
                  pha                                      
                  lda stmdsp,y                             
-                 bra _local_1013_20                       
+                 bra l14_2                                
 
-_local_1013_10   lda stmdsp2+1,y                          ; two      [901212]
+l14_1            lda stmdsp2+1,y                          ; two      [901212]
                  pha                                      
                  lda stmdsp2,y                            
 
-_local_1013_20   pha                                      
+l14_2            pha                                      
                  jmp chrget                               ; execution will commence after chrget's RTS
 
 

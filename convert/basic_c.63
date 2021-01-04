@@ -19,26 +19,26 @@ sys              jsr getwrd                               ; convert arg to integ
                  sta _bank                                
 
                  jsr optbyt                               ; (optional) .A reg arg
-                 bcc _local_1062_10                       
+                 bcc l63_1                                
                  stx _a_reg                               
 
-_local_1062_10   jsr optbyt                               ; (optional) .X reg arg
-                 bcc _local_1062_20                       
+l63_1            jsr optbyt                               ; (optional) .X reg arg
+                 bcc l63_2                                
                  stx _x_reg                               
 
-_local_1062_20   jsr optbyt                               ; (optional) .Y reg arg
-                 bcc _local_1062_30                       
+l63_2            jsr optbyt                               ; (optional) .Y reg arg
+                 bcc l63_4                                
                  stx _y_reg                               
 
-_local_1062_25   jsr optbyt                               ; (optional) .Z reg arg
-                 bcc _local_1062_30                       
+l63_3            jsr optbyt                               ; (optional) .Z reg arg
+                 bcc l63_4                                
                  stx _z_reg                               
 
-_local_1062_30   jsr optbyt                               ; (optional) .S reg arg
-                 bcc _local_1062_40                       
+l63_4            jsr optbyt                               ; (optional) .S reg arg
+                 bcc l63_5                                
                  stx _s_reg                               
 
-_local_1062_40   jmp _jsr_far                             ; far, far away
+l63_5            jmp _jsr_far                             ; far, far away
 ;If returns, Kernel will update _reg's for us
 
 ;.end

@@ -19,7 +19,7 @@ newnam
                  ldy #0                                   
                  jsr indin1_ram1                          
                  cmp #'@'                                 ; Replace file convention?
-                 bne _local_1238_10                       ; no
+                 bne l239_1                               ; no
                  lda #$80                                 ; yes- check for repeated param
                  jsr prmrpt                               
                  smb7 parsts                              ; set "@" flag
@@ -27,7 +27,7 @@ newnam
                  inw index1                               ; increment past "@"
                  bra lenchk                               
 
-_local_1238_10   cmp #'/'                                 ; Subdirectory (partition)?   [901115]
+l239_1           cmp #'/'                                 ; Subdirectory (partition)?   [901115]
                  bne lenchk                               ; no
                  pla                                      ; yes- recall nam1 or nam2
                  tsb dosflags                             ; set appropriate '/' flag (.a=1 or 2)

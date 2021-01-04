@@ -82,10 +82,10 @@ lda_far_ram1
                  ldz var_bank                             ; RAM1
                  lda 1,x                                  ; check to see if pointer points to "common"
                  cmp #$20                                 
-                 bcs _local_1005_10                       ; branch if not
+                 bcs l6_1                                 ; branch if not
                  ldz text_bank                            ; else select RAM0
 
-_local_1005_10   jsr _lda_far                             ; LDA (.x),Y from bank .z
+l6_1             jsr _lda_far                             ; LDA (.x),Y from bank .z
                  plx                                      
                  plz                                      
                  plp                                      ; restore .c

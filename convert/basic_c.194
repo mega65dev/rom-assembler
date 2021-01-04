@@ -20,15 +20,15 @@ load_file
                  jsr print_dos_error                      ; report error msg if any only in direct mode
                  pla                                      ; restore error stuff
                  plp                                      
-                 bcc _local_1193_30                       ; branch if no error (rts)
-                 bbs7 runmod,_local_1193_20               ; branch if run mode (erexit)
+                 bcc l194_3                               ; branch if no error (rts)
+                 bbs7 runmod,l194_2                       ; branch if run mode (erexit)
                  cmp #errfnf                              ; is it 'file not found' catch-all?
-                 bne _local_1193_10                       ; no  (erexit)
+                 bne l194_1                               ; no  (erexit)
                  sta errnum                               ; yes- save error # for 'er'
                  ora #$80                                 ; but no errdis
-_local_1193_10   sec                                      
-_local_1193_20   +lbcs erexit                             ; exit if kernel problem
-_local_1193_30   ply                                      ; restore end address
+l194_1           sec                                      
+l194_2           +lbcs erexit                             ; exit if kernel problem
+l194_3           ply                                      ; restore end address
                  plx                                      
                  lda verck                                
                  beq cld50                                ; was load

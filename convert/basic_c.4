@@ -1,19 +1,19 @@
 init_vectors                                              
-                 ldx #_local_1003_3-_local_1003_2-1       
-_local_1003_1    lda _local_1003_2,x                      
+                 ldx #l4_3-l4_2-1                         
+l4_1             lda l4_2,x                               
                  sta vectors_begin,x                      
                  dex                                      
-                 bpl _local_1003_1                        
+                 bpl l4_1                                 
 
                  rts                                      
 
 
-_local_1003_2    !word AutoScroll                         ; autoscroll vector
+l4_2             !word AutoScroll                         ; autoscroll vector
                  !word n_esc_fn_vec                       ; escape function vector
                  !word graphic_kernel                     ; graphic extension vector
                  !word nerror,nmain,ncrnch,nqplop,ngone,neval ; traditional vectors
                  !word nesclk,nescpr,nescex               ; escape command vectors
-_local_1003_3                                             
+l4_3                                                      
 
 ; .page
 ;; CHRGET/CHRGOT code.  It is downloaded to RAM.
@@ -39,14 +39,14 @@ _local_1003_3
 ; plz
 ;
 ; cmp #':' ;QNUM entry (chrget+27)
-; bcs _local_1003_2
+; bcs l4_2
 ; cmp #' '
 ; beq chrget_pattern
 ; sec
 ; sbc #'0'
 ; sec
 ; sbc #$d0
-;_local_1003_2 rts  ;(42 bytes to here)
+;l4_2 rts  ;(42 bytes to here)
 ;
 ;
 ;

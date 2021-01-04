@@ -2,9 +2,9 @@ finptr           lda lowtr
                  clc                                      
                  adc #2                                   
                  ldy lowtr+1                              
-                 bcc _local_1124_10                       
+                 bcc l125_1                               
                  iny                                      
-_local_1124_10   sta varpnt                               
+l125_1           sta varpnt                               
                  sty varpnt+1                             
                  rts                                      
 

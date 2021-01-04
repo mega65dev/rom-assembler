@@ -14,7 +14,7 @@ ident            lda #$80                                 ; set ID flag
                  +lbne snerr                              ; repeated parameter
                  jsr chrget                               ; get next character
                  cmp #'('                                 ; c65: allow I(ID$) syntax  [900710]
-                 bne _local_1234_10                       
+                 bne l235_1                               
                  jsr frmstr                               ; get ID from var
                  cmp #2                                   
                  +lbcc err_mfn                            ; if length < 2, error
@@ -26,7 +26,7 @@ ident            lda #$80                                 ; set ID flag
                  sta dosdid+1                             
                  bra delim1                               ; continue
 
-_local_1234_10   sta dosdid                               ; m(txtptr => dosdid
+l235_1           sta dosdid                               ; m(txtptr => dosdid
                  jsr chrget                               
                  sta dosdid+1                             
                  jsr chrget                               ; continue

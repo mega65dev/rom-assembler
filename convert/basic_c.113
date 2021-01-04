@@ -11,9 +11,9 @@ envelope
                  sta tonval+2                             
 
                  ldx #0                                   
-_local_1112_20   stx parcnt                               
+l113_1           stx parcnt                               
                  jsr optbyt                               ; get parameter - attack or sustain
-                 bcc _local_1112_30                       ; skip if no input
+                 bcc l113_2                               ; skip if no input
                  txa                                      
                  asl                                      
                  asl                                      ; shift to upper nibble
@@ -26,8 +26,8 @@ _local_1112_20   stx parcnt
                  ora nibble                               ; add new value
                  sta tonval,x                             ; save it
 
-_local_1112_30   jsr optbyt                               ; get decay or release rate
-                 bcc _local_1112_40                       ; skip if no input
+l113_2           jsr optbyt                               ; get decay or release rate
+                 bcc l113_3                               ; skip if no input
                  txa                                      
                  and #$0f                                 ; use only lower nibble
                  sta nibble                               ; save it
@@ -37,35 +37,35 @@ _local_1112_30   jsr optbyt                               ; get decay or release
                  ora nibble                               ; add new value
                  sta tonval,x                             ; save it
 
-_local_1112_40   ldx parcnt                               
+l113_3           ldx parcnt                               
                  inx                                      
                  cpx #1                                   
-                 beq _local_1112_20                       ; loop to do sustain/release rates
+                 beq l113_1                               ; loop to do sustain/release rates
                  jsr optbyt                               ; get waveform
-                 bcc _local_1112_90                       ; skip if no value
+                 bcc l113_5                               ; skip if no value
                  lda #$15                                 ; assume ring modulation
                  cpx #4                                   
-                 beq _local_1112_80                       ; skip if correct
+                 beq l113_4                               ; skip if correct
                  +lbcs fcerr                              ; error if >4
                  lda sbits+4,x                            ; get waveform bit
                  ora #1                                   ; set gate bit
 
-_local_1112_80   sta tonval+2                             ; save waveform
+l113_4           sta tonval+2                             ; save waveform
 
-_local_1112_90   jsr optwrd                               ; is there a pulse width arg?
-                 bcc _local_1112_110                      ; nope, done
+l113_5           jsr optwrd                               ; is there a pulse width arg?
+                 bcc l113_6                               ; nope, done
 
                  tax                                      ; save msb
                  lda tonval+2                             ; get waveform
                  and #$40                                 
-                 beq _local_1112_110                      ; skip if not pulse waveform
+                 beq l113_6                               ; skip if not pulse waveform
                  txa                                      
                  ldx tonnum                               ; get envelope number
                  sta pulshi,x                             ; save high byte of pulse width
                  tya                                      
                  sta pulslw,x                             ; save low byte
 
-_local_1112_110  ldx tonnum                               
+l113_6           ldx tonnum                               
                  lda tonval                               ; set inputted values
                  sta atktab,x                             
                  lda tonval+1                             

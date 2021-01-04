@@ -11,7 +11,7 @@ peek             phw poker                                ; ..also happens to be
                  jsr getadr                               
                  ldy #0                                   ; index
                  bit current_bank                         
-                 bmi _local_1139_10                       ; NOMAP?
+                 bmi l140_1                               ; NOMAP?
 
                  phz                                      
                  ldz current_bank                         ; set up bank number for Kernel's fetch
@@ -20,7 +20,7 @@ peek             phw poker                                ; ..also happens to be
                  plz                                      
                  !text $2c                                
 
-_local_1139_10   lda (poker),y                            
+l140_1           lda (poker),y                            
                  tay                                      ; get byte into .y
                  pla                                      
                  sta poker+1                              ; restore linnum

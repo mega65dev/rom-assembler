@@ -18,12 +18,12 @@ midd             lda #255                                 ; default
                  sta faclo                                ; save for later compare
                  jsr chrgot                               ; get current character
                  cmp #')'                                 ; is it a right paren )?
-                 beq _local_1153_1                        ; no third paren.
+                 beq l154_1                               ; no third paren.
 ; jsr chkcom  ;must have comma
 ; jsr getbyt  ;get the length into "faclo"
                  jsr combyt                               ; [910820]
 
-_local_1153_1    jsr pream                                ; check it out
+l154_1           jsr pream                                ; check it out
                  +lbeq fcerr                              ; illegal qty error
                  dex                                      ; compute offset
                  phx                                      

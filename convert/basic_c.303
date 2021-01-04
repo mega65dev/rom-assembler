@@ -1,7 +1,7 @@
 rsprite          jsr conint                               ; get first arg, sprite #, in .X
 ; dex  ;adjust [1..8] to [0..7]   [910220]
                  cpx #8  ; (318018-03 mod                 ; fab)
-                 bcs _local_1302_1                        ; value error
+                 bcs l303_1                               ; value error
                  txa                                      
                  pha                                      ; save sprite number
 
@@ -10,7 +10,7 @@ rsprite          jsr conint                               ; get first arg, sprit
                  jsr combyt                               ; [910820]
                  jsr chkcls                               ; look for closing paren
                  cpx #6                                   
-_local_1302_1    +lbcs fcerr                              ; value error
+l303_1           +lbcs fcerr                              ; value error
 
                  ply                                      ; sprite number
 ; jsr put_io_in_map
@@ -18,16 +18,16 @@ _local_1302_1    +lbcs fcerr                              ; value error
                  and #$0f                                 ; range 0-15
 ; inc a  ;adjust to 'keyboard' colors   [910724]
                  cpx #1                                   
-                 beq _local_1302_10                       ; it was color. set up for float
+                 beq l303_2                               ; it was color. set up for float
 
                  lda rspmod,x                             ; get index for this function
                  tax                                      
                  lda sbits,y                              ; get mask for this sprite number
                  and vic,x                                
-                 beq _local_1302_10                       
+                 beq l303_2                               
                  lda #1                                   ; return all non-zeros as '1'
 
-_local_1302_10   tay                                      
+l303_2           tay                                      
                  +lbra sngflt                             ; go float 1 byte arg in .Y
 
 

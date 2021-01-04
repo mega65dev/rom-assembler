@@ -84,8 +84,8 @@ go_slow
 wait_for_quiet                                            ; Wait for current voice to be quiet  [910626]
                  ldy voice                                
                  ldx times2,y                             ; voice*2
-_local_1105_10   bit voices+1,x                           ; test if voice is active   [910617]
-                 bpl _local_1105_10                       ; loop until inactive (IRQ)
+l106_1           bit voices+1,x                           ; test if voice is active   [910617]
+                 bpl l106_1                               ; loop until inactive (IRQ)
                  rts                                      
 
 

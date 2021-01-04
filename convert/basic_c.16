@@ -20,8 +20,8 @@ is_stop_key_down
 
 
 break_exit                                                ; STOP KEY:     [910104]
-_local_1015_10   jsr _stop                                ; wait for the user to release the key
-                 beq _local_1015_10                       
+l16_1            jsr _stop                                ; wait for the user to release the key
+                 beq l16_1                                
                  ldx #erbrk                               ; take the vector thru error to ready
                  +lbra error                              
 

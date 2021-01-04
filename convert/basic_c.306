@@ -1,23 +1,23 @@
 angmlt                                                    
                  ldy #sinval-vwork                        ; get offset to angle value
-                 bcc _local_1305_10                       ; get cosine/sine offset
+                 bcc l306_1                               ; get cosine/sine offset
                  ldy #cosval-vwork                        
 
-_local_1305_10   lda angsgn                               
+l306_1           lda angsgn                               
                  adc #2                                   ; correct phase for cosine to look as sine
                  lsr                                      
                  lsr                                      
                  php                                      ; save if carry - means negative angle value
                  jsr settwo                               ; get angle fraction in y/a
                  cpy #$ff                                 ; test if value should be 1
-                 bcc _local_1305_20                       ; skip if not
+                 bcc l306_2                               ; skip if not
                  txa                                      
                  tay                                      ; get offset to integer
                  jsr settwo                               ; just get integer - multiplied by 1
-                 bcs _local_1305_30                       
+                 bcs l306_3                               
 
-_local_1305_20   jsr twobyt                               ; multiply integer times angle value
-_local_1305_30   plp                                      ; get sign of angle
+l306_2           jsr twobyt                               ; multiply integer times angle value
+l306_3           plp                                      ; get sign of angle
                  bcc invert                               ; invert result if negative,do rts
                  rts                                      
 
@@ -62,16 +62,16 @@ _local_1305_30   plp                                      ; get sign of angle
 ;
 ; lda colsel  ;get current color source selected
 ;
-; bne _local_1305_10   ;branch if NOT background
+; bne l306_1   ;branch if NOT background
 ; lda fg_bg
 ; bit _graphm  ;test if mode = hires
 ; bpl 25$   ;if so, go set up byte
 ; rts   ;else exit
 ;
-;_local_1305_10 cmp #2
-; bne _local_1305_30   ;branch if NOT multi-color 1
+;l306_1 cmp #2
+; bne l306_3   ;branch if NOT multi-color 1
 ;
-;_local_1305_20 lda fg_mc1  ;get correct packed colors for multicolor mode.
+;l306_2 lda fg_mc1  ;get correct packed colors for multicolor mode.
 ;25$ and #$0f
 ; sta z_p_temp_1
 ; lda (grapnt),y
@@ -80,7 +80,7 @@ _local_1305_30   plp                                      ; get sign of angle
 ; sta (grapnt),y
 ; rts
 ;
-;_local_1305_30 bcs 40$   ;branch if multicolor 2
+;l306_3 bcs 40$   ;branch if multicolor 2
 ;
 ; lda fg_bg  ;here for foreground. get packed colors.
 ; and #$f0
@@ -124,7 +124,7 @@ _local_1305_30   plp                                      ; get sign of angle
 ;7$=color_ram_lo+40*7
 ;8$=color_ram_lo+40*8
 ;9$=color_ram_lo+40*9
-;_local_1305_10=color_ram_lo+40*10
+;l306_1=color_ram_lo+40*10
 ;11$=color_ram_lo+40*11
 ;12$=color_ram_lo+40*12
 ;13$=color_ram_lo+40*13
@@ -134,15 +134,15 @@ _local_1305_30   plp                                      ; get sign of angle
 ;17$=color_ram_lo+40*17
 ;18$=color_ram_lo+40*18
 ;19$=color_ram_lo+40*19
-;_local_1305_20=color_ram_lo+40*20
+;l306_2=color_ram_lo+40*20
 ;21$=color_ram_lo+40*21
 ;22$=color_ram_lo+40*22
 ;23$=color_ram_lo+40*23
 ;24$=color_ram_lo+40*24
 ;
-; .byte >99$,>1$,>2$,>3$,>4$,>5$,>6$,>7$,>8$,>9$,>_local_1305_10
+; .byte >99$,>1$,>2$,>3$,>4$,>5$,>6$,>7$,>8$,>9$,>l306_1
 ; .byte >11$,>12$,>13$,>14$,>15$,>16$,>17$,>18$,>19$
-; .byte >_local_1305_20,>21$,>22$,>23$,>24$
+; .byte >l306_2,>21$,>22$,>23$,>24$
 
 ; .page
 ;******************************************************************
@@ -198,18 +198,18 @@ _local_1305_30   plp                                      ; get sign of angle
 ;
 ;divpos lda xpos+1
 ; lsr a
-; bne _local_1305_20       ;out of bounds if greater than 1
+; bne l306_2       ;out of bounds if greater than 1
 ; lda xpos
 ; ror a
 ; lsr a  ;get column position = xpos/8
 ; bit _graphm
-; bmi _local_1305_10  ;skip if multicolor mode
+; bmi l306_1  ;skip if multicolor mode
 ; lsr a  ;divide by 8 if a hires or text mode
-;_local_1305_10 tay
+;l306_1 tay
 ; cpy #llen
-; bcs _local_1305_20  ;error exit if out of bounds
+; bcs l306_2  ;error exit if out of bounds
 ; lda ypos+1
-; bne _local_1305_20  ;out of bounds error if not = 0
+; bne l306_2  ;out of bounds error if not = 0
 ; lda ypos
 ; lsr a
 ; lsr a  ;get row number = ypos/8
@@ -217,7 +217,7 @@ _local_1305_30   plp                                      ; get sign of angle
 ; tax
 ; cmp #nlines ;compare to max number of rows
 ; rts  ;carry clr if okay
-;_local_1305_20 sec
+;l306_2 sec
 ; rts
 
 ; .page

@@ -138,10 +138,10 @@ fadd1            cmp #$f9                                 ; for speed and necess
 fadd4            bbr7 arisgn,fadd2                        ; get resulting sign and if positive, add. carry is clear
                  ldy #facexp                              
                  cpx #argexp                              ; fac is bigger
-                 beq _local_1167_10                       
+                 beq l168_1                               
                  ldy #argexp                              ; arg is bigger
 
-_local_1167_10   sec                                      ; subit.
+l168_1           sec                                      ; subit.
                  eor #$ff                                 
                  adc oldov                                
                  sta facov                                

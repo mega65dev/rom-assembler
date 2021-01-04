@@ -3,7 +3,7 @@ qint             lda facexp
                  sec                                      
                  sbc #$a0                                 ; get number of places to shift
 
-                 bbr7 facsgn,_local_1175_10               
+                 bbr7 facsgn,l176_1                       
 
                  tax                                      
                  lda #$ff                                 
@@ -11,7 +11,7 @@ qint             lda facexp
                  jsr negfch                               ; truly negate quantity in FAC
                  txa                                      
 
-_local_1175_10   ldx #fac                                 
+l176_1           ldx #fac                                 
                  cmp #$f9                                 
                  bpl qint1                                ; if number of places > 7 shift 1 place at a time
                  jsr shiftr                               ; start shifting bytes, then bits

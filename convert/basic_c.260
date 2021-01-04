@@ -2,13 +2,13 @@ rmouse           lda #0                                   ; Init
                  sta count                                ; variable count = 0
                  dec                                      
                  ldx #6-1                                 
-_local_1259_10   sta grapnt,x                             ; positions/buttons = -1
+l260_1           sta grapnt,x                             ; positions/buttons = -1
                  dex                                      
-                 bpl _local_1259_10                       
+                 bpl l260_1                               
 
                  lda _mouse_enable                        ; Is there a mouse in the house?
                  and #%11000000                           
-                 beq _local_1259_50                       ; no, exit
+                 beq l260_5                               ; no, exit
                  pha                                      ; yes, save port assigns for later
                  sei                                      
                  ldy _mouse_pointer                       ; Where is it?  Get pointer to sprite
@@ -16,9 +16,9 @@ _local_1259_10   sta grapnt,x                             ; positions/buttons = 
                  sta grapnt                               ; lsb
                  lda sbits,y                              
                  and vic+16                               ; msb    ???vic_save
-                 beq _local_1259_20                       
+                 beq l260_2                               
                  lda #1                                   ; convert to 0 or 1
-_local_1259_20   sta grapnt+1                             
+l260_2           sta grapnt+1                             
                  iny                                      ; Get Y position
                  lda vic,y                                ; lsb    ???vic_save
                  sta grapnt+2                             
@@ -33,20 +33,20 @@ _local_1259_20   sta grapnt+1
 
                  ldy #0                                   ; which port?
                  plx                                      ; recall port assignments
-_local_1259_30   txa                                      
+l260_3           txa                                      
                  asl                                      ; .c=1 if this one
                  tax                                      
-                 bcc _local_1259_40                       ; not this one
+                 bcc l260_4                               ; not this one
                  lda d1pra,y                              ; read it (logical port is opposite physical port)
                  and #%00010001                           ; want left, right buttons only
                  eor #%00010001                           ; (invert, since low means button down)
                  tsb grapnt+4                             
                  and #%00010000                           ; shift left button to msb
-                 beq _local_1259_40                       
+                 beq l260_4                               
                  smb7 grapnt+4                            
-_local_1259_40   iny                                      ; next port
+l260_4           iny                                      ; next port
                  cpy #2                                   
-                 bcc _local_1259_30                       
+                 bcc l260_3                               
 
                  lda #%01111110                           ; clean up
                  trb grapnt+4                             ; fix button register
@@ -56,34 +56,34 @@ _local_1259_40   iny                                      ; next port
 ; At this point, we have snapshot the current mouse status.
 ; Now pass requested info along in a manner very similar to RREG...
 
-_local_1259_50   jsr chrgot                               ; Get a variable name from variable list
-                 beq _local_1259_90                       ; eol- exit
+l260_5           jsr chrgot                               ; Get a variable name from variable list
+                 beq l260_8                               ; eol- exit
                  cmp #','                                 ; 
-                 beq _local_1259_70                       ; null- skip this arg
+                 beq l260_7                               ; null- skip this arg
                  jsr ptrget                               ; Get pointer to target variable
                  sta forpnt                               ; set up so we can share LET code
                  sty forpnt+1                             
                  lda valtyp                               ; what kind of variable name did ptrget find?
                  +lbne chkerr                             ; string- type mismatch error
 
-_local_1259_60   ldx count                                ; Make assignment
+l260_6           ldx count                                ; Make assignment
                  ldy grapnt,x                             ; low byte
                  lda grapnt+1,x                           ; high byte
                  jsr givayf                               ; float it
                  lda intflg                               ; set flags for type of var (int/float)
                  jsr qintgr                               ; use part of LET to do the work
 
-_local_1259_70   inc count                                ; Next assignment
+l260_7           inc count                                ; Next assignment
                  inc count                                
                  ldx count                                
                  cpx #6                                   ; there are 3 possible
-                 bcs _local_1259_90                       ; done all 3, exit
+                 bcs l260_8                               ; done all 3, exit
                  jsr chrgot                               ; check terminator
-                 beq _local_1259_90                       ; eol- exit
+                 beq l260_8                               ; eol- exit
                  jsr chkcom                               ; check delimiter
-                 bra _local_1259_50                       ; loop until done
+                 bra l260_5                               ; loop until done
 
-_local_1259_90   rts                                      
+l260_8           rts                                      
 
 ;.end
 ; .page

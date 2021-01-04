@@ -40,30 +40,30 @@ pot              jsr chkcls                               ; look for closing par
 
                  jsr go_slow                              
                  ldx #0                                   
-_local_1144_30   inx                                      ; delay to let pot be read by SID
-                 bne _local_1144_30                       
+l145_1           inx                                      ; delay to let pot be read by SID
+                 bne l145_1                               
 
-_local_1144_40   lda sid1+25,y                            ; read pot
+l145_2           lda sid1+25,y                            ; read pot
                  cmp sid1+25,y                            ; debounce
-                 bne _local_1144_40                       
+                 bne l145_2                               
                  sta pot_temp_2                           ; save pot value
                  jsr go_fast                              
 
                  ldx #0                                   ; set index to d1pra
                  bit pot_temp_1                           ; test if pot-0,1 or pot-2,3
-                 bmi _local_1144_50                       ; skip if pot 2,3
+                 bmi l145_3                               ; skip if pot 2,3
                  inx                                      ; index to d1prb
-_local_1144_50   lda #04                                  ; use joy line-2
+l145_3           lda #04                                  ; use joy line-2
                  dey                                      ; test if pot-x or pot-y
-                 bmi _local_1144_60                       ; skip if pot-x
+                 bmi l145_4                               ; skip if pot-x
                  asl                                      ; use joy line-3
-_local_1144_60   ldy #$ff                                 
+l145_4           ldy #$ff                                 
                  sty d1pra                                ; disable keybd inputs
                  iny                                      ; set to zero for no trigger
                  and d1pra,x                              ; test if trigger set
-                 bne _local_1144_70                       ; skip if not trigger
+                 bne l145_5                               ; skip if not trigger
                  iny                                      ; return value >255 for trigger
-_local_1144_70   pla                                      
+l145_5           pla                                      
                  sta d1pra                                ; restore keybd lines
                  tya                                      
                  ldy pot_temp_2                           ; restore pot value

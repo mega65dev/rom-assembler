@@ -11,12 +11,12 @@ rsfn             ldy dosf1l                               ; file name 1: get len
                  beq rdrt0                                ; if null string
 
                  ldy #0                                   ; move name to dosstr
-_local_1241_10   lda savram,y                             
+l242_1           lda savram,y                             
                  sta dosstr,x                             
                  inx                                      
                  iny                                      
                  cpy dosf1l                               
-                 bne _local_1241_10                       ; if move not complete
+                 bne l242_1                               ; if move not complete
                  bra rdrt1                                ; always
 
 

@@ -1,12 +1,12 @@
 sound_irq                                                 
                  ldy #6-1                                 ; test six voices    [910612]
-_local_1256_10   lda sound_time_hi,y                      ; active if msb clear
-                 bpl _local_1256_12                       
-_local_1256_11   dey                                      
-                 bpl _local_1256_10                       
+l257_1           lda sound_time_hi,y                      ; active if msb clear
+                 bpl l257_3                               
+l257_2           dey                                      
+                 bpl l257_1                               
                  +lbra basic_irq_end                      
 
-_local_1256_12   clc                                      ; add step to frequency
+l257_3           clc                                      ; add step to frequency
                  lda sound_freq_lo,y                      
                  adc sound_step_lo,y                      
                  sta sound_freq_lo,y                      
@@ -17,60 +17,60 @@ _local_1256_12   clc                                      ; add step to frequenc
                  lda sound_direction,y                    ; test if this is up or down
                  tax                                      
                  and #1                                   
-                 beq _local_1256_20                       ; branch if up
+                 beq l257_6                               ; branch if up
 
 ; If step direction is down, .C==0 OR freq < min  ==> reset value
 
-                 bcc _local_1256_13                       ; underflow, reset
+                 bcc l257_4                               ; underflow, reset
                  sec                                      
                  lda sound_freq_lo,y                      
                  sbc sound_min_lo,y                       
                  lda sound_freq_hi,y                      
                  sbc sound_min_hi,y                       
-                 bcs _local_1256_40                       ; no borrow, don't reset
+                 bcs l257_9                               ; no borrow, don't reset
 
-_local_1256_13   cpx #2                                   ; is 'cycle' bit set?
-                 bcc _local_1256_15                       ; no, keep direction 'down'
+l257_4           cpx #2                                   ; is 'cycle' bit set?
+                 bcc l257_5                               ; no, keep direction 'down'
 
                  jsr negate_step                          ; make step 2's comp
                  lda #2                                   ; change direction to 'up'
                  sta sound_direction,y                    
-                 bne _local_1256_35                       ; go reset for 'up'
+                 bne l257_8                               ; go reset for 'up'
 
-_local_1256_15   lda sound_max_lo,y                       ; reset to max
+l257_5           lda sound_max_lo,y                       ; reset to max
                  sta sound_freq_lo,y                      
                  lda sound_max_hi,y                       
                  sta sound_freq_hi,y                      
-                 bra _local_1256_40                       ; go update SID frequency
+                 bra l257_9                               ; go update SID frequency
 
 ; If step direction is up, overflow (.C==1) OR freq > max ==> reset frequency
 
-_local_1256_20   bcs _local_1256_30                       ; overflow, must reset
+l257_6           bcs l257_7                               ; overflow, must reset
                  lda sound_freq_hi,y                      ; 16 bit compare (yech!)
                  cmp sound_max_hi,y                       
-                 bcc _local_1256_40                       ; freq < max, no reset
-                 bne _local_1256_30                       ; freq > max, reset
+                 bcc l257_9                               ; freq < max, no reset
+                 bne l257_7                               ; freq > max, reset
                  lda sound_freq_lo,y                      ; msb's the same, test lsb's
                  cmp sound_max_lo,y                       
-                 bcc _local_1256_40                       ; freq < max, no reset
-                 beq _local_1256_40                       ; freq = max, no reset
+                 bcc l257_9                               ; freq < max, no reset
+                 beq l257_9                               ; freq = max, no reset
 
-_local_1256_30   cpx #2                                   ; is this 'cycle'?
-                 bcc _local_1256_35                       ; no, go reset for next 'up'
+l257_7           cpx #2                                   ; is this 'cycle'?
+                 bcc l257_8                               ; no, go reset for next 'up'
 
                  jsr negate_step                          ; make step 2's comp
                  lda #3                                   ; change direction to 'down'
                  sta sound_direction,y                    
-                 bne _local_1256_15                       ; go reset for next 'down'
+                 bne l257_5                               ; go reset for next 'down'
 
-_local_1256_35   lda sound_min_lo,y                       ; set freq to minimum value
+l257_8           lda sound_min_lo,y                       ; set freq to minimum value
                  sta sound_freq_lo,y                      
                  lda sound_min_hi,y                       
                  sta sound_freq_hi,y                      
 
 ; Update SID frequency registers
 
-_local_1256_40                                            
+l257_9                                                    
 ; jsr go_slow  ;      [910716] 4567R7A
                  ldx SID_offset,y                         ; get index to SID voices
                  lda sound_freq_lo,y                      
@@ -84,12 +84,12 @@ _local_1256_40
                  tya                                      
                  tax                                      
                  lda sound_time_lo,x                      ; 16 bit decrement - not very pretty
-                 bne _local_1256_50                       
+                 bne l257_10                              
                  dec sound_time_hi,x                      
-_local_1256_50   dec sound_time_lo,x                      
+l257_10          dec sound_time_lo,x                      
 
                  lda sound_time_hi,x                      ; underflow?
-                 +lbpl _local_1256_11                     ; nope
+                 +lbpl l257_2                             ; nope
 
 ; Time to turn off this voice
 
@@ -98,6 +98,6 @@ _local_1256_50   dec sound_time_lo,x
                  ldx SID_offset,y                         
                  sta sid1+4,x                             
 ; jsr go_fast  ;      [910716] 4567R7A
-                 +lbra _local_1256_11                     
+                 +lbra l257_2                             
 
 

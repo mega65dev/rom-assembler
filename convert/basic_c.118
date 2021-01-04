@@ -46,28 +46,28 @@ isvds            cpx #'D'                                 ; is this DS$?
                  jsr Check_DS                             ; yes- check DS$ allocation,
 ;  and get it if not in memory
                  ldy #$ff                                 
-_local_1117_10   iny                                      ; copy DS$ to a temp.
+l118_1           iny                                      ; copy DS$ to a temp.
                  lda #dsdesc+1                            ; must first determine how big it is
                  jsr lda_far_ram1                         ; lda (dsdesc+1),y
-                 bne _local_1117_10                       ; loop until terminating null found
+                 bne l118_1                               ; loop until terminating null found
 
                  tya                                      ; length of string required
                  jsr strini                               ; get temp. string space & descriptor
                  tay                                      
-                 beq _local_1117_30                       ; (don't bother copying if length is 0)
+                 beq l118_3                               ; (don't bother copying if length is 0)
 
                  phx                                      
 
                  ldx #dsctmp+1                            ; ???? was ldx #frespc
-_local_1117_20   lda #dsdesc+1                            ; copy DS$ into temp
+l118_2           lda #dsdesc+1                            ; copy DS$ into temp
                  dey                                      
                  jsr lda_far_ram1                         ; lda (dsdesc+1),y
                  jsr sta_far_ram1                         ; sta (dsctmp+1),y
                  tya                                      
-                 bne _local_1117_20                       
+                 bne l118_2                               
                  plx                                      
                  lda dsdesc                               ; a=length     [901014] FAB
                  jsr mvdone                               ; ???? (does nothing on C128 - bug or oversight?)
 
-_local_1117_30   +lbra putnew                             
+l118_3           +lbra putnew                             
 

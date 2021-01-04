@@ -27,13 +27,13 @@ bsave            lda #$66                                 ; std error flag
                  lda dosofh+1                             ; check that ea>sa
                  cmp dosofl+1                             
                  +lbcc fcerr                              ; ...error
-                 bne _local_1223_20                       
+                 bne l224_1                               
                  lda dosofh                               
                  cmp dosofl                               
                  +lbcc fcerr                              ; ...error
                  +lbeq fcerr                              
 
-_local_1223_20   ldy #fopn                                ; table offset
+l224_1           ldy #fopn                                ; table offset
                  lda #4                                   ; ..length
                  jsr sendp                                
 

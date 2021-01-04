@@ -79,20 +79,20 @@ fcomp            sta index2
                  eor facsgn                               ; signs the same
                  bmi fcsign                               ; signs differ so result is
                  cpx facexp                               ; sign of FAC again
-                 bne _local_1174_10                       
+                 bne l175_1                               
 
                  lda (index2),y                           
                  ora #$80                                 
                  cmp facho                                
-                 bne _local_1174_10                       
+                 bne l175_1                               
                  iny                                      
                  lda (index2),y                           
                  cmp facmoh                               
-                 bne _local_1174_10                       
+                 bne l175_1                               
                  iny                                      
                  lda (index2),y                           
                  cmp facmo                                
-                 bne _local_1174_10                       
+                 bne l175_1                               
                  iny                                      
                  lda #$7f                                 
                  cmp facov                                
@@ -100,10 +100,10 @@ fcomp            sta index2
                  sbc faclo                                ; get zero if equal
                  beq qintrt                               ; rts
 
-_local_1174_10   lda facsgn                               
-                 bcc _local_1174_20                       
+l175_1           lda facsgn                               
+                 bcc l175_2                               
                  eor #$ff                                 
-_local_1174_20   bra fcomps                               ; a part of sign sets up (a)
+l175_2           bra fcomps                               ; a part of sign sets up (a)
 
 ;.end
 ; .page

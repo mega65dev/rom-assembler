@@ -64,38 +64,38 @@ sprite           cmp #clr_token                           ; SPRITE CLR: init env
 
                  jsr get_sprite_number                    ; get sprite number in z_p_temp_1
                  jsr optbyt                               ; look for (optional) enable
-                 bcc _local_1284_10                       ; none here, don't change
+                 bcc l285_1                               ; none here, don't change
                  ldy #21                                  
                  jsr sprbit                               ; set/clear sprite bit
 
-_local_1284_10   jsr optbyt                               ; get (optional) color
-                 bcc _local_1284_20                       ; branch if no arg
+l285_1           jsr optbyt                               ; get (optional) color
+                 bcc l285_2                               ; branch if no arg
                  jsr chknyb                               ; [910109]
                  txa                                      
                  ldx z_p_temp_1                           ; get back sprite number
 ; jsr put_io_in_map
                  sta vic+39,x                             
 
-_local_1284_20   jsr optbyt                               ; look for (optional) priority
-                 bcc _local_1284_30                       
+l285_2           jsr optbyt                               ; look for (optional) priority
+                 bcc l285_3                               
                  ldy #27                                  
                  jsr sprbit                               
 
-_local_1284_30   jsr optbyt                               ; look for (optional) x expansion
-                 bcc _local_1284_40                       
+l285_3           jsr optbyt                               ; look for (optional) x expansion
+                 bcc l285_4                               
                  ldy #29                                  
                  jsr sprbit                               
 
-_local_1284_40   jsr optbyt                               ; look for (optional) y expansion
-                 bcc _local_1284_50                       
+l285_4           jsr optbyt                               ; look for (optional) y expansion
+                 bcc l285_5                               
                  ldy #23                                  
                  jsr sprbit                               
 
-_local_1284_50   jsr optbyt                               ; look for (optional) resolution
-                 bcc _local_1284_60                       
+l285_5           jsr optbyt                               ; look for (optional) resolution
+                 bcc l285_6                               
                  ldy #28                                  
                  jsr sprbit                               
 
-_local_1284_60   rts                                      
+l285_6           rts                                      
 
 ; .page

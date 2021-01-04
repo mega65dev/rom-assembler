@@ -4,17 +4,17 @@ search           sta srchtk                               ; save token to search
 
 ; Test if pointer is at bottom of stack.  If so, the item was not found.
 
-_local_1028_5    lda fndpnt                               
+l29_1            lda fndpnt                               
                  cmp #<stkbot                             
-                 bne _local_1028_10                       ; (fndpnt) <> bottom, ok
+                 bne l29_2                                ; (fndpnt) <> bottom, ok
                  lda fndpnt+1                             ; lsb's the same, test msb's
                  cmp #>stkbot                             
-                 beq _local_1028_98                       ; stack empty, rts
+                 beq l29_6                                ; stack empty, rts
 
-_local_1028_10   ldy #0                                   
+l29_2            ldy #0                                   
                  lda srchtk                               ; what are we looking for?
                  cmp #for_token                           ; 'for' tokens are special cases
-                 bne _local_1028_20                       
+                 bne l29_4                                
 
 ; Looking for a 'for' token.  If next token examined is not a 'for' token,
 ; return with z = 0.  Otherwise, check the pointer to its 'for' variable.
@@ -23,43 +23,43 @@ _local_1028_10   ldy #0
 ; mechanisim for examining the next entry.
 
                  cmp (fndpnt),y                           ; indirect ok- looking at runtime stack????
-                 bne _local_1028_99                       ; not 'for', do rts with z = 0
+                 bne l29_7                                ; not 'for', do rts with z = 0
                  ldy #2                                   ; point to msb of 'for' variable
                  lda forpnt+1                             
                  cmp #$ff                                 
-                 beq _local_1028_99                       ; do rts with z = 1
+                 beq l29_7                                ; do rts with z = 1
                  cmp (fndpnt),y                           
-                 bne _local_1028_15                       ; not right variable, keep looking.
+                 bne l29_3                                ; not right variable, keep looking.
                  dey                                      
                  lda forpnt                               ; test lsb
                  cmp (fndpnt),y                           
-                 beq _local_1028_99                       ; a hit! rts with z = 1
+                 beq l29_7                                ; a hit! rts with z = 1
 
-_local_1028_15   ldx #lenfor                              
-                 bra _local_1028_30                       ; keep looking
+l29_3            ldx #lenfor                              
+                 bra l29_5                                ; keep looking
 
-_local_1028_20   lda (fndpnt),y                           
+l29_4            lda (fndpnt),y                           
                  cmp srchtk                               ; is this the correct type of entry?
-                 beq _local_1028_99                       ; rts with z = 1
+                 beq l29_7                                ; rts with z = 1
 
 ; The entry on top of the run-time stack is not the entry we are looking for.
 ; Find out what is there, and advance temp. pointer past it.
 
                  ldx #lenfor                              ; is it a 'for' entry?
                  cmp #for_token                           
-                 beq _local_1028_30                       
+                 beq l29_5                                
                  ldx #5                                   ; must be gosub or do by default
 
-_local_1028_30   txa                                      
+l29_5            txa                                      
                  clc                                      
                  adc fndpnt                               
                  sta fndpnt                               
-                 bcc _local_1028_5                        
+                 bcc l29_1                                
                  inc fndpnt+1                             
-                 bra _local_1028_5                        ; always
+                 bra l29_1                                ; always
 
-_local_1028_98   ldy #1                                   ; clear z flag
-_local_1028_99   rts                                      
+l29_6            ldy #1                                   ; clear z flag
+l29_7            rts                                      
 
 ; .page
 ; GETSTK

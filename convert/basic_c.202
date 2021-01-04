@@ -1,15 +1,15 @@
 eoa              lda point                                ; decimal found?
-                 bpl _local_1201_20                       ; yes...
+                 bpl l202_1                               ; yes...
                  stx point                                ; no...add point
 
-_local_1201_20   jsr anaf                                 ; analyze format
+l202_1           jsr anaf                                 ; analyze format
                  lda vf                                   
                  cmp #$ff                                 
-                 beq _local_1201_40                       ; field overflow
+                 beq l202_3                               ; field overflow
                  lda fesp                                 ; exponent in field
                  beq cff                                  ; convert to f format if not
                  lda uexp                                 ; exponent in number?
-                 bne _local_1201_30                       ; yes...
+                 bne l202_2                               ; yes...
                  ldx enr                                  
                  jsr et2                                  ; add exponent to number
                  dec fbuffr+2,x                           
@@ -18,17 +18,17 @@ _local_1201_20   jsr anaf                                 ; analyze format
                  jsr alg                                  ; delete leading zeros
                  beq hup                                  ; all zero
 
-_local_1201_30   ldy posp                                 ; + or - in format?
+l202_2           ldy posp                                 ; + or - in format?
                  bne sswe                                 ; yes...
                  ldy sno                                  ; +?
                  bmi sswe                                 ; yes...
                  lda vf                                   
 
-_local_1201_40   beq errf                                 ; no room for sign
+l202_3           beq errf                                 ; no room for sign
                  dec vf                                   ; reserve room
-                 bne _local_1201_50                       
+                 bne l202_4                               
                  lda nf                                   ; one #?
                  beq errf                                 ; yes...error
 
-_local_1201_50   inc swe                                  
+l202_4           inc swe                                  
 

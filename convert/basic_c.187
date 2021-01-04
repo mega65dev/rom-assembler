@@ -11,7 +11,7 @@ tan              jsr mov1f                                ; move FAC into tempor
                  lda #0                                   
                  sta facsgn                               ; start off positive
                  lda tansgn                               
-                 jsr _local_1186_10                       ; compute cosine
+                 jsr l187_1                               ; compute cosine
                  lda #<tempf3                             
                  ldy #>tempf3                             ; address of sine value
 ; bra fdiv ;divide sine by cosine and return
@@ -19,7 +19,7 @@ tan              jsr mov1f                                ; move FAC into tempor
                  +lbeq overr                              ; overflow error     "
                  +lbra fdivt                              ; "
 
-_local_1186_10   pha                                      ; cosc.
+l187_1           pha                                      ; cosc.
                  bra sin1                                 
 
 

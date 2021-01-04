@@ -59,9 +59,9 @@ finqng           lda sgnflg
 
 
 findig           pha                                      
-                 bbr7 dptflg,_local_1177_10               
+                 bbr7 dptflg,l178_1                       
                  inc deccnt                               
-_local_1177_10   jsr mul10                                
+l178_1           jsr mul10                                
                  pla                                      ; get it back
                  sec                                      
                  sbc #'0'                                 

@@ -13,15 +13,15 @@ xeqesc                                                    ; execute escape token
                  jsr chrget                               ; let's have us a look at the second char
                  beq snerr1                               ; oops, there wasn't any!
                  cmp #first_esc_command_token             ; is it one of our esc tokens?
-                 bcc _local_1014_1                        ; no, foreign.
+                 bcc l15_1                                ; no, foreign.
                  cmp #last_esc_command_token+1            
-                 bcs _local_1014_1                        ; foreign
+                 bcs l15_1                                ; foreign
 
 ; It's one of our own.  Convert to index into command dispatch table
 
                  adc #monitor_token-else_token+new_token-end_token-first_esc_command_token+2 
                  bra xeqcm5                               ; always
 
-_local_1014_1    sec                                      ; set up flag for a trip into the users code
+l15_1            sec                                      ; set up flag for a trip into the users code
                  jmp (iescex)                             
 

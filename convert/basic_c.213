@@ -44,12 +44,12 @@ llar             cmp #'$'                                 ; dollar?
 expo             cmp #'^'                                 ; up arrow?
                  bne isp                                  ; no...
                  ldx #$02                                 
-_local_1212_10   jsr ansub                                ; must be 4 up arrows
+l213_1           jsr ansub                                ; must be 4 up arrows
                  bcs ero                                  
                  cmp #'^'                                 ; up arrow?
                  bne ero                                  
                  dex                                      
-                 bpl _local_1212_10                       
+                 bpl l213_1                               
                  inc fesp                                 ; set exp flag
                  jsr ansub                                ; next format char
                  bcs efo                                  ; end of format

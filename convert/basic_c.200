@@ -21,22 +21,22 @@ outc             jsr cdout                                ; output character
 conv             jsr fout                                 ; convert mfp to decimal
 
                  ldy #$ff                                 ; build descriptor for fout string
-_local_1199_10   iny                                      ; how big IS it?
+l200_1           iny                                      ; how big IS it?
                  lda fbuffr,y                             
-                 bne _local_1199_10                       
+                 bne l200_1                               
                  tya                                      
                  jsr strspa                               ; jsr getspa,stx dsctmp+1,sty dsctmp+2,sta dsctmp,rts
 
                  phx                                      
                  ldy #0                                   
                  ldx #dsctmp+1                            
-_local_1199_20   lda fbuffr,y                             
-                 beq _local_1199_30                       
+l200_2           lda fbuffr,y                             
+                 beq l200_3                               
                  jsr sta_far_ram1                         ; sta (dsctmp+1),y
                  iny                                      
-                 bne _local_1199_20                       
+                 bne l200_2                               
 
-_local_1199_30   plx                                      
+l200_3           plx                                      
                  jsr putnew                               
                  jsr ini                                  ; init counters and flags
                  jsr fform                                ; output one formatted number

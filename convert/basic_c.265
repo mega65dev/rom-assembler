@@ -24,10 +24,10 @@ AutoSearch
                  clc                                      
                  jsr _plot                                ; move to beginning of next line
 ; bcs AutoScrollpop ;  exit if no more lines
-                 bcs _local_1264_30                       ; no more lines- fake one   [910716]
+                 bcs l265_4                               ; no more lines- fake one   [910716]
                  sec                                      
                  jsr _plot                                ; else check if wrapped line
-                 bcs _local_1264_10                       ; it's wrapped- move up one line
+                 bcs l265_1                               ; it's wrapped- move up one line
                  lda _pnt                                 
                  adc _screen_left                         ; (.c=0)
                  sta txtptr                               ; copy screen address of logical line to txtptr
@@ -38,20 +38,20 @@ AutoSearch
                  lda (txtptr),y                           
 ; jsr indtxt  ;    (I did not want to limit search to the first column,
                  cmp #'9'+1                               ; but it was way too slow searching the entire screen)
-                 bcs _local_1264_10                       ; it's not a number
+                 bcs l265_1                               ; it's not a number
                  cmp #'0'                                 
-                 bcs _local_1264_20                       ; it's a digit 0-9, continue
+                 bcs l265_3                               ; it's a digit 0-9, continue
 
-_local_1264_10   bbs7 form,_local_1264_15                 ; not on this line- move to next line
+l265_1           bbs7 form,l265_2                         ; not on this line- move to next line
                  dex                                      ; move up one line
                  !text $89                                
-_local_1264_15   inx                                      ; move down one line
+l265_2           inx                                      ; move down one line
                  bra AutoSearch                           ; loop until we find a numeric digit or run out of lines
 
-_local_1264_20   clc                                      ; found a digit, get entire number into linnum & rts
+l265_3           clc                                      ; found a digit, get entire number into linnum & rts
                  +lbra linget                             
 
-_local_1264_30   lda #$ff                                 ; no line found, fake end of program   [910716]
+l265_4           lda #$ff                                 ; no line found, fake end of program   [910716]
                  sta linnum+1                             
                  rts                                      
 

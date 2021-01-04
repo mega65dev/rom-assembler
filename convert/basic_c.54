@@ -3,11 +3,11 @@ printn           jsr cmd                                  ; docmd
 
 
 cmd              jsr getbyt                               
-                 beq _local_1053_10                       
+                 beq l54_1                                
                  lda #','                                 ; comma?
                  jsr synchr                               
 
-_local_1053_10   php                                      ; save stat (beq=eof)
+l54_1            php                                      ; save stat (beq=eof)
                  pha                                      ; save char
                  stx channl                               ; channel to output on
                  jsr coout                                

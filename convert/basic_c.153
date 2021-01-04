@@ -9,9 +9,9 @@ rleft3           pha                                      ; save length
                  clc                                      
                  adc index                                ; compute where to copy
                  sta index                                
-                 bcc _local_1152_1                        
+                 bcc l153_1                               
                  inc index+1                              
-_local_1152_1    tya                                      
+l153_1           tya                                      
                  jsr movdo                                ; go move it
                  +lbra putnew                             
 

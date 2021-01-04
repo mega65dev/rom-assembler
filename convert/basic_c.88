@@ -12,21 +12,21 @@ find_loop_2
                  sta txtptr+1                             ; search string:
                  ldz #0                                   ; at the beginning
 
-_local_1087_40   jsr chargt                               ; get next character from text
+l88_1            jsr chargt                               ; get next character from text
                  beq find_loop                            ; eol (no match this line)
                  inx                                      ; bump pointer to next character
                  cmp (fstr1),z                            ; character match?  ind okay- buffer
-                 bne _local_1087_40                       ; no
+                 bne l88_1                                ; no
                  stx fndpnt                               ; yes- save next position
 
-_local_1087_50   inz                                      ; bump position in search string
+l88_2            inz                                      ; bump position in search string
                  cpz fstr1+2                              ; string match?
                  bcs print_line                           ; yes
                  jsr chargt                               
                  beq find_loop                            ; no- eol
                  cmp (fstr1),z                            ; ind okay- buffer
                  bne find_loop_2                          ; no- rewind to beginning of search string
-                 beq _local_1087_50                       ; maybe- still more chars to compare
+                 beq l88_2                                ; maybe- still more chars to compare
 
 
 ; Print the line of text at LOWTR, highlighting the section of code

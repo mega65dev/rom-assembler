@@ -11,19 +11,19 @@ Sprite_CLR_1
                  sta vic+29                               
 
                  ldx #init_as_0                           ; Init sprite tables
-_local_1315_40   sta sprite_data,x                        
+l316_1           sta sprite_data,x                        
                  dex                                      
-                 bpl _local_1315_40                       
+                 bpl l316_1                               
 
                  lda #sprite_base/64+7                    ; Set up sprite pointers
                  ldy #7                                   
-_local_1315_10   bbr7 _mode,_local_1315_20                
+l316_2           bbr7 _mode,l316_3                        
                  sta sprite_ptrs_40,y                     ; 40 col screen
-                 bra _local_1315_30                       
-_local_1315_20   sta sprite_ptrs_80,y                     ; 80 col screen
-_local_1315_30   dec                                      
+                 bra l316_4                               
+l316_3           sta sprite_ptrs_80,y                     ; 80 col screen
+l316_4           dec                                      
                  dey                                      
-                 bpl _local_1315_10                       
+                 bpl l316_2                               
 
                  plp                                      
 ; rts

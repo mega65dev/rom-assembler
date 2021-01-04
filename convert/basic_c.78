@@ -31,11 +31,11 @@ iline_20
 p2code                                                    ; updates text_top without actually changing lines
                  inx                                      
                  lda fbuffr+1,x                           ; get character from number
-                 beq _local_1077_20                       ; end of number
+                 beq l78_3                                ; end of number
                  jsr chrget                               ; get digit from old number
                  bcc p2code                               ; digit...move on
 
-_local_1077_10   inw fndpnt                               
+l78_1            inw fndpnt                               
                  sec                                      ; have we run out of memory (theoretically)?
                  lda fndpnt                               ; (compare with limit-of-memory pointer)
                  sbc max_mem_0                            
@@ -44,13 +44,13 @@ _local_1077_10   inw fndpnt
                  +lbcs omerr                              ; yes- out of memory error
                  inx                                      ; no - next...
                  lda fbuffr+1,x                           
-                 bne _local_1077_10                       
-_local_1077_15   rts                                      ; no more
+                 bne l78_1                                
+l78_2            rts                                      ; no more
 
-_local_1077_20   jsr chrget                               
-                 bcs _local_1077_15                       ; old stuff after # is other char
+l78_3            jsr chrget                               
+                 bcs l78_2                                ; old stuff after # is other char
                  dew fndpnt                               ; digit...move down
-                 bra _local_1077_20                       ; still digits...
+                 bra l78_3                                ; still digits...
 
 ; .page
 ;*********** This part of imbed_lines executed in pass 3 only **********

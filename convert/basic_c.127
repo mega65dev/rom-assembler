@@ -41,7 +41,7 @@ is_array
                  pha                                      ; save VALTYP for recursion
                  ldy #0                                   ; set number of dimensions to zero
 
-_local_1126_10   phy                                      ; save number of dims
+l127_1           phy                                      ; save number of dims
                  lda varnam+1                             
                  pha                                      
                  lda varnam                               
@@ -66,7 +66,7 @@ _local_1126_10   phy                                      ; save number of dims
                  jsr chrgot                               ; get terminating character
                  ldy count                                
                  cmp #','                                 ; more subscripts?
-                 beq _local_1126_10                       ; yes
+                 beq l127_1                               ; yes
 
 
                  jsr chkcls                               ; must be closed paren
@@ -80,23 +80,23 @@ _local_1126_10   phy                                      ; save number of dims
                  lda arytab+1                             
 
 
-_local_1126_20   stx lowtr                                
+l127_2           stx lowtr                                
                  sta lowtr+1                              
                  cmp strend+1                             ; end of arrays?
-                 bne _local_1126_30                       
+                 bne l127_3                               
                  cpx strend                               
                  beq notfdd                               ; a fine thing! no array!
 
-_local_1126_30   ldy #0                                   
+l127_3           ldy #0                                   
                  jsr indlow_ram1                          ; get high of name from array bank (ram1)
                  iny                                      
                  cmp varnam                               ; compare high orders.
-                 bne _local_1126_40                       ; no way is it this. get the bite outta here
+                 bne l127_4                               ; no way is it this. get the bite outta here
                  jsr indlow_ram1                          
                  cmp varnam+1                             ; low orders?
                  beq gotary                               ; well here it is
 
-_local_1126_40   iny                                      
+l127_4           iny                                      
                  jsr indlow_ram1                          ; get length
                  clc                                      
                  adc lowtr                                
@@ -104,6 +104,6 @@ _local_1126_40   iny
                  iny                                      
                  jsr indlow_ram1                          
                  adc lowtr+1                              
-                 bcc _local_1126_20                       ; always branches
+                 bcc l127_2                               ; always branches
 
 

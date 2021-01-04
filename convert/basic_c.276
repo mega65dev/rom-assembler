@@ -43,7 +43,7 @@ verify_mode
                  jsr chrget                               ; eat 'verify' token, get next  new [910429]
                  cmp #on_token                            
                  sec                                      
-                 beq _local_1275_10                       ; turn verify on (.c=1)
+                 beq l276_1                               ; turn verify on (.c=1)
                  jsr chkesc                               
                  cmp #off_token                           ; turn cursor off (.c=0)
                  +lbne snerr                              
@@ -51,14 +51,14 @@ verify_mode
 
 ;  Open disk command channel & pass it 'verify' command
 
-_local_1275_10   php                                      ; Save mode
+l276_1           php                                      ; Save mode
                  jsr chkeos                               ; eat 'on/off' token, error if not eos
 
                  ldx #4-1                                 
-_local_1275_20   lda verify_cmd,x                         ; move command to RAM, setup for open
+l276_2           lda verify_cmd,x                         ; move command to RAM, setup for open
                  sta savram,x                             
                  dex                                      
-                 bpl _local_1275_20                       
+                 bpl l276_2                               
 
                  lda #0                                   ; form on/off flag
                  plp                                      

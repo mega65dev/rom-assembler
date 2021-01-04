@@ -44,12 +44,12 @@ mod              jsr chknum                               ; 1st arg in FAC1 (num
                  jsr movaf                                ; save range in FAC2
                  jsr pullf1                               ; get back number in FAC1
                  ldx #5                                   ; swap FAC1 and FAC2
-_local_1147_10   lda facexp,x                             
+l148_1           lda facexp,x                             
                  ldy argexp,x                             
                  sta argexp,x                             
                  sty facexp,x                             
                  dex                                      
-                 bpl _local_1147_10                       
+                 bpl l148_1                               
                  jsr pushf1                               ; save one copy of range for later
 
                  jsr fdivt_c65                            ; number/range

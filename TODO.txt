@@ -1,2 +1,7 @@
-Better local label names.
-ACME bug fix.
+
+Todo
+	Split the code into sections
+	Start renaming things.
+
+Later
+	ACME bug fix.

@@ -7,7 +7,7 @@ print_dos_error                                           ; [900725]
                  cmp #'2'                                 
                  bcc header_rts                           ; branch if no error occured ('00' or '01')
                  cmp #'7'                                 
-                 bne _local_1226_1                        ; [900730]
+                 bne l227_1                               ; [900730]
                  iny                                      
                  lda #dsdesc+1                            
                  jsr lda_far_ram1                         ; might be '73' powerup message
@@ -19,7 +19,7 @@ print_dos_error                                           ; [900725]
 
 ; Print DOS error message as if it were a BASIC error message   [900910]
 
-_local_1226_1    lda #$ff                                 ; reset error line
+l227_1           lda #$ff                                 ; reset error line
                  sta errlin                               ; 
                  sta errlin+1                             
                  jsr _clrch                               
@@ -36,17 +36,17 @@ _local_1226_1    lda #$ff                                 ; reset error line
                  lda #dsdesc+1                            
                  jsr lda_far_ram1                         ; skip err#, comma, & leading space if any
                  cmp #' '                                 
-                 bne _local_1226_20                       
+                 bne l227_3                               
                  iny                                      
-_local_1226_10   lda #dsdesc+1                            
+l227_2           lda #dsdesc+1                            
                  jsr lda_far_ram1                         
                  cmp #','                                 ; finished at comma preceding trk, sector
-                 beq _local_1226_30                       
-_local_1226_20   jsr outch                                
+                 beq l227_4                               
+l227_3           jsr outch                                
                  iny                                      
-                 bpl _local_1226_10                       ; loop always (bpl=failsafe)
+                 bpl l227_2                               ; loop always (bpl=failsafe)
 
-_local_1226_30   jsr highlight_done                       ; [910624]
+l227_4           jsr highlight_done                       ; [910624]
                  jsr crdo                                 
                  +lbra ready                              ; we're in direct mode, error msg has been printed, abort
 

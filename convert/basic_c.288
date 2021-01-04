@@ -12,14 +12,14 @@ movspr_angle
                  ldx #xdest-vwork                         
                  clc                                      
 
-_local_1287_60   jsr angmlt                               ; multiply lengths*angles for x and y
+l288_1           jsr angmlt                               ; multiply lengths*angles for x and y
                  sta vwork,x                              
                  tya                                      
                  sta vwork+1,x                            
                  inx                                      
                  inx                                      
                  cpx #ydest-vwork                         
-                 beq _local_1287_60                       ; loop to do y-position
+                 beq l288_1                               ; loop to do y-position
 
                  ror numcnt                               ; shift in carry to set msb
                  bra movspr_position                      ; go place sprite

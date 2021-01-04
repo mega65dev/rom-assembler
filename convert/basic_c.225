@@ -17,11 +17,11 @@ bload_boot                                                ; <<<<<<<<<<<<<<<<<<<<
                  ldy dosofl+1                             ; ..and lo
                  lda #0                                   ; assume x & y not both=ff (means real add., not def)
                  cpx #$ff                                 
-                 bne _local_1224_5                        
+                 bne l225_1                               
                  cpy #$ff                                 
-                 bne _local_1224_5                        
+                 bne l225_1                               
                  lda #$ff                                 ; use defaults
-_local_1224_5    sta dossa                                
+l225_1           sta dossa                                
 
                  ldy #fopn                                ; table offset
                  lda #4                                   ; ..length,
@@ -47,16 +47,16 @@ _local_1224_5    sta dossa
                  jsr print_dos_error                      ; report DOS problems
                  pla                                      ; restore error stuff
                  plp                                      
-                 bcc _local_1224_30                       ; branch if no error (rts)
-                 bbs7 runmod,_local_1224_20               ; branch if run mode (erexit)
+                 bcc l225_4                               ; branch if no error (rts)
+                 bbs7 runmod,l225_3                       ; branch if run mode (erexit)
                  cmp #errfnf                              ; is it 'file not found' catch-all?
-                 bne _local_1224_10                       ; no  (erexit)
+                 bne l225_2                               ; no  (erexit)
                  sta errnum                               ; yes- save error # for 'er'
                  ora #$80                                 ; but no errdis
-_local_1224_10   sec                                      
-_local_1224_20   +lbcs erexit                             ; exit if kernel problem (rts)
+l225_2           sec                                      
+l225_3           +lbcs erexit                             ; exit if kernel problem (rts)
 
-_local_1224_30   lda verck                                ; load or verify operation?
+l225_4           lda verck                                ; load or verify operation?
                  +lbne verify_check                       ; verify
 
 ; jsr _readst  ;  read status

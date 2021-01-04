@@ -6,11 +6,11 @@ rdfn             lda dosf2a
                  beq rdrt0                                ; if null string
 
                  ldy #0                                   ; move name to dosstr
-_local_1242_10   jsr indin1_ram1                          
+l243_1           jsr indin1_ram1                          
                  sta dosstr,x                             
                  inx                                      
                  iny                                      
                  cpy dosf2l                               
-                 bne _local_1242_10                       ; if move not complete
+                 bne l243_1                               ; if move not complete
                  !text $89                                ; hop
 

@@ -107,18 +107,18 @@ remn             ldx #0                                   ; REM terminates on nu
                  ldy #0                                   ; this makes charac=0 after swap
                  sty endchr                               
 
-_local_1042_10   lda endchr                               
+l43_1            lda endchr                               
                  ldx charac                               
                  sta charac                               
                  stx endchr                               
-_local_1042_20   jsr indtxt                               
+l43_2            jsr indtxt                               
                  beq remrts                               ; null always terminates
                  cmp endchr                               ; is it some another terminator?
                  beq remrts                               ; yes, it's finished
                  iny                                      ; progress to next character
                  cmp #'"'                                 ; is it a quote?
-                 bne _local_1042_20                       ; no, just continue
-                 beq _local_1042_10                       ; yes, time to change
+                 bne l43_2                                ; no, just continue
+                 beq l43_1                                ; yes, time to change
 
 ;.end
 ; .page

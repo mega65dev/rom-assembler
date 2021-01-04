@@ -20,10 +20,10 @@ dclall           lda dosfa                                ; get disk #
 
 ; DSAVE dfn
 
-dsave            bbr4 runmod,_local_1221_10               ; PROGRAM or EDIT mode?    [910620]
+dsave            bbr4 runmod,l222_1                       ; PROGRAM or EDIT mode?    [910620]
                  +lbra edit_save                          ; edit
 
-_local_1221_10   lda #$66                                 ; set error flags
+l222_1           lda #$66                                 ; set error flags
                  jsr dosprs                               ; parse the line
                  jsr chk2                                 ; check required parameters
                  ldy #fopn                                ; table offset

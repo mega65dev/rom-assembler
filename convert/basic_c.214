@@ -64,47 +64,47 @@ instr            lda facmo                                ; save pointer to temp
                  stx faclo                                
                  jsr chrgot                               
                  cmp #')'                                 ; any length argument?
-                 beq _local_1213_1                        ; branch if not
+                 beq l214_1                               ; branch if not
                  jsr combyt                               ; else go get a one byte argument
 
-_local_1213_1    jsr chkcls                               ; look for )
+l214_1           jsr chkcls                               ; look for )
                  ldx faclo                                
                  +lbeq fcerr                              ; starting position can't be 0
                  dex                                      
                  stx positn                               
 
                  ldx #3                                   ; copy 'pointers to temp descriptors' to zero page
-_local_1213_3    lda tmpdes,x                             
+l214_2           lda tmpdes,x                             
                  sta ptarg1,x                             
                  dex                                      
-                 bpl _local_1213_3                        
+                 bpl l214_2                               
 
                  ldy #2                                   ; now get the descriptors
-_local_1213_4    lda #ptarg1                              
+l214_3           lda #ptarg1                              
                  jsr lda_far_ram1                         ; lda (ptarg1),y
                  sta str1,y                               
                  lda #ptarg2                              
                  jsr lda_far_ram1                         ; lda (ptarg2),y
                  sta str2,y                               
                  dey                                      
-                 bpl _local_1213_4                        
+                 bpl l214_3                               
 
                  lda str2                                 ; check if string 2 is null
-                 beq _local_1213_50                       ; if so, return 0
+                 beq l214_8                               ; if so, return 0
 
-_local_1213_10   lda #0                                   
+l214_4           lda #0                                   
                  sta match                                
                  clc                                      
                  lda str2                                 ; length of string 2
                  adc positn                               
-                 bcs _local_1213_50                       ; too long, not found
+                 bcs l214_8                               ; too long, not found
                  cmp str1                                 ; see if > length of string 1
-                 bcc _local_1213_20                       ; < len string 1
-                 bne _local_1213_50                       ; must be >, not found
+                 bcc l214_5                               ; < len string 1
+                 bne l214_8                               ; must be >, not found
 
-_local_1213_20   ldy match                                
+l214_5           ldy match                                
                  cpy str2                                 ; if match len = str len, then found
-                 beq _local_1213_40                       
+                 beq l214_7                               
                  tya                                      
                  clc                                      
                  adc positn                               ; compare str1(s+p+m) with str2(m)
@@ -116,19 +116,19 @@ _local_1213_20   ldy match
                  lda #str2+1                              
                  jsr lda_far_ram1                         ; lda (str2+1),y
                  cmp syntmp                               
-                 beq _local_1213_30                       
+                 beq l214_6                               
                  inc positn                               ; not the same, start over from next positn
-                 bra _local_1213_10                       ; always
+                 bra l214_4                               ; always
 
-_local_1213_30   inc match                                ; count characters that match
-                 bra _local_1213_20                       ; always
+l214_6           inc match                                ; count characters that match
+                 bra l214_5                               ; always
 
 
-_local_1213_40   inc positn                               ; found
+l214_7           inc positn                               ; found
                  lda positn                               
                  !text $2c                                
 
-_local_1213_50   lda #0                                   ; not found
+l214_8           lda #0                                   ; not found
 ; sta sw_rom_ram0 ;????
                  pha                                      
                  lda tmpdes+2                             ; free temp descriptors

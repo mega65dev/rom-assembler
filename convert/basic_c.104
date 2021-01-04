@@ -6,16 +6,16 @@ play_one_character
                  cmp #' '                                 ; spaces are a 'no-op'
                  beq play_rts                             
 
-_local_1103_5    cmp #'A'                                 ; note name a-g?
-                 bcc _local_1103_10                       
+l104_1           cmp #'A'                                 ; note name a-g?
+                 bcc l104_2                               
                  cmp #'H'                                 
                  +lbcc play_note                          ; yes...play it
 
-_local_1103_10   ldx #4                                   ; test for notes,'w,h,q,i,s'
-_local_1103_20   cmp notes,x                              
+l104_2           ldx #4                                   ; test for notes,'w,h,q,i,s'
+l104_3           cmp notes,x                              
                  +lbeq set_note_length                    
                  dex                                      
-                 bpl _local_1103_20                       
+                 bpl l104_3                               
 
                  cmp #'R'                                 ; rest?
                  +lbeq play_rest                          
@@ -23,10 +23,10 @@ _local_1103_20   cmp notes,x
                  +lbeq play_dot                           
 
                  ldx #5                                   ; test for v,o,t,x,u,m commands
-_local_1103_30   cmp mutabl,x                             
+l104_4           cmp mutabl,x                             
                  +lbeq play_command                       
                  dex                                      
-                 bpl _local_1103_30                       ; test all 5 characters in table
+                 bpl l104_4                               ; test all 5 characters in table
 
                  cmp #'#'                                 ; sharp?
                  +lbeq play_sharp                         

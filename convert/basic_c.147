@@ -12,10 +12,10 @@ pointer_ret      =*-1
                  tay                                      
                  pla                                      
                  cmp #>zero                               ; is this a dummy pointer?
-                 bne _local_1146_10                       
+                 bne l147_1                               
                  lda #0                                   ; if so, return 0
                  tay                                      
-_local_1146_10   +lbra nosflt                             
+l147_1           +lbra nosflt                             
 
 ;.end
 ; .page

@@ -11,14 +11,14 @@ dschk            php                                      ; check if current dev
                  pha                                      
                  lda _fa                                  
                  cmp #1                                   
-                 bne _local_1196_10                       
+                 bne l197_1                               
                  lda _default_drive                       
                  sta _fa                                  
-_local_1196_10   cmp #8                                   ; ????     [900807]
-                 bcc _local_1196_20                       
+l197_1           cmp #8                                   ; ????     [900807]
+                 bcc l197_2                               
                  sta dosfa                                ; also make last DOS device = current device
                  jsr Clear_DS                             
-_local_1196_20   pla                                      
+l197_2           pla                                      
                  plp                                      
                  rts                                      
 

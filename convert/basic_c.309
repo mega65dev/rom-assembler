@@ -24,23 +24,23 @@ incord
                  clc                                      
                  ldx vtemp4                               
 
-_local_1308_10   jsr angmlt                               ; multiply length * angle
+l309_1           jsr angmlt                               ; multiply length * angle
                  sta vwork,x                              ; save angle result
                  tya                                      
                  sta vwork+1,x                            
                  ldy #xpos-vwork                          
                  lsr vtemp5                               
-                 bcc _local_1308_20                       
+                 bcc l309_2                               
                  ldy #ypos-vwork                          
 
-_local_1308_20   jsr dotwo                                ; add/subtract value to current position
+l309_2           jsr dotwo                                ; add/subtract value to current position
                  sta vwork,x                              
                  tya                                      ; save result in destination
                  sta vwork+1,x                            
                  inx                                      
                  inx                                      
                  lsr vtemp5                               
-                 bne _local_1308_10                       ; do y-coordinate
+                 bne l309_1                               ; do y-coordinate
                  clc                                      
                  rts                                      
 

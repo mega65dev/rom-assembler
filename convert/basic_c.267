@@ -24,14 +24,14 @@ RestoreTextScreen                                          ; [910404]
 ; sei
 ; lda #$80
 ; bit _mode  ;40/80 mode, 0=80 128=40
-; bmi _local_1266_10
+; bmi l267_1
 ;
 ; tsb vic+49  ; 80
 ; lda #1
 ; trb vic+22  ;  fix x-scroll register
 ; bra 99$
 ;
-;_local_1266_10 trb vic+49  ; 40
+;l267_1 trb vic+49  ; 40
 ; lda #1
 ; tsb vic+22  ;  fix x-scroll register
 ;
@@ -94,12 +94,12 @@ C65__screen
 ; beq snerr  ;missing args??      [911017]
                  ldx #255                                 ; [911028]
                  cmp #','                                 
-                 beq _local_1266_10                       ; options byte only
+                 beq l267_1                               ; options byte only
 
                  jsr getbyt                               ; get draw screen# in .x
 ; cpx #4   ;       [910711]
 ; bcs 20$   ;  out of range error???? (255=leave alone)  [910930]
-_local_1266_10   stx GKI__parm1                           
+l267_1           stx GKI__parm1                           
 
                  ldx $1f69                                ; current viewscreen     [911017]
                  jsr optbyt                               ; eat a comma, get view screen# in .x

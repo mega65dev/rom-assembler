@@ -2,7 +2,7 @@ C65__set
                  cmp #verify_token                        ; SET VERIFY <ON | OFF>  new [910429]
                  +lbeq verify_mode                        
                  cmp #def_token                           ; SET DEF unit
-                 bne _local_1274_10                       
+                 bne l275_1                               
                  jsr getdisknum_1                         
                  stx _default_drive                       
                  stx dosfa                                ; Make last DOS device = current device
@@ -10,7 +10,7 @@ C65__set
 
 
 
-_local_1274_10   jsr chkesc                               ; Must be ESCape token
+l275_1           jsr chkesc                               ; Must be ESCape token
                  cmp #disk_token                          ; ok so far
                  +lbne bad_command                        ; unknown command
 
@@ -23,11 +23,11 @@ _local_1274_10   jsr chkesc                               ; Must be ESCape token
                  jsr chrgot                               ; check delimiter (comma, 'TO', or eos)
                  +lbeq Clear_DS                           ; eos- just change DOS' current drive [910417]
                  cmp #','                                 ; not eos, must be comma or 'TO'
-                 beq _local_1274_20                       
+                 beq l275_2                               
                  cmp #to_token                            
                  +lbne snerr                              
 
-_local_1274_20   jsr getdisknum_1                         ; skip delimiter
+l275_2           jsr getdisknum_1                         ; skip delimiter
                  stx dosds2                               ; got new disk unit #
 
 
@@ -37,10 +37,10 @@ _local_1274_20   jsr getdisknum_1                         ; skip delimiter
                  jsr dclall                               ; Close any open files????
 
                  ldx #6-1                                 
-_local_1274_30   lda disk_renum_cmd,x                     ; move command to RAM, setup for open
+l275_3           lda disk_renum_cmd,x                     ; move command to RAM, setup for open
                  sta savram,x                             
                  dex                                      
-                 bpl _local_1274_30                       
+                 bpl l275_3                               
                  lda dosds2                               
                  ora #32                                  ; make new # a talk/listen address
                  sta savram+6                             

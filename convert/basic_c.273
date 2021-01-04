@@ -18,25 +18,25 @@ C65__line
                  sta GKI__parm8                           
 
                  jsr optsad                               ; get x1     [910228]
-                 bcc _local_1272_10                       ; use x0
-_local_1272_1    sty GKI__parm5                           
+                 bcc l273_2                               ; use x0
+l273_1           sty GKI__parm5                           
                  sta GKI__parm6                           
 
-_local_1272_10   jsr optsad                               ; get y1     [910228]
-                 bcc _local_1272_20                       ; use y0
+l273_2           jsr optsad                               ; get y1     [910228]
+                 bcc l273_3                               ; use y0
                  sty GKI__parm7                           
                  sta GKI__parm8                           
 
-_local_1272_20   jsr ($8018)                              ; draw a line from x0,y0 to x1,y1
+l273_3           jsr ($8018)                              ; draw a line from x0,y0 to x1,y1
 
                  ldx #3                                   
-_local_1272_30   lda GKI__parm5,x                         ; copy x1,y1 to x0,y0
+l273_4           lda GKI__parm5,x                         ; copy x1,y1 to x0,y0
                  sta GKI__parm1,x                         
                  dex                                      
-                 bpl _local_1272_30                       
+                 bpl l273_4                               
 
                  jsr optsad                               ; more?
-                 bcs _local_1272_1                        ; yes, continue
+                 bcs l273_1                               ; yes, continue
                  rts                                      
 
 ; .page

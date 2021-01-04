@@ -7,10 +7,10 @@ kloop            clc                                      ; compute source addre
                  sta index1+1                             
                  ldy #$ff                                 
 
-_local_1008_10   iny                                      
+l9_1             iny                                      
                  lda (index1),y                           ; move source..  ????assumes text in common area
                  sta (txtptr),y                           ; to destination offset ????assumes text in common area
-                 bne _local_1008_10                       ; not end of line
+                 bne l9_1                                 ; not end of line
                  rts                                      
 
 ; .page

@@ -22,13 +22,13 @@ do_esc_fn
                  jsr chrget                               ; get second token
                  +lbeq snerr                              ; error if no second token
                  cmp #pointer_token                       
-                 beq _local_1018_10                       ; skip pre-parse if 'POINTER()'
+                 beq l19_1                                ; skip pre-parse if 'POINTER()'
                  pha                                      
                  jsr chrget                               ; should be '('
                  jsr chkopn                               
                  jsr frmevl                               ; evaluate first argument
                  pla                                      
-_local_1018_10   cmp #first_esc_function_token            ; see if this esc fn is one of ours
+l19_1            cmp #first_esc_function_token            ; see if this esc fn is one of ours
                  bcc foreign_esc_fn                       ; nope.
                  cmp #last_esc_function_token+1           
                  bcs foreign_esc_fn                       ; nope

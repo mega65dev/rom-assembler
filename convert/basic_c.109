@@ -11,30 +11,30 @@ play_note
                  txa                                      
                  clc                                      
                  adc sharp                                
-                 bpl _local_1108_10                       ; added sharp or nat
+                 bpl l109_1                               ; added sharp or nat
                  lda #11                                  ; underflow
                  iny                                      ; bump octave down
-_local_1108_10   cmp #12                                  ; overflow?
-                 bcc _local_1108_20                       ; no...
+l109_1           cmp #12                                  ; overflow?
+                 bcc l109_2                               ; no...
                  lda #0                                   
                  dey                                      ; bump octave up
-_local_1108_20   tax                                      
+l109_2           tax                                      
                  lda scalel,x                             
                  sta pitch                                
 
                  bit _pal_ntsc                            ; determine if PAL or NTSC system
-                 bmi _local_1108_25                       ; ...branch if PAL
+                 bmi l109_3                               ; ...branch if PAL
                  lda scaleh,x                             ; continue as before patch
-                 bra _local_1108_30                       
+                 bra l109_4                               
 
-_local_1108_25   lda scalelp,x                            ; load from PAL tables
+l109_3           lda scalelp,x                            ; load from PAL tables
                  sta pitch                                
                  lda scalehp,x                            
 
-_local_1108_30   dey                                      
+l109_4           dey                                      
                  bmi play_note_1                          ; go play note
                  lsr                                      
                  ror pitch                                
-                 bra _local_1108_30                       
+                 bra l109_4                               
 
 ; .page

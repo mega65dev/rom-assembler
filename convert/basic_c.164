@@ -1,35 +1,35 @@
 chkgrb           cpy fretop+1                             ; end of strings?
-                 bcc _local_1163_50                       
-                 bne _local_1163_10                       ; if not equal
+                 bcc l164_5                               
+                 bne l164_1                               ; if not equal
                  cmp fretop                               
-                 beq _local_1163_50                       
-                 bcc _local_1163_50                       
+                 beq l164_5                               
+                 bcc l164_5                               
 
-_local_1163_10   bit highds                               ; check flag
-                 bmi _local_1163_20                       ; if empty string found
+l164_1           bit highds                               ; check flag
+                 bmi l164_2                               ; if empty string found
                  lda #2                                   ; skip pointers past
                  jsr movtop                               ; move top pointer
 
-_local_1163_20   lda #2                                   ; skip pointers past
+l164_2           lda #2                                   ; skip pointers past
                  jsr movpnt                               ; move pointers
                  ldy #1                                   
                  jsr indgrb                               ; garbage?
                  cmp #$ff                                 
-                 beq _local_1163_40                       ; yes
+                 beq l164_4                               ; yes
 
-_local_1163_30   jsr indgrb                               ; to link bytes
+l164_3           jsr indgrb                               ; to link bytes
                  sta index1,y                             
                  dey                                      
-                 bpl _local_1163_30                       ; if two bytes not moved
-_local_1163_40   rts                                      
+                 bpl l164_3                               ; if two bytes not moved
+l164_4           rts                                      
 
 
-_local_1163_50   ldx temppt                               ; ptr to temp. strings
+l164_5           ldx temppt                               ; ptr to temp. strings
 
-_local_1163_60   cpx #tempst                              ; any out there?
-                 beq _local_1163_70                       ; no
+l164_6           cpx #tempst                              ; any out there?
+                 beq l164_7                               ; no
                  jsr slr1                                 ; setup ptr (tempf2) to temp. string's bkptr.
-                 beq _local_1163_60                       ; (skip if null string!)
+                 beq l164_6                               ; (skip if null string!)
                  phx                                      
                  ldx #tempf2                              
                  ldy #0                                   ; .a = string length
@@ -38,9 +38,9 @@ _local_1163_60   cpx #tempst                              ; any out there?
                  lda #$ff                                 
                  jsr sta_far_ram1 ;sta (tempf2),y         ; and mark as garbage
                  plx                                      
-                 bra _local_1163_60                       ; always
+                 bra l164_6                               ; always
 
-_local_1163_70   pla                                      ; throw away return address
+l164_7           pla                                      ; throw away return address
                  pla                                      
                  lda frespc                               ; fix fretop and frespc
                  ldy frespc+1                             

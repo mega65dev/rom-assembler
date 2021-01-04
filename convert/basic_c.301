@@ -5,10 +5,10 @@ PushParms                                                 ; [910820]
                  phw linnum                               ; Save 'poker' value
 
                  ldx #17-1                                
-_local_1300_10   lda GKI__parm1,x                         ; Save Graphics parameters
+l301_1           lda GKI__parm1,x                         ; Save Graphics parameters
                  pha                                      ; [eg: CHAR x,y,1,1,2,str$(PIXEL(x,y))]
                  dex                                      
-                 bpl _local_1300_10                       
+                 bpl l301_1                               
 
                  phz                                      ; Restore return address
                  phy                                      

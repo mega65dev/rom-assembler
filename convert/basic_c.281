@@ -21,12 +21,12 @@ C65__Viewport
 
                  pla                                      ; dispatch per secondary token...
                  cmp #clr_token                           
-                 beq _local_1280_10                       
+                 beq l281_1                               
                  cmp #def_token                           
                  +lbne snerr                              ; error
 
                  jmp ($8030)                              ; define viewport & return
 
-_local_1280_10   jmp ($8022)                              ; clear viewport (???? make this a box command)
+l281_1           jmp ($8022)                              ; clear viewport (???? make this a box command)
 
 ; .page

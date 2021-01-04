@@ -40,29 +40,29 @@ ldir
                  sta sid_speed_flag                       ; but save enables so we can restore them
 
                  ldy #3                                   ; loop counter (3=skip fake load adr & link bytes)
-_local_1217_1    sty t3                                   ; save counter
+l218_1           sty t3                                   ; save counter
                  ldx #doslfn                              
                  jsr _chkin                               
                  bcs ldir_end                             ; problem??
 
-_local_1217_10   jsr _readst                              ; check status
+l218_2           jsr _readst                              ; check status
                  bne ldir_end                             ; exit if bad status
                  jsr _basin                               ; get block count
                  sta dosstr                               ; buffer it
                  jsr _basin                               
                  sta dosstr+1                             
                  dec t3                                   
-                 bne _local_1217_10                       ; continue eating bytes until we have block count
+                 bne l218_2                               ; continue eating bytes until we have block count
 
 ; Read filename
 
                  ldx #1                                   ; buffer index-1
-_local_1217_20   inx                                      
+l218_3           inx                                      
                  jsr _readst                              ; check status
                  bne ldir_end                             ; exit if eof or bad status
                  jsr _basin                               ; buffer next character
                  sta dosstr,x                             
-                 bne _local_1217_20                       ; loop until eol (null terminator)
+                 bne l218_3                               ; loop until eol (null terminator)
 
 ; Print one line of directory
 
@@ -75,13 +75,13 @@ _local_1217_20   inx
                  jsr _bsout                               ; print space
 
                  ldx #2                                   
-_local_1217_30   lda dosstr,x                             
-                 beq _local_1217_40                       
+l218_4           lda dosstr,x                             
+                 beq l218_5                               
                  jsr _bsout                               ; print filename (null terminated)
                  inx                                      
-                 bne _local_1217_30                       
+                 bne l218_4                               
 
-_local_1217_40   jsr crdo                                 ; print return
+l218_5           jsr crdo                                 ; print return
                  jsr _clrch                               
                  jsr _stop                                ; check stop key
                  beq ldir_end                             ; exit if stop request
@@ -89,6 +89,6 @@ _local_1217_40   jsr crdo                                 ; print return
 ; Continue with next line
 
                  ldy #2                                   ; set to skip fake link bytes
-                 bra _local_1217_1                        ; loop
+                 bra l218_1                               ; loop
 
 

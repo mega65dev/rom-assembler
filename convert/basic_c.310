@@ -32,11 +32,11 @@ docor2           ldy #xpos-vwork
 
 cordsb           jsr chrgot                               ; read character
                  cmp #plus_token                          ; check if relative - plus sign
-                 beq _local_1309_10                       ; skip if yes
+                 beq l310_1                               ; skip if yes
                  cmp #minus_token                         
-                 beq _local_1309_10                       ; skip if relative - minus sign
+                 beq l310_1                               ; skip if relative - minus sign
                  clc                                      ; .c=1 if relative coord, .c=0 if absolute
-_local_1309_10   rol vtemp5                               ; save coord type for later
+l310_1           rol vtemp5                               ; save coord type for later
                  jsr frmnum                               
                  jsr getsad                               ; get signed 2 byte coordinate (y,a), do rts
                  ldx vtemp4                               

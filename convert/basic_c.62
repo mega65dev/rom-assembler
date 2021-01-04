@@ -1,36 +1,36 @@
-next             bne _local_1061_10                       ; hop if 'next' variable given
+next             bne l62_2                                ; hop if 'next' variable given
                  ldy #$ff                                 ; flag no specific 'for' variable
-                 bra _local_1061_20                       ; always
+                 bra l62_3                                ; always
 
-_local_1061_5    ldy #lenfor                              ; done, clean up stack
+l62_1            ldy #lenfor                              ; done, clean up stack
                  jsr rlsstk                               ; release (y) items from stack
                  jsr chrgot                               
                  cmp #','                                 ; ie., NEXT j,k
-                 bne _local_1061_45                       
+                 bne l62_7                                
                  jsr chrget                               
 
-_local_1061_10   jsr ptrget                               ; get pointer to variable in (a,y)
+l62_2            jsr ptrget                               ; get pointer to variable in (a,y)
                  sta forpnt                               
 
-_local_1061_20   sty forpnt+1                             
+l62_3            sty forpnt+1                             
                  lda #for_token                           
                  jsr search                               ; look for FOR entry in run-time stack
-                 beq _local_1061_30                       ; branch if found
+                 beq l62_4                                ; branch if found
                  ldx #errnf                               ; otherwise 'error, not found'
                  +lbra error                              
 
 
 ; Set up to move STEP value to FAC
 
-_local_1061_30   jsr movfnd                               ; (fndpnt) => (tos)
+l62_4            jsr movfnd                               ; (fndpnt) => (tos)
                  lda fndpnt                               
                  clc                                      
                  adc #3                                   ; offset to step value
                  ldy fndpnt+1                             
-                 bcc _local_1061_35                       
+                 bcc l62_5                                
                  iny                                      
 
-_local_1061_35   jsr movfm                                ; actually "move from ROM", but sys stack is in "common"
+l62_5            jsr movfm                                ; actually "move from ROM", but sys stack is in "common"
                  ldy #8                                   ; MOVFM doesn't move sign.  Get it
                  lda (fndpnt),y                           
                  sta facsgn                               
@@ -57,18 +57,18 @@ _local_1061_35   jsr movfm                                ; actually "move from 
                  clc                                      
                  adc #9                                   
                  ldy fndpnt+1                             
-                 bcc _local_1061_40                       
+                 bcc l62_6                                
                  iny                                      
 
 ; Test if loop done
 
-_local_1061_40                                            
+l62_6                                                     
 ; sta sw_rom_ram0 ;????
                  jsr fcomp                                ; compare FAC to value pointed to by (a,y)
                  ldy #8                                   
                  sec                                      
                  sbc (fndpnt),y                           ; (common area????)
-                 beq _local_1061_5                        ; branch taken if done
+                 beq l62_1                                ; branch taken if done
 
                  ldy #17                                  ; not done, set pointers to re-execute loop
                  lda (fndpnt),y                           ; (common area????)
@@ -82,7 +82,7 @@ _local_1061_40
                  dey                                      
                  lda (fndpnt),y                           
                  sta curlin                               
-_local_1061_45   rts                                      
+l62_7            rts                                      
 
 ;.end
 ; .page

@@ -69,20 +69,20 @@ eado             lda #0
 eadj             ldx uexp                                 
                  inx                                      
                  bit etof                                 ; e-to-f flag on?
-                 bmi _local_1203_20                       ; yes...
+                 bmi l204_2                               ; yes...
                  eor usgn                                 
-                 beq _local_1203_20                       ; ++ or --
+                 beq l204_2                               ; ++ or --
 
-_local_1203_10   jsr tag3                                 ; inc exp, overflow?
+l204_1           jsr tag3                                 ; inc exp, overflow?
                  jsr sexp                                 ; digit 0 if yes
-                 bcs _local_1203_10                       ; try second digit
+                 bcs l204_1                               ; try second digit
                  +lbra overr                              ; exp>99
 
-_local_1203_20   lda fbuffr,x                             
+l204_2           lda fbuffr,x                             
                  dec fbuffr,x                             ; decrement exp
                  cmp #'0'                                 ; underflow on digit?
                  jsr sexp                                 ; set digit=9 if yes...
-                 bcs _local_1203_20                       ; try 2nd digit
+                 bcs l204_2                               ; try 2nd digit
                  bit etof                                 ; flag off?
                  bpl et3                                  ; yes...
                  sty point                                ; decimal point pointer

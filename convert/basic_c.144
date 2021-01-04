@@ -15,9 +15,9 @@ joy              jsr conint                               ; get 1 byte arg in x
                  ldy #$ff                                 
                  sty d1pra                                ; set to not read any kybd inputs
 
-_local_1143_10   lda d1pra,x                              ; read joystick values
+l144_1           lda d1pra,x                              ; read joystick values
                  cmp d1pra,x                              ; debounce
-                 bne _local_1143_10                       
+                 bne l144_1                               
 
                  tax                                      ; save joystick values
                  pla                                      
@@ -30,9 +30,9 @@ _local_1143_10   lda d1pra,x                              ; read joystick values
                  tay                                      ; save direction : 0-8
                  txa                                      ; restore joystick value
                  and #$10                                 ; test if button triggered
-                 bne _local_1143_20                       ; skip if not
+                 bne l144_2                               ; skip if not
                  tya                                      
                  ora #$80                                 ; show trigger depressed
                  tay                                      
-_local_1143_20   +lbra sngflt                             ; float 1 byte arg in y.
+l144_2           +lbra sngflt                             ; float 1 byte arg in y.
 

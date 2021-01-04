@@ -29,27 +29,27 @@ getang
 
 gtang1           ldx #0                                   ; init count of phase
 
-_local_1304_10   inx                                      
+l305_1           inx                                      
                  sec                                      
                  sbc #90                                  ; subtract 90 until less than 0
-                 bcs _local_1304_10                       
+                 bcs l305_1                               
                  dey                                      
-                 bpl _local_1304_10                       
+                 bpl l305_1                               
                  stx angsgn                               ; save phase (here it is 1-4)
                  pha                                      
                  adc #90                                  ; make positive
-                 jsr _local_1304_20                       ; do division by 10
+                 jsr l305_2                               ; do division by 10
                  pla                                      ; get 2's comp of angle
                  clc                                      
                  eor #$ff                                 
                  adc #1                                   ; make positive
                  dec angsgn                               ; correct phase
 
-_local_1304_20   ldx #$ff                                 
-_local_1304_30   inx                                      ; do division by 10
+l305_2           ldx #$ff                                 
+l305_3           inx                                      ; do division by 10
                  sec                                      
                  sbc #10                                  
-                 bcs _local_1304_30                       
+                 bcs l305_3                               
                  adc #10                                  ; make positive
                  sta vtemp1                               ; save remainder
                  txa                                      
@@ -58,25 +58,25 @@ _local_1304_30   inx                                      ; do division by 10
                  lda angval+1,x                           ; get low byte base
                  ldy angval,x                             ; get high byte value
 
-_local_1304_40   clc                                      
+l305_4           clc                                      
                  dec vtemp1                               
-                 bmi _local_1304_50                       ; done - remainder = 0
+                 bmi l305_5                               ; done - remainder = 0
                  adc incval+1,x                           ; add low byte increment
                  pha                                      
                  tya                                      
                  adc incval,x                             ; add high byte increment
                  tay                                      
                  pla                                      
-                 bcc _local_1304_40                       ; ...always
+                 bcc l305_4                               ; ...always
 
-_local_1304_50   pha                                      ; save low byte of result
+l305_5           pha                                      ; save low byte of result
                  ldx #0                                   ; point to sinval
                  lda angsgn                               
                  lsr                                      
-                 bcs _local_1304_60                       ; skip if sine value
+                 bcs l305_6                               ; skip if sine value
                  ldx #2                                   ; point to cosval
 
-_local_1304_60   pla                                      
+l305_6           pla                                      
                  sta sinval,x                             ; save low byte result
                  tya                                      
                  sta sinval+1,x                           ; save high byte result

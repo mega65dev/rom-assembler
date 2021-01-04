@@ -5,9 +5,9 @@ fix_links                                                 ; <<<<<<<<<<<<<<<<<<<<
                  ldx index1+1                             
                  clc                                      
                  adc #2                                   
-                 bcc _local_1083_10                       
+                 bcc l84_1                                
                  inx                                      
-_local_1083_10   sta text_top                             ; set eot pointer
+l84_1            sta text_top                             ; set eot pointer
                  stx text_top+1                           
                  rts                                      ; C128-04 fix: was 'jmp ready' (FAB)
 

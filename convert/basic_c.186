@@ -42,10 +42,10 @@ sin2             lda #<fr4                                ; pointer to 1/4
                  ldy #>fr4                                
                  jsr romadd                               ; add it in
                  pla                                      ; get original quadrant
-                 bpl _local_1185_10                       
+                 bpl l186_1                               
                  jsr negop                                ; if negative, negate result
 
-_local_1185_10   lda #<sincon                             
+l186_1           lda #<sincon                             
                  ldy #>sincon                             
                  +lbra polyx                              ; do approximation polyomial
 

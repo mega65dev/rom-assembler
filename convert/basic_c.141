@@ -1,9 +1,9 @@
 poke             jsr getnum                               
-_local_1140_1    txa                                      ; set up value to store for Kernel 'stash' routine
+l141_1           txa                                      ; set up value to store for Kernel 'stash' routine
                  ldy #0                                   ; ..and index
                  sei                                      ; to allow poking IRQ vector, etc.  [910612]
                  bit current_bank                         
-                 bmi _local_1140_10                       ; (anything >1Meg means NOMAP)
+                 bmi l141_2                               ; (anything >1Meg means NOMAP)
 
                  phz                                      
                  ldx #poker                               ; ..and address
@@ -12,18 +12,18 @@ _local_1140_1    txa                                      ; set up value to stor
                  plz                                      
                  !text $2c                                
 
-_local_1140_10   sta (poker),y                            ; NoMap
+l141_2           sta (poker),y                            ; NoMap
 
-_local_1140_20   jsr chrgot                               ; eol?
-                 beq _local_1140_30                       ; yes
+l141_3           jsr chrgot                               ; eol?
+                 beq l141_4                               ; yes
                  inw poker                                ; no- increment address
 ; lda poker  ; check for segment wrap (FFFF->0000) [910911]
 ; ora poker+1
                  +lbeq omerr                              ; [910916]
                  jsr optbyt                               ; & get next [,byte]
-                 bcs _local_1140_1                        
+                 bcs l141_1                               
 
-_local_1140_30   cli                                      ; [910612]
+l141_4           cli                                      ; [910612]
                  rts                                      
 
 

@@ -13,17 +13,17 @@ fout2            lda faclo
                  adc foutbl,y                             
                  sta facho                                
                  inx                                      ; it was done yet another time
-                 bcs _local_1181_20                       
+                 bcs l182_1                               
                  bpl fout2                                
-                 bmi _local_1181_30                       
+                 bmi l182_2                               
 
-_local_1181_20   bmi fout2                                
-_local_1181_30   txa                                      
-                 bcc _local_1181_40                       ; can use (a) as is
+l182_1           bmi fout2                                
+l182_2           txa                                      
+                 bcc l182_3                               ; can use (a) as is
                  eor #$ff                                 ; find 11.(a)
                  adc #10                                  ; c is still on to complete negation, and will always be on after
 
-_local_1181_40   adc #'0'-1                               ; get a character to print
+l182_3           adc #'0'-1                               ; get a character to print
                  iny                                      
                  iny                                      
                  iny                                      
@@ -35,51 +35,51 @@ _local_1181_40   adc #'0'-1                               ; get a character to p
                  and #$7f                                 ; get rid of msb
                  sta fbuffr-1,y                           
                  dec deccnt                               
-                 bne _local_1181_50                       ; not time for dp yet
+                 bne l182_4                               ; not time for dp yet
                  lda #'.'                                 
                  iny                                      
                  sta fbuffr-1,y                           ; store dp
 
-_local_1181_50   sty fbufpt                               ; store pointer for later
+l182_4           sty fbufpt                               ; store pointer for later
                  ldy fdecpt                               
                  txa                                      ; complement accb
                  eor #$ff                                 ; complement acca
                  and #$80                                 ; save only msb
                  tax                                      
                  cpy #fdcend-foutbl                       
-; beq _local_1181_60  ;for time converter ????   removed [901014]
+; beq l182_5  ;for time converter ????   removed [901014]
 ; cpy #timend-foutbl
                  bne fout2                                ; continue with output
 
-_local_1181_60   ldy fbufpt                               ; get back output pointer
-_local_1181_70   lda fbuffr-1,y                           ; remove trailing blanks
+l182_5           ldy fbufpt                               ; get back output pointer
+l182_6           lda fbuffr-1,y                           ; remove trailing blanks
                  dey                                      
                  cmp #'0'                                 
-                 beq _local_1181_70                       
+                 beq l182_6                               
                  cmp #'.'                                 
-                 beq _local_1181_80                       ; ran into dp,  stop
+                 beq l182_7                               ; ran into dp,  stop
                  iny                                      ; something else, save it
 
-_local_1181_80   lda #'+'                                 
+l182_7           lda #'+'                                 
                  ldx tenexp                               
                  beq fout17                               ; no exponent to output
-                 bpl _local_1181_90                       
+                 bpl l182_8                               
                  lda #0                                   
                  sec                                      
                  sbc tenexp                               
                  tax                                      
                  lda #'-'                                 ; exponent is negative
 
-_local_1181_90   sta fbuffr+1,y                           ; store sign of exponent
+l182_8           sta fbuffr+1,y                           ; store sign of exponent
                  lda #'E'                                 
                  sta fbuffr,y                             ; store the 'E' character
                  txa                                      
 
                  ldx #'0'-1                               
                  sec                                      
-_local_1181_100  inx                                      ; move closer to output value
+l182_9           inx                                      ; move closer to output value
                  sbc #10                                  ; subtract 10
-                 bcs _local_1181_100                      ; not negative yet
+                 bcs l182_9                               ; not negative yet
 
                  adc #'9'+1                               ; get second output character
                  sta fbuffr+3,y                           ; store high digit

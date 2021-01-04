@@ -47,7 +47,7 @@ rspcolor
 rsppos           jsr conint                               ; get first arg, sprite #, in .X
 ; dex  ;adjust [1..8] to [0..7]   [910220]
                  cpx #8  ; (318018-03 mod                 ; fab)
-                 bcs _local_1303_1                        ; value error
+                 bcs l304_1                               ; value error
 
                  phx                                      ; save sprite number
 ; jsr chkcom ;check for proper delimiter
@@ -55,11 +55,11 @@ rsppos           jsr conint                               ; get first arg, sprit
                  jsr combyt                               ; [910820]
                  jsr chkcls                               ; look for closing paren
                  cpx #3                                   
-_local_1303_1    +lbcs fcerr                              ; value error
+l304_1           +lbcs fcerr                              ; value error
 
                  ply                                      ; sprite number
                  cpx #2                                   
-                 bne _local_1303_10                       ; branch if x or y position
+                 bne l304_2                               ; branch if x or y position
 
                  ldx sproff,y                             ; get offset into speed data
                  ldy sprite_data,x                        ; get speed data
@@ -67,26 +67,26 @@ _local_1303_1    +lbcs fcerr                              ; value error
 
 ; Get msb of sprite position (in case this is for x position)
 
-_local_1303_10   sei                                      
+l304_2           sei                                      
                  lda sbits,y                              ; get bit mask for this sprite
                  and vic+16                               ; ???vic_save
-                 beq _local_1303_20                       
+                 beq l304_3                               
                  lda #1                                   ; change any non-zero to a '1'
-_local_1303_20   pha                                      ; save msb
+l304_3           pha                                      ; save msb
 
                  tya                                      ; y = sprite# * 2
                  asl                                      
                  tay                                      
                  txa                                      ; see if this is y position
                  lsr                                      ; .C = 0 for x pos'n, 1 for y pos'n
-                 bcc _local_1303_30                       ; branch if x pos'n
+                 bcc l304_4                               ; branch if x pos'n
 
                  iny                                      ; adjust pointer to point to y pos'n in register data
                  pla                                      
                  lda #0                                   ; ..and force 'msb' to be zero
                  pha                                      
 
-_local_1303_30   lda vic,y                                ; get correct location lsb   ???vic_save
+l304_4           lda vic,y                                ; get correct location lsb   ???vic_save
                  cli                                      
                  tay                                      
                  pla                                      ; ..and get msb,

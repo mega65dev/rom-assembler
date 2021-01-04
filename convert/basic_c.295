@@ -1,13 +1,13 @@
 sprsav           jsr savinp                               ; evaluate 1st expression
-                 bcs _local_1294_20                       ; skip if source is a string
+                 bcs l295_2                               ; skip if source is a string
                  sta forpnt                               
                  sty forpnt+1                             ; save sprite address
                  ldy #62                                  
 
-_local_1294_10   lda (forpnt),y                           ; move sprite def to save area
+l295_1           lda (forpnt),y                           ; move sprite def to save area
                  sta savram,y                             
                  dey                                      
-                 bpl _local_1294_10                       
+                 bpl l295_1                               
 
                  iny                                      ; (0)
                  sty savram+64                            ; save sprite column length
@@ -25,7 +25,7 @@ _local_1294_10   lda (forpnt),y                           ; move sprite def to s
                  jsr strlit_1                             ; **get string space, copy savram to it
                  jsr desc_free                            ; **free up temp descriptor
 
-_local_1294_20   stx savsiz                               ; save source length
+l295_2           stx savsiz                               ; save source length
                  sta savsiz+1                             
                  sty savsiz+2                             ; save source start address
 
@@ -44,15 +44,15 @@ _local_1294_20   stx savsiz                               ; save source length
                  lda savsiz+2                             
                  sta forpnt+1                             
                  ldy #0                                   
-_local_1294_40   cpy savsiz                               ; test index vs source length
-                 beq _local_1294_45                       ; exit if source depleted
+l295_3           cpy savsiz                               ; test index vs source length
+                 beq l295_4                               ; exit if source depleted
                  lda #forpnt                              ; move source byte to sprite
                  jsr lda_far_ram1                         ; (from ram bank 1)
 ; sta sw_rom_ram0
                  sta (grapnt),y                           ; (to sprite area in bank 0)????
                  iny                                      
                  cpy #63                                  
-                 bne _local_1294_40                       
-_local_1294_45   rts                                      
+                 bne l295_3                               
+l295_4           rts                                      
 
 

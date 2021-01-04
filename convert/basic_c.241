@@ -6,11 +6,11 @@ rid              lda dosdid                               ; include id
 
 
 rwrt             lda dosrcl                               ; check for L or W
-                 beq _local_1240_10                       ; zero then write
+                 beq l241_1                               ; zero then write
                  lda #'L'                                 
                  bra sdp5                                 ; always
 
-_local_1240_10   lda #'S'                                 ; send W,S
+l241_1           lda #'S'                                 ; send W,S
                  sta dosrcl                               
                  lda #'W'                                 
                  bra sdp5                                 ; always

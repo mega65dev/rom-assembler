@@ -20,9 +20,9 @@ rlsstk           tya
                  clc                                      
                  adc tos                                  
                  sta tos                                  
-                 bcc _local_1031_10                       
+                 bcc l32_1                                
                  inc tos+1                                
-_local_1031_10   rts                                      
+l32_1            rts                                      
 
 ;.end
 ; .page

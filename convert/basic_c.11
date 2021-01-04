@@ -641,16 +641,16 @@ erstup           tax                                      ; error set up
                  lda #>error_message_list                 
                  sta index2+1                             
 
-_local_1010_1    dex                                      
-                 bmi _local_1010_4                        ; finished when .x decrements out
+l11_1            dex                                      
+                 bmi l11_3                                ; finished when .x decrements out
 
-_local_1010_2    lda (index2),y                           ; look at msg, and find end (msb set) (ind.ok)
+l11_2            lda (index2),y                           ; look at msg, and find end (msb set) (ind.ok)
                  inw index2                               
                  and #$ff                                 ; was msb set?
-                 bpl _local_1010_2                        ; no, not end of message
-                 bra _local_1010_1                        ; yes, tick off another msg
+                 bpl l11_2                                ; no, not end of message
+                 bra l11_1                                ; yes, tick off another msg
 
-_local_1010_4    rts                                      
+l11_3            rts                                      
 
 ;.end
 ; .page

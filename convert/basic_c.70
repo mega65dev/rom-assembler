@@ -1,11 +1,11 @@
 highlight_text                                            ; nasty kludge to colorize error or found text
                  bit highlight_save                       
-                 bpl _local_1069_10                       ; (unless it's already highlighted)
+                 bpl l70_1                                ; (unless it's already highlighted)
                  lda _color                               ; save current (normal) color
                  sta highlight_save                       ; msb=0 to mark highlight_save valid
                  lda highlight_color                      
                  sta _color                               ; change color to highlight
-_local_1069_10   rts                                      
+l70_1            rts                                      
 
 ;.end
 ; .page

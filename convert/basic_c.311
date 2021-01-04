@@ -41,18 +41,18 @@ incval
 
 edit             jsr errind                               ; direct mode only command
                  cmp #on_token                            
-                 bne _local_1310_10                       
+                 bne l311_1                               
                  lda #%00010000                           ; EDIT ON
-                 bra _local_1310_30                       ; (this kills trace mode, too)
+                 bra l311_3                               ; (this kills trace mode, too)
 
-_local_1310_10   jsr chkesc                               ; [910930]
+l311_1           jsr chkesc                               ; [910930]
 ; cmp #esc_command_token
-; bne _local_1310_20
+; bne l311_2
 ; jsr chrget
                  cmp #off_token                           
-_local_1310_20   +lbne snerr                              
+l311_2           +lbne snerr                              
                  lda #0                                   ; EDIT OFF
-_local_1310_30   sta runmod                               
+l311_3           sta runmod                               
                  jmp chrget                               ; exit
 
 

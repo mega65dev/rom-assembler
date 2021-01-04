@@ -51,25 +51,25 @@ movspr_1                                                  ; entry to eval destin
                  iny                                      
 
                  ldx #3                                   
-_local_1286_20   lsr sinval,x                             
+l287_1           lsr sinval,x                             
                  dex                                      
                  ror sinval,x                             
                  dex                                      
-                 bpl _local_1286_20                       
+                 bpl l287_1                               
 
-_local_1286_30   sei                                      
+l287_2           sei                                      
                  inx                                      ; x=0
                  lda angsgn,x                             ; move angle data to speed data
                  iny                                      
                  sta sprite_data,y                        
                  cpx #4                                   
-                 bne _local_1286_30                       
+                 bne l287_2                               
 
                  lda #0                                   ; clear speed angle counts
-_local_1286_40   iny                                      
+l287_3           iny                                      
                  sta sprite_data,y                        
                  dex                                      
-                 bne _local_1286_40                       
+                 bne l287_3                               
 
                  pla                                      ; restore speed value
                  and #$3f                                 ; limit range (0-63) ????  [910806]

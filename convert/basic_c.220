@@ -8,7 +8,7 @@ dopen            lda #$22                                 ; set error flag
                  ldx #8                                   ; random access length
                  bra open_it                              ; [910925]
 
-;_local_1219_10 jsr open_file  ;open it
+;l220_1 jsr open_file  ;open it
 ; bra exit_disk_op ;report any DOS errors, & return to main [910404]
 
 
@@ -42,11 +42,11 @@ open_file                                                 ; dop2.
 find_sa                                                   
                  ldy #$61                                 ; 2-14 possible
 
-_local_1219_10   iny                                      
+l220_1           iny                                      
                  cpy #$6f                                 
                  beq too_many_files                       ; if none available error
                  jsr _lkupsa                              ; kernel will lookup this sa in its tables
-                 bcc _local_1219_10                       ; if used keep looking
+                 bcc l220_1                               ; if used keep looking
                  sty dossa                                ; save secondary address
                  rts                                      ; return .y = sa
 

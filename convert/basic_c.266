@@ -10,10 +10,10 @@ Screen
 
                  jsr chkesc                               ; [910930]
 ; cmp #esc_command_token
-; bne _local_1265_10
+; bne l266_1
 ; jsr chrget  ; get past escape token
                  cmp #set_token                           
                  beq ScreenSet                            
-_local_1265_10   +lbra snerr                              ; report syntax error
+l266_1           +lbra snerr                              ; report syntax error
 
 ; .page

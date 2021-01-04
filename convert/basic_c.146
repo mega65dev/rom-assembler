@@ -10,13 +10,13 @@ lpen             jsr chkcls                               ; look for closing par
                  sta lightpen_xpos,x                      ; reset to zero (????preserve last latched position)
                  cli                                      
                  cpx #0                                   
-                 bne _local_1145_10                       ; done if y position
+                 bne l146_1                               ; done if y position
                  tya                                      
                  asl                                      ; else multiply *2 to get correct x position
                  tay                                      ; lsb
                  lda #0                                   
                  rol                                      ; msb
-_local_1145_10   +lbra nosflt                             ; float it (y,a)
+l146_1           +lbra nosflt                             ; float it (y,a)
 
 
 ;.end

@@ -7,10 +7,10 @@ ldir_end
 
 dcato            jsr _clrch                               
                  ldx channl                               ; restore output channel
-                 beq _local_1218_10                       ; branch if screen (default output)
+                 beq l219_1                               ; branch if screen (default output)
                  jmp _chkout                              ; else get output channel
 
-_local_1218_10   rts                                      
+l219_1           rts                                      
 
 ; .page
 ; DOPEN dfn(,t(,r))

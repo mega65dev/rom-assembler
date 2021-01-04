@@ -11,12 +11,12 @@ response_get
                  jsr _basin                               ; next char
                  pha                                      ; save first char of reply
 
-_local_1246_10   cmp #cr                                  ; eat chars until end of line
-                 beq _local_1246_20                       ; if cr received, exit
+l247_1           cmp #cr                                  ; eat chars until end of line
+                 beq l247_2                               ; if cr received, exit
                  jsr _basin                               
-                 bne _local_1246_10                       ; continue to ignore
+                 bne l247_1                               ; continue to ignore
 
-_local_1246_20   jsr _bsout                               ; new line     [910212] FAB
+l247_2           jsr _bsout                               ; new line     [910212] FAB
                  pla                                      
                  cmp #'Y'                                 ; z set means ans=y.....
                  rts                                      

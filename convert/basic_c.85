@@ -1,33 +1,33 @@
-range            beq _local_1084_10                       ; a terminator from chrgot?
-                 bcc _local_1084_10                       ; a number?
+range            beq l85_1                                ; a terminator from chrgot?
+                 bcc l85_1                                ; a number?
                  cmp #minus_token                         ; a dash?
-                 bne _local_1084_40   ;if it's not a dash, error (C128-03 fix ; FAB)
+                 bne l85_4   ;if it's not a dash, error (C128-03 fix ; FAB)
                  ldy #1                                   
                  jsr indtxt                               ; let's peek, and see what follows the dash!
-                 beq _local_1084_40                       ; uh-oh! it's of the form 'delete -' - error
+                 beq l85_4                                ; uh-oh! it's of the form 'delete -' - error
                  cmp #':'                                 ; the other terminator
-                 beq _local_1084_40                       ; ..still bad
+                 beq l85_4                                ; ..still bad
                  sec                                      ; set up for linget
 
-_local_1084_10   jsr linget                               ; get first #
+l85_1            jsr linget                               ; get first #
                  jsr FindLine                             ; find it & set ptrs
                  jsr chrgot                               ; get last char
-                 beq _local_1084_20                       ; skip done
+                 beq l85_2                                ; skip done
                  cmp #minus_token                         ; a dash?
-                 bne _local_1084_40                       ; no- syntax error
+                 bne l85_4                                ; no- syntax error
                  jsr chrget                               ; yes- skip dash
                  jsr linget                               ; get second #
-                 bne _local_1084_40                       ; error- wasn't a number
+                 bne l85_4                                ; error- wasn't a number
 
-_local_1084_20   lda endchr                               ; was a # input?
-                 bne _local_1084_30                       ; yes
+l85_2            lda endchr                               ; was a # input?
+                 bne l85_3                                ; yes
                  lda #$ff                                 ; no - make max
                  sta linnum                               
                  sta linnum+1                             
-_local_1084_30   rts                                      
+l85_3            rts                                      
 
 
-_local_1084_40   +lbra snerr                              ; syntax error
+l85_4            +lbra snerr                              ; syntax error
 
 ;.end
 ; .page

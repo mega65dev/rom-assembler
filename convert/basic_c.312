@@ -19,12 +19,12 @@ edit_p1line                                               ; Edit mode only, list
                  lda #' '                                 ; print a space
 
                  ldy #3                                   ; start printing at text following line number
-_local_1311_10   jsr outch                                ; print character
+l312_1           jsr outch                                ; print character
                  iny                                      
-                 bbr5 helper,_local_1311_20               ; if called from FIND/CHANGE check for highlighting
+                 bbr5 helper,l312_2                       ; if called from FIND/CHANGE check for highlighting
                  jsr helpsb                               
-_local_1311_20   jsr indlow                               ; get next character
-                 bne _local_1311_10                       ; loop until eol
+l312_2           jsr indlow                               ; get next character
+                 bne l312_1                               ; loop until eol
                  rts                                      ; done
 
 

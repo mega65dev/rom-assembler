@@ -327,6 +327,6 @@ synchr           ldy #0
 
 
 domin                                                     
-_local_1116_10   =negtab-optab                            ; negoff
-                 ldy #_local_1116_10                      ; precedence below '-'
+l117_1           =negtab-optab                            ; negoff
+                 ldy #l117_1                              ; precedence below '-'
 

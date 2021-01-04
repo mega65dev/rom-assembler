@@ -72,18 +72,18 @@ runc             jsr reset_txtptr                         ; load (txtptr) with (
 clear            beq clearc                               ; branch if no args    [910410]
 
                  cmp #err_token                           ; CLR ERR$
-                 bne _local_1040_10                       ; no
+                 bne l41_1                                ; no
                  jsr chkeos                               ; yes- eat token & error if not eos
                  +lbra error_clear                        ; and go clear ERR$
 
-_local_1040_10   cmp #'D'                                 ; CLR DS$     [910717]
-                 bne _local_1040_20                       ; no- error
+l41_1            cmp #'D'                                 ; CLR DS$     [910717]
+                 bne l41_2                                ; no- error
                  jsr chrget                               
                  cmp #'S'                                 
-                 bne _local_1040_20                       
+                 bne l41_2                                
                  jsr chrget                               
                  cmp #'$'                                 
-_local_1040_20   +lbne snerr                              ; no- error
+l41_2            +lbne snerr                              ; no- error
                  jsr chkeos                               
                  +lbra Clear_DS                           ; yes- clear current DS$
 

@@ -25,8 +25,8 @@ clearc           jsr _clall                               ; close all files
                  sty strend+1                             
 
                  ldx #pumony-puchrs                       ; reset print using chars
-_local_1041_1    lda pudefs,x                             
+l42_1            lda pudefs,x                             
                  sta puchrs,x                             
                  dex                                      
-                 bpl _local_1041_1                        
+                 bpl l42_1                                
 

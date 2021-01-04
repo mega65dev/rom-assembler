@@ -8,14 +8,14 @@ dir              ldx #doslfn
 
 dcat3            sty t3                                   ; save counter
 
-_local_1216_10   jsr _basin                               ; get char
+l217_1           jsr _basin                               ; get char
                  sta t4                                   
                  jsr _basin                               ; get char
                  sta t4+1                                 
                  jsr _readst                              ; check status
                  bne dcat11                               ; exit if eof or bad status
                  dec t3                                   
-                 bne _local_1216_10                       ; if not done
+                 bne l217_1                               ; if not done
 
 ; Output blocks number
 

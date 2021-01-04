@@ -1,17 +1,17 @@
 music_irq                                                 
                  ldx #0                                   
-_local_1255_100  ldy voices+1,x                           
-                 bmi _local_1255_110                      ; skip if not active
+l256_1           ldy voices+1,x                           
+                 bmi l256_2                               ; skip if not active
 
                  lda voices,x                             
                  sec                                      
                  sbc tempo_rate                           ; decrement current value by current tempo
                  sta voices,x                             
-                 bcs _local_1255_110                      
+                 bcs l256_2                               
                  tya                                      ; lda voices+1,x
                  sbc #0                                   
                  sta voices+1,x                           
-                 bcs _local_1255_110                      ; ok, no underflow
+                 bcs l256_2                               ; ok, no underflow
 
                  txa                                      
                  lsr                                      ; get offset to waveform
@@ -26,10 +26,10 @@ _local_1255_100  ldy voices+1,x
                  sta sid1+4,y                             ; turn off sound
 ; jsr go_fast  ;      [910716] 4567R7A
 
-_local_1255_110  inx                                      
+l256_2           inx                                      
                  inx                                      
                  cpx #6+6                                 ; [910612]
-                 bcc _local_1255_100                      ; loop for 6 voices
+                 bcc l256_1                               ; loop for 6 voices
 ;then continue with next IRQ task
 ; .page
 ; Test if SOUND command wants anything

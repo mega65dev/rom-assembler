@@ -20,14 +20,14 @@ list_err
 list_memory                                               
                  jsr range                                ; set up line range
 
-_local_1035_10   ldy #1                                   
+l36_1            ldy #1                                   
                  jsr indlow                               ; get ms byte of line to list's pointer
-                 bne _local_1035_20                       ; ok if not zero, but..
+                 bne l36_2                                ; ok if not zero, but..
                  dey                                      
                  jsr indlow                               
                  +lbeq crdo                               ; ..if ls byte is also zero, we're done
 
-_local_1035_20   jsr is_stop_key_down                     
+l36_2            jsr is_stop_key_down                     
                  jsr crdo                                 ; new line
                  ldy #2                                   
                  jsr indlow                               ; get ms byte of line number
@@ -36,11 +36,11 @@ _local_1035_20   jsr is_stop_key_down
                  jsr indlow                               ; get ls byte
 
                  cmp linnum+1                             ; test if we are past the last line requested
-                 bne _local_1035_30                       
+                 bne l36_3                                
                  cpx linnum                               
-                 beq _local_1035_40                       
-_local_1035_30   +lbcs crdo                               ; next line is > last line requested, exit
-_local_1035_40   jsr p1line                               ; print line #, space, and the line of code
+                 beq l36_4                                
+l36_3            +lbcs crdo                               ; next line is > last line requested, exit
+l36_4            jsr p1line                               ; print line #, space, and the line of code
                  ldy #0                                   ; move 'pointer to next line' into (lowtr)
                  jsr indlow                               
                  tax                                      
@@ -48,7 +48,7 @@ _local_1035_40   jsr p1line                               ; print line #, space,
                  jsr indlow                               
                  stx lowtr                                
                  sta lowtr+1                              
-                 bra _local_1035_10                       
+                 bra l36_1                                
 
 ; .page
 ;******************************************************

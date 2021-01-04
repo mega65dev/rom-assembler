@@ -6,7 +6,7 @@ Get_TI
                  stz facmoh                               
 
                  ldx #3                                   ; convert time (BCD) to tenths of seconds (binary) since midnight
-_local_1133_10   jsr TimeMultiply                         
+l134_1           jsr TimeMultiply                         
                  clc                                      
                  adc faclo                                
                  sta faclo                                
@@ -17,7 +17,7 @@ _local_1133_10   jsr TimeMultiply
                  adc facmoh                               
                  sta facmoh                               ; (can't overflow since 23:59:59:9 -> 863999 ($0D2EFF)
                  dex                                      
-                 bne _local_1133_10                       ; next factor
+                 bne l134_1                               ; next factor
 
                  lda #0                                   ; float value in FAC
                  sta facho                                ; zero msb, facov, facsgn

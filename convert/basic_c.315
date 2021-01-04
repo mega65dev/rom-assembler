@@ -6,10 +6,10 @@ Sound_CLR_1
 ; jsr go_slow  ;      [910716] 4567R7A
                  lda #0                                   
                  ldx #24-1                                
-_local_1314_40   sta sid1,x                               ; initialize SID chips
+l315_1           sta sid1,x                               ; initialize SID chips
                  sta sid2,x                               
                  dex                                      
-                 bpl _local_1314_40                       
+                 bpl l315_1                               
 
                  sta filters1+2                           ; set filters off
                  sta filters2+2                           
@@ -24,13 +24,13 @@ _local_1314_40   sta sid1,x                               ; initialize SID chips
 ; jsr go_fast  ;      [910716] 4567R7A
 
                  bit _pal_ntsc                            ; determine if PAL or NTSC system  [910724]
-                 bmi _local_1314_1                        ; ...branch if PAL
+                 bmi l315_2                               ; ...branch if PAL
                  lda #(<beats_ntsc)/4                     ; set beat to quarter note (4/4 time = .5 sec)
                  ldy #>beats_ntsc/4                       
-                 bra _local_1314_2                        
-_local_1314_1    lda #<beats_pal/4                        
+                 bra l315_3                               
+l315_2           lda #<beats_pal/4                        
                  ldy #>beats_pal/4                        
-_local_1314_2    sta ntime                                
+l315_3           sta ntime                                
                  sty ntime+1                              
 
                  lda #4                                   ; set default octave
@@ -39,33 +39,33 @@ _local_1314_2    sta ntime
                  sta tempo_rate                           ; 12 makes whole note in 4/4 time last 2 seconds
 
                  ldy #30-1                                ; initialize music tables
-_local_1314_10   lda atkmus,y                             
+l315_4           lda atkmus,y                             
                  sta atktab,y                             
                  dey                                      
-                 bpl _local_1314_10                       
+                 bpl l315_4                               
 
                  ldx #10-1                                ; initialize pulse widths
-_local_1314_20   lda pwhmus,x                             
+l315_5           lda pwhmus,x                             
                  sta pulshi,x                             
                  dex                                      
-                 bpl _local_1314_20                       
+                 bpl l315_5                               
 
                  txa                                      ; $ff
                  ldx #6-1                                 ; stereo SIDs   (save space) [911119]
                  ldy #1                                   
-_local_1314_25   sta sound_time_hi,x                      ; turn all SOUND counters off
+l315_6           sta sound_time_hi,x                      ; turn all SOUND counters off
                  sta voices,y                             ; turn all PLAY counters off
                  iny                                      
                  iny                                      
                  dex                                      
-                 bpl _local_1314_25                       
+                 bpl l315_6                               
 
                  ldy #6-1                                 ; set default envelope (piano) for all voices (6)
                  sty voice                                
-_local_1314_30   ldx #0                                   
+l315_7           ldx #0                                   
                  jsr set_envelope_1                       
                  dec voice                                
-                 bpl _local_1314_30                       
+                 bpl l315_7                               
                  inc voice                                ; set default voice (0)
 
                  plp                                      

@@ -2,9 +2,9 @@ movtop           eor #$ff                                 ; comp and add
                  sec                                      
                  adc grbtop                               
                  ldy grbtop+1                             
-                 bcs _local_1165_1                        
+                 bcs l166_1                               
                  dey                                      
-_local_1165_1    sta grbtop                               
+l166_1           sta grbtop                               
                  sty grbtop+1                             
                  rts                                      
 

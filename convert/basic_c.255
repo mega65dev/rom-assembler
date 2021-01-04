@@ -1,25 +1,25 @@
 drwinc           php                                      
                  and #1                                   ; adjust .y for x or y position
-                 beq _local_1254_5                        ; 0=x
+                 beq l255_1                               ; 0=x
                  iny                                      ; 1=y
-_local_1254_5    plp                                      
-                 bmi _local_1254_10                       ; enter with b7=negative, b6=positive, else zero
-                 bvc _local_1254_30                       
+l255_1           plp                                      
+                 bmi l255_2                               ; enter with b7=negative, b6=positive, else zero
+                 bvc l255_4                               
 
                  lda vic,y                                ; positive direction
                  inc                                      
                  sta vic,y                                
-                 bra _local_1254_20                       
+                 bra l255_3                               
 
-_local_1254_10   lda vic,y                                ; negative direction
+l255_2           lda vic,y                                ; negative direction
                  dec                                      
                  sta vic,y                                
                  cmp #$ff                                 
 
-_local_1254_20   bne _local_1254_30                       ; no wrap
+l255_3           bne l255_4                               ; no wrap
                  tya                                      
                  bit #1                                   
-                 bne _local_1254_30                       ; wrap in y okay
+                 bne l255_4                               ; wrap in y okay
                  lsr                                      
                  tay                                      
                  lda sbits,y                              ; wrap in x- toggle msb
@@ -29,7 +29,7 @@ _local_1254_20   bne _local_1254_30                       ; no wrap
                  asl                                      
                  tay                                      
 
-_local_1254_30   tya                                      ; restore y to sprite offset
+l255_4           tya                                      ; restore y to sprite offset
                  and #$fe                                 
                  tay                                      
                  rts                                      

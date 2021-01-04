@@ -1,10 +1,10 @@
 find_la                                                   
                  lda #0                                   ; 1-127 possible
 
-_local_1220_10   inc                                      
+l221_1           inc                                      
                  bmi too_many_files                       ; if none available error
                  jsr _lkupla                              ; kernel will lookup this la in its tables
-                 bcc _local_1220_10                       ; if used keep looking
+                 bcc l221_1                               ; if used keep looking
                  sta dosla                                ; save logical address
                  rts                                      ; return .a = la
 

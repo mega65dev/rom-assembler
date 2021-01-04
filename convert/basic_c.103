@@ -98,10 +98,10 @@ play             jsr frmstr                               ; frmevl,frestr,return
                  jsr clear_play_flags                     ; set 'dot' and 'sharp' to 0. return with Acc=0
                  sta hulp                                 ; zero counter
 
-_local_1102_10   ldy hulp                                 
+l103_1           ldy hulp                                 
                  cpy z_p_temp_1                           
                  beq play_rts                             ; done!
                  jsr indin1_ram1                          
                  jsr play_one_character                   
                  inc hulp                                 
-                 bne _local_1102_10                       ; always
+                 bne l103_1                               ; always

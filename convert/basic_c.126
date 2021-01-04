@@ -16,10 +16,10 @@ bltu             jsr reason
                  sec                                      
                  sbc index                                
                  sta hightr                               
-                 bcs _local_1125_10                       
+                 bcs l126_1                               
                  dec hightr+1                             
                  sec                                      
-_local_1125_10   lda highds                               
+l126_1           lda highds                               
                  sbc index                                
                  sta highds                               
                  bcs moren1                               

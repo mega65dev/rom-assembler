@@ -2,15 +2,15 @@ collision_irq
 ; sei
                  lda _vicIRQ                              ; check VIC IRQ flags
                  and #%00001110                           ; mask all but lp, s/s, and s/bgnd flags
-                 beq _local_1251_40                       ; exit if none set
+                 beq l252_5                               ; exit if none set
                  trb _vicIRQ                              ; else reset flags we're going to handle
                  lsr                                      ; shift out raster interrupt bit (not used)
 
 ; Test for 3 types of collision interrupts : sprite/sprite, sprite/bgnd, & light pen
 
                  ldy #1                                   ; loop for sprite/bgnd and sprite/sprite collision check
-_local_1251_10   lsr                                      
-                 bcc _local_1251_30                       ; bit not set ==> not source of interrupt
+l252_1           lsr                                      
+                 bcc l252_4                               ; bit not set ==> not source of interrupt
 
                  pha                                      
                  lda vic+30,y                             ; accumulate collision data (resets register)
@@ -19,23 +19,23 @@ _local_1251_10   lsr
 
                  lda intval                               ; allowable interrupts
                  cpy #0                                   ; examine selected bit
-                 beq _local_1251_20                       
+                 beq l252_2                               
                  lsr                                      
-_local_1251_20   lsr                                      
-                 bcc _local_1251_25                       ; BASIC doesn't want this interrupt
+l252_2           lsr                                      
+                 bcc l252_3                               ; BASIC doesn't want this interrupt
                  lda #$ff                                 
                  sta int_trip_flag,y                      ; turn on trip flag
 
-_local_1251_25   pla                                      
+l252_3           pla                                      
 
-_local_1251_30   dey                                      
-                 bpl _local_1251_10                       
+l252_4           dey                                      
+                 bpl l252_1                               
 
 ; .page
 ; Check light pen latch
 
                  lsr                                      
-                 bcc _local_1251_40                       ; LightPen latch not valid
+                 bcc l252_5                               ; LightPen latch not valid
 
                  ldx vic+49                               ; 4567R7 bug- must read LP_latches in Slow mode????
                  lda #%01000000                           ; [910618]
@@ -48,11 +48,11 @@ _local_1251_30   dey
 
                  lda intval                               ; is BASIC interested in our little find?
                  and #4                                   
-                 beq _local_1251_40                       ; no, move on to next IRQ task
+                 beq l252_5                               ; no, move on to next IRQ task
                  lda #$ff                                 
                  sta int_trip_flag+2                      ; yes- let BASIC know we caught one
 
-_local_1251_40                                            
+l252_5                                                    
 ; .page
 ; Update moving sprites
 

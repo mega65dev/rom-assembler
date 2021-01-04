@@ -82,9 +82,9 @@ restore__1                                                ; entry from FLOAD
 
 restore__2                                                
                  sbc #1                                   
-                 bcs _local_1072_1                        
+                 bcs l73_1                                
                  dey                                      
-_local_1072_1    sta datptr                               
+l73_1            sta datptr                               
                  sty datptr+1                             
                  rts                                      
 

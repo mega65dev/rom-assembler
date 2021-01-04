@@ -7,28 +7,28 @@ hup              +lbra chout                              ; output number
 
 
 cff              ldy uexp                                 ; exponent in no?
-                 beq _local_1202_20                       ; no...
+                 beq l203_2                               ; no...
                  sta hulp                                 ; delete exponent
                  sec                                      ; adjust decimal point
                  ror etof                                 ; set e-to-f flag
                  ldy point                                
                  lda usgn                                 ; exec nos3 or nos4
-                 bpl _local_1202_10                       ; depends on sign of exp
+                 bpl l203_1                               ; depends on sign of exp
                  jsr nos3                                 
-                 bra _local_1202_30                       
+                 bra l203_3                               
 
-_local_1202_10   jsr nos4                                 
+l203_1           jsr nos4                                 
 
-_local_1202_20   ldy point                                ; at start of no?
-                 beq _local_1202_30                       ; yes...
+l203_2           ldy point                                ; at start of no?
+                 beq l203_3                               ; yes...
                  jsr cho                                  ; no = 0 ?
-                 beq _local_1202_40                       ; yes...no round
+                 beq l203_4                               ; yes...no round
 
-_local_1202_30   jsr uround                               
-                 bra _local_1202_50                       
+l203_3           jsr uround                               
+                 bra l203_5                               
 
-_local_1202_40   dec vn                                   ; adjust...no was 0
-_local_1202_50   sec                                      
+l203_4           dec vn                                   ; adjust...no was 0
+l203_5           sec                                      
                  lda vf                                   
                  sbc vn                                   
                  bcc errf                                 ; no fit...error

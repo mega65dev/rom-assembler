@@ -107,9 +107,9 @@ docmp
                  txa                                      
                  rol                                      
                  and domask                               
-                 beq _local_1019_10                       
+                 beq l20_1                                
                  lda #$ff                                 ; map 0 to 0, map all others to -1
-_local_1019_10   +lbra float                              ; float the one-byte result into FAC
+l20_1            +lbra float                              ; float the one-byte result into FAC
 
 
 ;.end

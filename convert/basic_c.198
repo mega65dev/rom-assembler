@@ -12,23 +12,23 @@ using            ldx #$ff
                  pha                                      
 
                  ldy #2                                   ; move (facmo),1&2 to form,form+1
-_local_1197_10   jsr indfmo                               
+l198_1           jsr indfmo                               
                  dey                                      
                  sta form,y                               
-                 bne _local_1197_10                       
+                 bne l198_1                               
 
                  jsr indfmo                               ; get length
                  sta lfor                                 
                  tay                                      
-                 beq _local_1197_99                       ; syntax error if length is zero
+                 beq l198_3                               ; syntax error if length is zero
 
-_local_1197_20   dey                                      
+l198_2           dey                                      
                  jsr indfrm                               
                  cmp #'#'                                 ; at least one # in format?
-                 beq _local_1197_30                       ; yes...
+                 beq l198_4                               ; yes...
                  tya                                      ; no...end of format
-                 bne _local_1197_20                       ; no...
-_local_1197_99   +lbra snerr                              ; yes...syntax error
+                 bne l198_2                               ; no...
+l198_3           +lbra snerr                              ; yes...syntax error
 
 
-_local_1197_30   lda #';'                                 ; '
+l198_4           lda #';'                                 ; '

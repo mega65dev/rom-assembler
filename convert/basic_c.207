@@ -6,25 +6,25 @@ uround           clc
                  sbc z_p_temp_1                           ; underflow?
                  bcc rrts                                 ; yes...
                  cmp enr                                  ; anything to round?
-                 beq _local_1206_10                       ; yes...
+                 beq l207_1                               ; yes...
                  bcs rrts                                 ; no...
 
-_local_1206_10   cmp bnr                                  ; again...
+l207_1           cmp bnr                                  ; again...
                  bcc rrts                                 ; no...
                  tax                                      
                  lda fbuffr,x                             ; get digit
                  cmp #'5'                                 ; <5 ?
                  bcc rrts                                 ; yes...no round
 
-_local_1206_20   cpx bnr                                  ; begin of no reached?
-                 beq _local_1206_30                       ; yes..add 1
+l207_2           cpx bnr                                  ; begin of no reached?
+                 beq l207_3                               ; yes..add 1
                  dex                                      
                  jsr tag3                                 ; increment digit
                  stx enr                                  ; new end of no pointer
-                 beq _local_1206_20                       ; branch on overflow
+                 beq l207_2                               ; branch on overflow
                  rts                                      
 
-_local_1206_30   lda #'1'                                 
+l207_3           lda #'1'                                 
                  sta fbuffr,x                             
                  inx                                      
                  stx point                                

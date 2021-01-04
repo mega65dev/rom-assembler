@@ -1,21 +1,21 @@
 autoboot                                                  
                  lda #0                                   ; Select internal drive
                  sta fdc                                  
-_local_1190_10   bit fdc+2                                ; busywait
-                 bmi _local_1190_10                       
+l191_1           bit fdc+2                                ; busywait
+                 bmi l191_1                               
                  lda fdc+3                                ; See if a diskette is present
                  and #$08                                 
-                 beq _local_1190_30                       ; exit with no action taken if not
+                 beq l191_3                               ; exit with no action taken if not
 
                  lda #$e6                                 ; set up parameters for DOS parser like BLOAD
                  ldx #$fc                                 
                  jsr dosprx                               ; let the parser init DOS stuff
 
                  ldy #$ff                                 
-_local_1190_20   iny                                      ; Copy filename from ROM into buffer
+l191_2           iny                                      ; Copy filename from ROM into buffer
                  lda autoboot_filename,y                  
                  sta savram,y                             
-                 bne _local_1190_20                       ; null terminated
+                 bne l191_2                               ; null terminated
                  sty dosf1l                               ; length not counting terminator
 
                  lda #%01000001                           ; set flag for load indicating autoboot
@@ -33,14 +33,14 @@ _local_1190_20   iny                                      ; Copy filename from R
                  ply                                      
                  plx                                      
                  and #$bf                                 ; EOI is okay
-                 bne _local_1190_30                       ; outside problems
-                 bcs _local_1190_30                       ; inside problems
+                 bne l191_3                               ; outside problems
+                 bcs l191_3                               ; inside problems
 
                  stx text_top                             ; success- set end address & run it
                  sty text_top+1                           
                  cli                                      
                  +lbra run_a_program                      
 
-_local_1190_30   rts                                      ; failure- go_ready
+l191_3           rts                                      ; failure- go_ready
 
 

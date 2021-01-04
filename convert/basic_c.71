@@ -74,17 +74,17 @@ edit_err
 go_without_to                                             
                  jsr chrget                               ; what is next character?
                  cmp #to_token                            ; ..is it GO TO?
-                 bne _local_1070_1                        
+                 bne l71_1                                
                  jsr chrget                               ; ..yes, set up for goto
                  bra goto                                 ; ..bye!
 
-_local_1070_1    jsr getbyt                               ; is it GO 64?
+l71_1            jsr getbyt                               ; is it GO 64?
                  cpx #64                                  
                  +lbne snerr                              ; ...no, error
 
 ; The user wants to go to C64 mode.
 
-_local_1070_2    jsr are_you_sure                         
+l71_2            jsr are_you_sure                         
                  bne cont_rts                             ; must have had second thoughts. never mind
 ; jsr put_io_in_map
                  jmp _go_64                               

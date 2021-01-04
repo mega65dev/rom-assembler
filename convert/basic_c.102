@@ -74,14 +74,14 @@ LoadBlock
                  sty highds+1                             
 LoadBlockNext                                             
                  ldy #0                                   
-_local_1101_10   jsr _basin                               ; read definitions
+l102_1           jsr _basin                               ; read definitions
                  sta (highds),y                           
                  jsr _readst                              ; check channel status
                  bne LoadEOF                              ; exit if eof or error
                  jsr _stop                                
                  beq LoadEOF                              ; exit if stop key down
                  iny                                      
-                 bne _local_1101_10                       ; continue up to 1 page maximum
+                 bne l102_1                               ; continue up to 1 page maximum
                  clc                                      ; indicate "more"
                  rts                                      
 

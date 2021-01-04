@@ -7,10 +7,10 @@ set_filter
                  ldx filter_offset,y                      ; 0 0 0 4 4 4
                  lda filters1+2,x                         ; get current filter data for this SID  [910612]
                  ora vbits,y                              ; update filter voice bit
-                 bcs _local_1104_20                       ; branch to turn filter on
+                 bcs l105_1                               ; branch to turn filter on
                  eor vbits,y                              ; else, turn filter off   [910612]
 
-_local_1104_20   sta filters1+2,x                         
+l105_1           sta filters1+2,x                         
 ; lda filters1+3,x ;why????     [910612]
 ; sta filters1+4,x ;save new filter-type/volume
 
@@ -20,12 +20,12 @@ _local_1104_20   sta filters1+2,x
                  tay                                      
 ; jsr go_slow  ;      [910716] 4567R7A
                  ldz #3                                   
-_local_1104_30   lda filters1,x                           ; update the hardware
+l105_2           lda filters1,x                           ; update the hardware
                  sta sid1+21,y                            
                  inx                                      
                  iny                                      
                  dez                                      
-                 bpl _local_1104_30                       
+                 bpl l105_2                               
 ; jsr go_fast  ;      [910716] 4567R7A
                  bra clear_flag                           ; always
 

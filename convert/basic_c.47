@@ -1,17 +1,17 @@
 find_bend                                                 ; ... subroutine to find end of current b-block
                  jsr chrget                               
-                 bne _local_1046_20                       
+                 bne l47_3                                
 
 ; End of statement.. set up next
 
-_local_1046_10   cmp #':'                                 ; is this EOL?
+l47_1            cmp #':'                                 ; is this EOL?
                  beq find_bend                            ; no, keep looking
 
-_local_1046_15   bbr7 runmod,_local_1046_99               ; EOL: branch if direct mode, 'block terminator not found' error
+l47_2            bbr7 runmod,l47_7                        ; EOL: branch if direct mode, 'block terminator not found' error
 
                  ldy #2                                   
                  jsr indtxt                               ; end of text?
-                 beq _local_1046_99                       ; yes, msb of next stmt pointer = 0. error
+                 beq l47_7                                ; yes, msb of next stmt pointer = 0. error
 
                  iny                                      
                  jsr indtxt                               
@@ -27,23 +27,23 @@ _local_1046_15   bbr7 runmod,_local_1046_99               ; EOL: branch if direc
                  inc txtptr+1                             
                  bra find_bend                            ; always
 
-_local_1046_20   cmp #'"'                                 
-                 bne _local_1046_30                       
+l47_3            cmp #'"'                                 
+                 bne l47_4                                
                  jsr un_quote                             ; look for terminating quote, or EOL
-                 beq _local_1046_10                       ; EOL or ':' after closing quote
+                 beq l47_1                                ; EOL or ':' after closing quote
                  bne find_bend                            ; ..else normal char, keep looking
 
-_local_1046_30   cmp #rem_token                           ; REM?
-                 bne _local_1046_35                       ; no
+l47_4            cmp #rem_token                           ; REM?
+                 bne l47_5                                ; no
                  jsr rem                                  ; yes, trash this line
-                 bra _local_1046_15                       ; and go test for end of text
+                 bra l47_2                                ; and go test for end of text
 
-_local_1046_35   cmp #esc_command_token                   ; is this a BEND?
+l47_5            cmp #esc_command_token                   ; is this a BEND?
                  bne find_bend                            ; can't be, has to be an escape
 
                  jsr chrget                               ; skip over esc token
                  cmp #bend_token                          
-                 beq _local_1046_40                       ; this is what we came for, bye!
+                 beq l47_6                                ; this is what we came for, bye!
 
                  cmp #begin_token                         ; not a BEND. is it a BEGIN?
                  bne find_bend                            ; it's just a normal, stick-in-the-mud char. keep looking.
@@ -51,8 +51,8 @@ _local_1046_35   cmp #esc_command_token                   ; is this a BEND?
                  jsr find_bend                            ; oh-oh, recursion. Dr. Ja-Ja warned me about this.
                  bra find_bend                            
 
-_local_1046_40   rts                                      
+l47_6            rts                                      
 
-_local_1046_99   ldx #err_no_bend                         
+l47_7            ldx #err_no_bend                         
                  +lbra error                              
 

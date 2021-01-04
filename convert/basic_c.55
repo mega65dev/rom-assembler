@@ -181,7 +181,7 @@ input            rmb7 op                                  ; flag INPUT vs. LINPU
 
                  jsr chrgot                               ; looking for prompt string terminator  [910219]
                  cmp #','                                 
-                 bne _local_1054_10                       
+                 bne l55_1                                
                  sta buf_txtptr                           ; is comma- supress '?' after prompt  [910219]
                  jsr chrget                               ; eat comma
                  jsr strprt                               ; print prompt
@@ -189,7 +189,7 @@ input            rmb7 op                                  ; flag INPUT vs. LINPU
                  jsr InputLine                            ; get first item
                  bra getagn1                              ; see if there's more to do
 
-_local_1054_10   lda #';'                                 ; must end in semicolon
+l55_1            lda #';'                                 ; must end in semicolon
                  jsr synchr                               
                  jsr strprt                               ; print prompt
 

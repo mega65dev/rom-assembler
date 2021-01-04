@@ -161,16 +161,16 @@ moveup
 
 ; lda dma_ctlr+3  ;dma controller version    [910520] F018A
 ; and #1
-; beq _local_1080_10   ; F018    removed [910808] F018B
+; beq l81_1   ; F018    removed [910808] F018B
                  lda #%00110000                           ; F018A,B
-_local_1080_10   sta dma1_cmd                             ; command=copy, source=start   [910102]
+l81_1            sta dma1_cmd                             ; command=copy, source=start   [910102]
 ; php
                  lda text_bank                            ; bank = BASIC text bank   [910520] F018A
 ; plp   ;version?    removed [910808] F018B
-; bne _local_1080_20   ; F018A
+; bne l81_2   ; F018A
 ; and #%00001111  ; F018     [910102]
 ; ora #%01000000  ;(copy source=endpoint)    [910102]
-_local_1080_20   sta dma1_src_bank                        ; banks
+l81_2            sta dma1_src_bank                        ; banks
                  sta dma1_dest_bank                       
 
                  lda #0                                   ; [910219]

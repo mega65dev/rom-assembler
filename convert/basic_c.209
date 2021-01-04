@@ -30,17 +30,17 @@ afplus           cmp #'+'                                 ; plus?
                  jsr cdout                                
                  ldy uexp                                 
                  jsr cmo                                  ; first dig of exp zero?
-                 bne _local_1208_10                       ; no...
+                 bne l209_1                               ; no...
                  iny                                      
                  jsr cmo                                  ; second digit?
-                 beq _local_1208_20                       ; yes
+                 beq l209_2                               ; yes
 
-_local_1208_10   lda #'-'                                 
+l209_1           lda #'-'                                 
                  bit usgn                                 
-                 bmi _local_1208_30                       
+                 bmi l209_3                               
 
-_local_1208_20   lda #'+'                                 
-_local_1208_30   jsr cdout                                ; output sign exp
+l209_2           lda #'+'                                 
+l209_3           jsr cdout                                ; output sign exp
                  ldx uexp                                 
                  lda fbuffr,x                             
                  jsr cdout                                ; output first dig exp

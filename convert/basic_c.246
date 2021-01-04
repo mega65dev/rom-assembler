@@ -8,13 +8,13 @@ Suck_DS
                  jsr _open                                ; get command channel
                  ldx #doslfn                              
                  jsr _chkin                               
-                 bcs _local_1245_20                       ; skip input if problem
+                 bcs l246_2                               ; skip input if problem
 
-_local_1245_10   jsr _basin                               ; read disk error message
+l246_1           jsr _basin                               ; read disk error message
                  cmp #cr                                  
-                 bne _local_1245_10                       ; loop until eol
+                 bne l246_1                               ; loop until eol
 
-_local_1245_20   jsr _clrch                               ; shut down command channel
+l246_2           jsr _clrch                               ; shut down command channel
                  lda #doslfn                              
                  sec                                      ; not a real close
                  jmp _close                               ; close it

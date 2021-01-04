@@ -1,7 +1,7 @@
 rnd              jsr sign                                 ; get sign into .a
 
-rnd_0            bmi _local_1149_20                       ; /// entry from jump table
-                 bne _local_1149_10                       
+rnd_0            bmi l150_2                               ; /// entry from jump table
+                 bne l150_1                               
 
 
 ; Get value from hardware
@@ -25,10 +25,10 @@ rnd_0            bmi _local_1149_20                       ; /// entry from jump 
                  eor facmo                                
                  adc faclo                                
                  sta facho                                
-                 bra _local_1149_30                       
+                 bra l150_3                               
 
 ; .page
-_local_1149_10   lda #<rndx                               ; get last one into FAC
+l150_1           lda #<rndx                               ; get last one into FAC
                  ldy #>rndx                               
                  jsr movfm                                
                  lda #<rmulc                              
@@ -38,7 +38,7 @@ _local_1149_10   lda #<rndx                               ; get last one into FA
                  ldy #>raddc                              
                  jsr romadd                               ; add random constant
 
-_local_1149_20   ldx faclo                                
+l150_2           ldx faclo                                
                  lda facho                                
                  sta faclo                                
                  stx facho                                ; reverse hi and lo
@@ -47,7 +47,7 @@ _local_1149_20   ldx faclo
                  sta facmoh                               
                  stx facmo                                
 
-_local_1149_30   lda #0                                   ; strnex.  make number positive
+l150_3           lda #0                                   ; strnex.  make number positive
                  sta facsgn                               
                  lda facexp                               ; put exp where it will
                  sta facov                                ; be shifted in by normal

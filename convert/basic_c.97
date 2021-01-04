@@ -68,33 +68,33 @@ frmjmp
 
 key              beq Key_List                             ; KEY ? yes- no args
 
-_local_1096_1    ldx _kyndx                               ; is function key buffered?
-                 bne _local_1096_1                        ; yes- hang until IRQ finishes processing it ????
+l97_1            ldx _kyndx                               ; is function key buffered?
+                 bne l97_1                                ; yes- hang until IRQ finishes processing it ????
 
                  cmp #on_token                            ; KEY ON ?
-                 bne _local_1096_10                       
+                 bne l97_2                                
                  rmb5 _locks                              ; yes- reset Editor's lock bit
-                 bra _local_1096_30                       ; exit
+                 bra l97_4                                ; exit
 
-_local_1096_10   cmp #load_token                          ; KEY LOAD <filename>[,D#,U#]
+l97_2            cmp #load_token                          ; KEY LOAD <filename>[,D#,U#]
                  +lbeq Key_load                           
 
                  cmp #save_token                          ; KEY SAVE <filename>[,D#,U#]
                  +lbeq Key_Save                           
 
                  cmp #restore_token                       ; KEY RESTORE ?      [910925]
-                 bne _local_1096_20                       ; no
+                 bne l97_3                                ; no
                  rmb5 _locks                              ; yes- reset Editor's lock bit (enable keys)
                  jsr key_restore                          ; init key definitions
-                 bra _local_1096_30                       ; exit
+                 bra l97_4                                ; exit
 
-_local_1096_20   cmp #esc_command_token                   ; KEY OFF ?
+l97_3            cmp #esc_command_token                   ; KEY OFF ?
                  +lbne Key_Change                         ; no- must be new key definition
                  jsr chrget                               
                  cmp #off_token                           
                  +lbne snerr                              ; no- bad syntax
                  smb5 _locks                              ; yes- set Editor's lock bit
-_local_1096_30   +lbra chrget                             ; exit
+l97_4            +lbra chrget                             ; exit
 
 ; .page
 ;**************************************************************

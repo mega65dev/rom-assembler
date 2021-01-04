@@ -25,11 +25,11 @@ p1l026           sta index1+1                             ; index1 points to tok
                  dex                                      
                  bpl p1l070                               ; what luck! it's the first one
 
-_local_1038_10   inw index1                               ; scan text until next command found
+l39_1            inw index1                               ; scan text until next command found
                  lda (index1),y                           ; ind.ok (ROM)
-                 bpl _local_1038_10                       ; loop until terminal char (msb=1)
+                 bpl l39_1                                ; loop until terminal char (msb=1)
                  dex                                      ; is next text the one we want?
-                 bmi _local_1038_10                       ; no, keep scanning
+                 bmi l39_1                                ; no, keep scanning
                  inw index1                               ; yes, point to first character
 
                  bbr3 helper,p1l070                       ; found text for this token, is it REM?  [910626]

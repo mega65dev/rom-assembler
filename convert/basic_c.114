@@ -17,7 +17,7 @@ volrts
 
 volume           +lbeq snerr                              ; stereo parameters    [910612]
                  cmp #','                                 
-                 beq _local_1113_10                       ; left volume only
+                 beq l114_1                               ; left volume only
 ; jsr getbyt  ;right volume in .x
 ; cpx #16
 ; bcs fcerr  ;too large
@@ -45,7 +45,7 @@ volume           +lbeq snerr                              ; stereo parameters   
                  jsr chrgot                               
                  beq volrts                               
 
-_local_1113_10   jsr optbyt                               ; get optional left parameter   [910612]
+l114_1           jsr optbyt                               ; get optional left parameter   [910612]
                  +lbcc snerr                              ; comma but no value not given??
                  jsr chknyb                               ; [910930]
 ; cpx #16

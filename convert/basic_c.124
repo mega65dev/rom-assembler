@@ -16,9 +16,9 @@ arydon           phx
                  lda varnam+1                             
                  jsr sta_far_ram1                         ; sta (lowtr),y
                  lda #0                                   
-_local_1123_10   iny                                      
+l124_1           iny                                      
                  jsr sta_far_ram1                         ; sta (lowtr),y
                  cpy #6                                   
-                 bne _local_1123_10                       
+                 bne l124_1                               
                  plx                                      
 

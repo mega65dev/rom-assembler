@@ -12,43 +12,43 @@ open_SEQ_file
                  jsr open_file                            ; open the file
                  +lbcs list_err                           ; exit if error
                  plz                                      ; [910620]
-                 beq _local_1214_20                       
+                 beq l215_1                               
                  rts                                      ; or exit if called by EDIT load routine
 
-_local_1214_20   jsr _stop                                ; check stop key
-                 beq _local_1214_30                       ; exit if down
+l215_1           jsr _stop                                ; check stop key
+                 beq l215_6                               ; exit if down
                  ldx dosla                                
                  jsr _chkin                               ; get input channel
-                 bcs _local_1214_30                       ; exit if bad??
+                 bcs l215_6                               ; exit if bad??
                  ldx #0                                   
-_local_1214_25   cpx #255                                 ; check buffer (buflen????)
+l215_2           cpx #255                                 ; check buffer (buflen????)
 ; bcs 99$   ; 'too long' error
-                 beq _local_1214_26                       ; allow long lines   [910620]
+                 beq l215_3                               ; allow long lines   [910620]
                  jsr _basin                               ; read file data
                  sta dosstr,x                             ; buffer it
                  inx                                      ; bump buffer pointer
                  tay                                      ; save char
                  jsr _readst                              ; check channel status
-                 bne _local_1214_26                       ; exit if eof or error
+                 bne l215_3                               ; exit if eof or error
                  cpy #cr                                  
-                 bne _local_1214_25                       ; loop until eol
+                 bne l215_2                               ; loop until eol
 
-_local_1214_26   php                                      ; save input channel status (beq=eol, bne=eof/err)
+l215_3           php                                      ; save input channel status (beq=eol, bne=eof/err)
                  stx t4                                   ; save character count
                  jsr dcato                                ; get output channel
                  ldx #0                                   
-_local_1214_27   cpx t4                                   ; check buffer
-                 bcs _local_1214_28                       ; end of buffered data
+l215_4           cpx t4                                   ; check buffer
+                 bcs l215_5                               ; end of buffered data
                  lda dosstr,x                             ; output data
                  jsr _bsout                               
                  inx                                      ; bump buffer pointer
-                 bne _local_1214_27                       ; loop until end of buffer
+                 bne l215_4                               ; loop until end of buffer
 
-_local_1214_28   jsr _clrch                               
+l215_5           jsr _clrch                               
                  plp                                      ; check input status
-                 beq _local_1214_20                       ; loop until eof or bad status
+                 beq l215_1                               ; loop until eof or bad status
 
-_local_1214_30   +lbra list_exit                          ; release channel, close file, return to main
+l215_6           +lbra list_exit                          ; release channel, close file, return to main
 
 ;99$ jsr _clrch  ;non-I/O trouble   removed [910620]
 ; lda dosla  ; shut down disk & report BASIC error

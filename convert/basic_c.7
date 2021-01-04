@@ -5,10 +5,10 @@ sta_far_ram1
                  ldz var_bank                             ; RAM1
                  lda 1,x                                  ; check to see if pointer points to "common"
                  cmp #$20                                 
-                 bcs _local_1006_10                       ; branch if not
+                 bcs l7_1                                 ; branch if not
                  ldz text_bank                            ; else select RAM0
 
-_local_1006_10   pla                                      
+l7_1             pla                                      
                  jsr _sta_far                             ; STA (.x),Y to bank .z
                  plz                                      
                  plp                                      

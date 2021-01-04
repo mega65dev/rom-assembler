@@ -15,8 +15,8 @@ eex2             jsr synchr                               ; check character
                  bcc prcha                                ; branch if no room left
                  ldx #'='                                 
                  cpx chsn                                 ; = in field
-                 bne _local_1198_50                       ; branch if not
+                 bne l199_1                               ; branch if not
                  lsr                                      ; .a=.a/2
                  adc #0                                   ; add 1 if odd
 
-_local_1198_50   tax                                      ; store no of blanks in x
+l199_1           tax                                      ; store no of blanks in x

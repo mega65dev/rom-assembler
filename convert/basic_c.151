@@ -186,14 +186,14 @@ defstf           lda #varpnt
                  sta txtptr+1                             
 
 deffin           ldy #0                                   
-_local_1150_1    pla                                      ; get old arg value off stack,
+l151_1           pla                                      ; get old arg value off stack,
                  phx                                      
                  ldx #defpnt                              
                  jsr sta_far_ram1 ;sta (defpnt),y         ; and put it back in variable
                  plx                                      
                  iny                                      
                  cpy #5                                   
-                 bne _local_1150_1                        
+                 bne l151_1                               
                  rts                                      
 
 ;.end

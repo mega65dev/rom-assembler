@@ -114,9 +114,9 @@ twobyt
                  sta vtemp3                               ; initialize result to zero
 
                  ldy #16                                  ; initialize count
-_local_1306_10   lsr vtemp1                               
+l307_1           lsr vtemp1                               
                  ror vtemp2                               
-                 bcc _local_1306_20                       ; skip if no bit set
+                 bcc l307_2                               ; skip if no bit set
                  clc                                      
                  adc vwork,x                              ; add integer low byte
                  pha                                      
@@ -125,16 +125,16 @@ _local_1306_10   lsr vtemp1
                  sta vtemp3                               
                  pla                                      
 
-_local_1306_20   lsr vtemp3                               ; divide by 2
+l307_2           lsr vtemp3                               ; divide by 2
                  ror                                      
                  dey                                      
-                 bne _local_1306_10                       ; loop 16 times - test all bits in 2 bytes
+                 bne l307_1                               ; loop 16 times - test all bits in 2 bytes
 
                  adc #0                                   ; add back round factor
                  ldy vtemp3                               
-                 bcc _local_1306_30                       
+                 bcc l307_3                               
                  iny                                      
-_local_1306_30   plp                                      ; pop sign
+l307_3           plp                                      ; pop sign
                  bra abstw2                               ; return with signed product in y/a
 
 ; .page

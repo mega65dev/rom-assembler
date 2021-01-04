@@ -35,12 +35,12 @@ unit             jsr gtbytc                               ; getval
                  cpx #31                                  
                  bcs err_ild                              ; error if >30
                  cpx #1                                   ; drive 1 = use system default drive  [910221]
-                 bne _local_1237_10                       
+                 bne l238_1                               
                  ldx _default_drive                       
-                 bra _local_1237_20                       
-_local_1237_10   cpx #4                                   
+                 bra l238_2                               
+l238_1           cpx #4                                   
                  bcc err_ild                              ; error if <4
-_local_1237_20   stx dosfa                                
+l238_2           stx dosfa                                
                  lda #$08                                 ; set parser's unit flag
                  rts                                      
 

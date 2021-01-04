@@ -36,11 +36,11 @@ retpat                                                    ; f.bowen
                  dey                                      ; or LOOPing to a DO in direct mode. 'curlin+1' must not be
                  tax                                      ; restored to $ff without also resetting 'runmod'
                  inx                                      
-                 bne _local_1249_10                       ; branch if GOSUB or DO was from a program
+                 bne l250_1                               ; branch if GOSUB or DO was from a program
                  lda #%11000000                           
                  trb runmod                               ; else force return to direct mode
 
-_local_1249_10   lda (fndpnt),y                           
+l250_1           lda (fndpnt),y                           
                  sta curlin                               
                  rts                                      
 

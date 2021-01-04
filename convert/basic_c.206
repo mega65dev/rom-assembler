@@ -3,9 +3,9 @@ ini              jsr frefac                               ; free temp descriptor
                  ldx #$0a                                 ; printed in hulp
                  lda #0                                   
 
-_local_1205_10   sta swe,x                                ; init working registers
+l206_1           sta swe,x                                ; init working registers
                  dex                                      
-                 bpl _local_1205_10                       
+                 bpl l206_1                               
                  stx flag                                 ; comma flag =ff
                  stx point                                ; point pointer=ff
                  stx dolr                                 ; dollar flag=ff

@@ -12,7 +12,7 @@ change
                  jsr delimit_string                       ; string1
                  lda fstr1+2                              
                  +lbeq fcerr                              ; error if string1 null
-                 bbr7 op,_local_1085_10                   ; branch if no string2
+                 bbr7 op,l86_1                            ; branch if no string2
                  jsr chrget                               ; pick up required 'to' token
                  cmp #to_token                            
                  +lbne snerr                              ; error if missing
@@ -21,10 +21,10 @@ change
                  ldx #3                                   
                  jsr delimit_string                       ; string2
 
-_local_1085_10   jsr chrget                               ; line number range given?
-                 beq _local_1085_20                       ; no, eol
+l86_1            jsr chrget                               ; line number range given?
+                 beq l86_2                                ; no, eol
                  jsr chkcom                               ; yes, pick up required comma
-_local_1085_20   jsr range                                ; set up line number range (lowtr,linnum)
+l86_2            jsr range                                ; set up line number range (lowtr,linnum)
                  jsr tto                                  ; save txtptr for restoration when done
                  rmb7 helper                              ; clear 'help' flag for 'p1line'
                  lda helper                               

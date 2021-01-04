@@ -1,39 +1,39 @@
 boot             cmp #sys_token                           ; BOOTSYS?      [910111]
-                 bne _local_1188_1                        ; no
+                 bne l189_1                               ; no
                  jsr chrget                               ; yes- eat token
                  jsr _bootsys                             ; attempt to boot a new OS
-                 bcc _local_1188_15                       ; returned to us after successful install
+                 bcc l189_4                               ; returned to us after successful install
                  ldx #errbdk                              ; bootsys failed, report 'bad disk'????
                  +lbra error                              
 
-_local_1188_1    bbr4 runmod,_local_1188_2                ; Error if in Edit mode     [910620]
+l189_1           bbr4 runmod,l189_2                       ; Error if in Edit mode     [910620]
                  +lbra edit_err                           
 
-_local_1188_2    lda #0                                   ; BOOT "filename"     [910417]
+l189_2           lda #0                                   ; BOOT "filename"     [910417]
                  sta verck                                ; want 'load', not 'verify'
                  lda #$e6                                 ; set up parameters for DOS parser like BLOAD
                  ldx #$fc                                 
                  jsr dosprx                               ; parse the command
-                 bbr0 parsts,_local_1188_20               ; was there a filename?  branch if not
+                 bbr0 parsts,l189_5                       ; was there a filename?  branch if not
                  jsr bload_boot                           ; yes- bload it
                  +lbcs erexit                             ; load error
 
 ; ldx current_bank ;assume no B(ank) arg was given    [910114]
-; bbr0 parstx,_local_1188_10  ; correct, use current setup
+; bbr0 parstx,l189_3  ; correct, use current setup
                  ldx dosbnk                               ; else use given bank number
-_local_1188_10   stx _bank                                
+l189_3           stx _bank                                
                  lda _starting_addr                       ; set up address BLOAD loaded to
                  sta _pclo                                
                  lda _starting_addr+1                     
                  sta _pchi                                
                  jsr _jsr_far                             ; call it
-_local_1188_15   rts                                      
+l189_4           rts                                      
 
-_local_1188_20   ldy #$ff                                 
-_local_1188_30   iny                                      ; Copy default filename from ROM into buffer
+l189_5           ldy #$ff                                 
+l189_6           iny                                      ; Copy default filename from ROM into buffer
                  lda autoboot_filename,y                  
                  sta savram,y                             
-                 bne _local_1188_30                       ; null terminated
+                 bne l189_6                               ; null terminated
 
                  sty dosf1l                               ; length not counting terminator
                  smb6 runmod                              ; set flag for load not to go to ready

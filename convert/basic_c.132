@@ -1,20 +1,20 @@
 GetTimeDigit                                              
                  lda #0                                   ; default to '0'
                  cpy count                                
-                 bcs _local_1131_10                       ; exit if at end of string (carry set)
+                 bcs l132_1                               ; exit if at end of string (carry set)
 
                  jsr indin1_ram1                          ; else get a character from string
                  iny                                      ; point to next character
                  cmp #'.'                                 ; [910103]
-                 beq _local_1131_10                       ; terminator (period) (carry set)
+                 beq l132_1                               ; terminator (period) (carry set)
                  cmp #'0'                                 ; check character, only 0-9 allowed
                  +lbcc fcerr                              ; too small
                  cmp #':'                                 
-                 bcc _local_1131_10                       ; just right  (carry clear)
+                 bcc l132_1                               ; just right  (carry clear)
                  +lbne fcerr                              ; too big
 ; falls through if colon (carry set)
 
-_local_1131_10   and #$0f                                 ; make BCD
+l132_1           and #$0f                                 ; make BCD
                  rts                                      
 
 

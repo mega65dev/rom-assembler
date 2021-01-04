@@ -78,22 +78,22 @@ sleep            jsr getwrd                               ; get argument in (y,a
                  sty time                                 ; Number of seconds to "sleep"   [910730] new
                  sta time+1                               
 
-_local_1135_10   jsr _ReadTime                            ; Get current time
+l136_1           jsr _ReadTime                            ; Get current time
                  stz time+2                               ; tenths
                  sta time+3                               ; seconds
 
-_local_1135_20   jsr is_stop_key_down                     ; Allow user to abort
+l136_2           jsr is_stop_key_down                     ; Allow user to abort
                  jsr _ReadTime                            ; Wait for seconds to increment
                  cmp time+3                               
-                 beq _local_1135_20                       
+                 beq l136_2                               
                  sta time+3                               
 
-_local_1135_30   jsr _ReadTime                            ; Wait for tenths to increment
+l136_3           jsr _ReadTime                            ; Wait for tenths to increment
                  cpz time+2                               
-                 bne _local_1135_30                       
+                 bne l136_3                               
 
                  dew time                                 ; Decrement sleep period 1 second
-                 bne _local_1135_20                       ; Loop until sleep period over
+                 bne l136_2                               ; Loop until sleep period over
 
                  rts                                      
 

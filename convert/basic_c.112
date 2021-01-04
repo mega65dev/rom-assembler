@@ -91,15 +91,15 @@ filter           jsr getbyt                               ; get left/right SID  
                  tax                                      
 
                  ldy #0                                   
-_local_1111_10   lda filters1,x                           ; save current voice's filter params
+l112_1           lda filters1,x                           ; save current voice's filter params
                  sta fltsav,y                             
                  inx                                      
                  iny                                      
                  cpy #4                                   
-                 bcc _local_1111_10                       
+                 bcc l112_1                               
 
                  jsr optwrd                               ; get filter frequency
-                 bcc _local_1111_20                       ; skip if no value given
+                 bcc l112_2                               ; skip if no value given
                  cmp #8                                   ; test m.s. byte
                  +lbcs fcerr                              ; error if > 2047
                  sty fltsav                               ; save lower byte
@@ -114,28 +114,28 @@ _local_1111_10   lda filters1,x                           ; save current voice's
                  lsr                                      
                  ror fltsav+1                             
 
-_local_1111_20   lda #$10                                 ; start at type=LP
+l112_2           lda #$10                                 ; start at type=LP
                  sta fltflg                               
                  lda fltsav                               
 
-_local_1111_30   jsr optbyt                               ; get filter types (LP,BP,HP)
-                 bcc _local_1111_50                       ; skip if no value input
+l112_3           jsr optbyt                               ; get filter types (LP,BP,HP)
+                 bcc l112_6                               ; skip if no value input
                  cpx #1                                   ; (set .c: 0=0, 1=1)
-                 bcc _local_1111_35                       
-                 beq _local_1111_35                       
+                 bcc l112_4                               
+                 beq l112_4                               
                  +lbra fcerr                              ; error if >1
 
-_local_1111_35   lda fltsav+3                             ; get filter flags byte
+l112_4           lda fltsav+3                             ; get filter flags byte
                  ora fltflg                               ; set filter on
-                 bcs _local_1111_40                       ; skip if it should be on
+                 bcs l112_5                               ; skip if it should be on
                  eor fltflg                               ; turn filter off
-_local_1111_40   sta fltsav+3                             ; save value
+l112_5           sta fltsav+3                             ; save value
 
-_local_1111_50   asl fltflg                               ; shift for next filter
-                 bpl _local_1111_30                       ; loop 3 times
+l112_6           asl fltflg                               ; shift for next filter
+                 bpl l112_3                               ; loop 3 times
 
                  jsr optbyt                               ; get resonance value
-                 bcc _local_1111_70                       ; skip if no value given
+                 bcc l112_7                               ; skip if no value given
 ; cpx #16
 ; bcs fcerr  ;error if >15
                  jsr chknyb                               ; [910930]
@@ -150,14 +150,14 @@ _local_1111_50   asl fltflg                               ; shift for next filte
                  ora nibble                               ; add new value
                  sta fltsav+2                             ; save it
 
-_local_1111_70   ldx z_p_temp_1                           ; hardware offset for this voice's filter [910612]
+l112_7           ldx z_p_temp_1                           ; hardware offset for this voice's filter [910612]
                  ldy #0                                   
-_local_1111_80   lda fltsav,y                             ; copy new filter params to hardware
+l112_8           lda fltsav,y                             ; copy new filter params to hardware
                  sta filters1,x                           
                  inx                                      
                  iny                                      
                  cpy #4                                   
-                 bcc _local_1111_80                       
+                 bcc l112_8                               
                  rts                                      
 
 ;.end

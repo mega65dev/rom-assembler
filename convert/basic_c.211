@@ -2,17 +2,17 @@ pndd             lda swe                                  ; # of blanks
                  beq zerot                                
                  dec swe                                  ; count !
 
-_local_1210_5    +lbne bout                               ; out blank or *
+l211_1           +lbne bout                               ; out blank or *
                  lda posp                                 ; + or - in field?
-                 bmi _local_1210_5                        ; yes...out blank or *
+                 bmi l211_1                               ; yes...out blank or *
 
-_local_1210_10   jsr indfrm                               
+l211_2           jsr indfrm                               
                  cmp #','                                 ; comma?
                  bne ispl1                                ; no...out sign
                  lda blfd                                 ; yes...
                  jsr cdout                                ; out blank or *
                  iny                                      
-                 bra _local_1210_10                       
+                 bra l211_2                               
 
 
 

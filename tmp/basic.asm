@@ -1148,21 +1148,21 @@ init_storage
 
                  lda #sprite_base/64+7
                  ldy #7
-_local_1000_10   bbr7 _mode,_local_1000_20
+l1_1             bbr7 _mode,l1_2
                  sta sprite_ptrs_40,y                     ; 40 col screen
-                 bra _local_1000_30
-_local_1000_20   sta sprite_ptrs_80,y                     ; 80 col screen
-_local_1000_30   dec
+                 bra l1_3
+l1_2             sta sprite_ptrs_80,y                     ; 80 col screen
+l1_3             dec
                  dey
-                 bpl _local_1000_10
+                 bpl l1_1
 
 ; Zero out sprite movement stuff and some VIC stuff too
 
                  lda #0
                  ldx #init_as_0
-_local_1000_40   sta sprite_data,x
+l1_4             sta sprite_data,x
                  dex
-                 bpl _local_1000_40
+                 bpl l1_4
 
                  jsr init_sound_sprites                   ; init misc. interrupt & dma stuff
 
@@ -1252,16 +1252,16 @@ init_sound_sprites                                          ; [910523]
 
                  lda #0                                   ; [910523] F018A
                  ldx #12+12-1                             ; init DMA lists
-_local_1001_40   sta dma1_cmd,x
+l2_1             sta dma1_cmd,x
                  dex
-                 bpl _local_1001_40
+                 bpl l2_1
 
 ; stop_sprites   ;Stop all moving sprites (a=0)   [910523]
                  ldy #7                                   ; for sprites 0...7
-_local_1001_50   ldx sproff,y                             ; get table offset
+l2_2             ldx sproff,y                             ; get table offset
                  sta sprite_data,x                        ; reset speed for this sprite
                  dey
-                 bpl _local_1001_50                       ; loop until done
+                 bpl l2_2                                 ; loop until done
 
                  sta vic+21                               ; Turn off all sprites    [910717]
 
@@ -1271,7 +1271,7 @@ _local_1001_50   ldx sproff,y                             ; get table offset
 
 ; .page
 signon_message
-_local_1002_1    jsr _primm
+l3_1             jsr _primm
                  !text 147,18,028,"                     ",146,169
                  !text 5,9,"       THE COMMODORE C65 DEVELOPMENT SYSTEM",cr
                  !text 18,150,"                  ",146,169,cr
@@ -1287,21 +1287,21 @@ _local_1002_1    jsr _primm
 
 ; .page
 init_vectors
-                 ldx #_local_1003_3-_local_1003_2-1
-_local_1003_1    lda _local_1003_2,x
+                 ldx #l4_3-l4_2-1
+l4_1             lda l4_2,x
                  sta vectors_begin,x
                  dex
-                 bpl _local_1003_1
+                 bpl l4_1
 
                  rts
 
 
-_local_1003_2    !word AutoScroll                         ; autoscroll vector
+l4_2             !word AutoScroll                         ; autoscroll vector
                  !word n_esc_fn_vec                       ; escape function vector
                  !word graphic_kernel                     ; graphic extension vector
                  !word nerror,nmain,ncrnch,nqplop,ngone,neval ; traditional vectors
                  !word nesclk,nescpr,nescex               ; escape command vectors
-_local_1003_3
+l4_3
 
 ; .page
 ;; CHRGET/CHRGOT code.  It is downloaded to RAM.
@@ -1327,14 +1327,14 @@ _local_1003_3
 ; plz
 ;
 ; cmp #':' ;QNUM entry (chrget+27)
-; bcs _local_1003_2
+; bcs l4_2
 ; cmp #' '
 ; beq chrget_pattern
 ; sec
 ; sbc #'0'
 ; sec
 ; sbc #$d0
-;_local_1003_2 rts  ;(42 bytes to here)
+;l4_2 rts  ;(42 bytes to here)
 ;
 ;
 ;
@@ -1354,12 +1354,12 @@ chrgot           ldy #0                                   ; re-get current chara
 qnum             cmp #' '
                  beq chrget                               ; skip spaces
 chrtst           cmp #':'                                 ; [910513]
-                 bcs _local_1004_10                       ; eol
+                 bcs l5_1                                 ; eol
                  sec
                  sbc #'0'                                 ; alpha or numeric?
                  sec
                  sbc #$d0
-_local_1004_10   rts
+l5_1             rts
 
 
 ;.end
@@ -1451,10 +1451,10 @@ lda_far_ram1
                  ldz var_bank                             ; RAM1
                  lda 1,x                                  ; check to see if pointer points to "common"
                  cmp #$20
-                 bcs _local_1005_10                       ; branch if not
+                 bcs l6_1                                 ; branch if not
                  ldz text_bank                            ; else select RAM0
 
-_local_1005_10   jsr _lda_far                             ; LDA (.x),Y from bank .z
+l6_1             jsr _lda_far                             ; LDA (.x),Y from bank .z
                  plx
                  plz
                  plp                                      ; restore .c
@@ -1471,10 +1471,10 @@ sta_far_ram1
                  ldz var_bank                             ; RAM1
                  lda 1,x                                  ; check to see if pointer points to "common"
                  cmp #$20
-                 bcs _local_1006_10                       ; branch if not
+                 bcs l7_1                                 ; branch if not
                  ldz text_bank                            ; else select RAM0
 
-_local_1006_10   pla
+l7_1             pla
                  jsr _sta_far                             ; STA (.x),Y to bank .z
                  plz
                  plp
@@ -1559,18 +1559,18 @@ crun20           bcc crun10                               ; don't crunch numbers
                  jmp (iesclk)                             ; give others a chance at this.  (carry is set)
 
 nesclk
-                 +lbcc _local_1007_130                    ; carry clear if someone wanted it
+                 +lbcc l8_12                              ; carry clear if someone wanted it
                  cmp #0                                   ; end of line?
-                 beq _local_1007_110                      ; yes
+                 beq l8_10                                ; yes
                  cmp #':'                                 ; multi-stmt char?
                  beq crun10                               ; yes
                  cmp #'?'                                 ; print ('?') abreviation?
-                 bne _local_1007_20                       ; no
+                 bne l8_1                                 ; no
                  lda #print_token                         ; yes- substitute print token
-                 bra _local_1007_90
+                 bra l8_8
 
-_local_1007_20   cmp #$80                                 ; graphics?
-                 bcc _local_1007_30                       ; no
+l8_1             cmp #$80                                 ; graphics?
+                 bcc l8_2                                 ; no
                  cmp #pi                                  ; pi? (special case)
                  beq crun10                               ; yes, leave alone
                  ldy #1
@@ -1578,61 +1578,61 @@ _local_1007_20   cmp #$80                                 ; graphics?
                  bra crun05
 
 
-_local_1007_30   cmp #'"'                                 ; quote string?
-                 bne _local_1007_50                       ; no- try escape token
+l8_2             cmp #'"'                                 ; quote string?
+                 bne l8_4                                 ; no- try escape token
 
-_local_1007_40   jsr chrget
+l8_3             jsr chrget
                  cmp #0                                   ; end of line?
-                 beq _local_1007_110                      ; yes
+                 beq l8_10                                ; yes
                  cmp #'"'                                 ; close quote?
                  beq crun10                               ; yes
-                 bra _local_1007_40                       ; no, continue skipping characters
+                 bra l8_3                                 ; no, continue skipping characters
 
 
 ; Crunch escape token
 
-_local_1007_50   lda #>esc_command_list                   ; look for token in escape-command list
+l8_4             lda #>esc_command_list                   ; look for token in escape-command list
                  ldy #<esc_command_list
                  jsr reser
-                 bcc _local_1007_60                       ; not found
+                 bcc l8_5                                 ; not found
                  lda #first_esc_command_token+$80-1       ; set up for common escape routine
                  ldx #0                                   ; ..flag 'cmd' type escape
-                 bra _local_1007_120                      ; ..and go to it.
+                 bra l8_11                                ; ..and go to it.
 
-_local_1007_60   lda #>esc_function_list                  ; look for token in escape-function list
+l8_5             lda #>esc_function_list                  ; look for token in escape-function list
                  ldy #<esc_function_list
                  jsr reser
-                 bcc _local_1007_70                       ; not found
+                 bcc l8_6                                 ; not found
                  lda #first_esc_function_token+$80-1      ; set up for common escape routine
                  ldx #$ff                                 ; ..flag 'function' type escape
-                 bra _local_1007_120                      ; ..and go to it
+                 bra l8_11                                ; ..and go to it
 
-_local_1007_70   lda #>keyword_list                       ; look for token in normal list
+l8_6             lda #>keyword_list                       ; look for token in normal list
                  ldy #<keyword_list
                  jsr reser
                  bcc crun10                               ; not found
                  cpy #0                                   ; anything to move?
-                 beq _local_1007_80                       ; no
+                 beq l8_7                                 ; no
                  jsr kloop                                ; crunch it out
-_local_1007_80   lda count
+l8_7             lda count
 
-_local_1007_90   ldy #0
+l8_8             ldy #0
                  jsr sta_far_txt                          ; put token into text  (bleed-thru)
                  cmp #rem_token
-                 beq _local_1007_100
+                 beq l8_9
                  cmp #data_token
                  bne crun10
                  jsr chrget
                  jsr data
                  +lbra crun05
 
-_local_1007_100  jsr chrget
+l8_9             jsr chrget
                  jsr rem
 
 
 ;  No other statements can follow a REM
 
-_local_1007_110  ldx txtptr
+l8_10            ldx txtptr
                  pla
                  sta txtptr+1
                  pla
@@ -1647,8 +1647,8 @@ _local_1007_110  ldx txtptr
 
 ; Crunch out old text, install an escape token
 
-_local_1007_120  adc count                                ; make pointer into a token
-_local_1007_130  pha                                      ; save second token
+l8_11            adc count                                ; make pointer into a token
+l8_12            pha                                      ; save second token
                  dey                                      ; waste (# of chars) - 1
                  jsr kloop
 
@@ -1656,10 +1656,10 @@ _local_1007_130  pha                                      ; save second token
 
                  lda #esc_command_token                   ; assume command
                  inx
-                 bne _local_1007_140                      ; branch if command
+                 bne l8_13                                ; branch if command
                  lda #esc_function_token                  ; ..else get correct token
 
-_local_1007_140  ldy #0
+l8_13            ldy #0
                  jsr sta_far_txt                          ; install escape token... (bleed-thru)
                  iny
                  pla
@@ -1682,10 +1682,10 @@ kloop            clc                                      ; compute source addre
                  sta index1+1
                  ldy #$ff
 
-_local_1008_10   iny
+l9_1             iny
                  lda (index1),y                           ; move source..  ????assumes text in common area
                  sta (txtptr),y                           ; to destination offset ????assumes text in common area
-                 bne _local_1008_10                       ; not end of line
+                 bne l9_1                                 ; not end of line
                  rts
 
 ; .page
@@ -1705,54 +1705,54 @@ reser            sta index1+1
                  ldy #0
                  sty count
                  dey
-_local_1009_10   iny
-_local_1009_20   lda (txtptr),y                           ; assumes common memory
-                 bmi _local_1009_70                       ; abrieviation    [900510]
+l10_1            iny
+l10_2            lda (txtptr),y                           ; assumes common memory
+                 bmi l10_7                                ; abrieviation    [900510]
                  sec
                  sbc (index1),y                           ; does letter match? (ind.ok)
-                 beq _local_1009_10                       ; yes...continue
+                 beq l10_1                                ; yes...continue
                  cmp #$80                                 ; end of word?
-                 beq _local_1009_60                       ; yes...c set...done
+                 beq l10_6                                ; yes...c set...done
 
 
 ;  find next word
 
-_local_1009_30   lda (index1),y                           ; ind.ok
-                 bmi _local_1009_40                       ; found end of current
+l10_3            lda (index1),y                           ; ind.ok
+                 bmi l10_4                                ; found end of current
                  iny
-                 bne _local_1009_30
-_local_1009_40   iny                                      ; start of next
+                 bne l10_3
+l10_4            iny                                      ; start of next
                  inc count                                ; value of token
                  clc
                  tya
                  adc index1
                  sta index1
-                 bcc _local_1009_50
+                 bcc l10_5
                  inc index1+1
-_local_1009_50   clc
+l10_5            clc
                  ldy #0
                  lda (index1),y                           ; end of list? ind.ok
-                 bne _local_1009_20                       ; no
+                 bne l10_2                                ; no
 
 
 ;  yes...carry clear...fail
 
-_local_1009_60   ora count                                ; .a=$80 if match
+l10_6            ora count                                ; .a=$80 if match
                  sta count                                ; token is formed
                  rts
 
 
 ; special case- last character is shifted (necessary for 'diR' compatibility)
 
-_local_1009_70   sec                                      ; allow last chr to be shifted   [900510]
+l10_7            sec                                      ; allow last chr to be shifted   [900510]
                  sbc (index1),y                           ; does letter match? (ind.ok)
-                 beq _local_1009_80                       ; yes- end of word
+                 beq l10_8                                ; yes- end of word
                  cmp #$80                                 ; end of word?
-                 beq _local_1009_60                       ; yes
-                 bne _local_1009_30                       ; no- next word
+                 beq l10_6                                ; yes
+                 bne l10_3                                ; no- next word
 
-_local_1009_80   lda #$80                                 ; last chr is shifted & so is end of current word
-                 bra _local_1009_60
+l10_8            lda #$80                                 ; last chr is shifted & so is end of current word
+                 bra l10_6
 
 ;.end
 ; .page
@@ -2401,16 +2401,16 @@ erstup           tax                                      ; error set up
                  lda #>error_message_list
                  sta index2+1
 
-_local_1010_1    dex
-                 bmi _local_1010_4                        ; finished when .x decrements out
+l11_1            dex
+                 bmi l11_3                                ; finished when .x decrements out
 
-_local_1010_2    lda (index2),y                           ; look at msg, and find end (msb set) (ind.ok)
+l11_2            lda (index2),y                           ; look at msg, and find end (msb set) (ind.ok)
                  inw index2
                  and #$ff                                 ; was msb set?
-                 bpl _local_1010_2                        ; no, not end of message
-                 bra _local_1010_1                        ; yes, tick off another msg
+                 bpl l11_2                                ; no, not end of message
+                 bra l11_1                                ; yes, tick off another msg
 
-_local_1010_4    rts
+l11_3            rts
 
 ;.end
 ; .page
@@ -2425,13 +2425,13 @@ xeqcm            jmp (igone)
 
 ; Check if there is an interrupt from VIC that needs to be serviced
 
-ngone            bbr7 runmod,_local_1011_30               ; get off here if we are in direct mode
+ngone            bbr7 runmod,l12_3                        ; get off here if we are in direct mode
                  lda intval                               ; check if there is an interrupt already in progress
-                 bmi _local_1011_30                       ; yes, don't go any further
+                 bmi l12_3                                ; yes, don't go any further
 
                  ldx #2                                   ; check for 3 types of interrupts: s/s, s/b, & lp
-_local_1011_10   lda int_trip_flag,x
-                 beq _local_1011_20                       ; this wasn't set, go check next
+l12_1            lda int_trip_flag,x
+                 beq l12_2                                ; this wasn't set, go check next
 
                  lda #0
                  sta int_trip_flag,x                      ; reset this flag to show 'serviced'
@@ -2457,15 +2457,15 @@ _local_1011_10   lda int_trip_flag,x
                  sta txtptr
                  plx
 
-_local_1011_20   dex
-                 bpl _local_1011_10
+l12_2            dex
+                 bpl l12_1
 
 
-_local_1011_30   jsr chrget                               ; get statement type
+l12_3            jsr chrget                               ; get statement type
 xeqdir           jsr xeqcm3
 
 newstt           jsr is_stop_key_down
-                 bbr7 runmod,_local_1012_10               ; branch if direct mode
+                 bbr7 runmod,l13_1                        ; branch if direct mode
 
 ; In run mode...save txtptr for CONTinue command
 
@@ -2473,11 +2473,11 @@ newstt           jsr is_stop_key_down
                  tsx
                  stx oldstk
 
-_local_1012_10   ldy #0
+l13_1            ldy #0
                  jsr indtxt                               ; end of the line?
                  +lbne morsts                             ; no...out of statement
 
-_local_1012_20   bit runmod                               ; in direct mode?
+l13_2            bit runmod                               ; in direct mode?
                  +lbpl ready                              ; yes, go to ready
                  ldy #2
                  jsr indtxt                               ; end of text?
@@ -2492,9 +2492,9 @@ _local_1012_20   bit runmod                               ; in direct mode?
                  clc
                  adc txtptr                               ; point @ character before line start
                  sta txtptr
-                 bcc _local_1012_30
+                 bcc l13_3
                  inc txtptr+1
-_local_1012_30   +lbra xeqcm                              ; execute new line
+l13_3            +lbra xeqcm                              ; execute new line
 
 
 
@@ -2546,17 +2546,17 @@ xeqcm4           sec                                      ; convert adjusted tok
 
 xeqcm5           asl                                      ; *2 to convert into word pointer
                  tay
-                 bcs _local_1013_10                       ; dispatch table 1 or 2?     [901212]
+                 bcs l14_1                                ; dispatch table 1 or 2?     [901212]
                  lda stmdsp+1,y                           ; one
                  pha
                  lda stmdsp,y
-                 bra _local_1013_20
+                 bra l14_2
 
-_local_1013_10   lda stmdsp2+1,y                          ; two      [901212]
+l14_1            lda stmdsp2+1,y                          ; two      [901212]
                  pha
                  lda stmdsp2,y
 
-_local_1013_20   pha
+l14_2            pha
                  jmp chrget                               ; execution will commence after chrget's RTS
 
 
@@ -2576,16 +2576,16 @@ xeqesc                                                    ; execute escape token
                  jsr chrget                               ; let's have us a look at the second char
                  beq snerr1                               ; oops, there wasn't any!
                  cmp #first_esc_command_token             ; is it one of our esc tokens?
-                 bcc _local_1014_1                        ; no, foreign.
+                 bcc l15_1                                ; no, foreign.
                  cmp #last_esc_command_token+1
-                 bcs _local_1014_1                        ; foreign
+                 bcs l15_1                                ; foreign
 
 ; It's one of our own.  Convert to index into command dispatch table
 
                  adc #monitor_token-else_token+new_token-end_token-first_esc_command_token+2
                  bra xeqcm5                               ; always
 
-_local_1014_1    sec                                      ; set up flag for a trip into the users code
+l15_1            sec                                      ; set up flag for a trip into the users code
                  jmp (iescex)
 
 nescex           bcc xeqchr                               ; jmp chrget
@@ -2610,8 +2610,8 @@ is_stop_key_down
 
 
 break_exit                                                ; STOP KEY:     [910104]
-_local_1015_10   jsr _stop                                ; wait for the user to release the key
-                 beq _local_1015_10
+l16_1            jsr _stop                                ; wait for the user to release the key
+                 beq l16_1
                  ldx #erbrk                               ; take the vector thru error to ready
                  +lbra error
 
@@ -2622,13 +2622,13 @@ stop             bcs stopc                                ; STOP: .c=1
 end              clc                                      ; END: .c=0
 stopc            +lbne snerr                              ; error if args present   [910410]
 
-stop_1           bbr7 runmod,_local_1016_10               ; branch if direct mode
+stop_1           bbr7 runmod,l17_1                        ; branch if direct mode
                  jsr tto                                  ; transfer txtptr to oldtxt
                  lda curlin
                  ldy curlin+1
                  sta oldlin
                  sty oldlin+1
-_local_1016_10   pla                                      ; .diris
+l17_1            pla                                      ; .diris
                  pla
                  +lbcc ready                              ; say 'ready' if END, say 'break' if STOP
 
@@ -2658,14 +2658,14 @@ isfun            cmp #esc_function_token                  ; is this an escape fu
                  cmp #last_function_token+1
                  bcs snerr1                               ; no- must be syntax error
                  cmp #mid_token+1
-                 bcc _local_1017_1                        ; no need to adjust
+                 bcc l18_1                                ; no need to adjust
                  sbc #rgraphic_token-mid_token-1
 
-_local_1017_1    pha                                      ; save token
+l18_1            pha                                      ; save token
                  tax
                  jsr chrget                               ; set up for synchk.
                  cpx #instr_token-1                       ; look for (adjusted) instr token
-                 beq _local_1017_2                        ; yes
+                 beq l18_2                                ; yes
                  cpx #rgraphic_token-1                    ; look for rgraphic which now takes 2 args [910801]
                  +lbeq rgraphic                           ; yes
 
@@ -2687,7 +2687,7 @@ _local_1017_1    pha                                      ; save token
 ; description of the string argument is stored on the stack underneath the
 ; value of the integer argument.
 
-_local_1017_2    jsr chkopn                               ; check for an open parenthesis
+l18_2            jsr chkopn                               ; check for an open parenthesis
                  jsr frmevl                               ; eat open paren and first argument
                  jsr chkcom                               ; two args so comma must delimit
                  jsr chkstr                               ; make sure first was string
@@ -2731,13 +2731,13 @@ do_esc_fn
                  jsr chrget                               ; get second token
                  +lbeq snerr                              ; error if no second token
                  cmp #pointer_token
-                 beq _local_1018_10                       ; skip pre-parse if 'POINTER()'
+                 beq l19_1                                ; skip pre-parse if 'POINTER()'
                  pha
                  jsr chrget                               ; should be '('
                  jsr chkopn
                  jsr frmevl                               ; evaluate first argument
                  pla
-_local_1018_10   cmp #first_esc_function_token            ; see if this esc fn is one of ours
+l19_1            cmp #first_esc_function_token            ; see if this esc fn is one of ours
                  bcc foreign_esc_fn                       ; nope.
                  cmp #last_esc_function_token+1
                  bcs foreign_esc_fn                       ; nope
@@ -2857,9 +2857,9 @@ docmp
                  txa
                  rol
                  and domask
-                 beq _local_1019_10
+                 beq l20_1
                  lda #$ff                                 ; map 0 to 0, map all others to -1
-_local_1019_10   +lbra float                              ; float the one-byte result into FAC
+l20_1            +lbra float                              ; float the one-byte result into FAC
 
 
 ;.end
@@ -2895,17 +2895,17 @@ nerror           txa
                  bbr7 runmod,errisd                       ; branch if direct mode- always display error
 
                  ldy #1                                   ; copy curlin to errlin, oldtxt to errtxt
-_local_1020_10   lda curlin,y
+l21_1            lda curlin,y
                  sta errlin,y                             ; line# where error occurred
                  lda oldtxt,y
                  sta errtxt,y                             ; statement where error occured
                  dey
-                 bpl _local_1020_10
+                 bpl l21_1
                  inc errtxt                               ; point to a token, not ':' for HELP
-                 bne _local_1020_20
+                 bne l21_2
                  inc errtxt+1
 
-_local_1020_20   ldy trapno+1                             ; is trap set?
+l21_2            ldy trapno+1                             ; is trap set?
                  cpy #$ff
                  beq errisd                               ; no
                  sty linnum+1
@@ -2927,26 +2927,26 @@ errisd           dex
                  txa
                  jsr erstup                               ; set up address of error msg in .a in index2
 
-                 bbs7 runmod,_local_1021_5                ; reset error line if direct mode error
+                 bbs7 runmod,l22_1                        ; reset error line if direct mode error
                  lda #$ff
                  sta errlin                               ;
                  sta errlin+1
 
-_local_1021_5    jsr release_channels                     ; restore output to screen    [910909]
+l22_1            jsr release_channels                     ; restore output to screen    [910909]
                  jsr RestoreTextScreen                    ; make sure we're in text mode    [910404]
                  jsr init_stack
 
-_local_1021_10   jsr crdo                                 ; Print error message- start a new line with '?'
+l22_2            jsr crdo                                 ; Print error message- start a new line with '?'
                  jsr highlight_text                       ; use highlight color????    [910624]
                  jsr outqst
                  ldy #0
-_local_1021_20   lda (index2),y                           ; Read error msg from ROM  (ind.ok????)
+l22_3            lda (index2),y                           ; Read error msg from ROM  (ind.ok????)
                  pha
                  and #$7f
                  jsr outch                                ; Print it
                  iny
                  pla
-                 bpl _local_1021_20
+                 bpl l22_3
                  ldx errnum                               ; retrieve error #     [910925]
                  cpx #erbrk
                  beq errfin                               ; skip 'error' crap if 'break'
@@ -2955,9 +2955,9 @@ _local_1021_20   lda (index2),y                           ; Read error msg from 
 
 errfin           ldy curlin+1                             ; direct mode?
                  iny
-                 beq _local_1022_10                       ; yes...no line #
+                 beq l23_1                                ; yes...no line #
                  jsr inprt
-_local_1022_10   jsr highlight_done                       ; restore normal text color????    [910624]
+l23_1            jsr highlight_done                       ; restore normal text color????    [910624]
 
 ; .page
 ready_1
@@ -2967,12 +2967,12 @@ ready_1
                  trb runmod                               ; turn run modes off, leave trace mode on????
 
 ready_2
-                 bbs4 runmod,_local_1023_10               ; print appropriate system prompt
+                 bbs4 runmod,l24_1                        ; print appropriate system prompt
                  jsr _primm                               ; Program mode: print 'ready.'
                  !text cr,"READY.",cr,0
                  bra main
 
-_local_1023_10   jsr _primm                               ; Edit mode: print 'ok.'
+l24_1            jsr _primm                               ; Edit mode: print 'ok.'
                  !text cr,"OK.",cr,0
 
 
@@ -2988,19 +2988,19 @@ execute_a_line                                            ; EXECUTE PLAIN TEXT I
                  jsr chrget                               ; get first character of null-terminated string
                  tax
                  beq main                                 ; got null input
-                 bcc _local_1024_10                       ; got line number
+                 bcc l25_1                                ; got line number
                  jsr crunch                               ; got text- tokenize buffer,
                  jsr chrgot                               ; get first command (token),
                  +lbra xeqdir                             ; and execute it
 
 ;ADD or DELETE NEW LINE
-_local_1024_10   jsr linget                               ; evaluate line number, put into into linnum
-                 bbr4 runmod,_local_1024_20
+l25_1            jsr linget                               ; evaluate line number, put into into linnum
+                 bbr4 runmod,l25_2
                  jsr edit_crunch                          ; if edit mode, find end of input   [910620]
-                 bra _local_1024_30
+                 bra l25_3
 
-_local_1024_20   jsr crunch                               ; tokenize rest of input if not edit mode
-_local_1024_30   sty count                                ; save length
+l25_2            jsr crunch                               ; tokenize rest of input if not edit mode
+l25_3            sty count                                ; save length
                  jsr FindLine                             ; locate line in program
                  +lbcc nodel                              ; not found, go insert line into program
 ; else delete current line and insert this one
@@ -3023,15 +3023,15 @@ _local_1024_30   sty count                                ; save length
                  sec                                      ; ignore borrow (gives abs. value)
                  sbc #4                                   ; allow for link & line number
                  sbc count                                ; compare with new length
-                 bcs _local_1024_2                        ; new line is shorter, no problem
+                 bcs l25_5                                ; new line is shorter, no problem
                  neg                                      ; convert to positive delta
 
                  ldy text_top+1                           ; get msb of end of text (.c=0)
                  adc text_top                             ; add our calculated delta to end of text
-                 bcc _local_1024_1
+                 bcc l25_4
                  iny
-_local_1024_1    cpy max_mem_0+1
-                 bcc _local_1024_2                        ; result is less than top-of-memory: ok
+l25_4            cpy max_mem_0+1
+                 bcc l25_5                                ; result is less than top-of-memory: ok
                  +lbne omerr                              ; msb >  top, overflow
                  cmp max_mem_0                            ; msb's the same, test lsb's
                  +lbcs omerr                              ; lsb >= top, overflow
@@ -3043,7 +3043,7 @@ _local_1024_1    cpy max_mem_0+1
 ; text_top-(lowtr) = number of bytes to move (text_top points to old top of text)
 ; new text_top     = text_top -( (lowtr)-lowtr )
 
-_local_1024_2    lda lowtr                                ; set up DMA destination
+l25_5            lda lowtr                                ; set up DMA destination
                  sta dma1_dest_lo
                  lda lowtr+1
                  sta dma1_dest_hi
@@ -3100,28 +3100,28 @@ nodel            jsr init_stack                           ; 'clearc' removed sin
                  lda (txtptr),y                           ; delete line? ("common")
                  +lbeq main                               ; yes
 
-_local_1025_5    clc                                      ; no...something to insert
+l26_1            clc                                      ; no...something to insert
                  ldy text_top+1
                  lda text_top
                  sty hightr+1                             ; top of block to move (old text_top)
                  sta hightr
                  adc count                                ; number of characters in line to be inserted
-                 bcc _local_1025_1
+                 bcc l26_2
                  iny
-_local_1025_1    clc
+l26_2            clc
                  adc #4                                   ; plus link and line #
-                 bcc _local_1025_2                        ; gives us destination of move (new text_top)
+                 bcc l26_3                                ; gives us destination of move (new text_top)
                  iny
 
-_local_1025_2    sta highds                               ; destination of top
+l26_3            sta highds                               ; destination of top
                  sty highds+1
                  cpy max_mem_0+1                          ; make sure new top doesn't crash into top of available ram
-                 bcc _local_1025_4                        ; ok
+                 bcc l26_4                                ; ok
                  +lbne omerr                              ; out of memory, don't insert
                  cmp max_mem_0
                  +lbcs omerr                              ; out of memory, don't insert
 
-_local_1025_4    sta text_top                             ; set new top of text
+l26_4            sta text_top                             ; set new top of text
                  sty text_top+1
                  sec                                      ; compute number of things to move up
                  lda hightr
@@ -3143,14 +3143,14 @@ _local_1025_4    sta text_top                             ; set new top of text
 
 ; lda dma_ctlr+3  ;dma controller version    [910520] F018A
 ; and #1
-; beq _local_1025_10   ; F018    removed [910808] F018B
+; beq l26_5   ; F018    removed [910808] F018B
                  lda #%00110000                           ; F018A, B
-_local_1025_10   sta dma1_cmd                             ; command=copy, source=endpt   [910102]
+l26_5            sta dma1_cmd                             ; command=copy, source=endpt   [910102]
                  sty dma1_cnt_lo                          ; count
                  stx dma1_cnt_hi
                  tya
                  ora dma1_cnt_hi
-                 beq _local_1025_70                       ; special case= nothing to move???? should not happen
+                 beq l26_7                                ; special case= nothing to move???? should not happen
 
                  lda hightr
                  ldy hightr+1
@@ -3162,10 +3162,10 @@ _local_1025_10   sta dma1_cmd                             ; command=copy, source
                  sty dma1_dest_hi
                  lda text_bank                            ; [910520] F018A
 ; ldx dma1_cmd  ;version?    removed [910808] F018B
-; bne _local_1025_20   ; F018A
+; bne l26_6   ; F018A
 ; and #%00001111  ;      [910102]
 ; ora #%01000000  ;(copy source=endpoint)    [910102]
-_local_1025_20   sta dma1_src_bank                        ; banks
+l26_6            sta dma1_src_bank                        ; banks
                  sta dma1_dest_bank
                  lda #0
                  sta dma1_subcmd                          ; [910520] F018A
@@ -3177,7 +3177,7 @@ _local_1025_20   sta dma1_src_bank                        ; banks
 
 ; Make links non-null to fool 'chead'
 
-_local_1025_70   ldy #0
+l26_7            ldy #0
                  lda #1
                  ldx #lowtr
                  jsr sta_far_ram0                         ; sta (lowtr),y  y=0 (bleed-thru)
@@ -3199,22 +3199,22 @@ _local_1025_70   ldy #0
                  lda lowtr
                  adc #4
                  sta lowtr
-                 bcc _local_1025_80
+                 bcc l26_8
                  inc lowtr+1
 
 
 ; Block move line to text
 
-_local_1025_80   ldy count                                ; use dma ???? [910925]
+l26_8            ldy count                                ; use dma ???? [910925]
                  dey
 
-_local_1025_90   lda (txtptr),y                           ; (from common area)
+l26_9            lda (txtptr),y                           ; (from common area)
                  jsr sta_far_ram0                         ; sta (lowtr),y   (bleed-thru)
                  dey
                  cpy #$ff
-                 bne _local_1025_90
+                 bne l26_9
 
-; beq _local_1025_90   ;special case= nothing to move???? should not happen
+; beq l26_9   ;special case= nothing to move???? should not happen
 ; lda #0   ; F018A, B
 ; sta dma1_cmd  ;command=copy, source=start
 ; sty dma1_cnt_lo  ;count
@@ -3238,7 +3238,7 @@ _local_1025_90   lda (txtptr),y                           ; (from common area)
 ; lda #<dma1_cmd
 ; stx dma_ctlr+1  ;dma_list hi
 ; sta dma_ctlr  ;dma_list lo & trigger
-;_local_1025_90
+;l26_9
                  jsr link_program
                  jsr reset_txtptr                         ; set up txtptr (was jsr runc)
 
@@ -3246,7 +3246,7 @@ _local_1025_90   lda (txtptr),y                           ; (from common area)
 
                  lda autinc                               ; if in auto mode, increment val <> 0
                  ora autinc+1
-                 beq _local_1025_120                      ; not in
+                 beq l26_12                               ; not in
 
                  lda linnum                               ; yes, construct new line number
                  clc
@@ -3254,9 +3254,9 @@ _local_1025_90   lda (txtptr),y                           ; (from common area)
                  sta facho+1
                  lda linnum+1
                  adc autinc+1
-                 bcs _local_1025_120                      ; no auto if wrapped
+                 bcs l26_12                               ; no auto if wrapped
                  cmp #$fa                                 ; test if # >= 64000
-                 bcs _local_1025_120                      ; no auto if so.
+                 bcs l26_12                               ; no auto if so.
                  sta facho
                  ldx #$90
                  sec
@@ -3265,19 +3265,19 @@ _local_1025_90   lda (txtptr),y                           ; (from common area)
 
                  sei                                      ; [910710]
                  ldx #0                                   ; move string into kbd buffer
-_local_1025_100  lda fbuffr+1,x                           ; copy number formed into buffer, ignoring leading space
-                 beq _local_1025_110                      ; a null marks end
+l26_10           lda fbuffr+1,x                           ; copy number formed into buffer, ignoring leading space
+                 beq l26_11                               ; a null marks end
                  sta _keyd,x
                  inx
-                 bne _local_1025_100                      ; always
+                 bne l26_10                               ; always
 
-_local_1025_110  lda #29                                  ; cursor right
+l26_11           lda #29                                  ; cursor right
                  sta _keyd,x
                  inx
                  stx _ndx
                  cli                                      ; [910710]
 
-_local_1025_120  +lbra main
+l26_12           +lbra main
 
 
 ; .page
@@ -3290,17 +3290,17 @@ link_program
 
 chead            ldy #0
                  jsr indin1                               ; lda (index),y .. check for null link
-                 bne _local_1026_10
+                 bne l27_1
                  iny
                  jsr indin1                               ; lda (index),y
                  beq lnkrts
 
-_local_1026_10   ldy #3                                   ; [900524]
-_local_1026_20   iny                                      ; ???? very expensive loop ????
+l27_1            ldy #3                                   ; [900524]
+l27_2            iny                                      ; ???? very expensive loop ????
                  cpy #254
                  bcs link_error                           ; failsafe- program is mangled  [910103]
                  jsr indin1                               ; lda (index),y
-                 bne _local_1026_20
+                 bne l27_2
                  iny
                  tya
                  adc index
@@ -3341,20 +3341,20 @@ PromptedInput                                             ; qinlin.
 
 InputLine                                                 ; inlin.
                  ldx #0                                   ; read & buffer data until 'return' or buffer full
-_local_1027_10   jsr inchr                                ; get a character
+l28_1            jsr inchr                                ; get a character
                  cmp #0
-                 beq _local_1027_20
+                 beq l28_2
                  cmp #cr                                  ; a carriage return?
-                 beq _local_1027_20                       ; yes...done build
+                 beq l28_2                                ; yes...done build
 
                  sta buf,x                                ; no...buffer it
                  inx
                  cpx #buflen                              ; buffer full?
-                 bcc _local_1027_10                       ; no...continue
+                 bcc l28_1                                ; no...continue
                  +lbra errlen                             ; yes...string too long error
 
 
-_local_1027_20   lda #0                                   ; fininl.  terminate input with a null
+l28_2            lda #0                                   ; fininl.  terminate input with a null
                  sta buf,x
                  ldx #<buf_txtptr                         ; set up pointer to start of buffer-1 (for chrget)
                  ldy #>buf_txtptr
@@ -3391,17 +3391,17 @@ search           sta srchtk                               ; save token to search
 
 ; Test if pointer is at bottom of stack.  If so, the item was not found.
 
-_local_1028_5    lda fndpnt
+l29_1            lda fndpnt
                  cmp #<stkbot
-                 bne _local_1028_10                       ; (fndpnt) <> bottom, ok
+                 bne l29_2                                ; (fndpnt) <> bottom, ok
                  lda fndpnt+1                             ; lsb's the same, test msb's
                  cmp #>stkbot
-                 beq _local_1028_98                       ; stack empty, rts
+                 beq l29_6                                ; stack empty, rts
 
-_local_1028_10   ldy #0
+l29_2            ldy #0
                  lda srchtk                               ; what are we looking for?
                  cmp #for_token                           ; 'for' tokens are special cases
-                 bne _local_1028_20
+                 bne l29_4
 
 ; Looking for a 'for' token.  If next token examined is not a 'for' token,
 ; return with z = 0.  Otherwise, check the pointer to its 'for' variable.
@@ -3410,43 +3410,43 @@ _local_1028_10   ldy #0
 ; mechanisim for examining the next entry.
 
                  cmp (fndpnt),y                           ; indirect ok- looking at runtime stack????
-                 bne _local_1028_99                       ; not 'for', do rts with z = 0
+                 bne l29_7                                ; not 'for', do rts with z = 0
                  ldy #2                                   ; point to msb of 'for' variable
                  lda forpnt+1
                  cmp #$ff
-                 beq _local_1028_99                       ; do rts with z = 1
+                 beq l29_7                                ; do rts with z = 1
                  cmp (fndpnt),y
-                 bne _local_1028_15                       ; not right variable, keep looking.
+                 bne l29_3                                ; not right variable, keep looking.
                  dey
                  lda forpnt                               ; test lsb
                  cmp (fndpnt),y
-                 beq _local_1028_99                       ; a hit! rts with z = 1
+                 beq l29_7                                ; a hit! rts with z = 1
 
-_local_1028_15   ldx #lenfor
-                 bra _local_1028_30                       ; keep looking
+l29_3            ldx #lenfor
+                 bra l29_5                                ; keep looking
 
-_local_1028_20   lda (fndpnt),y
+l29_4            lda (fndpnt),y
                  cmp srchtk                               ; is this the correct type of entry?
-                 beq _local_1028_99                       ; rts with z = 1
+                 beq l29_7                                ; rts with z = 1
 
 ; The entry on top of the run-time stack is not the entry we are looking for.
 ; Find out what is there, and advance temp. pointer past it.
 
                  ldx #lenfor                              ; is it a 'for' entry?
                  cmp #for_token
-                 beq _local_1028_30
+                 beq l29_5
                  ldx #5                                   ; must be gosub or do by default
 
-_local_1028_30   txa
+l29_5            txa
                  clc
                  adc fndpnt
                  sta fndpnt
-                 bcc _local_1028_5
+                 bcc l29_1
                  inc fndpnt+1
-                 bra _local_1028_5                        ; always
+                 bra l29_1                                ; always
 
-_local_1028_98   ldy #1                                   ; clear z flag
-_local_1028_99   rts
+l29_6            ldy #1                                   ; clear z flag
+l29_7            rts
 
 ; .page
 ; GETSTK
@@ -3458,48 +3458,48 @@ getstk           eor #$ff                                 ; make value 2's comp.
                  adc tos
                  sta tos
                  ldy tos+1
-                 bcs _local_1029_10
+                 bcs l30_1
                  dey
-_local_1029_10   sty tos+1
+l30_1            sty tos+1
                  cpy #>stktop
                  +lbcc omerr
-                 bne _local_1029_20
+                 bne l30_2
                  cmp tos
                  +lbcc omerr
-_local_1029_20   rts
+l30_2            rts
 
 ; .page
 ; (a,y) is a certain address.  REASON makes sure it is less than (fretop).
 
 reason           cpy fretop+1
-                 bcc _local_1030_4
-                 bne _local_1030_1                        ; go garbage collect
+                 bcc l31_4
+                 bne l31_1                                ; go garbage collect
                  cmp fretop
-                 bcc _local_1030_4
+                 bcc l31_4
 
-_local_1030_1    pha
+l31_1            pha
                  ldx #9                                   ; if tempf2 has zero in between
                  tya
 
-_local_1030_2    pha
+l31_2            pha
                  lda highds-1,x                           ; save highds on stack
                  dex
-                 bpl _local_1030_2                        ; put 8 of them on stack
+                 bpl l31_2                                ; put 8 of them on stack
                  jsr garba2                               ; go garbage collect
                  ldx #$f7
 
-_local_1030_3    pla
+l31_3            pla
                  sta highds+9,x                           ; restore after garbage collect
                  inx
-                 bmi _local_1030_3
+                 bmi l31_3
                  ply
                  pla                                      ; restore .a and .y
                  cpy fretop+1                             ; compare highs
-                 bcc _local_1030_4
+                 bcc l31_4
                  +lbne omerr                              ; higher is bad
                  cmp fretop                               ; compare the lows
                  +lbcs omerr
-_local_1030_4    rts
+l31_4            rts
 
 ; .page
 
@@ -3530,9 +3530,9 @@ rlsstk           tya
                  clc
                  adc tos
                  sta tos
-                 bcc _local_1031_10
+                 bcc l32_1
                  inc tos+1
-_local_1031_10   rts
+l32_1            rts
 
 ;.end
 ; .page
@@ -3558,35 +3558,35 @@ FindLink
                  stx lowtr+1
                  ldy #1
                  jsr indlow                               ; end of program (null link)?
-                 beq _local_1032_3                        ; yes, exit with .c=0 (not found)
+                 beq l33_3                                ; yes, exit with .c=0 (not found)
                  iny
                  iny
                  jsr indlow                               ; get line number of this line (high byte first)
 ; sta syntmp
 ; lda linnum+1 ;is this the line we're looking for?
 ; cmp syntmp
-; bcc _local_1032_4  ; no- too high, so the line does not exist, exit
-; beq _local_1032_1
+; bcc l33_4  ; no- too high, so the line does not exist, exit
+; beq l33_1
 ; dey  ; no- too low, so get link to next line
-; bra _local_1032_2
+; bra l33_2
                  cmp linnum+1                             ; is this the line we're looking for?   [910925]
-                 beq _local_1032_1                        ; maybe
-                 bcs _local_1032_3                        ; no- too high, so the line does not exist, exit with .c=0
+                 beq l33_1                                ; maybe
+                 bcs l33_3                                ; no- too high, so the line does not exist, exit with .c=0
                  dey                                      ; no- too low, so get link to next line
-                 bra _local_1032_2
+                 bra l33_2
 
-_local_1032_1    dey                                      ; maybe- have to check low byte
+l33_1            dey                                      ; maybe- have to check low byte
                  jsr indlow
 ; sta syntmp
 ; lda linnum
 ; cmp syntmp
-; bcc _local_1032_4  ; no- too high, exit
-; beq _local_1032_4  ; yes- got it, exit
+; bcc l33_4  ; no- too high, exit
+; beq l33_4  ; yes- got it, exit
                  cmp linnum                               ; is this the line we're looking for?   [910925]
-                 beq _local_1032_4                        ; yes- got it, exit with .c=1
-                 bcs _local_1032_3                        ; no- too high, so the line does not exist, exit with .c=0
+                 beq l33_4                                ; yes- got it, exit with .c=1
+                 bcs l33_3                                ; no- too high, so the line does not exist, exit with .c=0
 
-_local_1032_2    dey                                      ; get link to next line
+l33_2            dey                                      ; get link to next line
                  jsr indlow
                  tax
                  dey
@@ -3594,8 +3594,8 @@ _local_1032_2    dey                                      ; get link to next lin
                  bra FindLink                             ; continue looking
 
 
-_local_1032_3    clc                                      ; exit, line not found (.c=0)
-_local_1032_4    rts                                      ; exit, line found (.c=1)
+l33_3            clc                                      ; exit, line not found (.c=0)
+l33_4            rts                                      ; exit, line found (.c=1)
 
 ;.end
 ; .page
@@ -3614,18 +3614,18 @@ linget           ldx #0                                   ; enter with CHRGET fl
                  stx linnum                               ; init line # to 0
                  stx linnum+1
 
-_local_1033_10   bcs _local_1033_40                       ; it's not a digit, do rts
-_local_1033_15   inc endchr                               ; indicate line # input
+l34_1            bcs l34_5                                ; it's not a digit, do rts
+l34_2            inc endchr                               ; indicate line # input
                  sbc #$2f                                 ; '0'-1 since .c=0
                  sta charac                               ; save for later
                  lda linnum+1
                  sta index
                  cmp #25                                  ; line number will be < 64000?
-                 bcc _local_1033_20                       ; yes, continue
-                 bbs1 helper,_local_1033_40               ; no, if called by AutoScroll it's okay
+                 bcc l34_3                                ; yes, continue
+                 bbs1 helper,l34_5                        ; no, if called by AutoScroll it's okay
                  +lbra snerr                              ; else syntax error
 
-_local_1033_20   lda linnum
+l34_3            lda linnum
                  asl                                      ; multiply by 10
                  rol index
                  asl
@@ -3640,26 +3640,26 @@ _local_1033_20   lda linnum
                  lda linnum
                  adc charac                               ; add in digit
                  sta linnum
-                 bcc _local_1033_30
+                 bcc l34_4
                  inc linnum+1
-_local_1033_30
+l34_4
 ; jsr chrget  ;ALLOW SPACES to terminate number  [910620]
-; bra _local_1033_10
+; bra l34_1
                  inw txtptr                               ; get next character from text
                  ldy #0                                   ; re-get current character from text
                  jsr indtxt                               ; lda (txtptr),y from RAM0
                  cmp #' '                                 ; space=eol    [910708]
-                 beq _local_1033_50
+                 beq l34_6
                  cmp #':'                                 ;
-                 bcs _local_1033_40                       ; eol
+                 bcs l34_5                                ; eol
                  sec
                  sbc #'0'                                 ; alpha or numeric?
                  sec
                  sbc #$d0
-                 bcc _local_1033_15                       ; numeric
-_local_1033_40   rts                                      ; exit
+                 bcc l34_2                                ; numeric
+l34_5            rts                                      ; exit
 
-_local_1033_50   jsr chargt                               ; terminating character is a space, eat it just this once
+l34_6            jsr chargt                               ; terminating character is a space, eat it just this once
                  +lbra chrtst                             ; return with flags set appropriately (esp. for 'range')
 
 ;.end
@@ -3696,7 +3696,7 @@ list_file
                  jsr _basin                               ; waste 'load address'
                  jsr _basin
 
-_local_1034_10   jsr _basin                               ; get link bytes
+l35_1            jsr _basin                               ; get link bytes
                  sta dosstr
                  jsr _basin
                  sta dosstr+1
@@ -3717,7 +3717,7 @@ _local_1034_10   jsr _basin                               ; get link bytes
                  jsr _basin                               ; 2-byte line #
                  sta dosstr,x
                  inx
-_local_1034_20   cpx #255                                 ; check buffer (buflen????)
+l35_2            cpx #255                                 ; check buffer (buflen????)
                  +lbcs errlen                             ; 'too long' error
                  jsr _basin
                  sta dosstr,x
@@ -3728,7 +3728,7 @@ _local_1034_20   cpx #255                                 ; check buffer (buflen
                  jsr _stop
                  beq list_exit                            ; exit if stop key down
                  tya
-                 bne _local_1034_20                       ; loop until eol
+                 bne l35_2                                ; loop until eol
 
                  jsr dcato                                ; get output channel
                  jsr crdo                                 ; start new line
@@ -3738,7 +3738,7 @@ _local_1034_20   cpx #255                                 ; check buffer (buflen
                  jsr _clrch
                  ldx dosla
                  jsr _chkin                               ; get input channel
-                 bcc _local_1034_10                       ; [900730]
+                 bcc l35_1                                ; [900730]
 
 list_exit
                  jsr dcato                                ; flush last line with a <cr>
@@ -3762,14 +3762,14 @@ list_err
 list_memory
                  jsr range                                ; set up line range
 
-_local_1035_10   ldy #1
+l36_1            ldy #1
                  jsr indlow                               ; get ms byte of line to list's pointer
-                 bne _local_1035_20                       ; ok if not zero, but..
+                 bne l36_2                                ; ok if not zero, but..
                  dey
                  jsr indlow
                  +lbeq crdo                               ; ..if ls byte is also zero, we're done
 
-_local_1035_20   jsr is_stop_key_down
+l36_2            jsr is_stop_key_down
                  jsr crdo                                 ; new line
                  ldy #2
                  jsr indlow                               ; get ms byte of line number
@@ -3778,11 +3778,11 @@ _local_1035_20   jsr is_stop_key_down
                  jsr indlow                               ; get ls byte
 
                  cmp linnum+1                             ; test if we are past the last line requested
-                 bne _local_1035_30
+                 bne l36_3
                  cpx linnum
-                 beq _local_1035_40
-_local_1035_30   +lbcs crdo                               ; next line is > last line requested, exit
-_local_1035_40   jsr p1line                               ; print line #, space, and the line of code
+                 beq l36_4
+l36_3            +lbcs crdo                               ; next line is > last line requested, exit
+l36_4            jsr p1line                               ; print line #, space, and the line of code
                  ldy #0                                   ; move 'pointer to next line' into (lowtr)
                  jsr indlow
                  tax
@@ -3790,7 +3790,7 @@ _local_1035_40   jsr p1line                               ; print line #, space,
                  jsr indlow
                  stx lowtr
                  sta lowtr+1
-                 bra _local_1035_10
+                 bra l36_1
 
 ; .page
 ;******************************************************
@@ -3805,10 +3805,10 @@ _local_1035_40   jsr p1line                               ; print line #, space,
 ;    (lowtr)        .A    .X
 ;******************************************************
 
-p1line           bbr4 runmod,_local_1036_10               ; [910620]
+p1line           bbr4 runmod,l37_1                        ; [910620]
                  +lbra edit_p1line                        ; handle things differently for plain text
 
-_local_1036_10   ldy #3
+l37_1            ldy #3
                  sty lstpnt
                  sty dores                                ; reset quote-switch
                  jsr linprt                               ; print line number
@@ -3818,26 +3818,26 @@ p1l010           ldy lstpnt
                  and #$7f
 
 p1l015           cmp #':'                                 ; end-of-stmt?     [900516]
-                 bne _local_1037_5                        ; no
-                 bbr7 helper,_local_1037_5                ; yes, but skip e-o-s check if not HELP...
-                 bbs7 dores,_local_1037_5                 ; or ':' is inside quotes
+                 bne l38_1                                ; no
+                 bbr7 helper,l38_1                        ; yes, but skip e-o-s check if not HELP...
+                 bbs7 dores,l38_1                         ; or ':' is inside quotes
                  jsr highlight_done                       ; yes, restore normal text color
                  lda #':'
 
-_local_1037_5    jsr outch                                ; outdo
+l38_1            jsr outch                                ; outdo
                  cmp #'"'                                 ; if quote character, toggle quote-switch
-                 bne _local_1037_10
+                 bne l38_2
                  lda dores
                  eor #$ff
                  sta dores
 
-_local_1037_10   iny                                      ; point to next character (should never wrap)
-                 bbs0 helper,_local_1037_15               ; branch if highlighting tokens
-                 bbs5 helper,_local_1037_15               ; branch if called by FIND/CHANGE
-                 bbr7 helper,_local_1037_20               ; branch if called by LIST or HELP satisfied
-_local_1037_15   jsr helpsb
+l38_2            iny                                      ; point to next character (should never wrap)
+                 bbs0 helper,l38_3                        ; branch if highlighting tokens
+                 bbs5 helper,l38_3                        ; branch if called by FIND/CHANGE
+                 bbr7 helper,l38_4                        ; branch if called by LIST or HELP satisfied
+l38_3            jsr helpsb
 
-_local_1037_20   jsr indlow
+l38_4            jsr indlow
                  +lbeq highlight_done                     ; finished when trailing null is found
                  jmp (iqplop)                             ; usually points to nqplop
 
@@ -3869,11 +3869,11 @@ p1l026           sta index1+1                             ; index1 points to tok
                  dex
                  bpl p1l070                               ; what luck! it's the first one
 
-_local_1038_10   inw index1                               ; scan text until next command found
+l39_1            inw index1                               ; scan text until next command found
                  lda (index1),y                           ; ind.ok (ROM)
-                 bpl _local_1038_10                       ; loop until terminal char (msb=1)
+                 bpl l39_1                                ; loop until terminal char (msb=1)
                  dex                                      ; is next text the one we want?
-                 bmi _local_1038_10                       ; no, keep scanning
+                 bmi l39_1                                ; no, keep scanning
                  inw index1                               ; yes, point to first character
 
                  bbr3 helper,p1l070                       ; found text for this token, is it REM?  [910626]
@@ -3950,11 +3950,11 @@ print_esc_fn
 
 print_foreign_esc
                  cpx #esc_command_token
-                 bne _local_1039_1
+                 bne l40_1
                  ldx #0
                  !text $2c
 
-_local_1039_1    ldx #$ff
+l40_1            ldx #$ff
                  sec
                  jmp (iescpr)
 
@@ -4032,18 +4032,18 @@ runc             jsr reset_txtptr                         ; load (txtptr) with (
 clear            beq clearc                               ; branch if no args    [910410]
 
                  cmp #err_token                           ; CLR ERR$
-                 bne _local_1040_10                       ; no
+                 bne l41_1                                ; no
                  jsr chkeos                               ; yes- eat token & error if not eos
                  +lbra error_clear                        ; and go clear ERR$
 
-_local_1040_10   cmp #'D'                                 ; CLR DS$     [910717]
-                 bne _local_1040_20                       ; no- error
+l41_1            cmp #'D'                                 ; CLR DS$     [910717]
+                 bne l41_2                                ; no- error
                  jsr chrget
                  cmp #'S'
-                 bne _local_1040_20
+                 bne l41_2
                  jsr chrget
                  cmp #'$'
-_local_1040_20   +lbne snerr                              ; no- error
+l41_2            +lbne snerr                              ; no- error
                  jsr chkeos
                  +lbra Clear_DS                           ; yes- clear current DS$
 
@@ -4079,10 +4079,10 @@ clearc           jsr _clall                               ; close all files
                  sty strend+1
 
                  ldx #pumony-puchrs                       ; reset print using chars
-_local_1041_1    lda pudefs,x
+l42_1            lda pudefs,x
                  sta puchrs,x
                  dex
-                 bpl _local_1041_1
+                 bpl l42_1
 
 fload            jsr restore__1                           ; reset pointer for DATA statements
 
@@ -4193,18 +4193,18 @@ remn             ldx #0                                   ; REM terminates on nu
                  ldy #0                                   ; this makes charac=0 after swap
                  sty endchr
 
-_local_1042_10   lda endchr
+l43_1            lda endchr
                  ldx charac
                  sta charac
                  stx endchr
-_local_1042_20   jsr indtxt
+l43_2            jsr indtxt
                  beq remrts                               ; null always terminates
                  cmp endchr                               ; is it some another terminator?
                  beq remrts                               ; yes, it's finished
                  iny                                      ; progress to next character
                  cmp #'"'                                 ; is it a quote?
-                 bne _local_1042_20                       ; no, just continue
-                 beq _local_1042_10                       ; yes, time to change
+                 bne l43_2                                ; no, just continue
+                 beq l43_1                                ; yes, time to change
 
 ;.end
 ; .page
@@ -4226,64 +4226,64 @@ _local_1042_20   jsr indtxt
 if               jsr frmevl                               ; evaluate the conditional expression
                  jsr chrgot                               ; re-get current character
                  cmp #goto_token                          ; is terminating character a GOTO?
-                 beq _local_1043_10                       ; yes
+                 beq l44_1                                ; yes
                  lda #then_token                          ; no, it must be THEN
                  jsr synchr
 
-_local_1043_10   lda facexp                               ; test truth value of argument
+l44_1            lda facexp                               ; test truth value of argument
                  bne if_true                              ; branch if true
 
 if_false
                  jsr chrgot                               ; is there a b-block?
                  cmp #esc_command_token
-                 bne _local_1044_20                       ; no, must be an escape command
+                 bne l45_1                                ; no, must be an escape command
                  iny                                      ; might be, look at escape token
                  jsr indtxt
                  cmp #begin_token
-                 bne _local_1044_20                       ; branch if not
+                 bne l45_1                                ; branch if not
                  jsr find_bend                            ; skip to end of b-block
 
-_local_1044_20   jsr data                                 ; may be 'else' clause. first skip over 'then' clause..
+l45_1            jsr data                                 ; may be 'else' clause. first skip over 'then' clause..
                  ldy #0
                  jsr indtxt                               ; ..and see if end of stmt or end of line
                  beq rem                                  ; end of line, no 'else'. go to next line
                  jsr chrget                               ; another statement on this line.. is it 'else'?
                  cmp #else_token
-                 bne _local_1044_20                       ; no, keep looking on this line
+                 bne l45_1                                ; no, keep looking on this line
                  jsr chrget                               ; yes! skip over token and execute clause (below)
 
 if_true          jsr chrgot
-                 beq _local_1045_20                       ; branch if end of statement
-                 bcs _local_1045_10                       ; branch if not a number
+                 beq l46_2                                ; branch if end of statement
+                 bcs l46_1                                ; branch if not a number
                  +lbra goto                               ; here if of the form 'THEN line#'
 
-_local_1045_10   cmp #esc_command_token                   ; is this the beginning of a b-block?
-                 bne _local_1045_20                       ; no, must be an escape command
+l46_1            cmp #esc_command_token                   ; is this the beginning of a b-block?
+                 bne l46_2                                ; no, must be an escape command
                  iny                                      ; might be, look at escape token
                  jsr indtxt
                  cmp #begin_token
-                 bne _local_1045_20
+                 bne l46_2
                  jsr chrget                               ; skip over 'BEGIN' if so...
                  jsr chrget                               ; ..and the second token, as well.
 
-_local_1045_20   jsr chrgot                               ; get back original character, & set up flags
+l46_2            jsr chrgot                               ; get back original character, & set up flags
                  +lbra xeqcm3                             ; ..and go execute whatever it is
 
 ; .page
 find_bend                                                 ; ... subroutine to find end of current b-block
                  jsr chrget
-                 bne _local_1046_20
+                 bne l47_3
 
 ; End of statement.. set up next
 
-_local_1046_10   cmp #':'                                 ; is this EOL?
+l47_1            cmp #':'                                 ; is this EOL?
                  beq find_bend                            ; no, keep looking
 
-_local_1046_15   bbr7 runmod,_local_1046_99               ; EOL: branch if direct mode, 'block terminator not found' error
+l47_2            bbr7 runmod,l47_7                        ; EOL: branch if direct mode, 'block terminator not found' error
 
                  ldy #2
                  jsr indtxt                               ; end of text?
-                 beq _local_1046_99                       ; yes, msb of next stmt pointer = 0. error
+                 beq l47_7                                ; yes, msb of next stmt pointer = 0. error
 
                  iny
                  jsr indtxt
@@ -4299,23 +4299,23 @@ _local_1046_15   bbr7 runmod,_local_1046_99               ; EOL: branch if direc
                  inc txtptr+1
                  bra find_bend                            ; always
 
-_local_1046_20   cmp #'"'
-                 bne _local_1046_30
+l47_3            cmp #'"'
+                 bne l47_4
                  jsr un_quote                             ; look for terminating quote, or EOL
-                 beq _local_1046_10                       ; EOL or ':' after closing quote
+                 beq l47_1                                ; EOL or ':' after closing quote
                  bne find_bend                            ; ..else normal char, keep looking
 
-_local_1046_30   cmp #rem_token                           ; REM?
-                 bne _local_1046_35                       ; no
+l47_4            cmp #rem_token                           ; REM?
+                 bne l47_5                                ; no
                  jsr rem                                  ; yes, trash this line
-                 bra _local_1046_15                       ; and go test for end of text
+                 bra l47_2                                ; and go test for end of text
 
-_local_1046_35   cmp #esc_command_token                   ; is this a BEND?
+l47_5            cmp #esc_command_token                   ; is this a BEND?
                  bne find_bend                            ; can't be, has to be an escape
 
                  jsr chrget                               ; skip over esc token
                  cmp #bend_token
-                 beq _local_1046_40                       ; this is what we came for, bye!
+                 beq l47_6                                ; this is what we came for, bye!
 
                  cmp #begin_token                         ; not a BEND. is it a BEGIN?
                  bne find_bend                            ; it's just a normal, stick-in-the-mud char. keep looking.
@@ -4323,32 +4323,32 @@ _local_1046_35   cmp #esc_command_token                   ; is this a BEND?
                  jsr find_bend                            ; oh-oh, recursion. Dr. Ja-Ja warned me about this.
                  bra find_bend
 
-_local_1046_40   rts
+l47_6            rts
 
-_local_1046_99   ldx #err_no_bend
+l47_7            ldx #err_no_bend
                  +lbra error
 
 un_quote                                                  ; txtptr points to a '"'. look for closing '"', or EOL
                  ldy #0
-_local_1047_10   inw txtptr
+l48_1            inw txtptr
                  jsr indtxt
-                 beq _local_1047_30                       ; EOL, get out here with .z set and a '00' in .a
+                 beq l48_2                                ; EOL, get out here with .z set and a '00' in .a
                  cmp #'"'
-                 bne _local_1047_10                       ; keep looking until quote
+                 bne l48_1                                ; keep looking until quote
                  jmp chrget                               ; got closing quote, get byte after quote, set flags
 
-_local_1047_30   rts
+l48_2            rts
 
 ; .page
 
 else             cmp #esc_command_token                   ; is this of the form "ELSE b-block"?
-                 bne _local_1048_10                       ; no, must be an escape command
+                 bne l49_1                                ; no, must be an escape command
                  iny                                      ; might be, look at escape token
                  jsr indtxt
                  cmp #begin_token
-                 bne _local_1048_10                       ; no, justa plain-old "ELSE statement"
+                 bne l49_1                                ; no, justa plain-old "ELSE statement"
                  jsr find_bend                            ; yes, it is a b-block. skip over the b-block.
-_local_1048_10   +lbra rem
+l49_1            +lbra rem
 
 
 ;.end
@@ -4362,19 +4362,19 @@ ongoto
                  jsr getbyt                               ; get & save GOTO/GOSUB
                  pha
                  cmp #goto_token                          ; GOTO?
-                 beq _local_1049_1                        ; yes
+                 beq l50_1                                ; yes
                  cmp #gosub_token                         ; GOSUB?
                  +lbne snerr                              ; no, syntax error
 
-_local_1049_1    dec faclo
-                 bne _local_1049_2                        ; skip another line number
+l50_1            dec faclo
+                 bne l50_2                                ; skip another line number
                  pla                                      ; get dispatch character
                  +lbra xeqcm2
 
-_local_1049_2    jsr chrget                               ; advance and set codes
+l50_2            jsr chrget                               ; advance and set codes
                  jsr linget                               ; read next line
                  cmp #','                                 ; is it a "comma"?
-                 beq _local_1049_1
+                 beq l50_1
                  pla                                      ; remove stack entry (token)
                  rts                                      ; either end of line or syntax error
 
@@ -4441,22 +4441,22 @@ dskx1            pla
                  iny
 
 dskx2            cmp fretop+1
-                 bcc _local_1050_20
-                 bne _local_1050_10
+                 bcc l51_2
+                 bne l51_1
                  dey
                  jsr indfmo
                  cmp fretop
-                 bcc _local_1050_20
+                 bcc l51_2
 
-_local_1050_10   ldy faclo                                ; qvaria
+l51_1            ldy faclo                                ; qvaria
                  cpy vartab+1                             ; if (vartab) > (facmo), don't copy
-                 bcc _local_1050_20
+                 bcc l51_2
                  bne copy                                 ; it is less
                  lda facmo
                  cmp vartab                               ; compare low orders
                  bcs copy
 
-_local_1050_20   lda facmo                                ; dntcpy
+l51_2            lda facmo                                ; dntcpy
                  ldy facmo+1
                  bra copyc
 
@@ -4502,7 +4502,7 @@ copyc            sta dscpnt
 ;   string by pointing it to its new descriptor.
 
                  jsr stradj                               ; set up new string
-                 bcc _local_1051_10                       ; leave it alone
+                 bcc l52_1                                ; leave it alone
                  ldy #0
                  lda forpnt                               ; put in backwards link
                  phx
@@ -4513,12 +4513,12 @@ copyc            sta dscpnt
                  jsr sta_far_ram1
                  plx
 
-_local_1051_10   lda forpnt                               ; fix old string
+l52_1            lda forpnt                               ; fix old string
                  sta index
                  lda forpnt+1
                  sta index+1
                  jsr stradj                               ; point to old string
-                 bcc _local_1051_20                       ; in text do not fix
+                 bcc l52_2                                ; in text do not fix
                  dey                                      ; restore y
                  phx
                  ldx #index
@@ -4530,14 +4530,14 @@ _local_1051_10   lda forpnt                               ; fix old string
                  jsr sta_far_ram1                         ; store length
                  plx
 
-_local_1051_20   ldy #2                                   ; set the descriptor
+l52_2            ldy #2                                   ; set the descriptor
                  phx
                  ldx #forpnt
-_local_1051_30   lda #dscpnt
+l52_3            lda #dscpnt
                  jsr lda_far_ram1                         ; lda (dscpnt),y from RAM1
                  jsr sta_far_ram1                         ; sta (forpnt),y to   RAM1
                  dey
-                 bpl _local_1051_30
+                 bpl l52_3
                  plx
                  rts
 
@@ -4551,42 +4551,42 @@ _local_1051_30   lda #dscpnt
 stradj           ldy #0
                  jsr indin1_ram1                          ; push length on stack
                  pha
-                 beq _local_1052_50                       ; if length=0 do nothing
+                 beq l53_5                                ; if length=0 do nothing
                  iny
                  jsr indin1_ram1                          ; get low byte (into .x)
                  tax
                  iny
                  jsr indin1_ram1                          ; get high byte
                  cmp max_mem_1+1
-                 bcc _local_1052_10                       ; ok
-                 bne _local_1052_50                       ; if above top of memory
+                 bcc l53_1                                ; ok
+                 bne l53_5                                ; if above top of memory
                  cpx max_mem_1                            ; msb the same, test lsb
-                 bcs _local_1052_50                       ; if above top of memory
+                 bcs l53_5                                ; if above top of memory
 
-_local_1052_10   cmp fretop+1
-                 bcc _local_1052_50                       ; if below fretop
-                 bne _local_1052_20
+l53_1            cmp fretop+1
+                 bcc l53_5                                ; if below fretop
+                 bne l53_2
                  cpx fretop
-                 bcc _local_1052_50                       ; if below fretop
+                 bcc l53_5                                ; if below fretop
 
-_local_1052_20   cmp dsdesc+2
-                 bne _local_1052_30                       ; fix
+l53_2            cmp dsdesc+2
+                 bne l53_3                                ; fix
                  cpx dsdesc+1
-                 beq _local_1052_50
+                 beq l53_5
 
-_local_1052_30   stx index                                ; ok set pointer
+l53_3            stx index                                ; ok set pointer
                  sta index+1
                  pla                                      ; get back length
                  tax                                      ; into x also
                  clc
                  adc index
                  sta index
-                 bcc _local_1052_40
+                 bcc l53_4
                  inc index+1
-_local_1052_40   sec                                      ; carry set
+l53_4            sec                                      ; carry set
                  rts
 
-_local_1052_50   pla                                      ; clean up stack
+l53_5            pla                                      ; clean up stack
                  clc
                  rts
 
@@ -4605,11 +4605,11 @@ printn           jsr cmd                                  ; docmd
 
 
 cmd              jsr getbyt
-                 beq _local_1053_10
+                 beq l54_1
                  lda #','                                 ; comma?
                  jsr synchr
 
-_local_1053_10   php                                      ; save stat (beq=eof)
+l54_1            php                                      ; save stat (beq=eof)
                  pha                                      ; save char
                  stx channl                               ; channel to output on
                  jsr coout
@@ -4801,7 +4801,7 @@ input            rmb7 op                                  ; flag INPUT vs. LINPU
 
                  jsr chrgot                               ; looking for prompt string terminator  [910219]
                  cmp #','
-                 bne _local_1054_10
+                 bne l55_1
                  sta buf_txtptr                           ; is comma- supress '?' after prompt  [910219]
                  jsr chrget                               ; eat comma
                  jsr strprt                               ; print prompt
@@ -4809,7 +4809,7 @@ input            rmb7 op                                  ; flag INPUT vs. LINPU
                  jsr InputLine                            ; get first item
                  bra getagn1                              ; see if there's more to do
 
-_local_1054_10   lda #';'                                 ; must end in semicolon
+l55_1            lda #';'                                 ; must end in semicolon
                  jsr synchr
                  jsr strprt                               ; print prompt
 
@@ -4819,15 +4819,15 @@ notqti           jsr errdir                               ; use common routine s
 
 getagn           jsr PromptedInput                        ; type "?" and input a line of text
 getagn1          lda channl
-                 beq _local_1055_10
+                 beq l56_1
                  jsr _readst                              ; get status byte
 ; and #2   ; (assumes serial bus????)  [910618] eoi ok
                  and #%10000111                           ; serial: err if dnp, r/w timeout errors
-                 beq _local_1055_10                       ; a-ok rs232: err if brk, ovr, frm, par errors
+                 beq l56_1                                ; a-ok rs232: err if brk, ovr, frm, par errors
                  jsr release_channels                     ; bad, close channel
                  +lbra data                               ; skip rest of input
 
-_local_1055_10   lda buf                                  ; bufful. get anything?
+l56_1            lda buf                                  ; bufful. get anything?
                  bne inpcon                               ; yes- process input
 ; lda channl  ;didn't get anything.  is this keyboard? [901212]
 ; bne getagn  ; no- keep looking for data ????
@@ -4858,12 +4858,12 @@ inloop           jsr ptrget                               ; get a pointer to the
                  sty forpnt+1
 
                  ldx #1
-_local_1056_1    lda txtptr,x                             ; move variable list pointer to 'vartxt'
+l57_1            lda txtptr,x                             ; move variable list pointer to 'vartxt'
                  sta vartxt,x
                  lda inpptr,x                             ; move data line pointer to 'txtptr'
                  sta txtptr,x
                  dex
-                 bpl _local_1056_1
+                 bpl l57_1
 
                  jsr chrgot                               ; get first data byte
                  bne datbk1                               ; not null, so we got something
@@ -4871,15 +4871,15 @@ _local_1056_1    lda txtptr,x                             ; move variable list p
                  bvc qdata                                ; branch if READ or INPUT
                  lda z_p_temp_1                           ; GET or GETKEY?
                  cmp #key_token
-                 bne _local_1056_3                        ; branch if GET
+                 bne l57_3                                ; branch if GET
 
-_local_1056_2    jsr cgetl                                ; GETKEY
+l57_2            jsr cgetl                                ; GETKEY
                  tax                                      ; test if null
-                 beq _local_1056_2                        ; it is null, keep scanning
-                 bne _local_1056_4                        ; got a key, go put it in var
+                 beq l57_2                                ; it is null, keep scanning
+                 bne l57_4                                ; got a key, go put it in var
 
-_local_1056_3    jsr cgetl                                ; get a key if pressed, otherwise gets a zero
-_local_1056_4    sta buf
+l57_3            jsr cgetl                                ; get a key if pressed, otherwise gets a zero
+l57_4            sta buf
                  ldx #<buf_txtptr
                  ldy #>buf_txtptr
                  bra datbk
@@ -4887,75 +4887,75 @@ _local_1056_4    sta buf
 ; .page
 qdata            +lbmi datlop                             ; branch if READ
                  lda channl                               ; else it's INPUT
-                 bne _local_1057_10
+                 bne l58_1
                  jsr outqst                               ; console input, so display '? ' prompt
 
-_local_1057_10   jsr PromptedInput                        ; get another line
+l58_1            jsr PromptedInput                        ; get another line
 
 datbk            stx txtptr                               ; set for CHRGET
                  sty txtptr+1
 
-datbk1           bbr7 op,_local_1058_1                    ; no chrgot if LINPUT (want leading spaces) [910513]
+datbk1           bbr7 op,l59_1                            ; no chrgot if LINPUT (want leading spaces) [910513]
                  jsr chargt
                  jsr chrtst
-                 bra _local_1058_2
+                 bra l59_2
 
-_local_1058_1    jsr chrget                               ; get next data byte
-_local_1058_2    bbr7 valtyp,_local_1058_50               ; get value type, input a number if numeric
-                 bbr6 input_flag,_local_1058_10           ; branch if not get, set quote
+l59_1            jsr chrget                               ; get next data byte
+l59_2            bbr7 valtyp,l59_8                        ; get value type, input a number if numeric
+                 bbr6 input_flag,l59_4                    ; branch if not get, set quote
                  inx
                  stx txtptr
-_local_1058_5    lda #0                                   ; [901212]
+l59_3            lda #0                                   ; [901212]
                  sta charac
-                 bra _local_1058_20
+                 bra l59_5
 
-_local_1058_10   bbs7 op,_local_1058_5                    ; no terminators if LINPUT or LREAD  [901212]
+l59_4            bbs7 op,l59_3                            ; no terminators if LINPUT or LREAD  [901212]
                  sta charac                               ; setqut.  assume quoted string
                  cmp #'"'                                 ; terminators ok?
-                 beq _local_1058_30                       ; yes (sets .c)
+                 beq l59_6                                ; yes (sets .c)
                  lda #':'                                 ; set terminators to ":" and...
                  sta charac
                  lda #','                                 ; ...comma
 
-_local_1058_20   clc                                      ; resetc
-_local_1058_30   sta endchr                               ; nowget
+l59_5            clc                                      ; resetc
+l59_6            sta endchr                               ; nowget
                  lda txtptr
                  ldy txtptr+1
                  adc #0                                   ; .c is set properly above
-                 bcc _local_1058_40
+                 bcc l59_7
                  iny
-_local_1058_40   jsr strlt2                               ; make a string descriptor for the value & copy if needed
+l59_7            jsr strlt2                               ; make a string descriptor for the value & copy if needed
                  jsr st2txt                               ; copy strng2 to txtptr (st-2-txt... get it?)
                  jsr inpcom                               ; do assignment
-                 bra _local_1058_60
+                 bra l59_9
 
-_local_1058_50   bbs7 op,_local_1058_100                  ; error if LINPUT (string input only)  [901212]
+l59_8            bbs7 op,l59_10                           ; error if LINPUT (string input only)  [901212]
                  ldx #0                                   ; numins. flag 'text bank' (0)
                  jsr fin
                  lda intflg                               ; set codes on flags
                  jsr qintgr                               ; go decide on float
 
-_local_1058_60   jsr chrgot                               ; strdn2. read last character
+l59_9            jsr chrgot                               ; strdn2. read last character
                  beq trmok                                ; ":" or EOL is ok
                  cmp #','                                 ; a comma?
                  beq trmok
 
                  lda input_flag                           ; is this get, read, or input?
-                 beq _local_1058_110                      ; input
-                 bmi _local_1058_100                      ; read
+                 beq l59_11                               ; input
+                 bmi l59_10                               ; read
                  ldx channl                               ; get. if not kbd, go use 'bad file data error'
-                 bne _local_1058_120
+                 bne l59_12
 
-_local_1058_100  ldx #errtm                               ; tmerr. 'get from kbd' or 'read' saw a bad type
-                 bra _local_1058_130                      ; always
+l59_10           ldx #errtm                               ; tmerr. 'get from kbd' or 'read' saw a bad type
+                 bra l59_13                               ; always
 
-_local_1058_110  lda channl
-                 beq _local_1058_200                      ; do again if keybd input
-_local_1058_120  ldx #errbd                               ; input saw bad file data
-_local_1058_130  +lbra error
+l59_11           lda channl
+                 beq l59_14                               ; do again if keybd input
+l59_12           ldx #errbd                               ; input saw bad file data
+l59_13           +lbra error
 
 
-_local_1058_200  jsr highlight_text                       ; [911119]
+l59_14           jsr highlight_text                       ; [911119]
                  jsr _primm
                  !text "?REDO FROM START",cr,0
                  jsr highlight_done                       ; [911119]
@@ -4969,38 +4969,38 @@ ott              lda oldtxt
 
 
 trmok            ldx #1
-_local_1059_1    lda txtptr,x
+l60_1            lda txtptr,x
                  sta inpptr,x                             ; save for more reads
                  lda vartxt,x
                  sta txtptr,x                             ; point to variable list
                  dex
-                 bpl _local_1059_1
+                 bpl l60_1
 
                  jsr chrgot                               ; look at last vartab character
-                 beq _local_1059_2                        ; that's the end of the list
+                 beq l60_2                                ; that's the end of the list
                  jsr chkcom                               ; not end. check for comma
                  +lbra inloop
 
-_local_1059_2    lda inpptr                               ; put away a new data pntr name
+l60_2            lda inpptr                               ; put away a new data pntr name
                  ldy inpptr+1
-                 bbr7 input_flag,_local_1059_3
+                 bbr7 input_flag,l60_3
                  sta datptr
                  sty datptr+1
                  rts
 
-_local_1059_3    ldy #0                                   ; last data chr could have been ',' or ':' but should be null
+l60_3            ldy #0                                   ; last data chr could have been ',' or ':' but should be null
                  lda #inpptr
                  jsr lda_far_ram0
-                 beq _local_1059_4                        ; it is null
+                 beq l60_4                                ; it is null
                  lda channl                               ; if not terminal, no type
-                 bne _local_1059_4
+                 bne l60_4
 
                  jsr highlight_text                       ; [911119]
                  jsr _primm
                  !text "?EXTRA IGNORED", cr,0
                  jsr highlight_done                       ; [911119]
 
-_local_1059_4    rts                                      ; do next statement
+l60_4            rts                                      ; do next statement
 
 ; .page
 ; DATLOP Routine Subroutine to find data.
@@ -5013,7 +5013,7 @@ _local_1059_4    rts                                      ; do next statement
 datlop           jsr datan                                ; skip some text
                  iny
                  tax                                      ; end of line?
-                 bne _local_1060_10                       ; no
+                 bne l61_1                                ; no
                  ldx #errod                               ; yes, "no data" error
                  iny
                  jsr indtxt
@@ -5027,7 +5027,7 @@ datlop           jsr datan                                ; skip some text
                  iny
                  sta datlin+1
 
-_local_1060_10   jsr addon                                ; nowlin.  txtptr+.y
+l61_1            jsr addon                                ; nowlin.  txtptr+.y
                  jsr chrgot                               ; span blanks
                  tax                                      ; used later
                  cpx #data_token                          ; is it a DATA statement?
@@ -5055,39 +5055,39 @@ _local_1060_10   jsr addon                                ; nowlin.  txtptr+.y
 ;
 ; (total 16 bytes)
 
-next             bne _local_1061_10                       ; hop if 'next' variable given
+next             bne l62_2                                ; hop if 'next' variable given
                  ldy #$ff                                 ; flag no specific 'for' variable
-                 bra _local_1061_20                       ; always
+                 bra l62_3                                ; always
 
-_local_1061_5    ldy #lenfor                              ; done, clean up stack
+l62_1            ldy #lenfor                              ; done, clean up stack
                  jsr rlsstk                               ; release (y) items from stack
                  jsr chrgot
                  cmp #','                                 ; ie., NEXT j,k
-                 bne _local_1061_45
+                 bne l62_7
                  jsr chrget
 
-_local_1061_10   jsr ptrget                               ; get pointer to variable in (a,y)
+l62_2            jsr ptrget                               ; get pointer to variable in (a,y)
                  sta forpnt
 
-_local_1061_20   sty forpnt+1
+l62_3            sty forpnt+1
                  lda #for_token
                  jsr search                               ; look for FOR entry in run-time stack
-                 beq _local_1061_30                       ; branch if found
+                 beq l62_4                                ; branch if found
                  ldx #errnf                               ; otherwise 'error, not found'
                  +lbra error
 
 
 ; Set up to move STEP value to FAC
 
-_local_1061_30   jsr movfnd                               ; (fndpnt) => (tos)
+l62_4            jsr movfnd                               ; (fndpnt) => (tos)
                  lda fndpnt
                  clc
                  adc #3                                   ; offset to step value
                  ldy fndpnt+1
-                 bcc _local_1061_35
+                 bcc l62_5
                  iny
 
-_local_1061_35   jsr movfm                                ; actually "move from ROM", but sys stack is in "common"
+l62_5            jsr movfm                                ; actually "move from ROM", but sys stack is in "common"
                  ldy #8                                   ; MOVFM doesn't move sign.  Get it
                  lda (fndpnt),y
                  sta facsgn
@@ -5114,18 +5114,18 @@ _local_1061_35   jsr movfm                                ; actually "move from 
                  clc
                  adc #9
                  ldy fndpnt+1
-                 bcc _local_1061_40
+                 bcc l62_6
                  iny
 
 ; Test if loop done
 
-_local_1061_40
+l62_6
 ; sta sw_rom_ram0 ;????
                  jsr fcomp                                ; compare FAC to value pointed to by (a,y)
                  ldy #8
                  sec
                  sbc (fndpnt),y                           ; (common area????)
-                 beq _local_1061_5                        ; branch taken if done
+                 beq l62_1                                ; branch taken if done
 
                  ldy #17                                  ; not done, set pointers to re-execute loop
                  lda (fndpnt),y                           ; (common area????)
@@ -5139,7 +5139,7 @@ _local_1061_40
                  dey
                  lda (fndpnt),y
                  sta curlin
-_local_1061_45   rts
+l62_7            rts
 
 ;.end
 ; .page
@@ -5178,26 +5178,26 @@ sys              jsr getwrd                               ; convert arg to integ
                  sta _bank
 
                  jsr optbyt                               ; (optional) .A reg arg
-                 bcc _local_1062_10
+                 bcc l63_1
                  stx _a_reg
 
-_local_1062_10   jsr optbyt                               ; (optional) .X reg arg
-                 bcc _local_1062_20
+l63_1            jsr optbyt                               ; (optional) .X reg arg
+                 bcc l63_2
                  stx _x_reg
 
-_local_1062_20   jsr optbyt                               ; (optional) .Y reg arg
-                 bcc _local_1062_30
+l63_2            jsr optbyt                               ; (optional) .Y reg arg
+                 bcc l63_4
                  stx _y_reg
 
-_local_1062_25   jsr optbyt                               ; (optional) .Z reg arg
-                 bcc _local_1062_30
+l63_3            jsr optbyt                               ; (optional) .Z reg arg
+                 bcc l63_4
                  stx _z_reg
 
-_local_1062_30   jsr optbyt                               ; (optional) .S reg arg
-                 bcc _local_1062_40
+l63_4            jsr optbyt                               ; (optional) .S reg arg
+                 bcc l63_5
                  stx _s_reg
 
-_local_1062_40   jmp _jsr_far                             ; far, far away
+l63_5            jmp _jsr_far                             ; far, far away
 ;If returns, Kernel will update _reg's for us
 
 ;.end
@@ -5211,59 +5211,59 @@ _local_1062_40   jmp _jsr_far                             ; far, far away
 
 dma                                                       ; params are not longer optional-  [910520] F018A
                  jsr getbyt                               ; get command
-_local_1063_1    bcc _local_1063_10
+l64_1            bcc l64_2
                  txa                                      ; [910102]
                  and #%00000100                           ;
                  +lbne fcerr                              ; (disallow chained DMA lists)
                  stx dma2_cmd
 
-_local_1063_10   jsr comwrd                               ; get length
-; bcc _local_1063_20
+l64_2            jsr comwrd                               ; get length
+; bcc l64_3
                  sty dma2_cnt_lo
                  sta dma2_cnt_hi
 
-_local_1063_20   jsr comwrd                               ; get source address & bank
-; bcc _local_1063_30
+l64_3            jsr comwrd                               ; get source address & bank
+; bcc l64_4
                  sty dma2_src_lo
                  sta dma2_src_hi
-_local_1063_30   jsr combyt
-; bcc _local_1063_40
+l64_4            jsr combyt
+; bcc l64_5
                  stx dma2_src_bank
 
-_local_1063_40   jsr comwrd                               ; get destination address & bank
-; bcc _local_1063_50
+l64_5            jsr comwrd                               ; get destination address & bank
+; bcc l64_6
                  sty dma2_dest_lo
                  sta dma2_dest_hi
-_local_1063_50   jsr combyt
-; bcc _local_1063_60
+l64_6            jsr combyt
+; bcc l64_7
                  stx dma2_dest_bank
 
-_local_1063_60   jsr optzer                               ; get subcmd, default=0    [910520] F018A
-; bcc _local_1063_65
+l64_7            jsr optzer                               ; get subcmd, default=0    [910520] F018A
+; bcc l64_8
                  stx dma2_subcmd
 
-_local_1063_65   jsr optzer                               ; get mod lo/hi, default=0   [910102]
-; bcc _local_1063_70
+l64_8            jsr optzer                               ; get mod lo/hi, default=0   [910102]
+; bcc l64_9
                  stx dma2_mod_lo
-_local_1063_70   jsr optzer
-; bcc _local_1063_80
+l64_9            jsr optzer
+; bcc l64_10
                  stx dma2_mod_hi
 
-_local_1063_80   ldy #0                                   ; dma_list (bank 0)
+l64_10           ldy #0                                   ; dma_list (bank 0)
                  ldx #>dma2_cmd
                  lda #<dma2_cmd
                  sty dma_ctlr+2                           ; dma_list bank
                  stx dma_ctlr+1                           ; dma_list hi
                  sta dma_ctlr                             ; dma_list lo & trigger
-_local_1063_85   bit dma_ctlr+3                           ; check status (in case IRQ enabled)  [910103]
-                 bmi _local_1063_85                       ; busy
+l64_11           bit dma_ctlr+3                           ; check status (in case IRQ enabled)  [910103]
+                 bmi l64_11                               ; busy
 
                  jsr chrgot                               ; eol?
-                 beq _local_1063_90                       ; yes
+                 beq l64_12                               ; yes
                  jsr optbyt                               ; no- continue after getting comma & next cmd byte
-                 bra _local_1063_1
+                 bra l64_1
 
-_local_1063_90   rts
+l64_12           rts
 
 ;.end
 ; .page
@@ -5291,10 +5291,10 @@ troff                                                     ; trace mode off
 rreg             lda #0
                  sta count
 
-_local_1064_10   jsr chrgot
-                 beq _local_1064_50                       ; reached end of statement- done
+l65_1            jsr chrgot
+                 beq l65_4                                ; reached end of statement- done
                  cmp #','                                 ; skip this arg?
-                 beq _local_1064_30                       ; branch if so
+                 beq l65_3                                ; branch if so
                  jsr ptrget                               ; get pointer to target variable
                  sta forpnt                               ; a little bit of set up so we can share LET code
                  sty forpnt+1
@@ -5304,25 +5304,25 @@ _local_1064_10   jsr chrgot
                  ldy count                                ; which register's value are we looking for?
                  lda _a_reg,y                             ; .A, .X, .Y, & .Z are contiguious
                  cpy #4
-                 bne _local_1064_20
+                 bne l65_2
                  lda _s_reg                               ; but .S isn't
 
-_local_1064_20   tay                                      ; low byte in .Y
+l65_2            tay                                      ; low byte in .Y
                  lda #0                                   ; high byte of zero
                  jsr givayf                               ; go float it
                  lda intflg                               ; set conditions for type of var (int/float)
                  jsr qintgr                               ; ..and use part of LET to do the work
 
-_local_1064_30   inc count                                ; 5 registers to do
+l65_3            inc count                                ; 5 registers to do
                  lda count
                  cmp #5
-                 bcs _local_1064_50
+                 bcs l65_4
                  jsr chrgot                               ; was this e-o-statement?
-                 beq _local_1064_50
+                 beq l65_4
                  jsr chrget                               ; not e-o-s, skip over comma,
-                 bne _local_1064_10                       ; ..and go do next
+                 bne l65_1                                ; ..and go do next
 
-_local_1064_50   rts
+l65_4            rts
 
 ;.end
 ; .page
@@ -5346,11 +5346,11 @@ midwrk           =midd2-1
                  stx hulp                                 ; store    " "
 
                  cmp #')'                                 ; finished?
-                 beq _local_1065_10                       ; branch if so (use default length)
+                 beq l66_1                                ; branch if so (use default length)
                  jsr combyt                               ; ..else get length
                  !text $2c
 
-_local_1065_10   ldx #$ff                                 ; default length
+l66_1            ldx #$ff                                 ; default length
                  stx z_p_temp_1
                  jsr chkcls                               ; look for ')'
                  lda #equal_token                         ; look for '='
@@ -5359,13 +5359,13 @@ _local_1065_10   ldx #$ff                                 ; default length
                  jsr chkstr                               ; nothing funny
 
                  ldy #2                                   ; get string descriptors
-_local_1065_20   lda #forpnt                              ; target
+l66_2            lda #forpnt                              ; target
                  jsr lda_far_ram1                         ; lda (forpnt),y
                  sta str1,y
                  jsr indfmo                               ; source
                  sta str2,y
                  dey
-                 bpl _local_1065_20
+                 bpl l66_2
 
 ; Test for target string in text was removed-  all strings are copied to
 ; string RAM when they are created.
@@ -5374,24 +5374,24 @@ _local_1065_20   lda #forpnt                              ; target
                  lda str2+1                               ; ..index can load & save
                  sbc hulp
                  sta str2+1
-                 bcs _local_1065_30
+                 bcs l66_3
                  dec str2+2
 
-_local_1065_30   lda z_p_temp_1                           ; get specified length (or default)
+l66_3            lda z_p_temp_1                           ; get specified length (or default)
                  cmp str2                                 ; compare with length of source
-                 bcc _local_1065_40                       ; ok if less,
+                 bcc l66_4                                ; ok if less,
                  lda str2                                 ; ..else use length of source
-_local_1065_40   tax
-                 beq _local_1065_80                       ; done if length=0
+l66_4            tax
+                 beq l66_7                                ; done if length=0
                  clc
                  adc hulp                                 ; add length to starting posn.
                  +lbcs fcerr                              ; illegal quantity error if > 256
                  cmp str1
-                 bcc _local_1065_60
+                 bcc l66_5
                  +lbne fcerr                              ; ...or if > target length
 
-_local_1065_60   ldy hulp                                 ; get adjusted starting address
-_local_1065_70   phx
+l66_5            ldy hulp                                 ; get adjusted starting address
+l66_6            phx
                  ldx #str1+1
                  lda #str2+1
                  jsr lda_far_ram1                         ; fetch from string bank
@@ -5399,9 +5399,9 @@ _local_1065_70   phx
                  iny
                  plx
                  dex
-                 bne _local_1065_70                       ; keep going for specified length
+                 bne l66_6                                ; keep going for specified length
 
-_local_1065_80   +lbra frefac                             ; free up temp. string, rts
+l66_7            +lbra frefac                             ; free up temp. string, rts
 
 ;.end
 
@@ -5426,13 +5426,13 @@ auto
 
 help             ldx errnum                               ; check for error status
                  inx
-                 beq _local_1066_1                        ; exit if there is no current error
+                 beq l67_1                                ; exit if there is no current error
                  lda errlin
                  ldy errlin+1
                  sta linnum
                  sty linnum+1
                  jsr FindLine                             ; find the beginning of line with error
-                 bcc _local_1066_1                        ; exit if line not found?
+                 bcc l67_1                                ; exit if line not found?
 
                  jsr crdo                                 ; begin a new line
                  ldx linnum
@@ -5442,63 +5442,63 @@ help             ldx errnum                               ; check for error stat
                  smb7 helper                              ; set 'help' flag for P1LINE
                  jsr p1line                               ; display line & highlight error
                  stz helper
-_local_1066_1    rmb7 helper                              ; reset 'help' flag
+l67_1            rmb7 helper                              ; reset 'help' flag
                  +lbra crdo                               ; and return to caller
 
 
 
 helpsb                                                    ; logic to highlight error or find string
                  bbs4 helper,highlight_done               ; branch if highlighting tokens
-                 bbs5 helper,_local_1067_10               ; branch if FIND
+                 bbs5 helper,l68_3                        ; branch if FIND
 
                  ldx lowtr+1                              ; has P1LINE reached code in error?
                  tya
                  clc
                  adc lowtr                                ; add character pointer to line pointer...
-                 bcc _local_1067_1
+                 bcc l68_1
                  inx
-_local_1067_1    cpx errtxt+1                             ; and compare to error pointer
-                 bne _local_1067_3                        ; not there
+l68_1            cpx errtxt+1                             ; and compare to error pointer
+                 bne l68_2                                ; not there
                  cmp errtxt
                  bcs highlight_text                       ; we're there- begin highlighting
-_local_1067_3    rts
+l68_2            rts
 
 
-_local_1067_10   cpy fndpnt                               ; at first character of find string?
-                 bcc _local_1067_30                       ; before it
+l68_3            cpy fndpnt                               ; at first character of find string?
+                 bcc l68_5                                ; before it
                  lda find_count
-                 beq _local_1067_30                       ; past it
-                 bmi _local_1067_40                       ; at last character
+                 beq l68_5                                ; past it
+                 bmi l68_6                                ; at last character
                  cmp fstr1+2
-                 bcc _local_1067_20                       ; in middle of string
+                 bcc l68_4                                ; in middle of string
                  jsr highlight_text                       ; at first char- start highlight
-_local_1067_20   dec find_count                           ; one less character to highlight
-                 beq _local_1067_20                       ; special case-
+l68_4            dec find_count                           ; one less character to highlight
+                 beq l68_4                                ; special case-
 ;make it negative for next time around
-_local_1067_30   rts
+l68_5            rts
 
-_local_1067_40   inc find_count                           ; make it zero
+l68_6            inc find_count                           ; make it zero
 
 
 highlight_done                                            ; nasty kludge to colorize error or found text
                  lda highlight_save
-                 bmi _local_1068_10                       ; (unless it's already normal)
+                 bmi l69_1                                ; (unless it's already normal)
                  sta _color                               ; restore normal color
                  ora #$80
                  sta highlight_save                       ; mark highlight_save invalid
                  rmb7 helper                              ; remove HELP flag
                  rmb1 helper                              ; remove token flag
-_local_1068_10   rts
+l69_1            rts
 
 
 highlight_text                                            ; nasty kludge to colorize error or found text
                  bit highlight_save
-                 bpl _local_1069_10                       ; (unless it's already highlighted)
+                 bpl l70_1                                ; (unless it's already highlighted)
                  lda _color                               ; save current (normal) color
                  sta highlight_save                       ; msb=0 to mark highlight_save valid
                  lda highlight_color
                  sta _color                               ; change color to highlight
-_local_1069_10   rts
+l70_1            rts
 
 ;.end
 ; .page
@@ -5595,17 +5595,17 @@ edit_err
 go_without_to
                  jsr chrget                               ; what is next character?
                  cmp #to_token                            ; ..is it GO TO?
-                 bne _local_1070_1
+                 bne l71_1
                  jsr chrget                               ; ..yes, set up for goto
                  bra goto                                 ; ..bye!
 
-_local_1070_1    jsr getbyt                               ; is it GO 64?
+l71_1            jsr getbyt                               ; is it GO 64?
                  cpx #64
                  +lbne snerr                              ; ...no, error
 
 ; The user wants to go to C64 mode.
 
-_local_1070_2    jsr are_you_sure
+l71_2            jsr are_you_sure
                  bne cont_rts                             ; must have had second thoughts. never mind
 ; jsr put_io_in_map
                  jmp _go_64
@@ -5644,9 +5644,9 @@ setexc           smb7 runmod                              ; set up run mode
                  sta _autoinsert                          ; disable auto-insert mode ?????
 
                  ldx #2                                   ; turn off all interrupt trip flags
-_local_1071_10   sta int_trip_flag,x
+l72_1            sta int_trip_flag,x
                  dex
-                 bpl _local_1071_10
+                 bpl l72_1
 
                  jsr _setmsg                              ; turn kernel messages off & rts
 
@@ -5734,9 +5734,9 @@ restore__1                                                ; entry from FLOAD
 
 restore__2
                  sbc #1
-                 bcs _local_1072_1
+                 bcs l73_1
                  dey
-_local_1072_1    sta datptr
+l73_1            sta datptr
                  sty datptr+1
                  rts
 
@@ -5919,11 +5919,11 @@ set_end          rts
 ; checks for non-existant line number destinations.
 
 ren_pass_2
-                 bbr4 runmod,_local_1073_10               ; skip pass two and three if plain text (edit mode) [910620]
+                 bbr4 runmod,l74_1                        ; skip pass two and three if plain text (edit mode) [910620]
                  jsr n1_reset                             ; yes- just setup up starting line # and reset txtptr
                  bra ren_pass_4                           ; then renumber just the text's line numbers
 
-_local_1073_10   lda #$01                                 ; set flag for 'pass 2'
+l74_1            lda #$01                                 ; set flag for 'pass 2'
                  sta z_p_temp_1
                  lda text_top                             ; copy top-of-text pointer for later use
                  ldx text_top+1                           ; (we don't want to change original here)
@@ -6018,10 +6018,10 @@ next_char
 chk_quote
                  cmp #'"'                                 ; opening double quote?
                  bne not_quote                            ; no...
-_local_1074_20   jsr chargt                               ; scan line
+l75_1            jsr chargt                               ; scan line
                  beq next_line                            ; end...
                  cmp #'"'                                 ; close double quote
-                 bne _local_1074_20                       ; no... continue
+                 bne l75_1                                ; no... continue
                  bra next_char                            ; yes... resume renumber
 
 not_quote
@@ -6030,10 +6030,10 @@ not_quote
                  bpl next_char                            ; not a token...
 
                  ldx #8                                   ; check special token list
-_local_1075_30   cmp testwd-1,x
+l76_1            cmp testwd-1,x
                  beq iline_10                             ; a match...
                  dex
-                 bne _local_1075_30                       ; continue until zero
+                 bne l76_1                                ; continue until zero
 
                  cmp #go_token                            ; wasn't in the token list. check for 'go to'
                  bne chk_escape                           ; not 'go', go check for 'collision' *c128 fix*
@@ -6052,10 +6052,10 @@ chk_escape
                  beq hop_1                                ; end of line ,abort
                  cmp #collision_token
                  bne next_char
-_local_1076_40   jsr chrget                               ; got it! skip over first argument
+l77_1            jsr chrget                               ; got it! skip over first argument
                  beq hop_1                                ; end of line, abort
                  cmp #','
-                 bne _local_1076_40                       ; not there yet
+                 bne l77_1                                ; not there yet
 
 
 iline_10
@@ -6091,11 +6091,11 @@ iline_20
 p2code                                                    ; updates text_top without actually changing lines
                  inx
                  lda fbuffr+1,x                           ; get character from number
-                 beq _local_1077_20                       ; end of number
+                 beq l78_3                                ; end of number
                  jsr chrget                               ; get digit from old number
                  bcc p2code                               ; digit...move on
 
-_local_1077_10   inw fndpnt
+l78_1            inw fndpnt
                  sec                                      ; have we run out of memory (theoretically)?
                  lda fndpnt                               ; (compare with limit-of-memory pointer)
                  sbc max_mem_0
@@ -6104,13 +6104,13 @@ _local_1077_10   inw fndpnt
                  +lbcs omerr                              ; yes- out of memory error
                  inx                                      ; no - next...
                  lda fbuffr+1,x
-                 bne _local_1077_10
-_local_1077_15   rts                                      ; no more
+                 bne l78_1
+l78_2            rts                                      ; no more
 
-_local_1077_20   jsr chrget
-                 bcs _local_1077_15                       ; old stuff after # is other char
+l78_3            jsr chrget
+                 bcs l78_2                                ; old stuff after # is other char
                  dew fndpnt                               ; digit...move down
-                 bra _local_1077_20                       ; still digits...
+                 bra l78_3                                ; still digits...
 
 ; .page
 ;*********** This part of imbed_lines executed in pass 3 only **********
@@ -6118,25 +6118,25 @@ _local_1077_20   jsr chrget
 p3code
                  inx
                  lda fbuffr+1,x                           ; get character from number
-                 beq _local_1078_30                       ; end of number
+                 beq l79_3                                ; end of number
 
                  pha                                      ; save digit from new number
                  jsr chargt                               ; get digit from old number
                  cmp #':'                                 ; command terminator or letter?
-                 bcs _local_1078_10
+                 bcs l79_1
                  cmp #' '                                 ; space? (fix for goto10 :rem)
-                 beq _local_1078_10
+                 beq l79_1
                  sec
                  sbc #'0'                                 ; number?
                  sec
                  sbc #$d0
-                 bcc _local_1078_20                       ; digit...move on
+                 bcc l79_2                                ; digit...move on
 
-_local_1078_10   jsr move_init                            ; other char...move up
+l79_1            jsr move_init                            ; other char...move up
                  jsr moveup
                  inw text_top
 
-_local_1078_20   pla
+l79_2            pla
                  phx
                  ldy #0
                  jsr sta_far_txt                          ; put new digit in new number (bleed-thru)
@@ -6144,14 +6144,14 @@ _local_1078_20   pla
                  bra p3code
 
 
-_local_1078_30   jsr chrget
+l79_3            jsr chrget
                  bcs iline_20                             ; old stuff after # is other char
 
-_local_1078_40   jsr move_init                            ; digit...move down
+l79_4            jsr move_init                            ; digit...move down
                  jsr movedown
                  dew text_top
                  jsr chrgot
-                 bcc _local_1078_40                       ; still digits...
+                 bcc l79_4                                ; still digits...
 
                  bra iline_20                             ; branch always
 
@@ -6164,7 +6164,7 @@ form_line
                  jsr n1_reset
 find_it
                  jsr chargt_x2                            ; new line, skip over link
-                 bne _local_1079_70                       ; if we get to end-of-text without finding the
+                 bne l80_1                                ; if we get to end-of-text without finding the
                  ldx #err_ref                             ; line # then 'unresolved reference' error
                  lda forpnt
                  sta curlin                               ; fake error routine into saying 'in line xxxxx'
@@ -6172,37 +6172,37 @@ find_it
                  sta curlin+1
                  +lbra error
 
-_local_1079_70   jsr chargt                               ; get line number low
+l80_1            jsr chargt                               ; get line number low
                  sta highds                               ; highds = current line# in loop
                  cmp linnum
-                 bne _local_1079_100
+                 bne l80_4
                  jsr chargt                               ; get line number high
                  sta highds+1
                  cmp linnum+1
-                 bne _local_1079_110
+                 bne l80_5
                  sec                                      ; if linnum < start#, no remapping
                  sbc hightr+1
-                 bcc _local_1079_80
-                 bne _local_1079_90
+                 bcc l80_2
+                 bne l80_3
                  lda linnum
                  sbc hightr
-                 bcs _local_1079_90
+                 bcs l80_3
 
-_local_1079_80   lda linnum                               ; use same line#
+l80_2            lda linnum                               ; use same line#
                  sta facho+1
                  lda linnum+1
                  sta facho
 
-_local_1079_90   ldx #$90                                 ; make replacement string
+l80_3            ldx #$90                                 ; make replacement string
                  sec
                  jsr floatc
                  +lbra fout
 
 
-_local_1079_100  jsr chargt
+l80_4            jsr chargt
                  sta highds+1                             ; (** 01/27/84 fix)
 
-_local_1079_110  jsr line_add                             ; scan to end of line
+l80_5            jsr line_add                             ; scan to end of line
                  bra find_it                              ; always
 
 ; .page
@@ -6373,16 +6373,16 @@ moveup
 
 ; lda dma_ctlr+3  ;dma controller version    [910520] F018A
 ; and #1
-; beq _local_1080_10   ; F018    removed [910808] F018B
+; beq l81_1   ; F018    removed [910808] F018B
                  lda #%00110000                           ; F018A,B
-_local_1080_10   sta dma1_cmd                             ; command=copy, source=start   [910102]
+l81_1            sta dma1_cmd                             ; command=copy, source=start   [910102]
 ; php
                  lda text_bank                            ; bank = BASIC text bank   [910520] F018A
 ; plp   ;version?    removed [910808] F018B
-; bne _local_1080_20   ; F018A
+; bne l81_2   ; F018A
 ; and #%00001111  ; F018     [910102]
 ; ora #%01000000  ;(copy source=endpoint)    [910102]
-_local_1080_20   sta dma1_src_bank                        ; banks
+l81_2            sta dma1_src_bank                        ; banks
                  sta dma1_dest_bank
 
                  lda #0                                   ; [910219]
@@ -6437,7 +6437,7 @@ for              lda #$80
                  jsr let                                  ; get & set FOR variables
                  lda #for_token                           ; set up for call to see if
                  jsr search                               ; ..this 'for' variable is unique
-                 beq _local_1081_10                       ; branch if not
+                 beq l82_1                                ; branch if not
 
 ; If the variable is not unique, (fndpnt) will point to last occurance
 ; in stack, and we will reset the stack to that point.  Otherwise we
@@ -6447,7 +6447,7 @@ for              lda #$80
                  jsr getstk                               ; updates stack pointer, error if overflow
                  jsr movtos                               ; (tos) => (fndpnt)
 
-_local_1081_10   jsr movfnd                               ; (fndpnt) => (tos)   (redundant for new entries)
+l82_1            jsr movfnd                               ; (fndpnt) => (tos)   (redundant for new entries)
                  jsr datan                                ; find address of next statement
                  tya                                      ; offset from (txtptr) in y
                  ldy #lenfor-1
@@ -6478,33 +6478,33 @@ _local_1081_10   jsr movfnd                               ; (fndpnt) => (tos)   
 
                  ldx #4
                  ldy #lenfor-5
-_local_1081_20   lda facexp,x                             ; Push faclo,mo,moh,ho,exp
+l82_2            lda facexp,x                             ; Push faclo,mo,moh,ho,exp
                  sta (tos),y                              ; (common area)
                  dex
                  dey
-                 bpl _local_1081_20
+                 bpl l82_2
 
                  lda #<fone                               ; Push STEP value
                  ldy #>fone                               ; (point to default 'one' in ROM)
                  jsr movfm
                  jsr chrgot
                  cmp #step_token
-                 bne _local_1081_30                       ; branch if no step given
+                 bne l82_3                                ; branch if no step given
                  jsr chrget
                  jsr frmnum
 
-_local_1081_30   jsr sign
+l82_3            jsr sign
                  pha                                      ; save sign for a moment
                  jsr round
                  pla
 
                  ldy #lenfor-10
                  ldx #5
-_local_1081_40   sta (tos),y                              ; (common area)
+l82_4            sta (tos),y                              ; (common area)
                  lda facexp-1,x
                  dey
                  dex
-                 bpl _local_1081_40
+                 bpl l82_4
 
                  lda forpnt+1                             ; Finally push pointer to 'for' variable, & 'for' token
                  sta (tos),y                              ; (common area)
@@ -6544,20 +6544,20 @@ delete_line
                  stx index1+1
 
                  jsr FindLine                             ; find ending line
-                 bcc _local_1082_20                       ; branch if not found
+                 bcc l83_2                                ; branch if not found
                  ldy #1
                  jsr indlow                               ; if eot, use this ptr.  else, need ptr to next
                  dey
                  tax                                      ; save it in case of swap
-                 bne _local_1082_10                       ; branch if not eot (end-of-text)
+                 bne l83_1                                ; branch if not eot (end-of-text)
                  jsr indlow
-                 beq _local_1082_20                       ; branch if eot (null link bytes)
+                 beq l83_2                                ; branch if eot (null link bytes)
 
-_local_1082_10   jsr indlow
+l83_1            jsr indlow
                  sta lowtr                                ; (source)
                  stx lowtr+1
 
-_local_1082_20   lda lowtr                                ; check that start <= end
+l83_2            lda lowtr                                ; check that start <= end
                  sec
                  sbc index1                               ; calculate delta
                  sta count                                ; (count)
@@ -6585,9 +6585,9 @@ fix_links                                                 ; <<<<<<<<<<<<<<<<<<<<
                  ldx index1+1
                  clc
                  adc #2
-                 bcc _local_1083_10
+                 bcc l84_1
                  inx
-_local_1083_10   sta text_top                             ; set eot pointer
+l84_1            sta text_top                             ; set eot pointer
                  stx text_top+1
                  rts                                      ; C128-04 fix: was 'jmp ready' (FAB)
 
@@ -6598,36 +6598,36 @@ _local_1083_10   sta text_top                             ; set eot pointer
 ;*
 ;********************************
 
-range            beq _local_1084_10                       ; a terminator from chrgot?
-                 bcc _local_1084_10                       ; a number?
+range            beq l85_1                                ; a terminator from chrgot?
+                 bcc l85_1                                ; a number?
                  cmp #minus_token                         ; a dash?
-                 bne _local_1084_40   ;if it's not a dash, error (C128-03 fix ; FAB)
+                 bne l85_4   ;if it's not a dash, error (C128-03 fix ; FAB)
                  ldy #1
                  jsr indtxt                               ; let's peek, and see what follows the dash!
-                 beq _local_1084_40                       ; uh-oh! it's of the form 'delete -' - error
+                 beq l85_4                                ; uh-oh! it's of the form 'delete -' - error
                  cmp #':'                                 ; the other terminator
-                 beq _local_1084_40                       ; ..still bad
+                 beq l85_4                                ; ..still bad
                  sec                                      ; set up for linget
 
-_local_1084_10   jsr linget                               ; get first #
+l85_1            jsr linget                               ; get first #
                  jsr FindLine                             ; find it & set ptrs
                  jsr chrgot                               ; get last char
-                 beq _local_1084_20                       ; skip done
+                 beq l85_2                                ; skip done
                  cmp #minus_token                         ; a dash?
-                 bne _local_1084_40                       ; no- syntax error
+                 bne l85_4                                ; no- syntax error
                  jsr chrget                               ; yes- skip dash
                  jsr linget                               ; get second #
-                 bne _local_1084_40                       ; error- wasn't a number
+                 bne l85_4                                ; error- wasn't a number
 
-_local_1084_20   lda endchr                               ; was a # input?
-                 bne _local_1084_30                       ; yes
+l85_2            lda endchr                               ; was a # input?
+                 bne l85_3                                ; yes
                  lda #$ff                                 ; no - make max
                  sta linnum
                  sta linnum+1
-_local_1084_30   rts
+l85_3            rts
 
 
-_local_1084_40   +lbra snerr                              ; syntax error
+l85_4            +lbra snerr                              ; syntax error
 
 ;.end
 ; .page
@@ -6656,7 +6656,7 @@ change
                  jsr delimit_string                       ; string1
                  lda fstr1+2
                  +lbeq fcerr                              ; error if string1 null
-                 bbr7 op,_local_1085_10                   ; branch if no string2
+                 bbr7 op,l86_1                            ; branch if no string2
                  jsr chrget                               ; pick up required 'to' token
                  cmp #to_token
                  +lbne snerr                              ; error if missing
@@ -6665,10 +6665,10 @@ change
                  ldx #3
                  jsr delimit_string                       ; string2
 
-_local_1085_10   jsr chrget                               ; line number range given?
-                 beq _local_1085_20                       ; no, eol
+l86_1            jsr chrget                               ; line number range given?
+                 beq l86_2                                ; no, eol
                  jsr chkcom                               ; yes, pick up required comma
-_local_1085_20   jsr range                                ; set up line number range (lowtr,linnum)
+l86_2            jsr range                                ; set up line number range (lowtr,linnum)
                  jsr tto                                  ; save txtptr for restoration when done
                  rmb7 helper                              ; clear 'help' flag for 'p1line'
                  lda helper
@@ -6690,23 +6690,23 @@ find_loop
 find_loop_1
                  ldy #1
                  jsr indlow                               ; check link
-                 bne _local_1086_10                       ; not null- continue
+                 bne l87_1                                ; not null- continue
                  dey
                  jsr indlow
                  +lbeq find_exit                          ; null- exit
 
-_local_1086_10   ldy #2
+l87_1            ldy #2
                  jsr indlow                               ; check line number
                  tax
                  iny
                  jsr indlow
                  cmp linnum+1
-                 bne _local_1086_20
+                 bne l87_2
                  cpx linnum
-                 beq _local_1086_30                       ; line is <= last line requested, continue
-_local_1086_20   +lbcs find_exit                          ; line is >  last line requested, exit
+                 beq l87_3                                ; line is <= last line requested, continue
+l87_2            +lbcs find_exit                          ; line is >  last line requested, exit
 
-_local_1086_30   ldx #3                                   ; set initial position - 1 (past link & line#)
+l87_3            ldx #3                                   ; set initial position - 1 (past link & line#)
                  stx fndpnt
 
 ; .page
@@ -6724,21 +6724,21 @@ find_loop_2
                  sta txtptr+1                             ; search string:
                  ldz #0                                   ; at the beginning
 
-_local_1087_40   jsr chargt                               ; get next character from text
+l88_1            jsr chargt                               ; get next character from text
                  beq find_loop                            ; eol (no match this line)
                  inx                                      ; bump pointer to next character
                  cmp (fstr1),z                            ; character match?  ind okay- buffer
-                 bne _local_1087_40                       ; no
+                 bne l88_1                                ; no
                  stx fndpnt                               ; yes- save next position
 
-_local_1087_50   inz                                      ; bump position in search string
+l88_2            inz                                      ; bump position in search string
                  cpz fstr1+2                              ; string match?
                  bcs print_line                           ; yes
                  jsr chargt
                  beq find_loop                            ; no- eol
                  cmp (fstr1),z                            ; ind okay- buffer
                  bne find_loop_2                          ; no- rewind to beginning of search string
-                 beq _local_1087_50                       ; maybe- still more chars to compare
+                 beq l88_2                                ; maybe- still more chars to compare
 
 
 ; Print the line of text at LOWTR, highlighting the section of code
@@ -6762,12 +6762,12 @@ print_line
 ; Options are  'Y' (yes),  '*' (do all),  'CR' (quit),  anything else means no.
 
 change_line
-                 bbs6 op,_local_1088_100                  ; branch if change-all mode set
+                 bbs6 op,l89_1                            ; branch if change-all mode set
                  jsr _primm                               ; prompt & get response
                  !text cr," CHANGE? ",0
                  jsr response_get
                  cmp #'Y'
-                 beq _local_1088_100                      ; yes, change it
+                 beq l89_1                                ; yes, change it
                  cmp #cr
                  +lbeq find_exit                          ; cr only, abort entire operation
                  cmp #'*'
@@ -6778,7 +6778,7 @@ change_line
 ; LOWTR+FNDPNT+(LEN(string1)-LEN(string2)) through TEXT_TOP and copying
 ; string1 into text beginning at LOWTR+FNDPNT for LEN(string2) characters.
 
-_local_1088_100  lda text_top                             ; setup upper address of text to move (index2)
+l89_1            lda text_top                             ; setup upper address of text to move (index2)
                  sta index2
                  lda text_top+1                           ; TEXT_TOP
                  sta index2+1
@@ -6795,8 +6795,8 @@ _local_1088_100  lda text_top                             ; setup upper address 
                  sec                                      ; calc number of chars to insert/delete
                  lda fstr1+2                              ; LEN(string1)-LEN(string2)
                  sbc fstr2+2
-                 beq _local_1088_20                       ; branch if string1 = string2 (no move)
-                 bpl _local_1088_10                       ; branch if string1 > string2 (delete)
+                 beq l89_6                                ; branch if string1 = string2 (no move)
+                 bpl l89_4                                ; branch if string1 > string2 (delete)
 ; else      string1 < string2 (insert)
 
                  neg                                      ; Move memory up to make room for larger string2
@@ -6820,43 +6820,43 @@ _local_1088_100  lda text_top                             ; setup upper address 
                  ldy text_top+1
                  lda count
                  adc text_top
-                 bcc _local_1088_1
+                 bcc l89_2
                  iny
-_local_1088_1    cpy max_mem_0+1
-                 bcc _local_1088_2                        ; result is less than top-of-memory: ok
+l89_2            cpy max_mem_0+1
+                 bcc l89_3                                ; result is less than top-of-memory: ok
                  +lbne omerr                              ; msb >  top, overflow
                  cmp max_mem_0                            ; msb's the same, test lsb's
                  +lbcs omerr                              ; lsb >= top, overflow
-_local_1088_2    sta text_top
+l89_3            sta text_top
                  sty text_top+1                           ; set new top of text pointer
                  jsr moveup                               ; make room
-                 bra _local_1088_20                       ; go copy string2 into area
+                 bra l89_6                                ; go copy string2 into area
 
-_local_1088_10   sta count                                ; Move memory down for smaller string2
+l89_4            sta count                                ; Move memory down for smaller string2
                  ldy text_top+1
                  lda text_top
                  sec
                  sbc count
-                 bcs _local_1088_11
+                 bcs l89_5
                  dey
-_local_1088_11   sta text_top
+l89_5            sta text_top
                  sty text_top+1                           ; set new top of text pointer
                  jsr movedown                             ; squish out excess space
 
-_local_1088_20   lda fstr2+2                              ; Copy string2 into text
-                 beq _local_1088_40                       ; branch if null, nothing to copy
+l89_6            lda fstr2+2                              ; Copy string2 into text
+                 beq l89_8                                ; branch if null, nothing to copy
                  sta find_count                           ; how many characters to copy
                  ldx #lowtr
                  ldy fndpnt                               ; index into text
                  ldz #0                                   ; index into string2
-_local_1088_30   lda (fstr2),z                            ; ind okay- buffer
+l89_7            lda (fstr2),z                            ; ind okay- buffer
                  jsr sta_far_ram0                         ; do the copy
                  iny
                  inz
                  dec find_count
-                 bne _local_1088_30
+                 bne l89_7
 
-_local_1088_40   jsr link_program                         ; relink program
+l89_8            jsr link_program                         ; relink program
                  clc
                  lda fndpnt                               ; place find position after new text
                  adc fstr2+2
@@ -6900,11 +6900,11 @@ delimit_string                                            ; command is in buffer
                  lda #$ff                                 ; set string length
                  sta fstr1+2,x
 
-_local_1089_10   inc fstr1+2,x
+l90_1            inc fstr1+2,x
                  jsr chargt                               ; build string
                  +lbeq snerr                              ; error if eol encountered inside string
                  cmp match
-                 bne _local_1089_10                       ; continue until matching delimiter found
+                 bne l90_1                                ; continue until matching delimiter found
                  rts
 
 ;.end
@@ -6917,10 +6917,10 @@ puctrl           jsr frmstr                               ; do frmevl,frestr. re
                  cpy #4
                  +lbcs fcerr                              ; len > 4 is illegal value error
 
-_local_1090_1    jsr indin1_ram1                          ; lda (index),y
+l91_1            jsr indin1_ram1                          ; lda (index),y
                  sta puchrs,y
                  dey
-                 bpl _local_1090_1
+                 bpl l91_1
                  rts
 
 ;.end
@@ -6930,12 +6930,12 @@ _local_1090_1    jsr indin1_ram1                          ; lda (index),y
 trap
 ; jsr errdir ;why not????      [910925]
                  jsr chrgot                               ; if no #, means 'turn off trap'
-                 beq _local_1091_10
+                 beq l92_1
                  jsr getwrd
                  sty trapno
                  !text $2c
 
-_local_1091_10   lda #$ff                                 ; flag no trap
+l92_1            lda #$ff                                 ; flag no trap
                  sta trapno+1
                  rts
 
@@ -6965,22 +6965,22 @@ resume           jsr errdir                               ; no direct mode
                  beq rescnt                               ; can't resume!
                  jsr chrgot                               ; look for arguments
                  beq resswp                               ; no arg's...restart err'd line
-                 bcc _local_1092_3                        ; numeric argument
+                 bcc l93_3                                ; numeric argument
                  cmp #next_token                          ; only other choice is 'next'
                  +lbne snerr                              ; if not, syntax error
 
                  jsr resswp                               ; resume execution with next stm't
                  ldy #0
                  jsr indtxt
-                 bne _local_1092_2                        ; must be a ':'
+                 bne l93_2                                ; must be a ':'
                  iny                                      ; must be a null,get next line
                  jsr indtxt                               ; make sure its not end-of-text
-                 bne _local_1092_1
+                 bne l93_1
                  iny
                  jsr indtxt
                  +lbeq ready                              ; 2 nulls, eot. bye!
 
-_local_1092_1    ldy #3                                   ; new line, update pointers
+l93_1            ldy #3                                   ; new line, update pointers
                  jsr indtxt
                  sta curlin
                  iny
@@ -6990,30 +6990,30 @@ _local_1092_1    ldy #3                                   ; new line, update poi
                  clc
                  adc txtptr
                  sta txtptr
-                 bcc _local_1092_2
+                 bcc l93_2
                  inc txtptr+1
-_local_1092_2    jsr chrget                               ; skip over this character, into body of statement
+l93_2            jsr chrget                               ; skip over this character, into body of statement
                  +lbra data                               ; advance until null or ':', then rts
 
 
-_local_1092_3    jsr getwrd                               ; resnum. numeric argument
+l93_3            jsr getwrd                               ; resnum. numeric argument
                  sta linnum+1
                  jsr resend
                  +lbra luk4it
 
 
 resswp           lda errtxt                               ; backup one so chrget will work
-                 bne _local_1093_10
+                 bne l94_1
                  dec errtxt+1
-_local_1093_10   dec errtxt
+l94_1            dec errtxt
 
                  ldx #1
-_local_1093_20   lda errlin,x                             ; restore line#
+l94_2            lda errlin,x                             ; restore line#
                  sta curlin,x
                  lda errtxt,x                             ; restore text pointer to statement
                  sta txtptr,x
                  dex
-                 bpl _local_1093_20
+                 bpl l94_2
 
 
 resend           ldx tmptrp                               ; restore trap line to allow traps again
@@ -7034,12 +7034,12 @@ rescnt           ldx #errcr
 ; .subttl  DO  LOOP  UNTIL  WHILE  EXIT
 
 do               ldy #1
-_local_1094_1    lda txtptr,y                             ; save current pointers for stack entry
+l95_1            lda txtptr,y                             ; save current pointers for stack entry
                  sta tmptxt,y
                  lda curlin,y
                  sta tmplin,y
                  dey
-                 bpl _local_1094_1
+                 bpl l95_1
 
                  jsr chrgot                               ; look for 'while' or 'until'
                  beq doyes                                ; unconditional
@@ -7098,21 +7098,21 @@ snrjmp           +lbra snerr
 
 fndend           jsr chrget
 
-fnd010           beq _local_1095_20                       ; end of statement
+fnd010           beq l96_2                                ; end of statement
                  cmp #loop_token
                  +lbeq data                               ; a hit!  read to end of statement, rts
                  cmp #'"'                                 ; quote
-                 beq _local_1095_10
+                 beq l96_1
                  cmp #do_token
                  bne fndend                               ; keep looking
                  jsr fndend                               ; recursivly
                  bra dono                                 ; do a chrgot, go to fnd010
 
 
-_local_1095_10   jsr un_quote                             ; look for terminating quote, or end of statement
+l96_1            jsr un_quote                             ; look for terminating quote, or end of statement
                  bne fndend                               ; character after quote wasn't terminator, keep going
 
-_local_1095_20   cmp #':'                                 ; end of line or end of stmt?
+l96_2            cmp #':'                                 ; end of line or end of stmt?
                  beq fndend                               ; just stmt, keep going
                  bbr7 runmod,fnderr                       ; if direct mode, not found error
                  ldy #2
@@ -7203,33 +7203,33 @@ frmjmp
 
 key              beq Key_List                             ; KEY ? yes- no args
 
-_local_1096_1    ldx _kyndx                               ; is function key buffered?
-                 bne _local_1096_1                        ; yes- hang until IRQ finishes processing it ????
+l97_1            ldx _kyndx                               ; is function key buffered?
+                 bne l97_1                                ; yes- hang until IRQ finishes processing it ????
 
                  cmp #on_token                            ; KEY ON ?
-                 bne _local_1096_10
+                 bne l97_2
                  rmb5 _locks                              ; yes- reset Editor's lock bit
-                 bra _local_1096_30                       ; exit
+                 bra l97_4                                ; exit
 
-_local_1096_10   cmp #load_token                          ; KEY LOAD <filename>[,D#,U#]
+l97_2            cmp #load_token                          ; KEY LOAD <filename>[,D#,U#]
                  +lbeq Key_load
 
                  cmp #save_token                          ; KEY SAVE <filename>[,D#,U#]
                  +lbeq Key_Save
 
                  cmp #restore_token                       ; KEY RESTORE ?      [910925]
-                 bne _local_1096_20                       ; no
+                 bne l97_3                                ; no
                  rmb5 _locks                              ; yes- reset Editor's lock bit (enable keys)
                  jsr key_restore                          ; init key definitions
-                 bra _local_1096_30                       ; exit
+                 bra l97_4                                ; exit
 
-_local_1096_20   cmp #esc_command_token                   ; KEY OFF ?
+l97_3            cmp #esc_command_token                   ; KEY OFF ?
                  +lbne Key_Change                         ; no- must be new key definition
                  jsr chrget
                  cmp #off_token
                  +lbne snerr                              ; no- bad syntax
                  smb5 _locks                              ; yes- set Editor's lock bit
-_local_1096_30   +lbra chrget                             ; exit
+l97_4            +lbra chrget                             ; exit
 
 ; .page
 ;**************************************************************
@@ -7250,10 +7250,10 @@ lstky1           inx                                      ; get key number = 1-1
 
                  phy
                  ldx #3
-_local_1097_20   lda preamb,x                             ; print key preamble:
+l98_1            lda preamb,x                             ; print key preamble:
                  jsr _bsout
                  dex                                      ; 'KEY '
-                 bpl _local_1097_20
+                 bpl l98_1
                  ldx z_p_temp_1                           ; key number
                  lda #0
                  jsr linprt
@@ -7268,31 +7268,31 @@ lsloop           lda _pky_buffer,y                        ; print key definition
                  phx                                      ; save position in output string
 
                  ldx #4                                   ; check for special (non-printable) characters
-_local_1098_50   cmp keychr-1,x
+l99_1            cmp keychr-1,x
                  beq list_special                         ; yes, display it as 'CHR$(...)'
                  dex
-                 bne _local_1098_50
+                 bne l99_1
 
                  plx                                      ; restore position
                  cpx #8
-                 bcc _local_1098_60                       ; 1st time thru- display leading quote
-                 bne _local_1098_70                       ; previous was a character- no additions needed
+                 bcc l99_2                                ; 1st time thru- display leading quote
+                 bne l99_3                                ; previous was a character- no additions needed
                  lda #'+'                                 ; add since previous was quote or return
                  jsr _bsout
-_local_1098_60   lda #'"'
+l99_2            lda #'"'
                  jsr _bsout                               ; add leading quote
-_local_1098_70   pla                                      ; restore character
+l99_3            pla                                      ; restore character
                  jsr _bsout                               ; display it
                  ldx #9                                   ; mark normal character
 
 lstnd            dec keysiz
                  bne lsloop                               ; loop to end of definition
                  cpx #9
-                 bcc _local_1099_10                       ; skip if previous not normal character
+                 bcc l100_1                               ; skip if previous not normal character
                  lda #'"'
                  jsr _bsout                               ; add ending quote
 
-_local_1099_10   lda #$8d
+l100_1           lda #$8d
                  jsr _bsout                               ; add ending return (shifted)
 
                  ldx z_p_temp_1                           ; key number
@@ -7303,11 +7303,11 @@ lstest           cpx #number_fkeys
 
 list_special
                  plx                                      ; restore .x
-_local_1100_10   lda keydat-3,x                           ; display something like  ' "+CHR$( '
+l101_1           lda keydat-3,x                           ; display something like  ' "+CHR$( '
                  jsr _bsout
                  dex
                  cpx #3
-                 bcs _local_1100_10
+                 bcs l101_1
                  pla                                      ; restore character
                  jsr prtdec                               ; display decimal value of chr in .a
                  lda #')'                                 ; finish off with closing paren.
@@ -7392,14 +7392,14 @@ LoadBlock
                  sty highds+1
 LoadBlockNext
                  ldy #0
-_local_1101_10   jsr _basin                               ; read definitions
+l102_1           jsr _basin                               ; read definitions
                  sta (highds),y
                  jsr _readst                              ; check channel status
                  bne LoadEOF                              ; exit if eof or error
                  jsr _stop
                  beq LoadEOF                              ; exit if stop key down
                  iny
-                 bne _local_1101_10                       ; continue up to 1 page maximum
+                 bne l102_1                               ; continue up to 1 page maximum
                  clc                                      ; indicate "more"
                  rts
 
@@ -7504,13 +7504,13 @@ play             jsr frmstr                               ; frmevl,frestr,return
                  jsr clear_play_flags                     ; set 'dot' and 'sharp' to 0. return with Acc=0
                  sta hulp                                 ; zero counter
 
-_local_1102_10   ldy hulp
+l103_1           ldy hulp
                  cpy z_p_temp_1
                  beq play_rts                             ; done!
                  jsr indin1_ram1
                  jsr play_one_character
                  inc hulp
-                 bne _local_1102_10                       ; always
+                 bne l103_1                               ; always
 play_rts
                  rts
 
@@ -7519,16 +7519,16 @@ play_one_character
                  cmp #' '                                 ; spaces are a 'no-op'
                  beq play_rts
 
-_local_1103_5    cmp #'A'                                 ; note name a-g?
-                 bcc _local_1103_10
+l104_1           cmp #'A'                                 ; note name a-g?
+                 bcc l104_2
                  cmp #'H'
                  +lbcc play_note                          ; yes...play it
 
-_local_1103_10   ldx #4                                   ; test for notes,'w,h,q,i,s'
-_local_1103_20   cmp notes,x
+l104_2           ldx #4                                   ; test for notes,'w,h,q,i,s'
+l104_3           cmp notes,x
                  +lbeq set_note_length
                  dex
-                 bpl _local_1103_20
+                 bpl l104_3
 
                  cmp #'R'                                 ; rest?
                  +lbeq play_rest
@@ -7536,10 +7536,10 @@ _local_1103_20   cmp notes,x
                  +lbeq play_dot
 
                  ldx #5                                   ; test for v,o,t,x,u,m commands
-_local_1103_30   cmp mutabl,x
+l104_4           cmp mutabl,x
                  +lbeq play_command
                  dex
-                 bpl _local_1103_30                       ; test all 5 characters in table
+                 bpl l104_4                               ; test all 5 characters in table
 
                  cmp #'#'                                 ; sharp?
                  +lbeq play_sharp
@@ -7572,10 +7572,10 @@ set_filter
                  ldx filter_offset,y                      ; 0 0 0 4 4 4
                  lda filters1+2,x                         ; get current filter data for this SID  [910612]
                  ora vbits,y                              ; update filter voice bit
-                 bcs _local_1104_20                       ; branch to turn filter on
+                 bcs l105_1                               ; branch to turn filter on
                  eor vbits,y                              ; else, turn filter off   [910612]
 
-_local_1104_20   sta filters1+2,x
+l105_1           sta filters1+2,x
 ; lda filters1+3,x ;why????     [910612]
 ; sta filters1+4,x ;save new filter-type/volume
 
@@ -7585,12 +7585,12 @@ _local_1104_20   sta filters1+2,x
                  tay
 ; jsr go_slow  ;      [910716] 4567R7A
                  ldz #3
-_local_1104_30   lda filters1,x                           ; update the hardware
+l105_2           lda filters1,x                           ; update the hardware
                  sta sid1+21,y
                  inx
                  iny
                  dez
-                 bpl _local_1104_30
+                 bpl l105_2
 ; jsr go_fast  ;      [910716] 4567R7A
                  bra clear_flag                           ; always
 
@@ -7681,8 +7681,8 @@ go_slow
 wait_for_quiet                                            ; Wait for current voice to be quiet  [910626]
                  ldy voice
                  ldx times2,y                             ; voice*2
-_local_1105_10   bit voices+1,x                           ; test if voice is active   [910617]
-                 bpl _local_1105_10                       ; loop until inactive (IRQ)
+l106_1           bit voices+1,x                           ; test if voice is active   [910617]
+                 bpl l106_1                               ; loop until inactive (IRQ)
                  rts
 
 
@@ -7690,15 +7690,15 @@ wait_for_all_quiet                                          ; Wait for all voice
                  ldy #3
                  ldx voice
                  cpx #3                                   ; determine left/right SID
-                 bcs _local_1106_10
+                 bcs l107_1
                  ldy #0
-_local_1106_10   ldz #3                                   ; for each of 3 voices
-_local_1106_20   ldx times2,y
-_local_1106_30   bit voices+1,x                           ; wait for voice to be inactive (IRQ)
-                 bpl _local_1106_30
+l107_1           ldz #3                                   ; for each of 3 voices
+l107_2           ldx times2,y
+l107_3           bit voices+1,x                           ; wait for voice to be inactive (IRQ)
+                 bpl l107_3
                  iny                                      ; next voice
                  dez
-                 bne _local_1106_20                       ; until done 3 voices
+                 bne l107_2                               ; until done 3 voices
                  rts
 
 ; .page
@@ -7719,22 +7719,22 @@ set_note_length
 ; sty ntime+1
 
                  bit _pal_ntsc                            ; determine if PAL or NTSC system  [910724]
-                 bmi _local_1107_1                        ; ...branch if PAL
+                 bmi l108_1                               ; ...branch if PAL
                  ldz #<beats_ntsc                         ; (whole note 4/4 time = 2 sec)
                  ldy #>beats_ntsc
-                 bra _local_1107_2
-_local_1107_1    ldz #<beats_pal
+                 bra l108_2
+l108_1           ldz #<beats_pal
                  ldy #>beats_pal
-_local_1107_2    stz ntime
+l108_2           stz ntime
                  sty ntime+1
 
-_local_1107_10   dex
-                 bmi _local_1107_20                       ; finished dividing, exit
+l108_3           dex
+                 bmi l108_4                               ; finished dividing, exit
                  lsr ntime+1
                  ror ntime
-                 bra _local_1107_10
+                 bra l108_3
 
-_local_1107_20   rts
+l108_4           rts
 
 ; .page
 play_note
@@ -7750,36 +7750,36 @@ play_note
                  txa
                  clc
                  adc sharp
-                 bpl _local_1108_10                       ; added sharp or nat
+                 bpl l109_1                               ; added sharp or nat
                  lda #11                                  ; underflow
                  iny                                      ; bump octave down
-_local_1108_10   cmp #12                                  ; overflow?
-                 bcc _local_1108_20                       ; no...
+l109_1           cmp #12                                  ; overflow?
+                 bcc l109_2                               ; no...
                  lda #0
                  dey                                      ; bump octave up
-_local_1108_20   tax
+l109_2           tax
                  lda scalel,x
                  sta pitch
 
                  bit _pal_ntsc                            ; determine if PAL or NTSC system
-                 bmi _local_1108_25                       ; ...branch if PAL
+                 bmi l109_3                               ; ...branch if PAL
                  lda scaleh,x                             ; continue as before patch
-                 bra _local_1108_30
+                 bra l109_4
 
-_local_1108_25   lda scalelp,x                            ; load from PAL tables
+l109_3           lda scalelp,x                            ; load from PAL tables
                  sta pitch
                  lda scalehp,x
 
-_local_1108_30   dey
+l109_4           dey
                  bmi play_note_1                          ; go play note
                  lsr
                  ror pitch
-                 bra _local_1108_30
+                 bra l109_4
 
 ; .page
 play_command
                  cmp #'M'                                 ; measure?
-                 beq _local_1109_10
+                 beq l110_1
 
                  lda rbits,x                              ; all others, set flag for next number
                  sta flag
@@ -7787,20 +7787,20 @@ play_command
 
 ; Wait for msb of all 3 voice counters to underflow
 
-;_local_1109_10 ldy #5
-;_local_1109_20 lda voices,y
-; bpl _local_1109_20
+;l110_1 ldy #5
+;l110_2 lda voices,y
+; bpl l110_2
 ; dey
 ; dey
-; bpl _local_1109_20
+; bpl l110_2
 ; rts
 
-_local_1109_10   ldy #5                                   ; [910626]
-_local_1109_20   ldx times2,y
-_local_1109_30   bit voices+1,x                           ; wait for voice to be inactive (IRQ)
-                 bpl _local_1109_30
+l110_1           ldy #5                                   ; [910626]
+l110_2           ldx times2,y
+l110_3           bit voices+1,x                           ; wait for voice to be inactive (IRQ)
+                 bpl l110_3
                  dey                                      ; next voice
-                 bpl _local_1109_20                       ; until done 6 voices
+                 bpl l110_2                               ; until done 6 voices
                  rts
 
 
@@ -7823,8 +7823,8 @@ play_rest
                  pha                                      ; save flag
                  ldx voice
                  ldy times2,x                             ; y=x*2
-_local_1110_10   lda voices+1,y                           ; test if there is a note playing
-                 bpl _local_1110_10                       ; and loop if so
+l111_1           lda voices+1,y                           ; test if there is a note playing
+                 bpl l111_1                               ; and loop if so
 
                  sei
                  lda ntime                                ; load counter for current length
@@ -7832,7 +7832,7 @@ _local_1110_10   lda voices+1,y                           ; test if there is a n
                  lda ntime+1
                  sta voices+1,y
                  lda dnote                                ; test if this is a dotted note
-                 beq _local_1110_20                       ; no
+                 beq l111_2                               ; no
                  lda ntime+1
                  lsr                                      ; duration is 1.5 x current length
                  pha
@@ -7845,8 +7845,8 @@ _local_1110_10   lda voices+1,y                           ; test if there is a n
                  adc voices+1,y
                  sta voices+1,y
 
-_local_1110_20   pla                                      ; test if this is a rest
-                 bmi _local_1110_30                       ; and branch if so- clear play flags and exit [910722]
+l111_2           pla                                      ; test if this is a rest
+                 bmi l111_3                               ; and branch if so- clear play flags and exit [910722]
 
 ; jsr put_io_in_map
 ; jsr go_slow  ;      [910716] 4567R7A
@@ -7860,7 +7860,7 @@ _local_1110_20   pla                                      ; test if this is a re
                  lda waveform,x                           ; and finally, turn on gate
                  sta sid1+4,y
 ; jsr go_fast  ;      [910716] 4567R7A
-_local_1110_30   cli
+l111_3           cli
 
 ; .page
 clear_play_flags
@@ -7956,15 +7956,15 @@ filter           jsr getbyt                               ; get left/right SID  
                  tax
 
                  ldy #0
-_local_1111_10   lda filters1,x                           ; save current voice's filter params
+l112_1           lda filters1,x                           ; save current voice's filter params
                  sta fltsav,y
                  inx
                  iny
                  cpy #4
-                 bcc _local_1111_10
+                 bcc l112_1
 
                  jsr optwrd                               ; get filter frequency
-                 bcc _local_1111_20                       ; skip if no value given
+                 bcc l112_2                               ; skip if no value given
                  cmp #8                                   ; test m.s. byte
                  +lbcs fcerr                              ; error if > 2047
                  sty fltsav                               ; save lower byte
@@ -7979,28 +7979,28 @@ _local_1111_10   lda filters1,x                           ; save current voice's
                  lsr
                  ror fltsav+1
 
-_local_1111_20   lda #$10                                 ; start at type=LP
+l112_2           lda #$10                                 ; start at type=LP
                  sta fltflg
                  lda fltsav
 
-_local_1111_30   jsr optbyt                               ; get filter types (LP,BP,HP)
-                 bcc _local_1111_50                       ; skip if no value input
+l112_3           jsr optbyt                               ; get filter types (LP,BP,HP)
+                 bcc l112_6                               ; skip if no value input
                  cpx #1                                   ; (set .c: 0=0, 1=1)
-                 bcc _local_1111_35
-                 beq _local_1111_35
+                 bcc l112_4
+                 beq l112_4
                  +lbra fcerr                              ; error if >1
 
-_local_1111_35   lda fltsav+3                             ; get filter flags byte
+l112_4           lda fltsav+3                             ; get filter flags byte
                  ora fltflg                               ; set filter on
-                 bcs _local_1111_40                       ; skip if it should be on
+                 bcs l112_5                               ; skip if it should be on
                  eor fltflg                               ; turn filter off
-_local_1111_40   sta fltsav+3                             ; save value
+l112_5           sta fltsav+3                             ; save value
 
-_local_1111_50   asl fltflg                               ; shift for next filter
-                 bpl _local_1111_30                       ; loop 3 times
+l112_6           asl fltflg                               ; shift for next filter
+                 bpl l112_3                               ; loop 3 times
 
                  jsr optbyt                               ; get resonance value
-                 bcc _local_1111_70                       ; skip if no value given
+                 bcc l112_7                               ; skip if no value given
 ; cpx #16
 ; bcs fcerr  ;error if >15
                  jsr chknyb                               ; [910930]
@@ -8015,14 +8015,14 @@ _local_1111_50   asl fltflg                               ; shift for next filte
                  ora nibble                               ; add new value
                  sta fltsav+2                             ; save it
 
-_local_1111_70   ldx z_p_temp_1                           ; hardware offset for this voice's filter [910612]
+l112_7           ldx z_p_temp_1                           ; hardware offset for this voice's filter [910612]
                  ldy #0
-_local_1111_80   lda fltsav,y                             ; copy new filter params to hardware
+l112_8           lda fltsav,y                             ; copy new filter params to hardware
                  sta filters1,x
                  inx
                  iny
                  cpy #4
-                 bcc _local_1111_80
+                 bcc l112_8
                  rts
 
 ;.end
@@ -8056,9 +8056,9 @@ envelope
                  sta tonval+2
 
                  ldx #0
-_local_1112_20   stx parcnt
+l113_1           stx parcnt
                  jsr optbyt                               ; get parameter - attack or sustain
-                 bcc _local_1112_30                       ; skip if no input
+                 bcc l113_2                               ; skip if no input
                  txa
                  asl
                  asl                                      ; shift to upper nibble
@@ -8071,8 +8071,8 @@ _local_1112_20   stx parcnt
                  ora nibble                               ; add new value
                  sta tonval,x                             ; save it
 
-_local_1112_30   jsr optbyt                               ; get decay or release rate
-                 bcc _local_1112_40                       ; skip if no input
+l113_2           jsr optbyt                               ; get decay or release rate
+                 bcc l113_3                               ; skip if no input
                  txa
                  and #$0f                                 ; use only lower nibble
                  sta nibble                               ; save it
@@ -8082,35 +8082,35 @@ _local_1112_30   jsr optbyt                               ; get decay or release
                  ora nibble                               ; add new value
                  sta tonval,x                             ; save it
 
-_local_1112_40   ldx parcnt
+l113_3           ldx parcnt
                  inx
                  cpx #1
-                 beq _local_1112_20                       ; loop to do sustain/release rates
+                 beq l113_1                               ; loop to do sustain/release rates
                  jsr optbyt                               ; get waveform
-                 bcc _local_1112_90                       ; skip if no value
+                 bcc l113_5                               ; skip if no value
                  lda #$15                                 ; assume ring modulation
                  cpx #4
-                 beq _local_1112_80                       ; skip if correct
+                 beq l113_4                               ; skip if correct
                  +lbcs fcerr                              ; error if >4
                  lda sbits+4,x                            ; get waveform bit
                  ora #1                                   ; set gate bit
 
-_local_1112_80   sta tonval+2                             ; save waveform
+l113_4           sta tonval+2                             ; save waveform
 
-_local_1112_90   jsr optwrd                               ; is there a pulse width arg?
-                 bcc _local_1112_110                      ; nope, done
+l113_5           jsr optwrd                               ; is there a pulse width arg?
+                 bcc l113_6                               ; nope, done
 
                  tax                                      ; save msb
                  lda tonval+2                             ; get waveform
                  and #$40
-                 beq _local_1112_110                      ; skip if not pulse waveform
+                 beq l113_6                               ; skip if not pulse waveform
                  txa
                  ldx tonnum                               ; get envelope number
                  sta pulshi,x                             ; save high byte of pulse width
                  tya
                  sta pulslw,x                             ; save low byte
 
-_local_1112_110  ldx tonnum
+l113_6           ldx tonnum
                  lda tonval                               ; set inputted values
                  sta atktab,x
                  lda tonval+1
@@ -8136,7 +8136,7 @@ volrts
 
 volume           +lbeq snerr                              ; stereo parameters    [910612]
                  cmp #','
-                 beq _local_1113_10                       ; left volume only
+                 beq l114_1                               ; left volume only
 ; jsr getbyt  ;right volume in .x
 ; cpx #16
 ; bcs fcerr  ;too large
@@ -8164,7 +8164,7 @@ volume           +lbeq snerr                              ; stereo parameters   
                  jsr chrgot
                  beq volrts
 
-_local_1113_10   jsr optbyt                               ; get optional left parameter   [910612]
+l114_1           jsr optbyt                               ; get optional left parameter   [910612]
                  +lbcc snerr                              ; comma but no value not given??
                  jsr chknyb                               ; [910930]
 ; cpx #16
@@ -8214,9 +8214,9 @@ sound            cmp #clr_token                           ; SOUND CLR: init soun
                  jsr getbyt                               ; get voice number in .X
                  dex                                      ; adjust 1..3 to 0..2
                  cpx #6                                   ; [910612]
-_local_1114_98   +lbcs fcerr                              ; illegal value
+l115_1           +lbcs fcerr                              ; illegal value
 
-_local_1114_10   stx sound_voice
+l115_2           stx sound_voice
 
 ; Get frequency
 
@@ -8230,7 +8230,7 @@ _local_1114_10   stx sound_voice
 
                  jsr comwrd                               ; eat comma, get number of jiffys to play
                  cmp #$80
-                 bcs _local_1114_98
+                 bcs l115_1
                  sty temp_time_lo
                  sta temp_time_hi
 
@@ -8238,7 +8238,7 @@ _local_1114_10   stx sound_voice
 
                  jsr optzer                               ; get optional sweep (default = 0, up)
                  cpx #3
-                 bcs _local_1114_98
+                 bcs l115_1
                  txa
                  sta temp_direction
                  and #1                                   ; set .Z if sweep up or oscillate
@@ -8254,7 +8254,7 @@ _local_1114_10   stx sound_voice
 
                  jsr optwrd                               ; get optional step, default is zero
                  plp                                      ; get flags from direction
-                 beq _local_1114_75                       ; branch if 'up' or oscillate
+                 beq l115_3                               ; branch if 'up' or oscillate
                  pha                                      ; if 'down', make step 2's complement
                  tya
                  eor #$ff
@@ -8264,7 +8264,7 @@ _local_1114_10   stx sound_voice
                  pla
                  eor #$ff
                  adc #0
-_local_1114_75   sta temp_step_hi
+l115_3           sta temp_step_hi
                  tya
                  sta temp_step_lo
 
@@ -8273,7 +8273,7 @@ _local_1114_75   sta temp_step_hi
                  ldx #2                                   ; get waveform. default is square (2)
                  jsr optbyt
                  cpx #4
-                 bcs _local_1114_98                       ; illegal value
+                 bcs l115_1                               ; illegal value
                  lda sbits+4,x                            ; get bit pattern for selected waveform
                  ora #1                                   ; add in the gate bit
                  sta temp_waveform
@@ -8281,11 +8281,11 @@ _local_1114_75   sta temp_step_hi
 ; Get pulse width
 
                  jsr optwrd                               ; get optional pulse width in y,a
-                 bcs _local_1114_80
+                 bcs l115_4
                  lda #8                                   ; no arg's given, use default pulse width
                  ldy #0
-_local_1114_80   cmp #16
-                 bcs _local_1114_98
+l115_4           cmp #16
+                 bcs l115_1
                  sty temp_pulse_lo
                  sta temp_pulse_hi
 
@@ -8293,7 +8293,7 @@ _local_1114_80   cmp #16
 
                  lda temp_time_lo
                  ora temp_time_hi
-                 beq _local_1114_100                      ; special case: time=0 means 'kill it NOW'
+                 beq l115_9                               ; special case: time=0 means 'kill it NOW'
 
 ; Wait for all current uses of this voice to time out
 
@@ -8301,16 +8301,16 @@ _local_1114_80   cmp #16
                  txa                                      ; make an index into PLAY's tables
                  asl
                  tay
-_local_1114_60   lda voices+1,y
-                 bpl _local_1114_60
+l115_5           lda voices+1,y
+                 bpl l115_5
 
-_local_1114_70   lda sound_time_hi,x                      ; now test 'SOUND'
-                 bpl _local_1114_70
+l115_6           lda sound_time_hi,x                      ; now test 'SOUND'
+                 bpl l115_6
 
 ; All clear, now set up for current effect
 
                  ldy #0                                   ; download max freq l&h, min freq l&h,
-_local_1114_90   lda temp_max_lo,y                        ; ..sweep direction, step value l&h, & freq l&h
+l115_7           lda temp_max_lo,y                        ; ..sweep direction, step value l&h, & freq l&h
                  sta sound_max_lo,x
                  inx
                  inx
@@ -8320,7 +8320,7 @@ _local_1114_90   lda temp_max_lo,y                        ; ..sweep direction, s
                  inx
                  iny
                  cpy #9
-                 bcc _local_1114_90
+                 bcc l115_7
 
 ; Now set up SID
 
@@ -8338,17 +8338,17 @@ _local_1114_90   lda temp_max_lo,y                        ; ..sweep direction, s
                  sta sid1+6,y
 
                  ldx #0                                   ; set up freq (l&h), pulse width (l&h), & waveform
-_local_1114_95   lda temp_freq_lo,x
+l115_8           lda temp_freq_lo,x
                  sta sid1,y
                  iny
                  inx
                  cpx #5
-                 bne _local_1114_95
+                 bne l115_8
 ; jsr go_fast  ;      [910716] 4567R7A
 
 ; Now set up time to play
 
-_local_1114_100  ldx sound_voice
+l115_9           ldx sound_voice
                  ldy temp_time_lo
                  lda temp_time_hi
 
@@ -8379,35 +8379,35 @@ _local_1114_100  ldx sound_voice
 
 window           jsr getbyt                               ; get u.l. col
                  cpx #80
-                 bbr7 _mode,_local_1115_10
+                 bbr7 _mode,l116_1
                  cpx #40
-_local_1115_10   bcs _local_1115_98
+l116_1           bcs l116_4
                  stx window_temp
 
                  jsr combyt                               ; get u.l. row
                  cpx #25
-                 bcs _local_1115_98
+                 bcs l116_4
                  stx window_temp+1
 
                  jsr combyt                               ; get l.r. column
                  cpx #80
-                 bbr7 _mode,_local_1115_20
+                 bbr7 _mode,l116_2
                  cpx #40
-_local_1115_20   bcs _local_1115_98
+l116_2           bcs l116_4
                  stx window_temp+2
                  cpx window_temp                          ; can't be less than u.l. column
-                 bcc _local_1115_98
+                 bcc l116_4
 
                  jsr combyt                               ; get l.r. row
                  cpx #25
-                 bcs _local_1115_98
+                 bcs l116_4
                  stx window_temp+3
                  cpx window_temp+1                        ; can't be less than u.l. row
-                 bcc _local_1115_98
+                 bcc l116_4
 
                  jsr optzer                               ; get optional clear flag
                  cpx #2
-                 bcs _local_1115_98
+                 bcs l116_4
                  phx
 
                  ldx window_temp
@@ -8422,12 +8422,12 @@ _local_1115_20   bcs _local_1115_98
 
                  ldx #19                                  ; assume 'home', not 'cls'
                  pla
-                 beq _local_1115_30
+                 beq l116_3
                  ldx #147
-_local_1115_30   txa
+l116_3           txa
                  jmp _bsout
 
-_local_1115_98   +lbra fcerr                              ; illegal value error
+l116_4           +lbra fcerr                              ; illegal value error
 
 ;.end
 ; .page
@@ -8768,8 +8768,8 @@ synchr           ldy #0
 
 
 domin
-_local_1116_10   =negtab-optab                            ; negoff
-                 ldy #_local_1116_10                      ; precedence below '-'
+l117_1           =negtab-optab                            ; negoff
+                 ldy #l117_1                              ; precedence below '-'
 
 gonprc           pla                                      ; get rid of rts addr.
                  pla
@@ -8819,30 +8819,30 @@ isvds            cpx #'D'                                 ; is this DS$?
                  jsr Check_DS                             ; yes- check DS$ allocation,
 ;  and get it if not in memory
                  ldy #$ff
-_local_1117_10   iny                                      ; copy DS$ to a temp.
+l118_1           iny                                      ; copy DS$ to a temp.
                  lda #dsdesc+1                            ; must first determine how big it is
                  jsr lda_far_ram1                         ; lda (dsdesc+1),y
-                 bne _local_1117_10                       ; loop until terminating null found
+                 bne l118_1                               ; loop until terminating null found
 
                  tya                                      ; length of string required
                  jsr strini                               ; get temp. string space & descriptor
                  tay
-                 beq _local_1117_30                       ; (don't bother copying if length is 0)
+                 beq l118_3                               ; (don't bother copying if length is 0)
 
                  phx
 
                  ldx #dsctmp+1                            ; ???? was ldx #frespc
-_local_1117_20   lda #dsdesc+1                            ; copy DS$ into temp
+l118_2           lda #dsdesc+1                            ; copy DS$ into temp
                  dey
                  jsr lda_far_ram1                         ; lda (dsdesc+1),y
                  jsr sta_far_ram1                         ; sta (dsctmp+1),y
                  tya
-                 bne _local_1117_20
+                 bne l118_2
                  plx
                  lda dsdesc                               ; a=length     [901014] FAB
                  jsr mvdone                               ; ???? (does nothing on C128 - bug or oversight?)
 
-_local_1117_30   +lbra putnew
+l118_3           +lbra putnew
 
 ds_rts           rts
 
@@ -8981,24 +8981,24 @@ ptrgt2           sta varnam
                  stx valtyp                               ; default is numeric
                  stx intflg                               ; assume floating
                  jsr chrget                               ; get following character
-                 bcc _local_1118_10                       ; branch if numeric
+                 bcc l119_1                               ; branch if numeric
                  jsr isletc                               ; is it alpha?
-                 bcc _local_1118_30                       ; no, no second character. branch
-_local_1118_10   tax                                      ; issec. save second character of name
+                 bcc l119_3                               ; no, no second character. branch
+l119_1           tax                                      ; issec. save second character of name
 
-_local_1118_20   jsr chrget                               ; skip over remainder of name. we only care about 2 chars.
-                 bcc _local_1118_20                       ; ..eat numbers,
+l119_2           jsr chrget                               ; skip over remainder of name. we only care about 2 chars.
+                 bcc l119_2                               ; ..eat numbers,
                  jsr isletc
-                 bcs _local_1118_20                       ; ..and alphas, too!
+                 bcs l119_2                               ; ..and alphas, too!
 
-_local_1118_30   cmp #'$'                                 ; nosec. is this a string?
-                 bne _local_1118_40                       ; if not, VALTYP = 0
+l119_3           cmp #'$'                                 ; nosec. is this a string?
+                 bne l119_4                               ; if not, VALTYP = 0
                  lda #$ff
                  sta valtyp                               ; ..else, flag 'string'
-                 bra _local_1118_50
+                 bra l119_5
 
-_local_1118_40   cmp #'%'                                 ; notstr. isn't string. is it integer?
-                 bne _local_1118_60                       ; branch if not
+l119_4           cmp #'%'                                 ; notstr. isn't string. is it integer?
+                 bne l119_6                               ; branch if not
                  lda subflg
 ; bne snerr ; syntax error if integers disabled
                  +lbne chkerr                             ; integers disallowed- type mismatch error  [910114]
@@ -9006,12 +9006,12 @@ _local_1118_40   cmp #'%'                                 ; notstr. isn't string
                  sta intflg
                  tsb varnam
 
-_local_1118_50   txa                                      ; turnon. turn on msb of second character
+l119_5           txa                                      ; turnon. turn on msb of second character
                  ora #$80
                  tax
                  jsr chrget                               ; get character after $ or %
 
-_local_1118_60   stx varnam+1                             ; strnam. store away second character
+l119_6           stx varnam+1                             ; strnam. store away second character
                  sec
                  ora subflg                               ; add flag whether to allow arrays
                  sbc #'('
@@ -9022,28 +9022,28 @@ _local_1118_60   stx varnam+1                             ; strnam. store away s
                  lda vartab                               ; place to start search
                  ldx vartab+1
 
-_local_1118_70   stx lowtr+1                              ; stxfnd.
-_local_1118_80   sta lowtr
+l119_7           stx lowtr+1                              ; stxfnd.
+l119_8           sta lowtr
                  cpx arytab+1                             ; at end of table yet?
-                 bne _local_1118_90
+                 bne l119_9
                  cmp arytab
                  beq notfns                               ; yes, we couldn't find it
 
-_local_1118_90   jsr indlow_ram1                          ; lda (lowtr),y
+l119_9           jsr indlow_ram1                          ; lda (lowtr),y
                  cmp varnam                               ; compare high orders
-                 bne _local_1118_100
+                 bne l119_10
                  iny
                  jsr indlow_ram1
                  cmp varnam+1                             ; and the low part?
                  +lbeq finptr                             ; !!that's it!!
 
                  dey
-_local_1118_100  clc
+l119_10          clc
                  lda lowtr
                  adc #7                                   ; makes no difference among types
-                 bcc _local_1118_80
+                 bcc l119_8
                  inx
-                 bra _local_1118_70                       ; branch always
+                 bra l119_7                               ; branch always
 
 
 
@@ -9052,11 +9052,11 @@ _local_1118_100  clc
 ;   (c)=1 a letter
 
 isletc           cmp #'A'
-                 bcc _local_1119_1                        ; if less than "a", return
+                 bcc l120_1                               ; if less than "a", return
                  sbc #'Z'+1                               ; $5a + 1
                  sec
                  sbc #$a5                                 ; reset carry if (a) .gt. "z".
-_local_1119_1    rts
+l120_1           rts
 
 
 notfns           tsx                                      ; check who's calling????
@@ -9064,8 +9064,8 @@ notfns           tsx                                      ; check who's calling?
                  cmp #>pointer_ret
                  beq ldzr                                 ; special case if called by pointer function
 
-_local_1120_20   = isvret-1
-                 cmp #>_local_1120_20                     ; is eval calling????
+l121_1           = isvret-1
+                 cmp #>l121_1                             ; is eval calling????
                  bne notevl                               ; no, carry on
 
 ldzr             lda #<zero                               ; set up pointer to simulated zero
@@ -9124,10 +9124,10 @@ varok            lda arytab
                  sty hightr+1
                  clc
                  adc #7
-                 bcc _local_1121_10                       ; not even
+                 bcc l122_1                               ; not even
                  iny
 
-_local_1121_10   sta highds
+l122_1           sta highds
                  sty highds+1
                  jsr bltu
                  lda highds
@@ -9185,11 +9185,11 @@ aryvgo           sta index1
 
 aryget           ldx index1+1
                  cpx arypnt+1                             ; done with this array?
-                 bne _local_1122_10
+                 bne l123_1
                  cmp arypnt
                  beq aryva3                               ; yes
 
-_local_1122_10   ldy #0                                   ; process string pointer
+l123_1           ldy #0                                   ; process string pointer
                  jsr indin1_ram1                          ; get length of string
                  beq dvarts                               ; skip if null string
                  sta syntmp
@@ -9237,19 +9237,19 @@ arydon           phx
                  lda varnam+1
                  jsr sta_far_ram1                         ; sta (lowtr),y
                  lda #0
-_local_1123_10   iny
+l124_1           iny
                  jsr sta_far_ram1                         ; sta (lowtr),y
                  cpy #6
-                 bne _local_1123_10
+                 bne l124_1
                  plx
 
 finptr           lda lowtr
                  clc
                  adc #2
                  ldy lowtr+1
-                 bcc _local_1124_10
+                 bcc l125_1
                  iny
-_local_1124_10   sta varpnt
+l125_1           sta varpnt
                  sty varpnt+1
                  rts
 
@@ -9274,10 +9274,10 @@ bltu             jsr reason
                  sec
                  sbc index
                  sta hightr
-                 bcs _local_1125_10
+                 bcs l126_1
                  dec hightr+1
                  sec
-_local_1125_10   lda highds
+l126_1           lda highds
                  sbc index
                  sta highds
                  bcs moren1
@@ -9327,7 +9327,7 @@ is_array
                  pha                                      ; save VALTYP for recursion
                  ldy #0                                   ; set number of dimensions to zero
 
-_local_1126_10   phy                                      ; save number of dims
+l127_1           phy                                      ; save number of dims
                  lda varnam+1
                  pha
                  lda varnam
@@ -9352,7 +9352,7 @@ _local_1126_10   phy                                      ; save number of dims
                  jsr chrgot                               ; get terminating character
                  ldy count
                  cmp #','                                 ; more subscripts?
-                 beq _local_1126_10                       ; yes
+                 beq l127_1                               ; yes
 
 
                  jsr chkcls                               ; must be closed paren
@@ -9366,23 +9366,23 @@ _local_1126_10   phy                                      ; save number of dims
                  lda arytab+1
 
 
-_local_1126_20   stx lowtr
+l127_2           stx lowtr
                  sta lowtr+1
                  cmp strend+1                             ; end of arrays?
-                 bne _local_1126_30
+                 bne l127_3
                  cpx strend
                  beq notfdd                               ; a fine thing! no array!
 
-_local_1126_30   ldy #0
+l127_3           ldy #0
                  jsr indlow_ram1                          ; get high of name from array bank (ram1)
                  iny
                  cmp varnam                               ; compare high orders.
-                 bne _local_1126_40                       ; no way is it this. get the bite outta here
+                 bne l127_4                               ; no way is it this. get the bite outta here
                  jsr indlow_ram1
                  cmp varnam+1                             ; low orders?
                  beq gotary                               ; well here it is
 
-_local_1126_40   iny
+l127_4           iny
                  jsr indlow_ram1                          ; get length
                  clc
                  adc lowtr
@@ -9390,7 +9390,7 @@ _local_1126_40   iny
                  iny
                  jsr indlow_ram1
                  adc lowtr+1
-                 bcc _local_1126_20                       ; always branches
+                 bcc l127_2                               ; always branches
 
 
 bserr            ldx #errbs                               ; get bad sub error number
@@ -9448,10 +9448,10 @@ notfdd
                  jsr sta_far_ram1                         ; sta (lowtr),y
                  plx
                  plp
-                 bpl _local_1127_10
+                 bpl l128_1
                  dex
 
-_local_1127_10   iny                                      ; notflt.
+l128_1           iny                                      ; notflt.
                  lda varnam+1
                  php
                  phx
@@ -9459,11 +9459,11 @@ _local_1127_10   iny                                      ; notflt.
                  jsr sta_far_ram1                         ; sta (lowtr),y
                  plx
                  plp
-                 bpl _local_1127_20
+                 bpl l128_2
                  dex
                  dex
 
-_local_1127_20   stx curtol
+l128_2           stx curtol
                  lda count                                ; save number of dimensions
                  iny
                  iny
@@ -9471,9 +9471,9 @@ _local_1127_20   stx curtol
                  ldx #lowtr                               ; point to string/array bank
                  jsr sta_far_ram1                         ; sta (lowtr),y
 
-_local_1127_30   ldx #11                                  ; loppta. default size
+l128_3           ldx #11                                  ; loppta. default size
                  lda #0
-                 bbr6 dimflg,_local_1127_40               ; not in a dim statement
+                 bbr6 dimflg,l128_4                       ; not in a dim statement
                  pla                                      ; get low order of indice
                  clc
                  adc #1
@@ -9481,7 +9481,7 @@ _local_1127_30   ldx #11                                  ; loppta. default size
                  pla                                      ; get high order of indice
                  adc #0
 
-_local_1127_40   iny                                      ; notdim.
+l128_4           iny                                      ; notdim.
                  phx
                  ldx #lowtr
                  jsr sta_far_ram1 ;sta (lowtr),y          ; store high part of indice
@@ -9497,37 +9497,37 @@ _local_1127_40   iny                                      ; notdim.
                  sta curtol+1
                  ldy index
                  dec count                                ; any more indices left?
-                 bne _local_1127_30                       ; yes
+                 bne l128_3                               ; yes
                  adc arypnt+1
                  +lbcs omerr                              ; overflow
                  sta arypnt+1                             ; compute where to zero
                  tay
                  txa
                  adc arypnt
-                 bcc _local_1127_50
+                 bcc l128_5
                  iny
                  +lbeq omerr
 
-_local_1127_50   jsr reason                               ; grease.  get room
+l128_5           jsr reason                               ; grease.  get room
                  sta strend
                  sty strend+1                             ; new end of storage
                  lda #0                                   ; storing (a) is faster than clear
                  inc curtol+1
                  ldy curtol
-                 beq _local_1127_70
+                 beq l128_7
 
-_local_1127_60   dey                                      ; zero out new entry
+l128_6           dey                                      ; zero out new entry
                  php
                  phx
                  ldx #arypnt
                  jsr sta_far_ram1                         ; sta (arypnt),y
                  plx
                  plp
-                 bne _local_1127_60                       ; no. continue
+                 bne l128_6                               ; no. continue
 
-_local_1127_70   dec arypnt+1                             ; deccur.
+l128_7           dec arypnt+1                             ; deccur.
                  dec curtol+1
-                 bne _local_1127_60                       ; do another block
+                 bne l128_6                               ; do another block
                  inc arypnt+1                             ; bump back up. will use later
                  sec
                  lda strend                               ; restore (a)
@@ -9588,7 +9588,7 @@ inlpn2           iny
 inlpn1           lda curtol+1                             ; don't multiply if curtol=0
                  ora curtol
                  clc                                      ; prepare to get indice back
-                 beq _local_1128_10                       ; get high part of indice back
+                 beq l129_1                               ; get high part of indice back
                  jsr umult                                ; multiply (curtol) by (5&6,lowtr)
                  txa
                  adc indice                               ; add in (indice)
@@ -9596,20 +9596,20 @@ inlpn1           lda curtol+1                             ; don't multiply if cu
                  tya
                  ldy index1
 
-_local_1128_10   adc indice+1
+l129_1           adc indice+1
                  stx curtol
                  dec count                                ; any more?
                  bne inlpnm                               ; yes
                  sta curtol+1
                  ldx #5
                  lda varnam
-                 bpl _local_1128_20
+                 bpl l129_2
                  dex
-_local_1128_20   lda varnam+1
-                 bpl _local_1128_30
+l129_2           lda varnam+1
+                 bpl l129_3
                  dex
                  dex
-_local_1128_30   stx addend
+l129_3           stx addend
                  lda #0
                  jsr umultd                               ; on rts, a & y = hi. x = lo.
                  txa
@@ -9671,9 +9671,9 @@ fmaptr           lda count
                  adc #5                                   ; point to entries. ((c) cleared by asl)
                  adc lowtr
                  ldy lowtr+1
-                 bcc _local_1129_1
+                 bcc l130_1
                  iny
-_local_1129_1    sta arypnt
+l130_1           sta arypnt
                  sty arypnt+1
                  rts
 
@@ -9698,11 +9698,11 @@ Set_TI_String
                  sty time+3
 
                  ldx #3                                   ; parameter pointer (3=hr,2=min,1=sec,0=tenths)
-_local_1130_10   jsr GetTimeDigit                         ; get first digit, convert to BCD
-                 bcs _local_1130_20                       ; colon or eos
+l131_1           jsr GetTimeDigit                         ; get first digit, convert to BCD
+                 bcs l131_2                               ; colon or eos
                  sta time,x
                  jsr GetTimeDigit                         ; get second digit, convert to BCD
-                 bcs _local_1130_20                       ; colon or eos
+                 bcs l131_2                               ; colon or eos
 
                  asl time,x                               ; move first digit to msd
                  asl time,x
@@ -9711,29 +9711,29 @@ _local_1130_10   jsr GetTimeDigit                         ; get first digit, con
                  ora time,x                               ; combine with second digit
                  sta time,x                               ; now we have a time element of packed BCD
 
-_local_1130_20   lda time,x
+l131_2           lda time,x
                  cmp MaxTimeValues,x                      ; check for parameter too big
                  +lbcs fcerr                              ; hr>23, min>59, sec>59, tenths>9
 
                  dex                                      ; check if done
-                 bmi _local_1130_30                       ; yes- all parameters accounted for
+                 bmi l131_4                               ; yes- all parameters accounted for
                  cpy count
-                 bcs _local_1130_40                       ; yes- end of string
+                 bcs l131_5                               ; yes- end of string
 
                  jsr indin1_ram1                          ; check for optional colon (or period)   [910103]
                  cmp #':'
-                 beq _local_1130_25
+                 beq l131_3
                  cmp #'.'
-                 bne _local_1130_10                       ; not there
-_local_1130_25   iny                                      ; it's there- skip over it
+                 bne l131_1                               ; not there
+l131_3           iny                                      ; it's there- skip over it
 
-                 bra _local_1130_10                       ; loop until done
+                 bra l131_1                               ; loop until done
 
 
-_local_1130_30   cpy count                                ; done
+l131_4           cpy count                                ; done
                  +lbcc errlen                             ; error if string too long
 
-_local_1130_40   ldz time                                 ; tenths  0-9
+l131_5           ldz time                                 ; tenths  0-9
                  lda time+1                               ; seconds 0-59
                  ldx time+2                               ; minutes 0-59
                  ldy time+3                               ; hours  0-23
@@ -9749,20 +9749,20 @@ _local_1130_40   ldz time                                 ; tenths  0-9
 GetTimeDigit
                  lda #0                                   ; default to '0'
                  cpy count
-                 bcs _local_1131_10                       ; exit if at end of string (carry set)
+                 bcs l132_1                               ; exit if at end of string (carry set)
 
                  jsr indin1_ram1                          ; else get a character from string
                  iny                                      ; point to next character
                  cmp #'.'                                 ; [910103]
-                 beq _local_1131_10                       ; terminator (period) (carry set)
+                 beq l132_1                               ; terminator (period) (carry set)
                  cmp #'0'                                 ; check character, only 0-9 allowed
                  +lbcc fcerr                              ; too small
                  cmp #':'
-                 bcc _local_1131_10                       ; just right  (carry clear)
+                 bcc l132_1                               ; just right  (carry clear)
                  +lbne fcerr                              ; too big
 ; falls through if colon (carry set)
 
-_local_1131_10   and #$0f                                 ; make BCD
+l132_1           and #$0f                                 ; make BCD
                  rts
 
 
@@ -9790,16 +9790,16 @@ Get_TI_String
                  jsr sta_far_ram1                         ; put period (special case)   [910103]
                  dey
                  ldx #1
-                 bra _local_1132_20
+                 bra l133_2
 
-_local_1132_10   phx                                      ; element pointer (1=secs, 2=mins, 3=hrs)
+l133_1           phx                                      ; element pointer (1=secs, 2=mins, 3=hrs)
                  ldx #dsctmp+1
                  lda #':'
                  jsr sta_far_ram1                         ; put colon
                  dey
                  plx
 
-_local_1132_20   lda time,x
+l133_2           lda time,x
                  taz
                  and #$0f                                 ; do lsd first, since we're working backwards
                  ora #'0'
@@ -9817,7 +9817,7 @@ _local_1132_20   lda time,x
                  plx
                  inx                                      ; next packed element
                  dey
-                 bpl _local_1132_10                       ; loop until done
+                 bpl l133_1                               ; loop until done
 
                  lda #10                                  ; length
                  jsr mvdone                               ; update frespc ????
@@ -9834,7 +9834,7 @@ Get_TI
                  stz facmoh
 
                  ldx #3                                   ; convert time (BCD) to tenths of seconds (binary) since midnight
-_local_1133_10   jsr TimeMultiply
+l134_1           jsr TimeMultiply
                  clc
                  adc faclo
                  sta faclo
@@ -9845,7 +9845,7 @@ _local_1133_10   jsr TimeMultiply
                  adc facmoh
                  sta facmoh                               ; (can't overflow since 23:59:59:9 -> 863999 ($0D2EFF)
                  dex
-                 bne _local_1133_10                       ; next factor
+                 bne l134_1                               ; next factor
 
                  lda #0                                   ; float value in FAC
                  sta facho                                ; zero msb, facov, facsgn
@@ -9895,16 +9895,16 @@ TimeMultiply
                  sta product+2                            ; hi
 
                  ldy #16                                  ; 16-bit multiplicand
-_local_1134_10   asl
+l135_1           asl
                  row product+1
                  row multiplicand                         ; multiplier * multiplicand -> product
-                 bcc _local_1134_20
+                 bcc l135_2
                  clc
                  adc time,x
-                 bcc _local_1134_20
+                 bcc l135_2
                  inw product+1                            ; (does no error check, since using time factors
-_local_1134_20   dey                                      ; in ROM and maximum time multiplier of 59 there
-                 bne _local_1134_10                       ; is no danger of overflow)
+l135_2           dey                                      ; in ROM and maximum time multiplier of 59 there
+                 bne l135_1                               ; is no danger of overflow)
 
 ; sta product
                  rts                                      ; (.X is preserved)
@@ -9990,22 +9990,22 @@ sleep            jsr getwrd                               ; get argument in (y,a
                  sty time                                 ; Number of seconds to "sleep"   [910730] new
                  sta time+1
 
-_local_1135_10   jsr _ReadTime                            ; Get current time
+l136_1           jsr _ReadTime                            ; Get current time
                  stz time+2                               ; tenths
                  sta time+3                               ; seconds
 
-_local_1135_20   jsr is_stop_key_down                     ; Allow user to abort
+l136_2           jsr is_stop_key_down                     ; Allow user to abort
                  jsr _ReadTime                            ; Wait for seconds to increment
                  cmp time+3
-                 beq _local_1135_20
+                 beq l136_2
                  sta time+3
 
-_local_1135_30   jsr _ReadTime                            ; Wait for tenths to increment
+l136_3           jsr _ReadTime                            ; Wait for tenths to increment
                  cpz time+2
-                 bne _local_1135_30
+                 bne l136_3
 
                  dew time                                 ; Decrement sleep period 1 second
-                 bne _local_1135_20                       ; Loop until sleep period over
+                 bne l136_2                               ; Loop until sleep period over
 
                  rts
 
@@ -10021,24 +10021,24 @@ wait             jsr getnum                               ; get required mask1
                  stx andmsk
                  ldx #0
                  jsr chrgot
-                 beq _local_1136_10
+                 beq l137_1
                  jsr combyt                               ; get optional mask2
-_local_1136_10   stx eormsk
+l137_1           stx eormsk
 
                  phz
                  ldz current_bank                         ; set up bank number for fetch
                  ldx #poker                               ; ..and address
                  ldy #0                                   ; ..and index
 
-_local_1136_15   bit current_bank
-                 bmi _local_1136_20                       ; NOMAP?
+l137_2           bit current_bank
+                 bmi l137_3                               ; NOMAP?
                  jsr _lda_far                             ; lda (poker),y
                  !text $2c
 
-_local_1136_20   lda (poker),y
+l137_3           lda (poker),y
                  eor eormsk
                  and andmsk
-                 beq _local_1136_15
+                 beq l137_2
                  plz
                  rts                                      ; got a nonzero
 
@@ -10061,9 +10061,9 @@ _local_1136_20   lda (poker),y
 
 fre              jsr conint                               ; get integer argument in .x
                  cpx #1                                   ; which bank?
-                 beq _local_1137_20                       ; go do bank one
+                 beq l138_1                               ; go do bank one
                  cpx #2                                   ; go do expansion banks   [910107]
-                 beq _local_1137_30                       ; else it must be bank zero
+                 beq l138_2                               ; else it must be bank zero
                  +lbcs fcerr                              ; any other is unpleasant to talk about
 
                  sec                                      ; FRE(text_bank)
@@ -10072,22 +10072,22 @@ fre              jsr conint                               ; get integer argument
                  tay                                      ; set up result for nosflt
                  lda max_mem_0+1
                  sbc text_top+1
-                 bra _local_1137_40                       ; assumes text_top < max_mem
+                 bra l138_3                               ; assumes text_top < max_mem
 
 
-_local_1137_20   jsr garba2                               ; FRE(var_bank) do garbage collect first
+l138_1           jsr garba2                               ; FRE(var_bank) do garbage collect first
                  sec
                  lda fretop
                  sbc strend
                  tay
                  lda fretop+1
                  sbc strend+1
-                 bra _local_1137_40
+                 bra l138_3
 
-_local_1137_30   ldy _expansion                           ; FRE(expansion banks)    [910107]
+l138_2           ldy _expansion                           ; FRE(expansion banks)    [910107]
                  lda #0
 
-_local_1137_40   +lbra nosflt                             ; go float the number (y,a)=(lo,hi)
+l138_3           +lbra nosflt                             ; go float the number (y,a)=(lo,hi)
 
 ;.end
 ; .page
@@ -10141,12 +10141,12 @@ dcml             jsr len1                                 ; find length of strin
                  sty strng2+1                             ; zero out value
                  sty strng2
 
-_local_1138_10   cpy index2                               ; evaluated all characters?
-                 beq _local_1138_50                       ; branch if so
+l139_1           cpy index2                               ; evaluated all characters?
+                 beq l139_4                               ; branch if so
                  jsr indin1_ram1                          ; get next character from string
                  iny
                  cmp #' '                                 ; ignore spaces
-                 beq _local_1138_10
+                 beq l139_1
                  inc index2+1
                  ldx index2+1
                  cpx #5
@@ -10155,28 +10155,28 @@ _local_1138_10   cpy index2                               ; evaluated all charac
                  cmp #'0'
                  bcc decbad                               ; bad if < 0
                  cmp #':'                                 ; '9'+1
-                 bcc _local_1138_30                       ; ok if  = 0-9
+                 bcc l139_2                               ; ok if  = 0-9
                  cmp #'A'
                  bcc decbad                               ; bad if > 9  and < A
                  cmp #'G'
                  bcs decbad                               ; bad if > F
 
                  sbc #7                                   ; adjust if A-F  (.c is clr)
-_local_1138_30   sbc #$2f                                 ; adjust to $00..$0f (.c is set)
+l139_2           sbc #$2f                                 ; adjust to $00..$0f (.c is set)
                  asl                                      ; shift low nibble to high
                  asl
                  asl
                  asl
 
                  ldx #4                                   ; mult. old val. by 16, add new
-_local_1138_40   asl
+l139_3           asl
                  rol strng2
                  rol strng2+1
                  dex
-                 bne _local_1138_40
-                 bra _local_1138_10
+                 bne l139_3
+                 bra l139_1
 
-_local_1138_50   ldy strng2                               ; get lsb of value,
+l139_4           ldy strng2                               ; get lsb of value,
                  lda strng2+1                             ; & msb,
                  +lbra nosflt                             ; go float 2 byte unsigned integer
 
@@ -10194,7 +10194,7 @@ peek             phw poker                                ; ..also happens to be
                  jsr getadr
                  ldy #0                                   ; index
                  bit current_bank
-                 bmi _local_1139_10                       ; NOMAP?
+                 bmi l140_1                               ; NOMAP?
 
                  phz
                  ldz current_bank                         ; set up bank number for Kernel's fetch
@@ -10203,7 +10203,7 @@ peek             phw poker                                ; ..also happens to be
                  plz
                  !text $2c
 
-_local_1139_10   lda (poker),y
+l140_1           lda (poker),y
                  tay                                      ; get byte into .y
                  pla
                  sta poker+1                              ; restore linnum
@@ -10213,11 +10213,11 @@ _local_1139_10   lda (poker),y
 
 ; .page
 poke             jsr getnum
-_local_1140_1    txa                                      ; set up value to store for Kernel 'stash' routine
+l141_1           txa                                      ; set up value to store for Kernel 'stash' routine
                  ldy #0                                   ; ..and index
                  sei                                      ; to allow poking IRQ vector, etc.  [910612]
                  bit current_bank
-                 bmi _local_1140_10                       ; (anything >1Meg means NOMAP)
+                 bmi l141_2                               ; (anything >1Meg means NOMAP)
 
                  phz
                  ldx #poker                               ; ..and address
@@ -10226,18 +10226,18 @@ _local_1140_1    txa                                      ; set up value to stor
                  plz
                  !text $2c
 
-_local_1140_10   sta (poker),y                            ; NoMap
+l141_2           sta (poker),y                            ; NoMap
 
-_local_1140_20   jsr chrgot                               ; eol?
-                 beq _local_1140_30                       ; yes
+l141_3           jsr chrgot                               ; eol?
+                 beq l141_4                               ; yes
                  inw poker                                ; no- increment address
 ; lda poker  ; check for segment wrap (FFFF->0000) [910911]
 ; ora poker+1
                  +lbeq omerr                              ; [910916]
                  jsr optbyt                               ; & get next [,byte]
-                 bcs _local_1140_1
+                 bcs l141_1
 
-_local_1140_30   cli                                      ; [910612]
+l141_4           cli                                      ; [910612]
                  rts
 
 
@@ -10246,45 +10246,45 @@ _local_1140_30   cli                                      ; [910612]
 ; .subttl  ERR$
 
 errd             jsr sign                                 ; get sign
-                 bmi _local_1141_1                        ; (allow err$(er) when er=-1)
+                 bmi l142_1                               ; (allow err$(er) when er=-1)
                  jsr conint                               ; get integer arg in x
                  dex
                  txa                                      ; error # (0 to max-1)
                  cmp #last_error_message                  ; check range
-                 bcc _local_1141_2                        ; ok
+                 bcc l142_2                               ; ok
                  ldx #0                                   ; too high, return null
                  !text $2c
 
-_local_1141_1    ldx #2                                   ; no error, return "ok"    [910911]
+l142_1           ldx #2                                   ; no error, return "ok"    [910911]
                  lda #<ok_error_message
                  ldy #>ok_error_message
                  sta index2
                  sty index2+1
-                 bra _local_1141_30                       ; pass it
+                 bra l142_5                               ; pass it
 
-_local_1141_2    jsr erstup                               ; look up the error, set up a pointer to it
+l142_2           jsr erstup                               ; look up the error, set up a pointer to it
                  ldy #$ff                                 ; determine how long it is
                  ldx #0
-_local_1141_10   inx                                      ; count printing characters
-_local_1141_20   iny
+l142_3           inx                                      ; count printing characters
+l142_4           iny
                  lda (index2),y                           ; (rom: ind.ok)
-                 bmi _local_1141_30                       ; msb set means last
+                 bmi l142_5                               ; msb set means last
                  cmp #' '
-                 bcc _local_1141_20                       ; don't count non-printers
-                 bra _local_1141_10                       ; count all others
+                 bcc l142_4                               ; don't count non-printers
+                 bra l142_3                               ; count all others
 
-_local_1141_30   txa                                      ; message length
+l142_5           txa                                      ; message length
                  jsr strspa                               ; get space
                  tax
-                 beq _local_1141_50                       ; null
+                 beq l142_7                               ; null
 
 ; sta sw_rom_ram1  ;set up string bank????
                  ldx #0
                  ldy #$ff
-_local_1141_40   iny                                      ; copy message into memory
+l142_6           iny                                      ; copy message into memory
                  lda (index2),y                           ; (rom: ind.ok)
                  cmp #' '
-                 bcc _local_1141_40                       ; skip non-printers
+                 bcc l142_6                               ; skip non-printers
 
                  pha
                  and #$7f
@@ -10298,9 +10298,9 @@ _local_1141_40   iny                                      ; copy message into me
                  ply
                  inx
                  pla                                      ; test if msb was set
-                 bpl _local_1141_40
+                 bpl l142_6
 
-_local_1141_50   +lbra chrd1                              ; pla,pla,jmp putnew
+l142_7           +lbra chrd1                              ; pla,pla,jmp putnew
 
 
 ;.end
@@ -10333,9 +10333,9 @@ hexit            pha
 
 dohex            and #$0f
                  cmp #$0a
-                 bcc _local_1142_1
+                 bcc l143_1
                  adc #6
-_local_1142_1    adc #'0'
+l143_1           adc #'0'
                  phx
                  ldx #dsctmp+1
                  jsr sta_far_ram1                         ; sta (dsctmp+1),y
@@ -10383,9 +10383,9 @@ joy              jsr conint                               ; get 1 byte arg in x
                  ldy #$ff
                  sty d1pra                                ; set to not read any kybd inputs
 
-_local_1143_10   lda d1pra,x                              ; read joystick values
+l144_1           lda d1pra,x                              ; read joystick values
                  cmp d1pra,x                              ; debounce
-                 bne _local_1143_10
+                 bne l144_1
 
                  tax                                      ; save joystick values
                  pla
@@ -10398,11 +10398,11 @@ _local_1143_10   lda d1pra,x                              ; read joystick values
                  tay                                      ; save direction : 0-8
                  txa                                      ; restore joystick value
                  and #$10                                 ; test if button triggered
-                 bne _local_1143_20                       ; skip if not
+                 bne l144_2                               ; skip if not
                  tya
                  ora #$80                                 ; show trigger depressed
                  tay
-_local_1143_20   +lbra sngflt                             ; float 1 byte arg in y.
+l144_2           +lbra sngflt                             ; float 1 byte arg in y.
 
 joytab           !text 4,2,3,0,6,8,7,0,5,1,0
 
@@ -10446,30 +10446,30 @@ pot              jsr chkcls                               ; look for closing par
 
                  jsr go_slow
                  ldx #0
-_local_1144_30   inx                                      ; delay to let pot be read by SID
-                 bne _local_1144_30
+l145_1           inx                                      ; delay to let pot be read by SID
+                 bne l145_1
 
-_local_1144_40   lda sid1+25,y                            ; read pot
+l145_2           lda sid1+25,y                            ; read pot
                  cmp sid1+25,y                            ; debounce
-                 bne _local_1144_40
+                 bne l145_2
                  sta pot_temp_2                           ; save pot value
                  jsr go_fast
 
                  ldx #0                                   ; set index to d1pra
                  bit pot_temp_1                           ; test if pot-0,1 or pot-2,3
-                 bmi _local_1144_50                       ; skip if pot 2,3
+                 bmi l145_3                               ; skip if pot 2,3
                  inx                                      ; index to d1prb
-_local_1144_50   lda #04                                  ; use joy line-2
+l145_3           lda #04                                  ; use joy line-2
                  dey                                      ; test if pot-x or pot-y
-                 bmi _local_1144_60                       ; skip if pot-x
+                 bmi l145_4                               ; skip if pot-x
                  asl                                      ; use joy line-3
-_local_1144_60   ldy #$ff
+l145_4           ldy #$ff
                  sty d1pra                                ; disable keybd inputs
                  iny                                      ; set to zero for no trigger
                  and d1pra,x                              ; test if trigger set
-                 bne _local_1144_70                       ; skip if not trigger
+                 bne l145_5                               ; skip if not trigger
                  iny                                      ; return value >255 for trigger
-_local_1144_70   pla
+l145_5           pla
                  sta d1pra                                ; restore keybd lines
                  tya
                  ldy pot_temp_2                           ; restore pot value
@@ -10496,13 +10496,13 @@ lpen             jsr chkcls                               ; look for closing par
                  sta lightpen_xpos,x                      ; reset to zero (????preserve last latched position)
                  cli
                  cpx #0
-                 bne _local_1145_10                       ; done if y position
+                 bne l146_1                               ; done if y position
                  tya
                  asl                                      ; else multiply *2 to get correct x position
                  tay                                      ; lsb
                  lda #0
                  rol                                      ; msb
-_local_1145_10   +lbra nosflt                             ; float it (y,a)
+l146_1           +lbra nosflt                             ; float it (y,a)
 
 
 ;.end
@@ -10529,10 +10529,10 @@ pointer_ret      =*-1
                  tay
                  pla
                  cmp #>zero                               ; is this a dummy pointer?
-                 bne _local_1146_10
+                 bne l147_1
                  lda #0                                   ; if so, return 0
                  tay
-_local_1146_10   +lbra nosflt
+l147_1           +lbra nosflt
 
 ;.end
 ; .page
@@ -10592,12 +10592,12 @@ mod              jsr chknum                               ; 1st arg in FAC1 (num
                  jsr movaf                                ; save range in FAC2
                  jsr pullf1                               ; get back number in FAC1
                  ldx #5                                   ; swap FAC1 and FAC2
-_local_1147_10   lda facexp,x
+l148_1           lda facexp,x
                  ldy argexp,x
                  sta argexp,x
                  sty facexp,x
                  dex
-                 bpl _local_1147_10
+                 bpl l148_1
                  jsr pushf1                               ; save one copy of range for later
 
                  jsr fdivt_c65                            ; number/range
@@ -10631,27 +10631,27 @@ _local_1147_10   lda facexp,x
 rwindow          jsr chkcls
                  jsr conint
                  cpx #2
-                 beq _local_1148_50                       ; return current console
+                 beq l149_2                               ; return current console
                  +lbcs fcerr
 
                  cpx #0
-                 bne _local_1148_10
+                 bne l149_1
 
                  lda _screen_bottom
                  sec
                  sbc _screen_top
-                 bra _local_1148_60                       ; always
+                 bra l149_3                               ; always
 
-_local_1148_10   lda _screen_right
+l149_1           lda _screen_right
                  sec
                  sbc _screen_left
-                 bra _local_1148_60                       ; always
+                 bra l149_3                               ; always
 
 
-_local_1148_50   lda #80                                  ; assume 80 col
-                 bbr7 _mode,_local_1148_60
+l149_2           lda #80                                  ; assume 80 col
+                 bbr7 _mode,l149_3
                  lsr
-_local_1148_60   tay
+l149_3           tay
                  +lbra sngflt                             ; float 1 byte arg in .Y
 
 ;.end
@@ -10667,8 +10667,8 @@ _local_1148_60   tay
 
 rnd              jsr sign                                 ; get sign into .a
 
-rnd_0            bmi _local_1149_20                       ; /// entry from jump table
-                 bne _local_1149_10
+rnd_0            bmi l150_2                               ; /// entry from jump table
+                 bne l150_1
 
 
 ; Get value from hardware
@@ -10692,10 +10692,10 @@ rnd_0            bmi _local_1149_20                       ; /// entry from jump 
                  eor facmo
                  adc faclo
                  sta facho
-                 bra _local_1149_30
+                 bra l150_3
 
 ; .page
-_local_1149_10   lda #<rndx                               ; get last one into FAC
+l150_1           lda #<rndx                               ; get last one into FAC
                  ldy #>rndx
                  jsr movfm
                  lda #<rmulc
@@ -10705,7 +10705,7 @@ _local_1149_10   lda #<rndx                               ; get last one into FA
                  ldy #>raddc
                  jsr romadd                               ; add random constant
 
-_local_1149_20   ldx faclo
+l150_2           ldx faclo
                  lda facho
                  sta faclo
                  stx facho                                ; reverse hi and lo
@@ -10714,7 +10714,7 @@ _local_1149_20   ldx faclo
                  sta facmoh
                  stx facmo
 
-_local_1149_30   lda #0                                   ; strnex.  make number positive
+l150_3           lda #0                                   ; strnex.  make number positive
                  sta facsgn
                  lda facexp                               ; put exp where it will
                  sta facov                                ; be shifted in by normal
@@ -10913,14 +10913,14 @@ defstf           lda #varpnt
                  sta txtptr+1
 
 deffin           ldy #0
-_local_1150_1    pla                                      ; get old arg value off stack,
+l151_1           pla                                      ; get old arg value off stack,
                  phx
                  ldx #defpnt
                  jsr sta_far_ram1 ;sta (defpnt),y         ; and put it back in variable
                  plx
                  iny
                  cpy #5
-                 bne _local_1150_1
+                 bne l151_1
                  rts
 
 ;.end
@@ -10971,11 +10971,11 @@ leftd            jsr pream                                ; test parameters
                  cmp syntmp
                  tya                                      ; that's all there is to LEFT$
 
-rleft            bcc _local_1151_1
+rleft            bcc l152_1
                  jsr inddpt
                  tax                                      ; put length into x
                  tya                                      ; zero (a), the offset
-_local_1151_1    pha                                      ; save offset
+l152_1           pha                                      ; save offset
 rleft2           txa
 rleft3           pha                                      ; save length
                  jsr strspa                               ; get space
@@ -10987,9 +10987,9 @@ rleft3           pha                                      ; save length
                  clc
                  adc index                                ; compute where to copy
                  sta index
-                 bcc _local_1152_1
+                 bcc l153_1
                  inc index+1
-_local_1152_1    tya
+l153_1           tya
                  jsr movdo                                ; go move it
                  +lbra putnew
 
@@ -11015,12 +11015,12 @@ midd             lda #255                                 ; default
                  sta faclo                                ; save for later compare
                  jsr chrgot                               ; get current character
                  cmp #')'                                 ; is it a right paren )?
-                 beq _local_1153_1                        ; no third paren.
+                 beq l154_1                               ; no third paren.
 ; jsr chkcom  ;must have comma
 ; jsr getbyt  ;get the length into "faclo"
                  jsr combyt                               ; [910820]
 
-_local_1153_1    jsr pream                                ; check it out
+l154_1           jsr pream                                ; check it out
                  +lbeq fcerr                              ; illegal qty error
                  dex                                      ; compute offset
                  phx
@@ -11082,11 +11082,11 @@ len1             jsr frestr                               ; free up string
 ; decimal equivalent of the PETSCII string argument.
 
 asc              jsr len1
-                 beq _local_1154_1                        ; it was null (zero length)
+                 beq l155_1                               ; it was null (zero length)
                  ldy #0
                  jsr indin1_ram1                          ; get 1st character
                  tay
-_local_1154_1    +lbra sngflt
+l155_1           +lbra sngflt
 
 ;.end
 ; .page
@@ -11132,24 +11132,24 @@ strlt2           sta strng1                               ; save pointer to stri
                  ldy #255                                 ; initialize character count
 strget           iny
                  jsr indst1                               ; get character
-                 beq _local_1155_20                       ; if zero
+                 beq l156_2                               ; if zero
                  cmp charac                               ; this terminator?
-                 beq _local_1155_10                       ; yes
+                 beq l156_1                               ; yes
                  cmp endchr
                  bne strget                               ; look further
 
-_local_1155_10   cmp #'"'                                 ; strfin.  quote?
-                 beq _local_1155_30
+l156_1           cmp #'"'                                 ; strfin.  quote?
+                 beq l156_3
 
-_local_1155_20   clc
-_local_1155_30   sty dsctmp                               ; no, back up. retain count
+l156_2           clc
+l156_3           sty dsctmp                               ; no, back up. retain count
                  tya
                  adc strng1                               ; wishing to set (txtptr)
                  sta strng2
                  ldx strng1+1
-                 bcc _local_1155_40
+                 bcc l156_4
                  inx
-_local_1155_40   stx strng2+1
+l156_4           stx strng2+1
                  tya
 
 ; .page
@@ -11160,11 +11160,11 @@ strlit_1                                                  ; //// entry from SPRS
                  pha                                      ; save length
                  phx
                  ldx #frespc
-_local_1156_10   dey
+l157_1           dey
                  jsr indst1                               ; lda (strng1),y in bank 0
                  jsr sta_far_ram1                         ; sta (frespc),y in bank 1
                  tya
-                 bne _local_1156_10
+                 bne l157_1
                  plx
                  pla                                      ; restore length
                  jsr mvdone                               ; finish up by updating frespc
@@ -11254,20 +11254,20 @@ movdo            tay
                  pha
                  phx
                  ldx #frespc
-_local_1157_10   dey
+l158_1           dey
                  jsr indin1_ram1
                  jsr sta_far_ram1                         ; sta (frespc),y
                  tya
-                 bne _local_1157_10
+                 bne l158_1
                  plx
                  pla
 
 mvdone           clc                                      ; update frespc pointer
                  adc frespc
                  sta frespc
-                 bcc _local_1158_10
+                 bcc l159_1
                  inc frespc+1
-_local_1158_10   rts
+l159_1           rts
 
 ; .page
 ; FRETMP is passed a string descriptor pntr in (a,y).  A check is made to see
@@ -11285,9 +11285,9 @@ frefac           lda facmo                                ; free up string point
 fretmp           sta index                                ; get length for later
                  sty index+1
                  jsr fretms                               ; check desc. if last
-                 bne _local_1159_30                       ; one then scratch it
+                 bne l160_3                               ; one then scratch it
                  jsr stradj                               ; index points to link
-                 bcc _local_1159_30                       ; literal no fix
+                 bcc l160_3                               ; literal no fix
 
                  phx                                      ; .x=length
                  dey                                      ; .y=1
@@ -11304,9 +11304,9 @@ fretmp           sta index                                ; get length for later
                  sec                                      ; to first byte
                  adc index
                  ldy index+1
-                 bcs _local_1159_10
+                 bcs l160_1
                  dey
-_local_1159_10   sta index
+l160_1           sta index
                  sty index+1
 
                  tax                                      ; lo into x
@@ -11324,14 +11324,14 @@ _local_1159_10   sta index
                  sec                                      ; plus one
                  adc fretop
                  sta fretop
-                 bcc _local_1159_20
+                 bcc l160_2
                  inc fretop+1
-_local_1159_20   inw fretop                               ; + one more
+l160_2           inw fretop                               ; + one more
                  pla                                      ; pull length off stack
                  rts
 
 
-_local_1159_30   ldy #0                                   ; set up x,y,a and index
+l160_3           ldy #0                                   ; set up x,y,a and index
                  jsr indin1_ram1                          ; length
                  pha                                      ; on stack
                  iny
@@ -11378,17 +11378,17 @@ tryag2           tax                                      ; save in x also
                  sec                                      ; for subtract
                  sbc #2                                   ; minus 2 (link bytes)
                  ldy fretop+1
-                 bcs _local_1160_10
+                 bcs l161_1
                  dey
-_local_1160_10   sta index1                               ; save for later
+l161_1           sta index1                               ; save for later
                  sty index1+1
                  txa
                  eor #$ff
                  sec
                  adc index1
-                 bcs _local_1160_20
+                 bcs l161_2
                  dey
-_local_1160_20   cpy strend+1
+l161_2           cpy strend+1
                  bcc garbag
                  bne strfre
                  cmp strend
@@ -11432,10 +11432,10 @@ garbag           lda garbfl
 
 
 garba2           ldx temppt                               ; ptr to temp. strings
-_local_1161_10   cpx #tempst                              ; any out there?
-                 beq _local_1161_20                       ; none
+l162_1           cpx #tempst                              ; any out there?
+                 beq l162_2                               ; none
                  jsr slr1                                 ; setup ptr (tempf2) to temp. string's bkptr
-                 beq _local_1161_10                       ; (skip if null string!)
+                 beq l162_1                               ; (skip if null string!)
                  txa                                      ; .x = lsb of ptr to descriptor
                  phx                                      ; set up string bank
                  ldx #tempf2
@@ -11445,10 +11445,10 @@ _local_1161_10   cpx #tempst                              ; any out there?
                  iny
                  jsr sta_far_ram1                         ; (tempf2),y
                  plx
-                 bra _local_1161_10                       ; always
+                 bra l162_1                               ; always
 
 
-_local_1161_20   ldy #0                                   ; set up flag
+l162_2           ldy #0                                   ; set up flag
                  sty highds
                  ldx max_mem_1
                  ldy max_mem_1+1
@@ -11464,17 +11464,17 @@ _local_1161_20   ldy #0                                   ; set up flag
 ; do while (grbpnt <= fretop)
 
 gloop            jsr chkgrb                               ; check garbage string
-                 bne _local_1162_2                        ; if not garbage
+                 bne l163_2                               ; if not garbage
 
-_local_1162_1    dey                                      ; back up to length
+l163_1           dey                                      ; back up to length
                  jsr indgrb
                  jsr movpnt                               ; move grbpnt to next
                  sec
                  ror highds                               ; indicate garbage string found
                  bra gloop                                ; always
 
-_local_1162_2    bit highds
-                 bpl _local_1162_30                       ; if garbage string not found
+l163_2           bit highds
+                 bpl l163_6                               ; if garbage string not found
                  ldx #0
                  stx highds                               ; clear indicator
 
@@ -11482,7 +11482,7 @@ _local_1162_2    bit highds
 
 ; Move a string over garbage
 
-_local_1162_5    phx
+l163_3           phx
                  ldx #grbtop
                  ldy #1                                   ; move the link bytes
                  jsr indgrb
@@ -11502,31 +11502,31 @@ _local_1162_5    phx
                  txa                                      ; put length-1 in .y
                  tay
 
-_local_1162_10   dey
+l163_4           dey
                  jsr indgrb
                  phx
                  ldx #grbtop
                  jsr sta_far_ram1                         ; sta (grbtop),y
                  plx
                  dex
-                 bne _local_1162_10
+                 bne l163_4
 
                  ldy #2                                   ; fix the descriptor
                  phx
                  ldx #index1
-_local_1162_20   lda grbtop-1,y
+l163_5           lda grbtop-1,y
                  jsr sta_far_ram1                         ; sta (index1),y
                  dey
-                 bne _local_1162_20
+                 bne l163_5
                  plx
 
                  lda grbpnt                               ; check pointer
                  ldy grbpnt+1
                  jsr chkgrb                               ; check garbage string
-                 beq _local_1162_1                        ; if garbage found
-                 bne _local_1162_5                        ; always
+                 beq l163_1                               ; if garbage found
+                 bne l163_3                               ; always
 
-_local_1162_30   ldy #0                                   ; skip over good strings
+l163_6           ldy #0                                   ; skip over good strings
                  jsr indin1_ram1
                  tax
                  jsr movtop
@@ -11548,37 +11548,37 @@ _local_1162_30   ldy #0                                   ; skip over good strin
 
 
 chkgrb           cpy fretop+1                             ; end of strings?
-                 bcc _local_1163_50
-                 bne _local_1163_10                       ; if not equal
+                 bcc l164_5
+                 bne l164_1                               ; if not equal
                  cmp fretop
-                 beq _local_1163_50
-                 bcc _local_1163_50
+                 beq l164_5
+                 bcc l164_5
 
-_local_1163_10   bit highds                               ; check flag
-                 bmi _local_1163_20                       ; if empty string found
+l164_1           bit highds                               ; check flag
+                 bmi l164_2                               ; if empty string found
                  lda #2                                   ; skip pointers past
                  jsr movtop                               ; move top pointer
 
-_local_1163_20   lda #2                                   ; skip pointers past
+l164_2           lda #2                                   ; skip pointers past
                  jsr movpnt                               ; move pointers
                  ldy #1
                  jsr indgrb                               ; garbage?
                  cmp #$ff
-                 beq _local_1163_40                       ; yes
+                 beq l164_4                               ; yes
 
-_local_1163_30   jsr indgrb                               ; to link bytes
+l164_3           jsr indgrb                               ; to link bytes
                  sta index1,y
                  dey
-                 bpl _local_1163_30                       ; if two bytes not moved
-_local_1163_40   rts
+                 bpl l164_3                               ; if two bytes not moved
+l164_4           rts
 
 
-_local_1163_50   ldx temppt                               ; ptr to temp. strings
+l164_5           ldx temppt                               ; ptr to temp. strings
 
-_local_1163_60   cpx #tempst                              ; any out there?
-                 beq _local_1163_70                       ; no
+l164_6           cpx #tempst                              ; any out there?
+                 beq l164_7                               ; no
                  jsr slr1                                 ; setup ptr (tempf2) to temp. string's bkptr.
-                 beq _local_1163_60                       ; (skip if null string!)
+                 beq l164_6                               ; (skip if null string!)
                  phx
                  ldx #tempf2
                  ldy #0                                   ; .a = string length
@@ -11587,9 +11587,9 @@ _local_1163_60   cpx #tempst                              ; any out there?
                  lda #$ff
                  jsr sta_far_ram1 ;sta (tempf2),y         ; and mark as garbage
                  plx
-                 bra _local_1163_60                       ; always
+                 bra l164_6                               ; always
 
-_local_1163_70   pla                                      ; throw away return address
+l164_7           pla                                      ; throw away return address
                  pla
                  lda frespc                               ; fix fretop and frespc
                  ldy frespc+1
@@ -11602,9 +11602,9 @@ movpnt           eor #$ff                                 ; comp and add
                  sec
                  adc grbpnt
                  ldy grbpnt+1
-                 bcs _local_1164_1
+                 bcs l165_1
                  dey
-_local_1164_1    sta grbpnt
+l165_1           sta grbpnt
                  sty grbpnt+1
                  rts
 
@@ -11614,9 +11614,9 @@ movtop           eor #$ff                                 ; comp and add
                  sec
                  adc grbtop
                  ldy grbtop+1
-                 bcs _local_1165_1
+                 bcs l166_1
                  dey
-_local_1165_1    sta grbtop
+l166_1           sta grbtop
                  sty grbtop+1
                  rts
 
@@ -11634,9 +11634,9 @@ slr1             dex                                      ; .x = ptr to temp. st
                  clc
                  adc tempf2                               ; want ptr to string's backpointer
                  sta tempf2
-                 bcc _local_1166_1
+                 bcc l167_1
                  inc tempf2+1
-_local_1166_1    pla   ;.a=len & set z flag               ; .x=next desc. ptr
+l167_1           pla   ;.a=len & set z flag               ; .x=next desc. ptr
                  rts
 
 ;.end
@@ -11783,10 +11783,10 @@ fadd1            cmp #$f9                                 ; for speed and necess
 fadd4            bbr7 arisgn,fadd2                        ; get resulting sign and if positive, add. carry is clear
                  ldy #facexp
                  cpx #argexp                              ; fac is bigger
-                 beq _local_1167_10
+                 beq l168_1
                  ldy #argexp                              ; arg is bigger
 
-_local_1167_10   sec                                      ; subit.
+l168_1           sec                                      ; subit.
                  eor #$ff
                  adc oldov
                  sta facov
@@ -11810,7 +11810,7 @@ normal           ldy #0
                  tya
                  clc
 
-_local_1168_10   ldx facho
+l169_1           ldx facho
                  bne norm1
                  ldx facho+1                              ; shift 8 bits at a time for speed
                  stx facho
@@ -11823,7 +11823,7 @@ _local_1168_10   ldx facho
                  sty facov
                  adc #8
                  cmp #32
-                 bne _local_1168_10
+                 bne l169_1
 
 zerofc           lda #0                                   ; not needed by NORMAL, but by others
 zerof1           sta facexp                               ; number must be zero
@@ -11930,9 +11930,9 @@ shiftr           adc #8
                  bcs shftrt                               ; equiv to beq here
 
 shftr3           asl 1,x
-                 bcc _local_1169_10
+                 bcc l170_1
                  inc 1,x
-_local_1169_10   ror 1,x
+l170_1           ror 1,x
                  ror 1,x                                  ; yes, two of them
 
 rolshf           ror 2,x
@@ -12117,8 +12117,8 @@ mltply           +lbeq mulshf                             ; normalize result and
 mltpl1           lsr
                  ora #$80                                 ; will flag end of shifting
 
-_local_1170_10   tay
-                 bcc _local_1170_20                       ; if mult bit=0, just shift
+l171_1           tay
+                 bcc l171_2                               ; if mult bit=0, just shift
                  clc
                  lda reslo
                  adc arglo
@@ -12133,14 +12133,14 @@ _local_1170_10   tay
                  adc argho
                  sta resho
 
-_local_1170_20   ror resho
+l171_2           ror resho
                  ror resmoh
                  ror resmo
                  ror reslo
                  ror facov                                ; save for rounding
                  tya
                  lsr                                      ; clear msb so we get a closer to 0
-                 bne _local_1170_10                       ; slow as a turtle
+                 bne l171_1                               ; slow as a turtle
 
 multrt           rts
 
@@ -12216,12 +12216,12 @@ muldiv
 mldexp           beq zeremv                               ; so we get zero exponent
                  clc
                  adc facexp                               ; result is in (a)
-                 bcc _local_1171_10                       ; find (c) xor (n)
+                 bcc l172_1                               ; find (c) xor (n)
                  +lbmi overr                              ; overflow if bits match
                  clc
                  !text $2c
 
-_local_1171_10   bpl zeremv                               ; underflow
+l172_1           bpl zeremv                               ; underflow
                  adc #$80                                 ; add bias
                  sta facexp
                  +lbeq zeroml                             ; zero the rest of it
@@ -12455,10 +12455,10 @@ movfa            lda argsgn
 movfa1           sta facsgn
 
                  ldx #5
-_local_1172_1    lda argexp-1,x
+l173_1           lda argexp-1,x
                  sta facexp-1,x
                  dex
-                 bne _local_1172_1
+                 bne l173_1
                  stx facov
                  rts
 
@@ -12466,10 +12466,10 @@ _local_1172_1    lda argexp-1,x
 movaf            jsr round
 
 movef            ldx #6
-_local_1173_1    lda facexp-1,x
+l174_1           lda facexp-1,x
                  sta argexp-1,x
                  dex
-                 bne _local_1173_1
+                 bne l174_1
                  stx facov                                ; zero it since rounded
 movrts           rts
 
@@ -12552,20 +12552,20 @@ fcomp            sta index2
                  eor facsgn                               ; signs the same
                  bmi fcsign                               ; signs differ so result is
                  cpx facexp                               ; sign of FAC again
-                 bne _local_1174_10
+                 bne l175_1
 
                  lda (index2),y
                  ora #$80
                  cmp facho
-                 bne _local_1174_10
+                 bne l175_1
                  iny
                  lda (index2),y
                  cmp facmoh
-                 bne _local_1174_10
+                 bne l175_1
                  iny
                  lda (index2),y
                  cmp facmo
-                 bne _local_1174_10
+                 bne l175_1
                  iny
                  lda #$7f
                  cmp facov
@@ -12573,10 +12573,10 @@ fcomp            sta index2
                  sbc faclo                                ; get zero if equal
                  beq qintrt                               ; rts
 
-_local_1174_10   lda facsgn
-                 bcc _local_1174_20
+l175_1           lda facsgn
+                 bcc l175_2
                  eor #$ff
-_local_1174_20   bra fcomps                               ; a part of sign sets up (a)
+l175_2           bra fcomps                               ; a part of sign sets up (a)
 
 ;.end
 ; .page
@@ -12592,7 +12592,7 @@ qint             lda facexp
                  sec
                  sbc #$a0                                 ; get number of places to shift
 
-                 bbr7 facsgn,_local_1175_10
+                 bbr7 facsgn,l176_1
 
                  tax
                  lda #$ff
@@ -12600,7 +12600,7 @@ qint             lda facexp
                  jsr negfch                               ; truly negate quantity in FAC
                  txa
 
-_local_1175_10   ldx #fac
+l176_1           ldx #fac
                  cmp #$f9
                  bpl qint1                                ; if number of places > 7 shift 1 place at a time
                  jsr shiftr                               ; start shifting bytes, then bits
@@ -12661,9 +12661,9 @@ fin              stx fin_bank                             ; save bank number whe
 
                  ldy #0                                   ; zero facsgn, sgnflg
                  ldx #$0a                                 ; zero exp and ho (and moh)
-_local_1176_10   sty deccnt,x                             ; zero mo and lo
+l177_1           sty deccnt,x                             ; zero mo and lo
                  dex                                      ; zero tenexp and expsgn
-                 bpl _local_1176_10                       ; zero deccnt, dptflg
+                 bpl l177_1                               ; zero deccnt, dptflg
 
                  bcc findgq                               ; flags still set from chrget
                  cmp #'-'                                 ; a negative sign?
@@ -12733,9 +12733,9 @@ finqng           lda sgnflg
 
 
 findig           pha
-                 bbr7 dptflg,_local_1177_10
+                 bbr7 dptflg,l178_1
                  inc deccnt
-_local_1177_10   jsr mul10
+l178_1           jsr mul10
                  pla                                      ; get it back
                  sec
                  sbc #'0'
@@ -12763,12 +12763,12 @@ faddt_c65                                                 ; [910402]
 
 finedg           lda tenexp                               ; get exp so far
                  cmp #10                                  ; will result be >= 100?
-                 bcc _local_1178_5
+                 bcc l179_1
                  lda #100
-                 bbs7 expsgn,_local_1178_30               ; if neg exp, no chk for overr
+                 bbs7 expsgn,l179_4                       ; if neg exp, no chk for overr
                  +lbra overr
 
-_local_1178_5    asl                                      ; max is 120
+l179_1           asl                                      ; max is 120
                  asl                                      ; mult by 2 twice
                  clc                                      ; possible shift out of high
                  adc tenexp                               ; like multiplying by five
@@ -12778,15 +12778,15 @@ _local_1178_5    asl                                      ; max is 120
                  sta syntmp
 
                  lda fin_bank                             ; text or string bank?
-                 bne _local_1178_10
+                 bne l179_2
                  jsr indtxt                               ; text
-                 bra _local_1178_20
-_local_1178_10   jsr indin1_ram1                          ; string
+                 bra l179_3
+l179_2           jsr indin1_ram1                          ; string
 
-_local_1178_20   adc syntmp
+l179_3           adc syntmp
                  sec
                  sbc #'0'
-_local_1178_30   sta tenexp                               ; save result
+l179_4           sta tenexp                               ; save result
                  +lbra finec
 
 ; .page
@@ -12803,14 +12803,14 @@ fin_chrget_2
                  ldy #0
                  jsr indin1_ram1
                  cmp #':'
-                 bcs _local_1179_10
+                 bcs l180_1
                  cmp #' '
                  beq fin_chrget_1                         ; skip over spaces
                  sec
                  sbc #'0'                                 ; set up .c as CHRGET would
                  sec
                  sbc #$d0
-_local_1179_10   rts
+l180_1           rts
 
 ;.end
 ; .page
@@ -12833,9 +12833,9 @@ linprt           sta facho
 
 fout             ldy #1
 foutc            lda #' '                                 ; if positive, print space
-                 bbr7 facsgn,_local_1180_10
+                 bbr7 facsgn,l181_1
                  lda #'-'                                 ; if neg
-_local_1180_10   sta fbuffr-1,y                           ; store the character
+l181_1           sta fbuffr-1,y                           ; store the character
                  sta facsgn                               ; make FAC pos for QINT
                  sty fbufpt                               ; save for later
                  iny
@@ -12845,71 +12845,71 @@ _local_1180_10   sta fbuffr-1,y                           ; store the character
 
                  lda #0
                  cpx #$80                                 ; is number < 1?
-                 beq _local_1180_20                       ; no
-                 bcs _local_1180_30
+                 beq l181_2                               ; no
+                 bcs l181_3
 
-_local_1180_20   lda #<nmil                               ; mult by 10~6
+l181_2           lda #<nmil                               ; mult by 10~6
                  ldy #>nmil
                  jsr rommlt
                  lda #$f7
-_local_1180_30   sta deccnt                               ; save count or zero it
+l181_3           sta deccnt                               ; save count or zero it
 
-_local_1180_40   lda #<n9999
+l181_4           lda #<n9999
                  ldy #>n9999
                  jsr fcomp                                ; is number > 999999.499 or 999999999.5?
-                 beq _local_1180_100                      ; go to biggies
-                 bpl _local_1180_70                       ; yes, make it smaller
+                 beq l181_9                               ; go to biggies
+                 bpl l181_7                               ; yes, make it smaller
 
-_local_1180_50   lda #<n0999
+l181_5           lda #<n0999
                  ldy #>n0999
                  jsr fcomp                                ; is number > 99999.9499 or 99999999.90625?
-                 beq _local_1180_60
-                 bpl _local_1180_80                       ; yes. done multiplying
+                 beq l181_6
+                 bpl l181_8                               ; yes. done multiplying
 
-_local_1180_60   jsr mul10                                ; make it bigger
+l181_6           jsr mul10                                ; make it bigger
                  dec deccnt
-                 bne _local_1180_50                       ; see if that does it (this always goes)
+                 bne l181_5                               ; see if that does it (this always goes)
 
-_local_1180_70   jsr div10                                ; make it smaller
+l181_7           jsr div10                                ; make it smaller
                  inc deccnt
-                 bne _local_1180_40                       ; see if that does it (this always goes)
+                 bne l181_4                               ; see if that does it (this always goes)
 
-_local_1180_80   jsr faddh                                ; add a half to round up
+l181_8           jsr faddh                                ; add a half to round up
 
 
-_local_1180_100  jsr qint                                 ; biggies.
+l181_9           jsr qint                                 ; biggies.
                  ldx #1                                   ; decimal point count
                  lda deccnt
                  clc
                  adc #$0a                                 ; should number be printed in E notation?  (ie, is number .lt. .01?)
-                 bmi _local_1180_110                      ; yes
+                 bmi l181_10                              ; yes
                  cmp #$0b                                 ; is it > 999999 or 9999999999?
-                 bcs _local_1180_120                      ; yes, use E notation
+                 bcs l181_11                              ; yes, use E notation
                  adc #$ff                                 ; number of places before decimal point
                  tax                                      ; put into accx
                  lda #2                                   ; no E notation
-_local_1180_110  sec
+l181_10          sec
 
-_local_1180_120  sbc #2                                   ; effectively add 5 to orig exp
+l181_11          sbc #2                                   ; effectively add 5 to orig exp
                  sta tenexp                               ; that is the exponent to print
                  stx deccnt                               ; number of decimal places
                  txa
-                 beq _local_1180_130
-                 bpl _local_1180_150                      ; some places before dec pnt
+                 beq l181_12
+                 bpl l181_14                              ; some places before dec pnt
 
-_local_1180_130  ldy fbufpt                               ; get pointer to output
+l181_12          ldy fbufpt                               ; get pointer to output
                  lda #'.'                                 ; put in "."
                  iny
                  sta fbuffr-1,y
                  txa
-                 beq _local_1180_140
+                 beq l181_13
                  lda #'0'                                 ; get the ensuing zero
                  iny
                  sta fbuffr-1,y
 
-_local_1180_140  sty fbufpt                               ; save it for later
+l181_13          sty fbufpt                               ; save it for later
 
-_local_1180_150  ldy #0
+l181_14          ldy #0
 
 foutim           ldx #$80                                 ; first pass through, accb has msb set
 fout2            lda faclo
@@ -12926,17 +12926,17 @@ fout2            lda faclo
                  adc foutbl,y
                  sta facho
                  inx                                      ; it was done yet another time
-                 bcs _local_1181_20
+                 bcs l182_1
                  bpl fout2
-                 bmi _local_1181_30
+                 bmi l182_2
 
-_local_1181_20   bmi fout2
-_local_1181_30   txa
-                 bcc _local_1181_40                       ; can use (a) as is
+l182_1           bmi fout2
+l182_2           txa
+                 bcc l182_3                               ; can use (a) as is
                  eor #$ff                                 ; find 11.(a)
                  adc #10                                  ; c is still on to complete negation, and will always be on after
 
-_local_1181_40   adc #'0'-1                               ; get a character to print
+l182_3           adc #'0'-1                               ; get a character to print
                  iny
                  iny
                  iny
@@ -12948,51 +12948,51 @@ _local_1181_40   adc #'0'-1                               ; get a character to p
                  and #$7f                                 ; get rid of msb
                  sta fbuffr-1,y
                  dec deccnt
-                 bne _local_1181_50                       ; not time for dp yet
+                 bne l182_4                               ; not time for dp yet
                  lda #'.'
                  iny
                  sta fbuffr-1,y                           ; store dp
 
-_local_1181_50   sty fbufpt                               ; store pointer for later
+l182_4           sty fbufpt                               ; store pointer for later
                  ldy fdecpt
                  txa                                      ; complement accb
                  eor #$ff                                 ; complement acca
                  and #$80                                 ; save only msb
                  tax
                  cpy #fdcend-foutbl
-; beq _local_1181_60  ;for time converter ????   removed [901014]
+; beq l182_5  ;for time converter ????   removed [901014]
 ; cpy #timend-foutbl
                  bne fout2                                ; continue with output
 
-_local_1181_60   ldy fbufpt                               ; get back output pointer
-_local_1181_70   lda fbuffr-1,y                           ; remove trailing blanks
+l182_5           ldy fbufpt                               ; get back output pointer
+l182_6           lda fbuffr-1,y                           ; remove trailing blanks
                  dey
                  cmp #'0'
-                 beq _local_1181_70
+                 beq l182_6
                  cmp #'.'
-                 beq _local_1181_80                       ; ran into dp,  stop
+                 beq l182_7                               ; ran into dp,  stop
                  iny                                      ; something else, save it
 
-_local_1181_80   lda #'+'
+l182_7           lda #'+'
                  ldx tenexp
                  beq fout17                               ; no exponent to output
-                 bpl _local_1181_90
+                 bpl l182_8
                  lda #0
                  sec
                  sbc tenexp
                  tax
                  lda #'-'                                 ; exponent is negative
 
-_local_1181_90   sta fbuffr+1,y                           ; store sign of exponent
+l182_8           sta fbuffr+1,y                           ; store sign of exponent
                  lda #'E'
                  sta fbuffr,y                             ; store the 'E' character
                  txa
 
                  ldx #'0'-1
                  sec
-_local_1181_100  inx                                      ; move closer to output value
+l182_9           inx                                      ; move closer to output value
                  sbc #10                                  ; subtract 10
-                 bcs _local_1181_100                      ; not negative yet
+                 bcs l182_9                               ; not negative yet
 
                  adc #'9'+1                               ; get second output character
                  sta fbuffr+3,y                           ; store high digit
@@ -13046,17 +13046,17 @@ fpwrt            beq exp                                  ; if FAC=0, just expon
                  jsr movmf                                ; FAC->MEM
 
                  lda argsgn                               ; note y=0 already. that's good, in case no one calls int.
-                 bpl _local_1182_10                       ; no problems if x>0
+                 bpl l183_1                               ; no problems if x>0
                  jsr int                                  ; integerize the FAC
                  lda #<tempf3                             ; get addr of comperand
                  ldy #>tempf3
                  jsr fcomp                                ; equal?
-                 bne _local_1182_10                       ; leave x neg. log will blow him out
+                 bne l183_1                               ; leave x neg. log will blow him out
 ;a=-1 and y is irrelavant
                  tya                                      ; negative x. make positive
                  ldy integr                               ; get evenness
 
-_local_1182_10   jsr movfa1                               ; alternate entry point.    ARG->FAC
+l183_1           jsr movfa1                               ; alternate entry point.    ARG->FAC
                  phy                                      ; save evenness for later
                  jsr log                                  ; find log
                  lda #<tempf3                             ; multiply FAC times LOG(x)
@@ -13107,33 +13107,33 @@ exp              lda #<logeb2                             ; multiply by LOG(e) b
                  jsr rommlt                               ; LOGEB2->ARG, FAC=FAC*ARG
                  lda facov
                  adc #$50                                 ; ????
-                 bcc _local_1183_10
+                 bcc l184_1
                  jsr incrnd
 
-_local_1183_10   sta oldov
+l184_1           sta oldov
                  jsr movef                                ; to save in ARG without round.  ARG=FAC, facov=0)
                  lda facexp
                  cmp #$88                                 ; if ABS(FAC) >= 128, too big
-                 bcc _local_1183_30
+                 bcc l184_3
 
-_local_1183_20   jsr mldvex                               ; overflow or overflow
-_local_1183_30   jsr int                                  ; FAC=INT(FAC), uses facov
+l184_2           jsr mldvex                               ; overflow or overflow
+l184_3           jsr int                                  ; FAC=INT(FAC), uses facov
                  lda integr                               ; get low part
                  clc
                  adc #$81
-                 beq _local_1183_20                       ; overflow or overflow!!
+                 beq l184_2                               ; overflow or overflow!!
 
                  sec
                  sbc #1                                   ; subtract it
                  pha                                      ; save a while
 
                  ldx #5                                   ; swap FAC and ARG
-_local_1183_40   lda argexp,x
+l184_4           lda argexp,x
                  ldy facexp,x
                  sta facexp,x
                  sty argexp,x
                  dex
-                 bpl _local_1183_40
+                 bpl l184_4
 
                  lda oldov
                  sta facov
@@ -13185,20 +13185,20 @@ poly1            jsr mov2f                                ; save FAC (rounds, .y
                  lda polypt
                  ldy polypt+1
 
-_local_1184_10   jsr rommlt
+l185_1           jsr rommlt
                  lda polypt                               ; get current pointer
                  ldy polypt+1
                  clc
                  adc #5
-                 bcc _local_1184_20
+                 bcc l185_2
                  iny
-_local_1184_20   sta polypt
+l185_2           sta polypt
                  sty polypt+1
                  jsr romadd                               ; add in constant
                  lda #<tempf2                             ; multiply the original FAC
                  ldy #>tempf2
                  dec degree                               ; done?
-                 bne _local_1184_10
+                 bne l185_1
                  rts                                      ; yes
 
 ;.end
@@ -13256,10 +13256,10 @@ sin2             lda #<fr4                                ; pointer to 1/4
                  ldy #>fr4
                  jsr romadd                               ; add it in
                  pla                                      ; get original quadrant
-                 bpl _local_1185_10
+                 bpl l186_1
                  jsr negop                                ; if negative, negate result
 
-_local_1185_10   lda #<sincon
+l186_1           lda #<sincon
                  ldy #>sincon
                  +lbra polyx                              ; do approximation polyomial
 
@@ -13281,7 +13281,7 @@ tan              jsr mov1f                                ; move FAC into tempor
                  lda #0
                  sta facsgn                               ; start off positive
                  lda tansgn
-                 jsr _local_1186_10                       ; compute cosine
+                 jsr l187_1                               ; compute cosine
                  lda #<tempf3
                  ldy #>tempf3                             ; address of sine value
 ; bra fdiv ;divide sine by cosine and return
@@ -13289,7 +13289,7 @@ tan              jsr mov1f                                ; move FAC into tempor
                  +lbeq overr                              ; overflow error     "
                  +lbra fdivt                              ; "
 
-_local_1186_10   pha                                      ; cosc.
+l187_1           pha                                      ; cosc.
                  bra sin1
 
 
@@ -13301,32 +13301,32 @@ _local_1186_10   pha                                      ; cosc.
 
 atn              lda facsgn                               ; what is sign?
                  pha                                      ; save for later
-                 bpl _local_1187_10
+                 bpl l188_1
                  jsr negop                                ; if negative, negate FAC
 ;use arctan(x)=-arctan(-x)
-_local_1187_10   lda facexp
+l188_1           lda facexp
                  pha                                      ; save this too for later
                  cmp #$81                                 ; see if FAC >= 1.0
-                 bcc _local_1187_20                       ; it is less than 1
+                 bcc l188_2                               ; it is less than 1
                  lda #<fone                               ; get pntr to 1.0
                  ldy #>fone
                  jsr romdiv                               ; compute reciprocal
 ;use aectan(x)=pi/2-arctan(1/x)
-_local_1187_20   lda #<atncon                             ; pointer to arctan constants
+l188_2           lda #<atncon                             ; pointer to arctan constants
                  ldy #>atncon
                  jsr polyx
                  pla
                  cmp #$81                                 ; was original argument < 1?
-                 bcc _local_1187_30                       ; yes
+                 bcc l188_3                               ; yes
                  lda #<pi2
                  ldy #>pi2
                  jsr romsub                               ; subtract arctan from pi/2
 
-_local_1187_30   pla                                      ; was original aurgument positive?
-                 bpl _local_1187_40                       ; yes
+l188_3           pla                                      ; was original aurgument positive?
+                 bpl l188_4                               ; yes
                  +lbra negop                              ; if negative, negate result
 
-_local_1187_40   rts                                      ; all done
+l188_4           rts                                      ; all done
 
 ;.end
 ; .page
@@ -13348,41 +13348,41 @@ _local_1187_40   rts                                      ; all done
 ;****************************************************************************
 
 boot             cmp #sys_token                           ; BOOTSYS?      [910111]
-                 bne _local_1188_1                        ; no
+                 bne l189_1                               ; no
                  jsr chrget                               ; yes- eat token
                  jsr _bootsys                             ; attempt to boot a new OS
-                 bcc _local_1188_15                       ; returned to us after successful install
+                 bcc l189_4                               ; returned to us after successful install
                  ldx #errbdk                              ; bootsys failed, report 'bad disk'????
                  +lbra error
 
-_local_1188_1    bbr4 runmod,_local_1188_2                ; Error if in Edit mode     [910620]
+l189_1           bbr4 runmod,l189_2                       ; Error if in Edit mode     [910620]
                  +lbra edit_err
 
-_local_1188_2    lda #0                                   ; BOOT "filename"     [910417]
+l189_2           lda #0                                   ; BOOT "filename"     [910417]
                  sta verck                                ; want 'load', not 'verify'
                  lda #$e6                                 ; set up parameters for DOS parser like BLOAD
                  ldx #$fc
                  jsr dosprx                               ; parse the command
-                 bbr0 parsts,_local_1188_20               ; was there a filename?  branch if not
+                 bbr0 parsts,l189_5                       ; was there a filename?  branch if not
                  jsr bload_boot                           ; yes- bload it
                  +lbcs erexit                             ; load error
 
 ; ldx current_bank ;assume no B(ank) arg was given    [910114]
-; bbr0 parstx,_local_1188_10  ; correct, use current setup
+; bbr0 parstx,l189_3  ; correct, use current setup
                  ldx dosbnk                               ; else use given bank number
-_local_1188_10   stx _bank
+l189_3           stx _bank
                  lda _starting_addr                       ; set up address BLOAD loaded to
                  sta _pclo
                  lda _starting_addr+1
                  sta _pchi
                  jsr _jsr_far                             ; call it
-_local_1188_15   rts
+l189_4           rts
 
-_local_1188_20   ldy #$ff
-_local_1188_30   iny                                      ; Copy default filename from ROM into buffer
+l189_5           ldy #$ff
+l189_6           iny                                      ; Copy default filename from ROM into buffer
                  lda autoboot_filename,y
                  sta savram,y
-                 bne _local_1188_30                       ; null terminated
+                 bne l189_6                               ; null terminated
 
                  sty dosf1l                               ; length not counting terminator
                  smb6 runmod                              ; set flag for load not to go to ready
@@ -13401,10 +13401,10 @@ autobootCSG                                               ; Run ROMed diagnostic
 
                  sei                                      ; prevent IRQ from wacking code DL'd to $1xxx  [911106]
                  ldx #12-1
-_local_1189_10   lda _local_1189_20,x                     ; prep DMA list
+l190_1           lda l190_2,x                             ; prep DMA list
                  sta dma1_cmd,x
                  dex
-                 bpl _local_1189_10
+                 bpl l190_1
 
                  lda #0
                  ldx #>dma1_cmd                           ; copy program from ROM to RAM
@@ -13422,10 +13422,10 @@ _local_1189_10   lda _local_1189_20,x                     ; prep DMA list
                  jmp _jmp_far                             ; jump to code, no return.  NOTE: this *MAPs* RAM-0 into context!
 
 ; move from $024001 to $002001, $3FFF bytes  BASIC program
-;_local_1189_20 .byte $00,$ff,$3f,$01,$40,$02,$01,$20,$00,$00,$00,$00
+;l190_2 .byte $00,$ff,$3f,$01,$40,$02,$01,$20,$00,$00,$00,$00
 
 ; move from $024000 to $1000, $4000 bytes   Diagnostic  [911105]
-_local_1189_20   !text $00,$00,$40,$00,$40,$02,$00,$10,$00,0,0,0
+l190_2           !text $00,$00,$40,$00,$40,$02,$00,$10,$00,0,0,0
 
 ; .page
 ; AUTOBOOT Attempts to RUN a disk program after cold startup.  The
@@ -13434,21 +13434,21 @@ _local_1189_20   !text $00,$00,$40,$00,$40,$02,$00,$10,$00,0,0,0
 autoboot
                  lda #0                                   ; Select internal drive
                  sta fdc
-_local_1190_10   bit fdc+2                                ; busywait
-                 bmi _local_1190_10
+l191_1           bit fdc+2                                ; busywait
+                 bmi l191_1
                  lda fdc+3                                ; See if a diskette is present
                  and #$08
-                 beq _local_1190_30                       ; exit with no action taken if not
+                 beq l191_3                               ; exit with no action taken if not
 
                  lda #$e6                                 ; set up parameters for DOS parser like BLOAD
                  ldx #$fc
                  jsr dosprx                               ; let the parser init DOS stuff
 
                  ldy #$ff
-_local_1190_20   iny                                      ; Copy filename from ROM into buffer
+l191_2           iny                                      ; Copy filename from ROM into buffer
                  lda autoboot_filename,y
                  sta savram,y
-                 bne _local_1190_20                       ; null terminated
+                 bne l191_2                               ; null terminated
                  sty dosf1l                               ; length not counting terminator
 
                  lda #%01000001                           ; set flag for load indicating autoboot
@@ -13466,15 +13466,15 @@ _local_1190_20   iny                                      ; Copy filename from R
                  ply
                  plx
                  and #$bf                                 ; EOI is okay
-                 bne _local_1190_30                       ; outside problems
-                 bcs _local_1190_30                       ; inside problems
+                 bne l191_3                               ; outside problems
+                 bcs l191_3                               ; inside problems
 
                  stx text_top                             ; success- set end address & run it
                  sty text_top+1
                  cli
                  +lbra run_a_program
 
-_local_1190_30   rts                                      ; failure- go_ready
+l191_3           rts                                      ; failure- go_ready
 
 
 autoboot_filename
@@ -13546,15 +13546,15 @@ exit_disk_operation
                  jsr print_dos_error                      ; print DOS error msg if any only in direct mode
                  pla
                  plp
-                 bcc _local_1191_30                       ; branch if no error (rts)
-                 bbs7 runmod,_local_1191_20               ; branch if run mode (erexit)
+                 bcc l192_3                               ; branch if no error (rts)
+                 bbs7 runmod,l192_2                       ; branch if run mode (erexit)
                  cmp #errfnf                              ; is it 'file not found' catch-all?
-                 bne _local_1191_10                       ; no  (erexit)
+                 bne l192_1                               ; no  (erexit)
                  sta errnum                               ; yes- save error # for 'er'
                  ora #$80                                 ; but no errdis
-_local_1191_10   sec
-_local_1191_20   bcs erexit                               ; exit if kernel problem (rts)
-_local_1191_30   rts
+l192_1           sec
+l192_2           bcs erexit                               ; exit if kernel problem (rts)
+l192_3           rts
 
 ; .page
 verify           lda #1                                   ; verify flag
@@ -13562,9 +13562,9 @@ verify           lda #1                                   ; verify flag
 
 load             lda #0                                   ; load flag
                  sta verck
-_local_1192_1    bbr4 runmod,_local_1192_2                ; Error if in Edit mode     [910620]
+l193_1           bbr4 runmod,l193_2                       ; Error if in Edit mode     [910620]
                  +lbra edit_err
-_local_1192_2    jsr plsv                                 ; parse parameters, dschk
+l193_2           jsr plsv                                 ; parse parameters, dschk
 
 cld10                                                     ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< entry from dload
 ; jsr put_io_in_map
@@ -13588,15 +13588,15 @@ load_file
                  jsr print_dos_error                      ; report error msg if any only in direct mode
                  pla                                      ; restore error stuff
                  plp
-                 bcc _local_1193_30                       ; branch if no error (rts)
-                 bbs7 runmod,_local_1193_20               ; branch if run mode (erexit)
+                 bcc l194_3                               ; branch if no error (rts)
+                 bbs7 runmod,l194_2                       ; branch if run mode (erexit)
                  cmp #errfnf                              ; is it 'file not found' catch-all?
-                 bne _local_1193_10                       ; no  (erexit)
+                 bne l194_1                               ; no  (erexit)
                  sta errnum                               ; yes- save error # for 'er'
                  ora #$80                                 ; but no errdis
-_local_1193_10   sec
-_local_1193_20   +lbcs erexit                             ; exit if kernel problem
-_local_1193_30   ply                                      ; restore end address
+l194_1           sec
+l194_2           +lbcs erexit                             ; exit if kernel problem
+l194_3           ply                                      ; restore end address
                  plx
                  lda verck
                  beq cld50                                ; was load
@@ -13666,12 +13666,12 @@ close_out_1
                  pha
                  lda _fa                                  ; special error checking if disk op
                  cmp #8
-                 bcc _local_1194_10
+                 bcc l195_1
                  pla
                  plp
                  +lbra exit_disk_operation                ; disk
 
-_local_1194_10   pla                                      ; something else
+l195_1           pla                                      ; something else
                  plp
                  +lbcs erexit
                  rts
@@ -13751,9 +13751,9 @@ paoc             lda #sys_bank                            ; ????      [910620]
                  ldy #0                                   ; default sa (command)
                  lda andmsk                               ; get la
                  cpx #3
-                 bcc _local_1195_10
+                 bcc l196_1
                  dey                                      ; if sa not given and fa=serial bus, default to $ff
-_local_1195_10   jsr _setlfs                              ; store them
+l196_1           jsr _setlfs                              ; store them
                  jsr paoc20                               ; skip junk
                  jsr plsv7                                ; get sa
                  txa
@@ -13777,14 +13777,14 @@ dschk            php                                      ; check if current dev
                  pha
                  lda _fa
                  cmp #1
-                 bne _local_1196_10
+                 bne l197_1
                  lda _default_drive
                  sta _fa
-_local_1196_10   cmp #8                                   ; ????     [900807]
-                 bcc _local_1196_20
+l197_1           cmp #8                                   ; ????     [900807]
+                 bcc l197_2
                  sta dosfa                                ; also make last DOS device = current device
                  jsr Clear_DS
-_local_1196_20   pla
+l197_2           pla
                  plp
                  rts
 
@@ -13877,26 +13877,26 @@ using            ldx #$ff
                  pha
 
                  ldy #2                                   ; move (facmo),1&2 to form,form+1
-_local_1197_10   jsr indfmo
+l198_1           jsr indfmo
                  dey
                  sta form,y
-                 bne _local_1197_10
+                 bne l198_1
 
                  jsr indfmo                               ; get length
                  sta lfor
                  tay
-                 beq _local_1197_99                       ; syntax error if length is zero
+                 beq l198_3                               ; syntax error if length is zero
 
-_local_1197_20   dey
+l198_2           dey
                  jsr indfrm
                  cmp #'#'                                 ; at least one # in format?
-                 beq _local_1197_30                       ; yes...
+                 beq l198_4                               ; yes...
                  tya                                      ; no...end of format
-                 bne _local_1197_20                       ; no...
-_local_1197_99   +lbra snerr                              ; yes...syntax error
+                 bne l198_2                               ; no...
+l198_3           +lbra snerr                              ; yes...syntax error
 
 
-_local_1197_30   lda #';'                                 ; '
+l198_4           lda #';'                                 ; '
 eex2             jsr synchr                               ; check character
                  sty z_p_temp_1                           ; clear flag for anaf
                  sty bnr                                  ; set pointer to begin of no
@@ -13914,11 +13914,11 @@ eex2             jsr synchr                               ; check character
                  bcc prcha                                ; branch if no room left
                  ldx #'='
                  cpx chsn                                 ; = in field
-                 bne _local_1198_50                       ; branch if not
+                 bne l199_1                               ; branch if not
                  lsr                                      ; .a=.a/2
                  adc #0                                   ; add 1 if odd
 
-_local_1198_50   tax                                      ; store no of blanks in x
+l199_1           tax                                      ; store no of blanks in x
 prcha            ldy #0
 chx              txa
                  beq cpef                                 ; branch if no blanks
@@ -13942,22 +13942,22 @@ outc             jsr cdout                                ; output character
 conv             jsr fout                                 ; convert mfp to decimal
 
                  ldy #$ff                                 ; build descriptor for fout string
-_local_1199_10   iny                                      ; how big IS it?
+l200_1           iny                                      ; how big IS it?
                  lda fbuffr,y
-                 bne _local_1199_10
+                 bne l200_1
                  tya
                  jsr strspa                               ; jsr getspa,stx dsctmp+1,sty dsctmp+2,sta dsctmp,rts
 
                  phx
                  ldy #0
                  ldx #dsctmp+1
-_local_1199_20   lda fbuffr,y
-                 beq _local_1199_30
+l200_2           lda fbuffr,y
+                 beq l200_3
                  jsr sta_far_ram1                         ; sta (dsctmp+1),y
                  iny
-                 bne _local_1199_20
+                 bne l200_2
 
-_local_1199_30   plx
+l200_3           plx
                  jsr putnew
                  jsr ini                                  ; init counters and flags
                  jsr fform                                ; output one formatted number
@@ -14014,23 +14014,23 @@ insy             cpy hulp                                 ; end of no reached?
 
 lsg              lda fbuffr,y
                  cmp #'-'                                 ; sign of exponent negative
-                 bne _local_1200_10                       ; no...
+                 bne l201_1                               ; no...
                  ror usgn                                 ; make sign negative
-_local_1200_10   iny
+l201_1           iny
                  sty uexp                                 ; set exponent pointer
 
 eoa              lda point                                ; decimal found?
-                 bpl _local_1201_20                       ; yes...
+                 bpl l202_1                               ; yes...
                  stx point                                ; no...add point
 
-_local_1201_20   jsr anaf                                 ; analyze format
+l202_1           jsr anaf                                 ; analyze format
                  lda vf
                  cmp #$ff
-                 beq _local_1201_40                       ; field overflow
+                 beq l202_3                               ; field overflow
                  lda fesp                                 ; exponent in field
                  beq cff                                  ; convert to f format if not
                  lda uexp                                 ; exponent in number?
-                 bne _local_1201_30                       ; yes...
+                 bne l202_2                               ; yes...
                  ldx enr
                  jsr et2                                  ; add exponent to number
                  dec fbuffr+2,x
@@ -14039,19 +14039,19 @@ _local_1201_20   jsr anaf                                 ; analyze format
                  jsr alg                                  ; delete leading zeros
                  beq hup                                  ; all zero
 
-_local_1201_30   ldy posp                                 ; + or - in format?
+l202_2           ldy posp                                 ; + or - in format?
                  bne sswe                                 ; yes...
                  ldy sno                                  ; +?
                  bmi sswe                                 ; yes...
                  lda vf
 
-_local_1201_40   beq errf                                 ; no room for sign
+l202_3           beq errf                                 ; no room for sign
                  dec vf                                   ; reserve room
-                 bne _local_1201_50
+                 bne l202_4
                  lda nf                                   ; one #?
                  beq errf                                 ; yes...error
 
-_local_1201_50   inc swe
+l202_4           inc swe
 
 sswe             jsr shpn                                 ; shift decimal point
                  jsr uround                               ; round number
@@ -14062,28 +14062,28 @@ hup              +lbra chout                              ; output number
 
 
 cff              ldy uexp                                 ; exponent in no?
-                 beq _local_1202_20                       ; no...
+                 beq l203_2                               ; no...
                  sta hulp                                 ; delete exponent
                  sec                                      ; adjust decimal point
                  ror etof                                 ; set e-to-f flag
                  ldy point
                  lda usgn                                 ; exec nos3 or nos4
-                 bpl _local_1202_10                       ; depends on sign of exp
+                 bpl l203_1                               ; depends on sign of exp
                  jsr nos3
-                 bra _local_1202_30
+                 bra l203_3
 
-_local_1202_10   jsr nos4
+l203_1           jsr nos4
 
-_local_1202_20   ldy point                                ; at start of no?
-                 beq _local_1202_30                       ; yes...
+l203_2           ldy point                                ; at start of no?
+                 beq l203_3                               ; yes...
                  jsr cho                                  ; no = 0 ?
-                 beq _local_1202_40                       ; yes...no round
+                 beq l203_4                               ; yes...no round
 
-_local_1202_30   jsr uround
-                 bra _local_1202_50
+l203_3           jsr uround
+                 bra l203_5
 
-_local_1202_40   dec vn                                   ; adjust...no was 0
-_local_1202_50   sec
+l203_4           dec vn                                   ; adjust...no was 0
+l203_5           sec
                  lda vf
                  sbc vn
                  bcc errf                                 ; no fit...error
@@ -14172,20 +14172,20 @@ eado             lda #0
 eadj             ldx uexp
                  inx
                  bit etof                                 ; e-to-f flag on?
-                 bmi _local_1203_20                       ; yes...
+                 bmi l204_2                               ; yes...
                  eor usgn
-                 beq _local_1203_20                       ; ++ or --
+                 beq l204_2                               ; ++ or --
 
-_local_1203_10   jsr tag3                                 ; inc exp, overflow?
+l204_1           jsr tag3                                 ; inc exp, overflow?
                  jsr sexp                                 ; digit 0 if yes
-                 bcs _local_1203_10                       ; try second digit
+                 bcs l204_1                               ; try second digit
                  +lbra overr                              ; exp>99
 
-_local_1203_20   lda fbuffr,x
+l204_2           lda fbuffr,x
                  dec fbuffr,x                             ; decrement exp
                  cmp #'0'                                 ; underflow on digit?
                  jsr sexp                                 ; set digit=9 if yes...
-                 bcs _local_1203_20                       ; try 2nd digit
+                 bcs l204_2                               ; try 2nd digit
                  bit etof                                 ; flag off?
                  bpl et3                                  ; yes...
                  sty point                                ; decimal point pointer
@@ -14215,14 +14215,14 @@ tag3             lda fbuffr,x                             ; get digit of exp
 
 ansub            clc
                  iny                                      ; begin format?
-                 beq _local_1204_10                       ; yes...
+                 beq l205_1                               ; yes...
                  cpy lfor                                 ; end?
-                 bcc _local_1204_20                       ; no...
+                 bcc l205_2                               ; no...
 
-_local_1204_10   ldy z_p_temp_1                           ; <>0?
+l205_1           ldy z_p_temp_1                           ; <>0?
                  bne retrn                                ; yes...
 
-_local_1204_20   jsr indfrm
+l205_2           jsr indfrm
                  inc cform                                ; pointer to field
                  rts
 
@@ -14234,9 +14234,9 @@ ini              jsr frefac                               ; free temp descriptor
                  ldx #$0a                                 ; printed in hulp
                  lda #0
 
-_local_1205_10   sta swe,x                                ; init working registers
+l206_1           sta swe,x                                ; init working registers
                  dex
-                 bpl _local_1205_10
+                 bpl l206_1
                  stx flag                                 ; comma flag =ff
                  stx point                                ; point pointer=ff
                  stx dolr                                 ; dollar flag=ff
@@ -14255,25 +14255,25 @@ uround           clc
                  sbc z_p_temp_1                           ; underflow?
                  bcc rrts                                 ; yes...
                  cmp enr                                  ; anything to round?
-                 beq _local_1206_10                       ; yes...
+                 beq l207_1                               ; yes...
                  bcs rrts                                 ; no...
 
-_local_1206_10   cmp bnr                                  ; again...
+l207_1           cmp bnr                                  ; again...
                  bcc rrts                                 ; no...
                  tax
                  lda fbuffr,x                             ; get digit
                  cmp #'5'                                 ; <5 ?
                  bcc rrts                                 ; yes...no round
 
-_local_1206_20   cpx bnr                                  ; begin of no reached?
-                 beq _local_1206_30                       ; yes..add 1
+l207_2           cpx bnr                                  ; begin of no reached?
+                 beq l207_3                               ; yes..add 1
                  dex
                  jsr tag3                                 ; increment digit
                  stx enr                                  ; new end of no pointer
-                 beq _local_1206_20                       ; branch on overflow
+                 beq l207_2                               ; branch on overflow
                  rts
 
-_local_1206_30   lda #'1'
+l207_3           lda #'1'
                  sta fbuffr,x
                  inx
                  stx point
@@ -14310,10 +14310,10 @@ szer             jsr cmo                                  ; zero in no?
 ; Using- chout: print number
 
 chout            lda dolr                                 ; dollar flag set?
-                 bmi _local_1207_10                       ; no...
+                 bmi l208_1                               ; no...
                  inc z_p_temp_1                           ; make room for $
 
-_local_1207_10   ldx bnr                                  ; start of #
+l208_1           ldx bnr                                  ; start of #
                  dex
                  ldy begfd                                ; begin of field
 
@@ -14349,17 +14349,17 @@ afplus           cmp #'+'                                 ; plus?
                  jsr cdout
                  ldy uexp
                  jsr cmo                                  ; first dig of exp zero?
-                 bne _local_1208_10                       ; no...
+                 bne l209_1                               ; no...
                  iny
                  jsr cmo                                  ; second digit?
-                 beq _local_1208_20                       ; yes
+                 beq l209_2                               ; yes
 
-_local_1208_10   lda #'-'
+l209_1           lda #'-'
                  bit usgn
-                 bmi _local_1208_30
+                 bmi l209_3
 
-_local_1208_20   lda #'+'
-_local_1208_30   jsr cdout                                ; output sign exp
+l209_2           lda #'+'
+l209_3           jsr cdout                                ; output sign exp
                  ldx uexp
                  lda fbuffr,x
                  jsr cdout                                ; output first dig exp
@@ -14396,13 +14396,13 @@ zerot1           dec z_p_temp_1                           ; count leading zeros
 
                  jsr indfrm                               ; take a peek at the next character in the format string
                  cmp #','                                 ; if it's a comma, we got problems
-                 bne _local_1209_10                       ; ...branch if no comma & resume normal processing
+                 bne l210_1                               ; ...branch if no comma & resume normal processing
 
                  lda blfd                                 ; here's the "$,999.99" bug fix:
                  jsr cdout                                ; print a 'fill' character instead of the '$'
                  iny                                      ; and increment format string pointer past comma
 
-_local_1209_10   sec                                      ; resume normal processing
+l210_1           sec                                      ; resume normal processing
                  ror dolr                                 ; clear the dollar flag & go on to print '$'
 ; sta sw_rom_ram0 ;????
                  lda pumony
@@ -14413,17 +14413,17 @@ pndd             lda swe                                  ; # of blanks
                  beq zerot
                  dec swe                                  ; count !
 
-_local_1210_5    +lbne bout                               ; out blank or *
+l211_1           +lbne bout                               ; out blank or *
                  lda posp                                 ; + or - in field?
-                 bmi _local_1210_5                        ; yes...out blank or *
+                 bmi l211_1                               ; yes...out blank or *
 
-_local_1210_10   jsr indfrm
+l211_2           jsr indfrm
                  cmp #','                                 ; comma?
                  bne ispl1                                ; no...out sign
                  lda blfd                                 ; yes...
                  jsr cdout                                ; out blank or *
                  iny
-                 bra _local_1210_10
+                 bra l211_2
 
 
 
@@ -14443,11 +14443,11 @@ gfor             jsr ansub
                  tax                                      ; save char
 
 sfur             jsr ansub                                ; get next format char
-                 bcs _local_1211_10                       ; stop on wrap-around
+                 bcs l212_1                               ; stop on wrap-around
                  jsr com1                                 ; compare specials
                  beq foun1                                ; found some...
 
-_local_1211_10   ldy begfd
+l212_1           ldy begfd
                  txa
 pchar            jsr outch ;outdo                         ; out character
                  bra gfor
@@ -14495,12 +14495,12 @@ llar             cmp #'$'                                 ; dollar?
 expo             cmp #'^'                                 ; up arrow?
                  bne isp                                  ; no...
                  ldx #$02
-_local_1212_10   jsr ansub                                ; must be 4 up arrows
+l213_1           jsr ansub                                ; must be 4 up arrows
                  bcs ero
                  cmp #'^'                                 ; up arrow?
                  bne ero
                  dex
-                 bpl _local_1212_10
+                 bpl l213_1
                  inc fesp                                 ; set exp flag
                  jsr ansub                                ; next format char
                  bcs efo                                  ; end of format
@@ -14571,47 +14571,47 @@ instr            lda facmo                                ; save pointer to temp
                  stx faclo
                  jsr chrgot
                  cmp #')'                                 ; any length argument?
-                 beq _local_1213_1                        ; branch if not
+                 beq l214_1                               ; branch if not
                  jsr combyt                               ; else go get a one byte argument
 
-_local_1213_1    jsr chkcls                               ; look for )
+l214_1           jsr chkcls                               ; look for )
                  ldx faclo
                  +lbeq fcerr                              ; starting position can't be 0
                  dex
                  stx positn
 
                  ldx #3                                   ; copy 'pointers to temp descriptors' to zero page
-_local_1213_3    lda tmpdes,x
+l214_2           lda tmpdes,x
                  sta ptarg1,x
                  dex
-                 bpl _local_1213_3
+                 bpl l214_2
 
                  ldy #2                                   ; now get the descriptors
-_local_1213_4    lda #ptarg1
+l214_3           lda #ptarg1
                  jsr lda_far_ram1                         ; lda (ptarg1),y
                  sta str1,y
                  lda #ptarg2
                  jsr lda_far_ram1                         ; lda (ptarg2),y
                  sta str2,y
                  dey
-                 bpl _local_1213_4
+                 bpl l214_3
 
                  lda str2                                 ; check if string 2 is null
-                 beq _local_1213_50                       ; if so, return 0
+                 beq l214_8                               ; if so, return 0
 
-_local_1213_10   lda #0
+l214_4           lda #0
                  sta match
                  clc
                  lda str2                                 ; length of string 2
                  adc positn
-                 bcs _local_1213_50                       ; too long, not found
+                 bcs l214_8                               ; too long, not found
                  cmp str1                                 ; see if > length of string 1
-                 bcc _local_1213_20                       ; < len string 1
-                 bne _local_1213_50                       ; must be >, not found
+                 bcc l214_5                               ; < len string 1
+                 bne l214_8                               ; must be >, not found
 
-_local_1213_20   ldy match
+l214_5           ldy match
                  cpy str2                                 ; if match len = str len, then found
-                 beq _local_1213_40
+                 beq l214_7
                  tya
                  clc
                  adc positn                               ; compare str1(s+p+m) with str2(m)
@@ -14623,19 +14623,19 @@ _local_1213_20   ldy match
                  lda #str2+1
                  jsr lda_far_ram1                         ; lda (str2+1),y
                  cmp syntmp
-                 beq _local_1213_30
+                 beq l214_6
                  inc positn                               ; not the same, start over from next positn
-                 bra _local_1213_10                       ; always
+                 bra l214_4                               ; always
 
-_local_1213_30   inc match                                ; count characters that match
-                 bra _local_1213_20                       ; always
+l214_6           inc match                                ; count characters that match
+                 bra l214_5                               ; always
 
 
-_local_1213_40   inc positn                               ; found
+l214_7           inc positn                               ; found
                  lda positn
                  !text $2c
 
-_local_1213_50   lda #0                                   ; not found
+l214_8           lda #0                                   ; not found
 ; sta sw_rom_ram0 ;????
                  pha
                  lda tmpdes+2                             ; free temp descriptors
@@ -14669,43 +14669,43 @@ open_SEQ_file
                  jsr open_file                            ; open the file
                  +lbcs list_err                           ; exit if error
                  plz                                      ; [910620]
-                 beq _local_1214_20
+                 beq l215_1
                  rts                                      ; or exit if called by EDIT load routine
 
-_local_1214_20   jsr _stop                                ; check stop key
-                 beq _local_1214_30                       ; exit if down
+l215_1           jsr _stop                                ; check stop key
+                 beq l215_6                               ; exit if down
                  ldx dosla
                  jsr _chkin                               ; get input channel
-                 bcs _local_1214_30                       ; exit if bad??
+                 bcs l215_6                               ; exit if bad??
                  ldx #0
-_local_1214_25   cpx #255                                 ; check buffer (buflen????)
+l215_2           cpx #255                                 ; check buffer (buflen????)
 ; bcs 99$   ; 'too long' error
-                 beq _local_1214_26                       ; allow long lines   [910620]
+                 beq l215_3                               ; allow long lines   [910620]
                  jsr _basin                               ; read file data
                  sta dosstr,x                             ; buffer it
                  inx                                      ; bump buffer pointer
                  tay                                      ; save char
                  jsr _readst                              ; check channel status
-                 bne _local_1214_26                       ; exit if eof or error
+                 bne l215_3                               ; exit if eof or error
                  cpy #cr
-                 bne _local_1214_25                       ; loop until eol
+                 bne l215_2                               ; loop until eol
 
-_local_1214_26   php                                      ; save input channel status (beq=eol, bne=eof/err)
+l215_3           php                                      ; save input channel status (beq=eol, bne=eof/err)
                  stx t4                                   ; save character count
                  jsr dcato                                ; get output channel
                  ldx #0
-_local_1214_27   cpx t4                                   ; check buffer
-                 bcs _local_1214_28                       ; end of buffered data
+l215_4           cpx t4                                   ; check buffer
+                 bcs l215_5                               ; end of buffered data
                  lda dosstr,x                             ; output data
                  jsr _bsout
                  inx                                      ; bump buffer pointer
-                 bne _local_1214_27                       ; loop until end of buffer
+                 bne l215_4                               ; loop until end of buffer
 
-_local_1214_28   jsr _clrch
+l215_5           jsr _clrch
                  plp                                      ; check input status
-                 beq _local_1214_20                       ; loop until eof or bad status
+                 beq l215_1                               ; loop until eof or bad status
 
-_local_1214_30   +lbra list_exit                          ; release channel, close file, return to main
+l215_6           +lbra list_exit                          ; release channel, close file, return to main
 
 ;99$ jsr _clrch  ;non-I/O trouble   removed [910620]
 ; lda dosla  ; shut down disk & report BASIC error
@@ -14758,31 +14758,31 @@ disk
 directory                                                 ; display disk directory (catalog)
                  jsr chrgot                               ; get current chr
                  cmp #esc_command_token                   ; eat dirECTORY kludge if it's there
-                 bne _local_1215_1
+                 bne l216_1
                  jsr chrget                               ; (esc token + another)
                  cmp #ectory_token
                  +lbne snerr
                  jsr chrget                               ; yes- get next good char
 
-_local_1215_1    jsr dospar                               ; parse the line
+l216_1           jsr dospar                               ; parse the line
                  lda parsts                               ; check options
                  and #$e6
                  +lbne snerr
 
                  ldy #fdir                                ; table offset for directory
                  bit dosflags                             ; want recoverable files? [901024]
-                 bvc _local_1215_2                        ; no
+                 bvc l216_2                               ; no
                  ldy #fdirr                               ; yes
-_local_1215_2    ldx #1                                   ; just $
+l216_2           ldx #1                                   ; just $
                  lda parsts                               ; check for default
                  and #$11                                 ; no drive?
-                 beq _local_1215_20
+                 beq l216_4
                  lsr
-                 bcc _local_1215_10                       ; just drive
+                 bcc l216_3                               ; just drive
                  inx                                      ; drive and filename
                  inx
-_local_1215_10   inx
-_local_1215_20   txa                                      ; a now has length
+l216_3           inx
+l216_4           txa                                      ; a now has length
                  jsr sendp                                ; build
 
                  ldx #sys_bank                            ; set banks????  fname in system space, bank0 [910620]
@@ -14794,14 +14794,14 @@ _local_1215_20   txa                                      ; a now has length
                  lda #doslfn                              ; lfn
                  jsr _setlfs                              ; set file parameters
                  jsr _open                                ; open it...
-                 bcc _local_1215_30                       ; ...ok
+                 bcc l216_5                               ; ...ok
                  pha
                  jsr dcat11                               ; ...error, shut down and report
                  plx
                  sec
                  +lbra error
 
-_local_1215_30   lda channl                               ; determine DIR vs LDIR
+l216_5           lda channl                               ; determine DIR vs LDIR
                  bne ldir                                 ; if output channel not default (screen)
 ; use LDIR
 
@@ -14817,14 +14817,14 @@ dir              ldx #doslfn
 
 dcat3            sty t3                                   ; save counter
 
-_local_1216_10   jsr _basin                               ; get char
+l217_1           jsr _basin                               ; get char
                  sta t4
                  jsr _basin                               ; get char
                  sta t4+1
                  jsr _readst                              ; check status
                  bne dcat11                               ; exit if eof or bad status
                  dec t3
-                 bne _local_1216_10                       ; if not done
+                 bne l217_1                               ; if not done
 
 ; Output blocks number
 
@@ -14878,29 +14878,29 @@ ldir
                  sta sid_speed_flag                       ; but save enables so we can restore them
 
                  ldy #3                                   ; loop counter (3=skip fake load adr & link bytes)
-_local_1217_1    sty t3                                   ; save counter
+l218_1           sty t3                                   ; save counter
                  ldx #doslfn
                  jsr _chkin
                  bcs ldir_end                             ; problem??
 
-_local_1217_10   jsr _readst                              ; check status
+l218_2           jsr _readst                              ; check status
                  bne ldir_end                             ; exit if bad status
                  jsr _basin                               ; get block count
                  sta dosstr                               ; buffer it
                  jsr _basin
                  sta dosstr+1
                  dec t3
-                 bne _local_1217_10                       ; continue eating bytes until we have block count
+                 bne l218_2                               ; continue eating bytes until we have block count
 
 ; Read filename
 
                  ldx #1                                   ; buffer index-1
-_local_1217_20   inx
+l218_3           inx
                  jsr _readst                              ; check status
                  bne ldir_end                             ; exit if eof or bad status
                  jsr _basin                               ; buffer next character
                  sta dosstr,x
-                 bne _local_1217_20                       ; loop until eol (null terminator)
+                 bne l218_3                               ; loop until eol (null terminator)
 
 ; Print one line of directory
 
@@ -14913,13 +14913,13 @@ _local_1217_20   inx
                  jsr _bsout                               ; print space
 
                  ldx #2
-_local_1217_30   lda dosstr,x
-                 beq _local_1217_40
+l218_4           lda dosstr,x
+                 beq l218_5
                  jsr _bsout                               ; print filename (null terminated)
                  inx
-                 bne _local_1217_30
+                 bne l218_4
 
-_local_1217_40   jsr crdo                                 ; print return
+l218_5           jsr crdo                                 ; print return
                  jsr _clrch
                  jsr _stop                                ; check stop key
                  beq ldir_end                             ; exit if stop request
@@ -14927,7 +14927,7 @@ _local_1217_40   jsr crdo                                 ; print return
 ; Continue with next line
 
                  ldy #2                                   ; set to skip fake link bytes
-                 bra _local_1217_1                        ; loop
+                 bra l218_1                               ; loop
 
 
 ldir_end
@@ -14939,10 +14939,10 @@ ldir_end
 
 dcato            jsr _clrch
                  ldx channl                               ; restore output channel
-                 beq _local_1218_10                       ; branch if screen (default output)
+                 beq l219_1                               ; branch if screen (default output)
                  jmp _chkout                              ; else get output channel
 
-_local_1218_10   rts
+l219_1           rts
 
 ; .page
 ; DOPEN dfn(,t(,r))
@@ -14957,7 +14957,7 @@ dopen            lda #$22                                 ; set error flag
                  ldx #8                                   ; random access length
                  bra open_it                              ; [910925]
 
-;_local_1219_10 jsr open_file  ;open it
+;l220_1 jsr open_file  ;open it
 ; bra exit_disk_op ;report any DOS errors, & return to main [910404]
 
 
@@ -14991,11 +14991,11 @@ open_file                                                 ; dop2.
 find_sa
                  ldy #$61                                 ; 2-14 possible
 
-_local_1219_10   iny
+l220_1           iny
                  cpy #$6f
                  beq too_many_files                       ; if none available error
                  jsr _lkupsa                              ; kernel will lookup this sa in its tables
-                 bcc _local_1219_10                       ; if used keep looking
+                 bcc l220_1                               ; if used keep looking
                  sty dossa                                ; save secondary address
                  rts                                      ; return .y = sa
 
@@ -15006,10 +15006,10 @@ _local_1219_10   iny
 find_la
                  lda #0                                   ; 1-127 possible
 
-_local_1220_10   inc
+l221_1           inc
                  bmi too_many_files                       ; if none available error
                  jsr _lkupla                              ; kernel will lookup this la in its tables
-                 bcc _local_1220_10                       ; if used keep looking
+                 bcc l221_1                               ; if used keep looking
                  sta dosla                                ; save logical address
                  rts                                      ; return .a = la
 
@@ -15038,10 +15038,10 @@ dclall           lda dosfa                                ; get disk #
 
 ; DSAVE dfn
 
-dsave            bbr4 runmod,_local_1221_10               ; PROGRAM or EDIT mode?    [910620]
+dsave            bbr4 runmod,l222_1                       ; PROGRAM or EDIT mode?    [910620]
                  +lbra edit_save                          ; edit
 
-_local_1221_10   lda #$66                                 ; set error flags
+l222_1           lda #$66                                 ; set error flags
                  jsr dosprs                               ; parse the line
                  jsr chk2                                 ; check required parameters
                  ldy #fopn                                ; table offset
@@ -15066,10 +15066,10 @@ dverify          lda #1                                   ; flag 'verify'
 dload            lda #0
                  sta verck                                ; set load flag (for verify check later)
 
-                 bbr4 runmod,_local_1222_10               ; PROGRAM or EDIT mode?    [910620]
+                 bbr4 runmod,l223_1                       ; PROGRAM or EDIT mode?    [910620]
                  +lbra edit_load                          ; edit
 
-_local_1222_10   lda #$e6                                 ; set error flags
+l223_1           lda #$e6                                 ; set error flags
                  jsr dosprs                               ; parse the line
                  jsr chk2                                 ; check required parameters
 
@@ -15103,13 +15103,13 @@ bsave            lda #$66                                 ; std error flag
                  lda dosofh+1                             ; check that ea>sa
                  cmp dosofl+1
                  +lbcc fcerr                              ; ...error
-                 bne _local_1223_20
+                 bne l224_1
                  lda dosofh
                  cmp dosofl
                  +lbcc fcerr                              ; ...error
                  +lbeq fcerr
 
-_local_1223_20   ldy #fopn                                ; table offset
+l224_1           ldy #fopn                                ; table offset
                  lda #4                                   ; ..length
                  jsr sendp
 
@@ -15149,11 +15149,11 @@ bload_boot                                                ; <<<<<<<<<<<<<<<<<<<<
                  ldy dosofl+1                             ; ..and lo
                  lda #0                                   ; assume x & y not both=ff (means real add., not def)
                  cpx #$ff
-                 bne _local_1224_5
+                 bne l225_1
                  cpy #$ff
-                 bne _local_1224_5
+                 bne l225_1
                  lda #$ff                                 ; use defaults
-_local_1224_5    sta dossa
+l225_1           sta dossa
 
                  ldy #fopn                                ; table offset
                  lda #4                                   ; ..length,
@@ -15179,16 +15179,16 @@ _local_1224_5    sta dossa
                  jsr print_dos_error                      ; report DOS problems
                  pla                                      ; restore error stuff
                  plp
-                 bcc _local_1224_30                       ; branch if no error (rts)
-                 bbs7 runmod,_local_1224_20               ; branch if run mode (erexit)
+                 bcc l225_4                               ; branch if no error (rts)
+                 bbs7 runmod,l225_3                       ; branch if run mode (erexit)
                  cmp #errfnf                              ; is it 'file not found' catch-all?
-                 bne _local_1224_10                       ; no  (erexit)
+                 bne l225_2                               ; no  (erexit)
                  sta errnum                               ; yes- save error # for 'er'
                  ora #$80                                 ; but no errdis
-_local_1224_10   sec
-_local_1224_20   +lbcs erexit                             ; exit if kernel problem (rts)
+l225_2           sec
+l225_3           +lbcs erexit                             ; exit if kernel problem (rts)
 
-_local_1224_30   lda verck                                ; load or verify operation?
+l225_4           lda verck                                ; load or verify operation?
                  +lbne verify_check                       ; verify
 
 ; jsr _readst  ;  read status
@@ -15213,10 +15213,10 @@ header           jsr dospar                               ; parse the line
                  ldy #fhed                                ; tabld index
                  lda #4                                   ; length
                  ldx dosdid                               ; check for diskid
-                 beq _local_1225_10
+                 beq l226_1
                  lda #6                                   ; length with id
 
-_local_1225_10   jsr trans                                ; build and send command
+l226_1           jsr trans                                ; build and send command
 ;fall into 'print_dos_error'
 
 ; .page
@@ -15229,7 +15229,7 @@ print_dos_error                                           ; [900725]
                  cmp #'2'
                  bcc header_rts                           ; branch if no error occured ('00' or '01')
                  cmp #'7'
-                 bne _local_1226_1                        ; [900730]
+                 bne l227_1                               ; [900730]
                  iny
                  lda #dsdesc+1
                  jsr lda_far_ram1                         ; might be '73' powerup message
@@ -15241,7 +15241,7 @@ print_dos_error                                           ; [900725]
 
 ; Print DOS error message as if it were a BASIC error message   [900910]
 
-_local_1226_1    lda #$ff                                 ; reset error line
+l227_1           lda #$ff                                 ; reset error line
                  sta errlin                               ;
                  sta errlin+1
                  jsr _clrch
@@ -15258,17 +15258,17 @@ _local_1226_1    lda #$ff                                 ; reset error line
                  lda #dsdesc+1
                  jsr lda_far_ram1                         ; skip err#, comma, & leading space if any
                  cmp #' '
-                 bne _local_1226_20
+                 bne l227_3
                  iny
-_local_1226_10   lda #dsdesc+1
+l227_2           lda #dsdesc+1
                  jsr lda_far_ram1
                  cmp #','                                 ; finished at comma preceding trk, sector
-                 beq _local_1226_30
-_local_1226_20   jsr outch
+                 beq l227_4
+l227_3           jsr outch
                  iny
-                 bpl _local_1226_10                       ; loop always (bpl=failsafe)
+                 bpl l227_2                               ; loop always (bpl=failsafe)
 
-_local_1226_30   jsr highlight_done                       ; [910624]
+l227_4           jsr highlight_done                       ; [910624]
                  jsr crdo
                  +lbra ready                              ; we're in direct mode, error msg has been printed, abort
 
@@ -15282,31 +15282,31 @@ header_rts
 scratch          jsr dospar                               ; parse the line
                  jsr chk1
                  jsr are_you_sure                         ; confirm if in direct mode
-                 bne _local_1227_30                       ; branch if 'no' response given
+                 bne l228_4                               ; branch if 'no' response given
 
                  ldy #fscr                                ; offset
                  lda #4                                   ; length
                  bit dosflags                             ; scratch or recover?
-                 bvc _local_1227_1                        ; scratch
+                 bvc l228_1                               ; scratch
                  ldy #frscr                               ; recover
                  lda #6
-_local_1227_1    jsr trans                                ; transmit scratch command
+l228_1           jsr trans                                ; transmit scratch command
                  jsr Read_DS                              ; read error channel & update DS$
 
-                 bbs7 runmod,_local_1227_30               ; branch if not direct mode
+                 bbs7 runmod,l228_4                       ; branch if not direct mode
                  jsr crdo                                 ; output cr
 
                  ldy #0                                   ; display 'files scratched' DOS message
-_local_1227_10   lda #dsdesc+1
+l228_2           lda #dsdesc+1
                  jsr lda_far_ram1                         ; lda (dsdesc+1),y
-                 beq _local_1227_20                       ; if end of error message
+                 beq l228_3                               ; if end of error message
                  jsr outch                                ; print it
                  iny
-                 bpl _local_1227_10                       ; always (bpl=failsafe)
+                 bpl l228_2                               ; always (bpl=failsafe)
 
-_local_1227_20   jsr crdo                                 ; done
+l228_3           jsr crdo                                 ; done
 
-_local_1227_30   rts
+l228_4           rts
 
 ; .page
 ; RECORD- relative record access
@@ -15332,7 +15332,7 @@ record           lda #'#'
                  lda dosla                                ; get logical address
 ; jsr put_io_in_map
                  jsr _lkupla                              ; logical to physical map
-                 bcs _local_1228_20                       ; if file not found (not open)    [910404]
+                 bcs l229_1                               ; if file not found (not open)    [910404]
                  sty dossa_temp                           ; save secondary address
 
                  stx dosfa                                ; set up device number for trans routine
@@ -15346,7 +15346,7 @@ record           lda #'#'
                  jsr trans                                ; send command
                  +lbra print_dos_error                    ; if any
 
-_local_1228_20   ldx #errfno                              ; file not found err (file not open)   [910404]
+l229_1           ldx #errfno                              ; file not found err (file not open)   [910404]
                  +lbra error
 
 ; .page
@@ -15369,9 +15369,9 @@ collect          jsr dospar                               ; parse the line
                  jsr _clall                               ; close all files
                  ldy #fcoll                               ; tabld offset
                  lda #1                                   ; length
-                 bbr4 parsts,_local_1229_10
+                 bbr4 parsts,l230_1
                  inc                                      ; include drive
-_local_1229_10   jsr trans                                ; send command
+l230_1           jsr trans                                ; send command
                  +lbra print_dos_error                    ; if any
 
 
@@ -15381,13 +15381,13 @@ _local_1229_10   jsr trans                                ; send command
 dcopy            jsr dospar                               ; parse the line
                  and #$30
                  cmp #$30                                 ; check required parameters
-                 bne _local_1230_10                       ; branch if single drive copy
+                 bne l231_1                               ; branch if single drive copy
                  lda parsts                               ; else check for dual drive params
                  and #$c7
-                 beq _local_1230_20
+                 beq l231_2
                  and #3                                   ; special check for 2nd filename   [910717]
                  cmp #3
-                 beq _local_1230_10                       ; branch if given
+                 beq l231_1                               ; branch if given
                  lda #'*'
                  sta dosdid                               ; else supply "*" for him, just like 'name2'
                  lda #1
@@ -15398,10 +15398,10 @@ dcopy            jsr dospar                               ; parse the line
                  sty dosf2a+1
                  lda #2                                   ; and set filename2 flag
                  tsb parsts                               ; set flag in status
-_local_1230_10   lda parsts
+l231_1           lda parsts
                  jsr chk4
 ; lda parsts
-_local_1230_20   ldy #fcopy                               ; tabld offset
+l231_2           ldy #fcopy                               ; tabld offset
                  lda #8                                   ; length
                  jsr trans                                ; send command
                  +lbra print_dos_error                    ; if any
@@ -15442,10 +15442,10 @@ backup           lda #$c7                                 ; set error flags
                  cmp #$30
                  +lbne snerr
                  jsr are_you_sure
-                 beq _local_1231_10                       ; if run mode or not 'yes'
+                 beq l232_1                               ; if run mode or not 'yes'
                  rts
 
-_local_1231_10   jsr dclall                               ; close disk
+l232_1           jsr dclall                               ; close disk
                  ldy #fbak
                  lda #4                                   ; length
                  jsr trans                                ; send command
@@ -15584,15 +15584,15 @@ dosprx                                                    ; spec aux error flag 
                  sta parstx
 
                  ldx #dosspc                              ; clear DOS scratch area   [900522]
-_local_1232_10   sta xcnt-1,x
+l233_1           sta xcnt-1,x
                  dex                                      ; no filenames, null lengths
-                 bne _local_1232_10
+                 bne l233_1
 
                  ldx #dossa-dosofl                        ; set some defaults from table
-_local_1232_20   lda dostbl,x
+l233_2           lda dostbl,x
                  sta dosofl,x                             ; start/end adr = $FFFF, la/fa/sa
                  dex
-                 bpl _local_1232_20
+                 bpl l233_2
 
                  ldx _default_drive                       ; set default device   [900522]
                  stx dosfa
@@ -15671,21 +15671,21 @@ reclen           tax                                      ; save char
                  lda #$40
                  jsr prmrpt                               ; check for repeated parameter
                  cpx #'W'
-                 bne _local_1233_10
+                 bne l234_1
                  jsr chrget
-                 bra _local_1233_20                       ; set parsts
+                 bra l234_4                               ; set parsts
 
-_local_1233_10   ldx #1                                   ; a kludge to allow  DOPEN#lf,"relfile",L  [911024]
+l234_1           ldx #1                                   ; a kludge to allow  DOPEN#lf,"relfile",L  [911024]
                  jsr chrget
-                 beq _local_1233_12                       ; eol? open existing rel file
+                 beq l234_2                               ; eol? open existing rel file
                  jsr getbyt                               ; get reclen (was getval)
-_local_1233_12   stx dosrcl                               ; store parcel
+l234_2           stx dosrcl                               ; store parcel
                  txa                                      ; cpx #0
-                 beq _local_1233_15                       ; zero illegal dosrcl
+                 beq l234_3                               ; zero illegal dosrcl
                  inx                                      ; cpx #255
-_local_1233_15   +lbeq fcerr                              ; illegal dosrcl
+l234_3           +lbeq fcerr                              ; illegal dosrcl
 
-_local_1233_20   lda #$40                                 ; set dosrcl flag &
+l234_4           lda #$40                                 ; set dosrcl flag &
                  +lbra del1
 
 
@@ -15705,7 +15705,7 @@ ident            lda #$80                                 ; set ID flag
                  +lbne snerr                              ; repeated parameter
                  jsr chrget                               ; get next character
                  cmp #'('                                 ; c65: allow I(ID$) syntax  [900710]
-                 bne _local_1234_10
+                 bne l235_1
                  jsr frmstr                               ; get ID from var
                  cmp #2
                  +lbcc err_mfn                            ; if length < 2, error
@@ -15717,7 +15717,7 @@ ident            lda #$80                                 ; set ID flag
                  sta dosdid+1
                  bra delim1                               ; continue
 
-_local_1234_10   sta dosdid                               ; m(txtptr => dosdid
+l235_1           sta dosdid                               ; m(txtptr => dosdid
                  jsr chrget
                  sta dosdid+1
                  jsr chrget                               ; continue
@@ -15756,11 +15756,11 @@ name1            lda #1                                   ; name1 allowed only o
                  sta dosf1l
 
                  ldy #0
-_local_1235_10   jsr indin1_ram1
+l236_1           jsr indin1_ram1
                  sta savram,y                             ; copy name into buffer
                  iny
                  cpy dosf1l
-                 bcc _local_1235_10                       ; ...copy all of it
+                 bcc l236_1                               ; ...copy all of it
                  lda #1                                   ; set name1 flag
 
 
@@ -15793,7 +15793,7 @@ nxxx             cmp #','
 
 parse2           jsr chrget
 pars22           cmp #'D'
-                 beq _local_1236_10
+                 beq l237_1
                  cmp #on_token                            ; "on" token
                  beq on2
                  cmp #'U'
@@ -15803,7 +15803,7 @@ pars22           cmp #'D'
                  cmp #'('
                  beq name2
 
-_local_1236_10   lda #$20
+l237_1           lda #$20
                  jsr prmrpt                               ; check for repeated parameter
                  jsr gtbytc                               ; getval
                  cpx #10
@@ -15849,12 +15849,12 @@ unit             jsr gtbytc                               ; getval
                  cpx #31
                  bcs err_ild                              ; error if >30
                  cpx #1                                   ; drive 1 = use system default drive  [910221]
-                 bne _local_1237_10
+                 bne l238_1
                  ldx _default_drive
-                 bra _local_1237_20
-_local_1237_10   cpx #4
+                 bra l238_2
+l238_1           cpx #4
                  bcc err_ild                              ; error if <4
-_local_1237_20   stx dosfa
+l238_2           stx dosfa
                  lda #$08                                 ; set parser's unit flag
                  rts
 
@@ -15880,7 +15880,7 @@ newnam
                  ldy #0
                  jsr indin1_ram1
                  cmp #'@'                                 ; Replace file convention?
-                 bne _local_1238_10                       ; no
+                 bne l239_1                               ; no
                  lda #$80                                 ; yes- check for repeated param
                  jsr prmrpt
                  smb7 parsts                              ; set "@" flag
@@ -15888,7 +15888,7 @@ newnam
                  inw index1                               ; increment past "@"
                  bra lenchk
 
-_local_1238_10   cmp #'/'                                 ; Subdirectory (partition)?   [901115]
+l239_1           cmp #'/'                                 ; Subdirectory (partition)?   [901115]
                  bne lenchk                               ; no
                  pla                                      ; yes- recall nam1 or nam2
                  tsb dosflags                             ; set appropriate '/' flag (.a=1 or 2)
@@ -16116,11 +16116,11 @@ rsca             lda dossa_temp                           ; secondary address (r
                  bra sdp5                                 ; always
 
 
-rfat             bbr7 parsts,_local_1239_10               ; if "@" not encountered
+rfat             bbr7 parsts,l240_1                       ; if "@" not encountered
                  lda #'@'
                  bra sdp5                                 ; always
 
-_local_1239_10   lda dosflags
+l240_1           lda dosflags
                  lsr
                  bcc sdp1                                 ; if "/" not encountered
                  lda #'/'
@@ -16137,11 +16137,11 @@ rid              lda dosdid                               ; include id
 
 
 rwrt             lda dosrcl                               ; check for L or W
-                 beq _local_1240_10                       ; zero then write
+                 beq l241_1                               ; zero then write
                  lda #'L'
                  bra sdp5                                 ; always
 
-_local_1240_10   lda #'S'                                 ; send W,S
+l241_1           lda #'S'                                 ; send W,S
                  sta dosrcl
                  lda #'W'
                  bra sdp5                                 ; always
@@ -16163,12 +16163,12 @@ rsfn             ldy dosf1l                               ; file name 1: get len
                  beq rdrt0                                ; if null string
 
                  ldy #0                                   ; move name to dosstr
-_local_1241_10   lda savram,y
+l242_1           lda savram,y
                  sta dosstr,x
                  inx
                  iny
                  cpy dosf1l
-                 bne _local_1241_10                       ; if move not complete
+                 bne l242_1                               ; if move not complete
                  bra rdrt1                                ; always
 
 
@@ -16180,12 +16180,12 @@ rdfn             lda dosf2a
                  beq rdrt0                                ; if null string
 
                  ldy #0                                   ; move name to dosstr
-_local_1242_10   jsr indin1_ram1
+l243_1           jsr indin1_ram1
                  sta dosstr,x
                  inx
                  iny
                  cpy dosf2l
-                 bne _local_1242_10                       ; if move not complete
+                 bne l243_1                               ; if move not complete
                  !text $89                                ; hop
 
 rdrt0            dex                                      ; case cdd=sd
@@ -16262,10 +16262,10 @@ Read_DS_1
 Read_DS_2
                  ldx dosfa                                ; fa
                  cpx #2
-                 bcs _local_1243_10                       ; if =0 or 1 use default  [910429]
+                 bcs l244_1                               ; if =0 or 1 use default  [910429]
                  ldx _default_drive                       ; (was dosffn)   [900710]
                  stx dosfa
-_local_1243_10   lda #doslfn                              ; la (reserved la)
+l244_1           lda #doslfn                              ; la (reserved la)
                  ldy #$6f                                 ; sa (command channel)
                  jsr _setlfs
                  lda #0                                   ; no name (so no setbank)
@@ -16273,19 +16273,19 @@ _local_1243_10   lda #doslfn                              ; la (reserved la)
                  jsr _open                                ; get command channel
                  ldx #doslfn
                  jsr _chkin
-                 bcs _local_1243_40                       ; a problem (file already open??)
+                 bcs l244_4                               ; a problem (file already open??)
 
                  ldy #$ff
-_local_1243_20   iny                                      ; read disk error message
+l244_2           iny                                      ; read disk error message
                  jsr _basin
                  cmp #cr
-                 beq _local_1243_30                       ; if eol
+                 beq l244_3                               ; if eol
                  ldx #dsdesc+1
                  jsr sta_far_ram1                         ; sta (dsdesc+1),y copy to DS$
                  cpy #40
-                 bcc _local_1243_20                       ; loop unless too long
+                 bcc l244_2                               ; loop unless too long
 
-_local_1243_30   lda #0                                   ; errend.
+l244_3           lda #0                                   ; errend.
                  ldx #dsdesc+1                            ; terminate DS$ with a null
                  jsr sta_far_ram1                         ; sta (dsdesc+1),y
 
@@ -16294,8 +16294,8 @@ _local_1243_30   lda #0                                   ; errend.
                  sec                                      ; not a real close
                  jmp _close                               ; close it and rts
 
-_local_1243_40   pha                                      ; errbad.
-                 jsr _local_1243_30
+l244_4           pha                                      ; errbad.
+                 jsr l244_3
                  jsr Clear_DS                             ; flag 'no DS available'
                  plx                                      ; get error
                  +lbra error
@@ -16306,7 +16306,7 @@ _local_1243_40   pha                                      ; errbad.
 
 Clear_DS                                                  ; oldclr.
                  lda dsdesc                               ; check for allocation
-                 beq _local_1244_10                       ; branch if not allocated
+                 beq l245_1                               ; branch if not allocated
 
                  phy                                      ; mark current DS$ string as garbage
                  phx
@@ -16322,7 +16322,7 @@ Clear_DS                                                  ; oldclr.
                  plx
                  ply
 
-_local_1244_10   rts
+l245_1           rts
 
 ; .page
 ; Read DOS error message, but don't care what it is.  Want to stop disk LED blink.
@@ -16338,13 +16338,13 @@ Suck_DS
                  jsr _open                                ; get command channel
                  ldx #doslfn
                  jsr _chkin
-                 bcs _local_1245_20                       ; skip input if problem
+                 bcs l246_2                               ; skip input if problem
 
-_local_1245_10   jsr _basin                               ; read disk error message
+l246_1           jsr _basin                               ; read disk error message
                  cmp #cr
-                 bne _local_1245_10                       ; loop until eol
+                 bne l246_1                               ; loop until eol
 
-_local_1245_20   jsr _clrch                               ; shut down command channel
+l246_2           jsr _clrch                               ; shut down command channel
                  lda #doslfn
                  sec                                      ; not a real close
                  jmp _close                               ; close it
@@ -16365,12 +16365,12 @@ response_get
                  jsr _basin                               ; next char
                  pha                                      ; save first char of reply
 
-_local_1246_10   cmp #cr                                  ; eat chars until end of line
-                 beq _local_1246_20                       ; if cr received, exit
+l247_1           cmp #cr                                  ; eat chars until end of line
+                 beq l247_2                               ; if cr received, exit
                  jsr _basin
-                 bne _local_1246_10                       ; continue to ignore
+                 bne l247_1                               ; continue to ignore
 
-_local_1246_20   jsr _bsout                               ; new line     [910212] FAB
+l247_2           jsr _bsout                               ; new line     [910212] FAB
                  pla
                  cmp #'Y'                                 ; z set means ans=y.....
                  rts
@@ -16396,15 +16396,15 @@ response_fake
 ;*****************************************************************
 
 optwrd           jsr chrgot
-                 beq _local_1247_10
+                 beq l248_1
                  jsr chkcom
                  cmp #','
-                 beq _local_1247_10
+                 beq l248_1
                  jsr getwrd
                  sec
                  rts
 
-_local_1247_10   lda #0
+l248_1           lda #0
                  tay
 
 optw99           clc
@@ -16417,15 +16417,15 @@ comsad           jsr chkcom                               ; get a comma & signed
 
 
 optsad           jsr chrgot                               ; get a comma & optional, signed 2-byte arg in y,a [910307]
-                 beq _local_1248_10                       ; eol, therefore this arg is not specified
+                 beq l249_1                               ; eol, therefore this arg is not specified
                  jsr chkcom                               ; eat comma
                  cmp #','                                 ; is next a comma too?
-                 beq _local_1248_10                       ; yes, therefore this arg is not specified
+                 beq l249_1                               ; yes, therefore this arg is not specified
                  jsr sadwrd                               ; get signed word
                  sec
                  rts
 
-_local_1248_10   lda #0                                   ; default optional arg to zero
+l249_1           lda #0                                   ; default optional arg to zero
                  tay
                  clc
                  rts
@@ -16482,11 +16482,11 @@ retpat                                                    ; f.bowen
                  dey                                      ; or LOOPing to a DO in direct mode. 'curlin+1' must not be
                  tax                                      ; restored to $ff without also resetting 'runmod'
                  inx
-                 bne _local_1249_10                       ; branch if GOSUB or DO was from a program
+                 bne l250_1                               ; branch if GOSUB or DO was from a program
                  lda #%11000000
                  trb runmod                               ; else force return to direct mode
 
-_local_1249_10   lda (fndpnt),y
+l250_1           lda (fndpnt),y
                  sta curlin
                  rts
 
@@ -16506,10 +16506,10 @@ basic_irq
 ; bne collision_irq ; no, go check other VIC interrupts
 
                  lda irq_wrap_flag                        ; filter out wrapped IRQ calls (allows interruptable code)
-                 beq _local_1250_1                        ; it's ok
+                 beq l251_1                               ; it's ok
                  rts                                      ; exit- we're already handling one interrupt
 
-_local_1250_1    inc irq_wrap_flag                        ; shut the door
+l251_1           inc irq_wrap_flag                        ; shut the door
                  cli                                      ; but leave the window open
 
 ; .page
@@ -16519,15 +16519,15 @@ collision_irq
 ; sei
                  lda _vicIRQ                              ; check VIC IRQ flags
                  and #%00001110                           ; mask all but lp, s/s, and s/bgnd flags
-                 beq _local_1251_40                       ; exit if none set
+                 beq l252_5                               ; exit if none set
                  trb _vicIRQ                              ; else reset flags we're going to handle
                  lsr                                      ; shift out raster interrupt bit (not used)
 
 ; Test for 3 types of collision interrupts : sprite/sprite, sprite/bgnd, & light pen
 
                  ldy #1                                   ; loop for sprite/bgnd and sprite/sprite collision check
-_local_1251_10   lsr
-                 bcc _local_1251_30                       ; bit not set ==> not source of interrupt
+l252_1           lsr
+                 bcc l252_4                               ; bit not set ==> not source of interrupt
 
                  pha
                  lda vic+30,y                             ; accumulate collision data (resets register)
@@ -16536,23 +16536,23 @@ _local_1251_10   lsr
 
                  lda intval                               ; allowable interrupts
                  cpy #0                                   ; examine selected bit
-                 beq _local_1251_20
+                 beq l252_2
                  lsr
-_local_1251_20   lsr
-                 bcc _local_1251_25                       ; BASIC doesn't want this interrupt
+l252_2           lsr
+                 bcc l252_3                               ; BASIC doesn't want this interrupt
                  lda #$ff
                  sta int_trip_flag,y                      ; turn on trip flag
 
-_local_1251_25   pla
+l252_3           pla
 
-_local_1251_30   dey
-                 bpl _local_1251_10
+l252_4           dey
+                 bpl l252_1
 
 ; .page
 ; Check light pen latch
 
                  lsr
-                 bcc _local_1251_40                       ; LightPen latch not valid
+                 bcc l252_5                               ; LightPen latch not valid
 
                  ldx vic+49                               ; 4567R7 bug- must read LP_latches in Slow mode????
                  lda #%01000000                           ; [910618]
@@ -16565,11 +16565,11 @@ _local_1251_30   dey
 
                  lda intval                               ; is BASIC interested in our little find?
                  and #4
-                 beq _local_1251_40                       ; no, move on to next IRQ task
+                 beq l252_5                               ; no, move on to next IRQ task
                  lda #$ff
                  sta int_trip_flag+2                      ; yes- let BASIC know we caught one
 
-_local_1251_40
+l252_5
 ; .page
 ; Update moving sprites
 
@@ -16578,19 +16578,19 @@ movspr_irq
                  +lbeq music_irq                          ; no- skip ahead
 
                  ldy #7                                   ; check each of 8 sprites
-_local_1252_10   lda vic+21                               ; is this sprite is enabled?
+l253_1           lda vic+21                               ; is this sprite is enabled?
                  and sbits,y
-                 beq _local_1252_40                       ; sprite not enabled
+                 beq l253_5                               ; sprite not enabled
 
                  ldx sproff,y                             ; get offset to sprite info from a table
                  lda sprite_data,x                        ; is this sprite moving (speed >0 )?
-                 beq _local_1252_40                       ; sprite not moving
-                 bpl _local_1252_15                       ; sprite moving, no destination
+                 beq l253_5                               ; sprite not moving
+                 bpl l253_2                               ; sprite moving, no destination
                  bsr movspr_to_irq                        ; sprite moving to a destination [910809]
-                 bra _local_1252_40
+                 bra l253_5
 
-_local_1252_15   sta sprite_data+1,x                      ; set counter
-_local_1252_20   tya                                      ; convert sprite# to a VIC register pointer
+l253_2           sta sprite_data+1,x                      ; set counter
+l253_3           tya                                      ; convert sprite# to a VIC register pointer
                  asl
                  tay
                  lda sprite_data+2,x                      ; get angle sign
@@ -16609,15 +16609,15 @@ _local_1252_20   tya                                      ; convert sprite# to a
                  lsr                                      ; restore index (.Y=sprite pointer)
                  tay
                  plp
-                 bcc _local_1252_30                       ; skip if no overflow
+                 bcc l253_4                               ; skip if no overflow
                  lda vic+16                               ; get x position msb bits ???vic_save
                  eor sbits,y                              ; invert bit
                  sta vic+16                               ; ???vic_save
-_local_1252_30   dec sprite_data+1,x
-                 bne _local_1252_20                       ; loop until counter done
+l253_4           dec sprite_data+1,x
+                 bne l253_3                               ; loop until counter done
 
-_local_1252_40   dey                                      ; check next sprite
-                 bpl _local_1252_10                       ; loop until done moving all sprites
+l253_5           dey                                      ; check next sprite
+                 bpl l253_1                               ; loop until done moving all sprites
                  +lbra music_irq                          ; then continue with next IRQ task
 ; .page
 movspr_to_irq                                             ; [910809]
@@ -16628,38 +16628,38 @@ movspr_to_irq                                             ; [910809]
                  asl
                  tay
 
-_local_1253_10   sec                                      ; for i = 1 to abs(greatr)
+l254_1           sec                                      ; for i = 1 to abs(greatr)
                  lda sprite_data+1,x
                  sbc #1
                  sta sprite_data+1,x
-                 bcs _local_1253_20
+                 bcs l254_2
                  lda sprite_data+2,x
                  sbc #0
                  sta sprite_data+2,x
-                 bcs _local_1253_20
+                 bcs l254_2
                  lda #0
                  sta sprite_data,x                        ; done!  sprite is at its destination
                  ply                                      ; remember sprite #
                  rts
 
-_local_1253_20   lda sprite_data+3,x                      ; ptr(lesser)
+l254_2           lda sprite_data+3,x                      ; ptr(lesser)
                  bit sprite_data+10,x
-                 bmi _local_1253_30                       ; if e > 0
+                 bmi l254_3                               ; if e > 0
                  bit sprite_data+3,x                      ; sgn(lesser) (b7=1=neg, b6=1=pos, else 0)
                  jsr drwinc                               ; pos(lesser) = pos(lesser) + sgn(lesser)
 
                  lda sprite_data+4,x                      ; ptr(greater)
-_local_1253_30   lsr                                      ; which f?
-                 bcs _local_1253_40
+l254_3           lsr                                      ; which f?
+                 bcs l254_4
                  lda sprite_data+9,x                      ; e = e + f1
                  adc sprite_data+5,x
                  sta sprite_data+9,x
                  lda sprite_data+10,x
                  adc sprite_data+6,x
                  sta sprite_data+10,x
-                 bra _local_1253_50
+                 bra l254_5
 
-_local_1253_40   clc
+l254_4           clc
                  lda sprite_data+9,x                      ; e = e + f2
                  adc sprite_data+7,x
                  sta sprite_data+9,x
@@ -16667,38 +16667,38 @@ _local_1253_40   clc
                  adc sprite_data+8,x
                  sta sprite_data+10,x
 
-_local_1253_50   lda sprite_data+4,x                      ; ptr(greater)
+l254_5           lda sprite_data+4,x                      ; ptr(greater)
                  bit sprite_data+4,x                      ; sgn(greater) (b7=1=neg, b6=1=pos, else 0)
                  jsr drwinc                               ; pos(greater) = pos(greater) + sgn(greater)
 
                  dez                                      ; count
-                 bne _local_1253_10
+                 bne l254_1
                  ply                                      ; remember sprite #
                  rts                                      ; done this frame
 
 
 drwinc           php
                  and #1                                   ; adjust .y for x or y position
-                 beq _local_1254_5                        ; 0=x
+                 beq l255_1                               ; 0=x
                  iny                                      ; 1=y
-_local_1254_5    plp
-                 bmi _local_1254_10                       ; enter with b7=negative, b6=positive, else zero
-                 bvc _local_1254_30
+l255_1           plp
+                 bmi l255_2                               ; enter with b7=negative, b6=positive, else zero
+                 bvc l255_4
 
                  lda vic,y                                ; positive direction
                  inc
                  sta vic,y
-                 bra _local_1254_20
+                 bra l255_3
 
-_local_1254_10   lda vic,y                                ; negative direction
+l255_2           lda vic,y                                ; negative direction
                  dec
                  sta vic,y
                  cmp #$ff
 
-_local_1254_20   bne _local_1254_30                       ; no wrap
+l255_3           bne l255_4                               ; no wrap
                  tya
                  bit #1
-                 bne _local_1254_30                       ; wrap in y okay
+                 bne l255_4                               ; wrap in y okay
                  lsr
                  tay
                  lda sbits,y                              ; wrap in x- toggle msb
@@ -16708,7 +16708,7 @@ _local_1254_20   bne _local_1254_30                       ; no wrap
                  asl
                  tay
 
-_local_1254_30   tya                                      ; restore y to sprite offset
+l255_4           tya                                      ; restore y to sprite offset
                  and #$fe
                  tay
                  rts
@@ -16718,18 +16718,18 @@ _local_1254_30   tya                                      ; restore y to sprite 
 
 music_irq
                  ldx #0
-_local_1255_100  ldy voices+1,x
-                 bmi _local_1255_110                      ; skip if not active
+l256_1           ldy voices+1,x
+                 bmi l256_2                               ; skip if not active
 
                  lda voices,x
                  sec
                  sbc tempo_rate                           ; decrement current value by current tempo
                  sta voices,x
-                 bcs _local_1255_110
+                 bcs l256_2
                  tya                                      ; lda voices+1,x
                  sbc #0
                  sta voices+1,x
-                 bcs _local_1255_110                      ; ok, no underflow
+                 bcs l256_2                               ; ok, no underflow
 
                  txa
                  lsr                                      ; get offset to waveform
@@ -16744,23 +16744,23 @@ _local_1255_100  ldy voices+1,x
                  sta sid1+4,y                             ; turn off sound
 ; jsr go_fast  ;      [910716] 4567R7A
 
-_local_1255_110  inx
+l256_2           inx
                  inx
                  cpx #6+6                                 ; [910612]
-                 bcc _local_1255_100                      ; loop for 6 voices
+                 bcc l256_1                               ; loop for 6 voices
 ;then continue with next IRQ task
 ; .page
 ; Test if SOUND command wants anything
 
 sound_irq
                  ldy #6-1                                 ; test six voices    [910612]
-_local_1256_10   lda sound_time_hi,y                      ; active if msb clear
-                 bpl _local_1256_12
-_local_1256_11   dey
-                 bpl _local_1256_10
+l257_1           lda sound_time_hi,y                      ; active if msb clear
+                 bpl l257_3
+l257_2           dey
+                 bpl l257_1
                  +lbra basic_irq_end
 
-_local_1256_12   clc                                      ; add step to frequency
+l257_3           clc                                      ; add step to frequency
                  lda sound_freq_lo,y
                  adc sound_step_lo,y
                  sta sound_freq_lo,y
@@ -16771,60 +16771,60 @@ _local_1256_12   clc                                      ; add step to frequenc
                  lda sound_direction,y                    ; test if this is up or down
                  tax
                  and #1
-                 beq _local_1256_20                       ; branch if up
+                 beq l257_6                               ; branch if up
 
 ; If step direction is down, .C==0 OR freq < min  ==> reset value
 
-                 bcc _local_1256_13                       ; underflow, reset
+                 bcc l257_4                               ; underflow, reset
                  sec
                  lda sound_freq_lo,y
                  sbc sound_min_lo,y
                  lda sound_freq_hi,y
                  sbc sound_min_hi,y
-                 bcs _local_1256_40                       ; no borrow, don't reset
+                 bcs l257_9                               ; no borrow, don't reset
 
-_local_1256_13   cpx #2                                   ; is 'cycle' bit set?
-                 bcc _local_1256_15                       ; no, keep direction 'down'
+l257_4           cpx #2                                   ; is 'cycle' bit set?
+                 bcc l257_5                               ; no, keep direction 'down'
 
                  jsr negate_step                          ; make step 2's comp
                  lda #2                                   ; change direction to 'up'
                  sta sound_direction,y
-                 bne _local_1256_35                       ; go reset for 'up'
+                 bne l257_8                               ; go reset for 'up'
 
-_local_1256_15   lda sound_max_lo,y                       ; reset to max
+l257_5           lda sound_max_lo,y                       ; reset to max
                  sta sound_freq_lo,y
                  lda sound_max_hi,y
                  sta sound_freq_hi,y
-                 bra _local_1256_40                       ; go update SID frequency
+                 bra l257_9                               ; go update SID frequency
 
 ; If step direction is up, overflow (.C==1) OR freq > max ==> reset frequency
 
-_local_1256_20   bcs _local_1256_30                       ; overflow, must reset
+l257_6           bcs l257_7                               ; overflow, must reset
                  lda sound_freq_hi,y                      ; 16 bit compare (yech!)
                  cmp sound_max_hi,y
-                 bcc _local_1256_40                       ; freq < max, no reset
-                 bne _local_1256_30                       ; freq > max, reset
+                 bcc l257_9                               ; freq < max, no reset
+                 bne l257_7                               ; freq > max, reset
                  lda sound_freq_lo,y                      ; msb's the same, test lsb's
                  cmp sound_max_lo,y
-                 bcc _local_1256_40                       ; freq < max, no reset
-                 beq _local_1256_40                       ; freq = max, no reset
+                 bcc l257_9                               ; freq < max, no reset
+                 beq l257_9                               ; freq = max, no reset
 
-_local_1256_30   cpx #2                                   ; is this 'cycle'?
-                 bcc _local_1256_35                       ; no, go reset for next 'up'
+l257_7           cpx #2                                   ; is this 'cycle'?
+                 bcc l257_8                               ; no, go reset for next 'up'
 
                  jsr negate_step                          ; make step 2's comp
                  lda #3                                   ; change direction to 'down'
                  sta sound_direction,y
-                 bne _local_1256_15                       ; go reset for next 'down'
+                 bne l257_5                               ; go reset for next 'down'
 
-_local_1256_35   lda sound_min_lo,y                       ; set freq to minimum value
+l257_8           lda sound_min_lo,y                       ; set freq to minimum value
                  sta sound_freq_lo,y
                  lda sound_min_hi,y
                  sta sound_freq_hi,y
 
 ; Update SID frequency registers
 
-_local_1256_40
+l257_9
 ; jsr go_slow  ;      [910716] 4567R7A
                  ldx SID_offset,y                         ; get index to SID voices
                  lda sound_freq_lo,y
@@ -16838,12 +16838,12 @@ _local_1256_40
                  tya
                  tax
                  lda sound_time_lo,x                      ; 16 bit decrement - not very pretty
-                 bne _local_1256_50
+                 bne l257_10
                  dec sound_time_hi,x
-_local_1256_50   dec sound_time_lo,x
+l257_10          dec sound_time_lo,x
 
                  lda sound_time_hi,x                      ; underflow?
-                 +lbpl _local_1256_11                     ; nope
+                 +lbpl l257_2                             ; nope
 
 ; Time to turn off this voice
 
@@ -16852,7 +16852,7 @@ _local_1256_50   dec sound_time_lo,x
                  ldx SID_offset,y
                  sta sid1+4,x
 ; jsr go_fast  ;      [910716] 4567R7A
-                 +lbra _local_1256_11
+                 +lbra l257_2
 
 
 negate_step
@@ -16888,18 +16888,18 @@ sprsub           pha                                      ; save angle phase
                  adc sprite_data+8,x
                  sta sprite_data+8,x
                  pla                                      ; get angle sign
-                 bcc _local_1257_30                       ; skip if no carry - do not update position
+                 bcc l258_3                               ; skip if no carry - do not update position
                  lsr
                  lsr                                      ; test if positive or negative
                  lda vic,y                                ; ???vic_save
-                 bcs _local_1257_10                       ; skip if negative
+                 bcs l258_1                               ; skip if negative
                  adc #1                                   ; increment position
-                 bra _local_1257_20
+                 bra l258_2
 
-_local_1257_10   sbc #1                                   ; decrement position
+l258_1           sbc #1                                   ; decrement position
                  cmp #$ff                                 ; set carry if underflow
-_local_1257_20   sta vic,y                                ; decrement position  ???vic_save
-_local_1257_30   rts
+l258_2           sta vic,y                                ; decrement position  ???vic_save
+l258_3           rts
 
 ;.end
 ; .page
@@ -16917,7 +16917,7 @@ _local_1257_30   rts
 ;***********************************************************************
 
 mouse            cmp #on_token                            ; new [910122]
-                 beq _local_1258_10
+                 beq l259_1
                  jsr chkesc
                  cmp #off_token
                  +lbne snerr
@@ -16932,7 +16932,7 @@ mouse            cmp #on_token                            ; new [910122]
                  +lbra chkeos                             ; eat token & exit after checking for eos
 
 ;TURN MOUSE ON
-_local_1258_10   jsr chrget                               ; eat token
+l259_1           jsr chrget                               ; eat token
                  ldx #2                                   ; get (optional) port# in .X
                  jsr optbyt                               ; if not present default to port 2
                  cpx #4                                   ;
@@ -16956,7 +16956,7 @@ _local_1258_10   jsr chrget                               ; eat token
 
 ; .page
                  jsr optbyt                               ; get (optional) hotspot, x  new [910307]
-                 bcc _local_1258_20                       ; not given
+                 bcc l259_2                               ; not given
                  cpx #24
                  +lbcs fcerr                              ; out of range (0-23)
                  txa
@@ -16969,8 +16969,8 @@ _local_1258_10   jsr chrget                               ; eat token
                  adc #87
                  sta _mouse_right
 
-_local_1258_20   jsr optbyt                               ; get (optional) hotspot, y
-                 bcc _local_1258_30                       ; not given
+l259_2           jsr optbyt                               ; get (optional) hotspot, y
+                 bcc l259_3                               ; not given
                  cpx #21
                  +lbcs fcerr                              ; out of range (0-20)
                  txa
@@ -16983,8 +16983,8 @@ _local_1258_20   jsr optbyt                               ; get (optional) hotsp
                  adc #250
                  sta _mouse_bottom
 
-_local_1258_30   jsr chrgot                               ; get (optional) position coordinate  [910123]
-                 beq _local_1258_40                       ; eol, use this sprite's last position
+l259_3           jsr chrgot                               ; get (optional) position coordinate  [910123]
+                 beq l259_4                               ; eol, use this sprite's last position
                  jsr sprcor                               ; else get first coordinate
                  bit numcnt                               ; test coordinate type
                  +lbvs snerr                              ; syntax error
@@ -17001,7 +17001,7 @@ _local_1258_30   jsr chrgot                               ; get (optional) posit
                  +lbmi movspr_angle                       ; angular coordinates
                  +lbra snerr                              ; else error
 
-_local_1258_40   rts
+l259_4           rts
 
 ;.end
 ; .page
@@ -17026,13 +17026,13 @@ rmouse           lda #0                                   ; Init
                  sta count                                ; variable count = 0
                  dec
                  ldx #6-1
-_local_1259_10   sta grapnt,x                             ; positions/buttons = -1
+l260_1           sta grapnt,x                             ; positions/buttons = -1
                  dex
-                 bpl _local_1259_10
+                 bpl l260_1
 
                  lda _mouse_enable                        ; Is there a mouse in the house?
                  and #%11000000
-                 beq _local_1259_50                       ; no, exit
+                 beq l260_5                               ; no, exit
                  pha                                      ; yes, save port assigns for later
                  sei
                  ldy _mouse_pointer                       ; Where is it?  Get pointer to sprite
@@ -17040,9 +17040,9 @@ _local_1259_10   sta grapnt,x                             ; positions/buttons = 
                  sta grapnt                               ; lsb
                  lda sbits,y
                  and vic+16                               ; msb    ???vic_save
-                 beq _local_1259_20
+                 beq l260_2
                  lda #1                                   ; convert to 0 or 1
-_local_1259_20   sta grapnt+1
+l260_2           sta grapnt+1
                  iny                                      ; Get Y position
                  lda vic,y                                ; lsb    ???vic_save
                  sta grapnt+2
@@ -17057,20 +17057,20 @@ _local_1259_20   sta grapnt+1
 
                  ldy #0                                   ; which port?
                  plx                                      ; recall port assignments
-_local_1259_30   txa
+l260_3           txa
                  asl                                      ; .c=1 if this one
                  tax
-                 bcc _local_1259_40                       ; not this one
+                 bcc l260_4                               ; not this one
                  lda d1pra,y                              ; read it (logical port is opposite physical port)
                  and #%00010001                           ; want left, right buttons only
                  eor #%00010001                           ; (invert, since low means button down)
                  tsb grapnt+4
                  and #%00010000                           ; shift left button to msb
-                 beq _local_1259_40
+                 beq l260_4
                  smb7 grapnt+4
-_local_1259_40   iny                                      ; next port
+l260_4           iny                                      ; next port
                  cpy #2
-                 bcc _local_1259_30
+                 bcc l260_3
 
                  lda #%01111110                           ; clean up
                  trb grapnt+4                             ; fix button register
@@ -17080,34 +17080,34 @@ _local_1259_40   iny                                      ; next port
 ; At this point, we have snapshot the current mouse status.
 ; Now pass requested info along in a manner very similar to RREG...
 
-_local_1259_50   jsr chrgot                               ; Get a variable name from variable list
-                 beq _local_1259_90                       ; eol- exit
+l260_5           jsr chrgot                               ; Get a variable name from variable list
+                 beq l260_8                               ; eol- exit
                  cmp #','                                 ;
-                 beq _local_1259_70                       ; null- skip this arg
+                 beq l260_7                               ; null- skip this arg
                  jsr ptrget                               ; Get pointer to target variable
                  sta forpnt                               ; set up so we can share LET code
                  sty forpnt+1
                  lda valtyp                               ; what kind of variable name did ptrget find?
                  +lbne chkerr                             ; string- type mismatch error
 
-_local_1259_60   ldx count                                ; Make assignment
+l260_6           ldx count                                ; Make assignment
                  ldy grapnt,x                             ; low byte
                  lda grapnt+1,x                           ; high byte
                  jsr givayf                               ; float it
                  lda intflg                               ; set flags for type of var (int/float)
                  jsr qintgr                               ; use part of LET to do the work
 
-_local_1259_70   inc count                                ; Next assignment
+l260_7           inc count                                ; Next assignment
                  inc count
                  ldx count
                  cpx #6                                   ; there are 3 possible
-                 bcs _local_1259_90                       ; done all 3, exit
+                 bcs l260_8                               ; done all 3, exit
                  jsr chrgot                               ; check terminator
-                 beq _local_1259_90                       ; eol- exit
+                 beq l260_8                               ; eol- exit
                  jsr chkcom                               ; check delimiter
-                 bra _local_1259_50                       ; loop until done
+                 bra l260_5                               ; loop until done
 
-_local_1259_90   rts
+l260_8           rts
 
 ;.end
 ; .page
@@ -17123,15 +17123,15 @@ _local_1259_90   rts
 
 cursor           cmp #on_token                            ; Check for ON | OFF
                  clc
-                 beq _local_1260_20                       ; turn cursor on (.c=0)
+                 beq l261_3                               ; turn cursor on (.c=0)
                  cmp #esc_command_token
-                 bne _local_1260_1                        ; (might be a function)
+                 bne l261_1                               ; (might be a function)
                  jsr chkesc
                  cmp #off_token                           ; turn cursor off (.c=1)
-                 beq _local_1260_20
+                 beq l261_3
                  +lbra snerr
 
-_local_1260_1    pha                                      ; Evaluate cursor position parameters
+l261_1           pha                                      ; Evaluate cursor position parameters
                  sec
                  jsr _plot                                ; get current cursor position & save it
                  stx srow
@@ -17140,9 +17140,9 @@ _local_1260_1    pha                                      ; Evaluate cursor posi
                  ldx column                               ; get new column, default=current column
                  pla
                  cmp #','
-                 beq _local_1260_10                       ; not given, use default
+                 beq l261_2                               ; not given, use default
                  jsr getbyt
-_local_1260_10   stx column
+l261_2           stx column
                  ldx srow                                 ; get new row, default=current row
                  jsr optbyt
 ; stx srow
@@ -17152,7 +17152,7 @@ _local_1260_10   stx column
                  +lbcs fcerr                              ; error if bad position
 
                  jsr optzer                               ; Get new cursor type   ???? assumes screen output
-                 bcc _local_1260_30                       ; not given, exit
+                 bcc l261_4                               ; not given, exit
                  lda #esc
                  jsr _bsout                               ; use escape sequence to set
                  txa
@@ -17162,14 +17162,14 @@ _local_1260_10   stx column
                  adc #'E'                                 ; 0=F=flash, 1=E=solid
                  jmp _bsout                               ; set it and exit
 
-_local_1260_20   jsr _cursor                              ; Turn cursor ON or OFF per .c
+l261_3           jsr _cursor                              ; Turn cursor ON or OFF per .c
 
                  jsr chrget                               ; eat token, get next character
-                 beq _local_1260_30                       ; eol- exit
+                 beq l261_4                               ; eol- exit
                  jsr chkcom                               ; else, must be comma
-                 bra _local_1260_1                        ; it is- go evaluate position
+                 bra l261_1                               ; it is- go evaluate position
 
-_local_1260_30   rts                                      ; eol
+l261_4           rts                                      ; eol
 
 ; .page
 ;************************************************************************
@@ -17185,33 +17185,33 @@ rcursor          sec                                      ; new [910228]
 
                  ldx #0                                   ; just like RREG and RMOUSE...
                  stx count
-_local_1261_50   jsr chrgot                               ; Get a variable name from variable list
-                 beq _local_1261_90                       ; eol- exit
+l262_1           jsr chrgot                               ; Get a variable name from variable list
+                 beq l262_4                               ; eol- exit
                  cmp #','                                 ;
-                 beq _local_1261_70                       ; null- skip this arg
+                 beq l262_3                               ; null- skip this arg
                  jsr ptrget                               ; Get pointer to target variable
                  sta forpnt                               ; set up so we can share LET code
                  sty forpnt+1
                  lda valtyp                               ; what kind of variable name did ptrget find?
                  +lbne chkerr                             ; string- type mismatch error
 
-_local_1261_60   ldx count                                ; Make assignment
+l262_2           ldx count                                ; Make assignment
                  ldy column,x                             ; low byte
                  lda #0                                   ; high byte
                  jsr givayf                               ; float it
                  lda intflg                               ; set flags for type of var (int/float)
                  jsr qintgr                               ; use part of LET to do the work
 
-_local_1261_70   inc count                                ; Next assignment
+l262_3           inc count                                ; Next assignment
                  ldx count
                  cpx #2                                   ; there are 2 possible
-                 bcs _local_1261_90                       ; done 2, exit
+                 bcs l262_4                               ; done 2, exit
                  jsr chrgot                               ; check terminator
-                 beq _local_1261_90                       ; eol- exit
+                 beq l262_4                               ; eol- exit
                  jsr chkcom                               ; check delimiter
-                 bra _local_1261_50                       ; loop until done
+                 bra l262_1                               ; loop until done
 
-_local_1261_90   rts
+l262_4           rts
 
 ;.end
 ; .page
@@ -17263,7 +17263,7 @@ AutoScrollup                                              ; wanting to scroll up
                  tax
                  jsr AutoSearch                           ; search for a line number on screen, put it in linnum
                  jsr FindLine                             ; find the line in program
-                 bcc _local_1262_10   ;  line not found   ; we have a pointer to the next line
+                 bcc l263_1   ;  line not found           ; we have a pointer to the next line
                  ldy #0
                  jsr indlow                               ; find the next line, the one we want to print, via link bytes
                  tax
@@ -17271,11 +17271,11 @@ AutoScrollup                                              ; wanting to scroll up
                  jsr indlow
                  stx lowtr                                ; advance pointer to it
                  sta lowtr+1
-_local_1262_10   ldx form+1                               ; put cursor back at bottom of screen
+l263_1           ldx form+1                               ; put cursor back at bottom of screen
                  ldy #0
                  clc
                  jsr _plot
-_local_1262_20   jsr crdo                                 ; get a blank line to print on- scroll screen up
+l263_2           jsr crdo                                 ; get a blank line to print on- scroll screen up
                  ldy #1
                  jsr indlow                               ; end of program marker?
                  bne AutoScrollprint                      ; no-  print this line & exit
@@ -17284,7 +17284,7 @@ _local_1262_20   jsr crdo                                 ; get a blank line to 
                  sta lowtr
                  stx lowtr+1
                  jsr crdo                                 ; and add an extra newline
-                 bra _local_1262_20
+                 bra l263_2
 
 ; .page
 AutoScrolldn                                              ; wanting to scroll down
@@ -17294,24 +17294,24 @@ AutoScrolldn                                              ; wanting to scroll do
                  ldy #0                                   ; put cursor at top of screen
                  clc
                  jsr _plot
-_local_1263_10   jsr _primm                               ; and scroll screen (kill any pending Editor modes, too)
+l264_1           jsr _primm                               ; and scroll screen (kill any pending Editor modes, too)
                  !text esc,esc,esc,"W",0
                  jsr FindLine                             ; find the line in program whose number we found on screen
                  lda lowtr                                ; (does not matter if it or next higher line is found)
                  cmp txttab
-                 bne _local_1263_20
+                 bne l264_2
                  lda lowtr+1
                  cmp txttab+1
-                 bne _local_1263_20
+                 bne l264_2
                  lda #$ff                                 ; special case- it's the very first line, want to wrap to last line
                  sta linnum+1                             ; fake pointer to the last line,
                  jsr _primm                               ; scroll screen to insert extra space,
                  !text esc,"W",0
-                 bra _local_1263_10                       ; and go around again
+                 bra l264_1                               ; and go around again
 
-_local_1263_20   lda txttab                               ; start at beginning of program (txttab) and find the line which points at (lowtr)
+l264_2           lda txttab                               ; start at beginning of program (txttab) and find the line which points at (lowtr)
                  ldx txttab+1
-_local_1263_30   sta index                                ; pointer to link bytes
+l264_3           sta index                                ; pointer to link bytes
                  stx index+1
                  ldy #1
                  jsr indin1                               ; get link bytes
@@ -17319,9 +17319,9 @@ _local_1263_30   sta index                                ; pointer to link byte
                  dey
                  jsr indin1
                  cpx lowtr+1                              ; do link bytes point at target line?
-                 bne _local_1263_30
+                 bne l264_3
                  cmp lowtr
-                 bne _local_1263_30                       ; no- use these link bytes to find next line
+                 bne l264_3                               ; no- use these link bytes to find next line
 
                  lda index                                ; yes- copy pointer
                  ldx index+1
@@ -17356,10 +17356,10 @@ AutoSearch
                  clc
                  jsr _plot                                ; move to beginning of next line
 ; bcs AutoScrollpop ;  exit if no more lines
-                 bcs _local_1264_30                       ; no more lines- fake one   [910716]
+                 bcs l265_4                               ; no more lines- fake one   [910716]
                  sec
                  jsr _plot                                ; else check if wrapped line
-                 bcs _local_1264_10                       ; it's wrapped- move up one line
+                 bcs l265_1                               ; it's wrapped- move up one line
                  lda _pnt
                  adc _screen_left                         ; (.c=0)
                  sta txtptr                               ; copy screen address of logical line to txtptr
@@ -17370,20 +17370,20 @@ AutoSearch
                  lda (txtptr),y
 ; jsr indtxt  ;    (I did not want to limit search to the first column,
                  cmp #'9'+1                               ; but it was way too slow searching the entire screen)
-                 bcs _local_1264_10                       ; it's not a number
+                 bcs l265_1                               ; it's not a number
                  cmp #'0'
-                 bcs _local_1264_20                       ; it's a digit 0-9, continue
+                 bcs l265_3                               ; it's a digit 0-9, continue
 
-_local_1264_10   bbs7 form,_local_1264_15                 ; not on this line- move to next line
+l265_1           bbs7 form,l265_2                         ; not on this line- move to next line
                  dex                                      ; move up one line
                  !text $89
-_local_1264_15   inx                                      ; move down one line
+l265_2           inx                                      ; move down one line
                  bra AutoSearch                           ; loop until we find a numeric digit or run out of lines
 
-_local_1264_20   clc                                      ; found a digit, get entire number into linnum & rts
+l265_3           clc                                      ; found a digit, get entire number into linnum & rts
                  +lbra linget
 
-_local_1264_30   lda #$ff                                 ; no line found, fake end of program   [910716]
+l265_4           lda #$ff                                 ; no line found, fake end of program   [910716]
                  sta linnum+1
                  rts
 
@@ -17416,11 +17416,11 @@ Screen
 
                  jsr chkesc                               ; [910930]
 ; cmp #esc_command_token
-; bne _local_1265_10
+; bne l266_1
 ; jsr chrget  ; get past escape token
                  cmp #set_token
                  beq ScreenSet
-_local_1265_10   +lbra snerr                              ; report syntax error
+l266_1           +lbra snerr                              ; report syntax error
 
 ; .page
 CheckGraphicMode
@@ -17449,14 +17449,14 @@ RestoreTextScreen                                          ; [910404]
 ; sei
 ; lda #$80
 ; bit _mode  ;40/80 mode, 0=80 128=40
-; bmi _local_1266_10
+; bmi l267_1
 ;
 ; tsb vic+49  ; 80
 ; lda #1
 ; trb vic+22  ;  fix x-scroll register
 ; bra 99$
 ;
-;_local_1266_10 trb vic+49  ; 40
+;l267_1 trb vic+49  ; 40
 ; lda #1
 ; tsb vic+22  ;  fix x-scroll register
 ;
@@ -17519,12 +17519,12 @@ C65__screen
 ; beq snerr  ;missing args??      [911017]
                  ldx #255                                 ; [911028]
                  cmp #','
-                 beq _local_1266_10                       ; options byte only
+                 beq l267_1                               ; options byte only
 
                  jsr getbyt                               ; get draw screen# in .x
 ; cpx #4   ;       [910711]
 ; bcs 20$   ;  out of range error???? (255=leave alone)  [910930]
-_local_1266_10   stx GKI__parm1
+l267_1           stx GKI__parm1
 
                  ldx $1f69                                ; current viewscreen     [911017]
                  jsr optbyt                               ; eat a comma, get view screen# in .x
@@ -17554,23 +17554,23 @@ ScreenDef
 C65__screendef
                  jsr getbyt                               ; get screen number
                  cpx #4                                   ; range 0-3   [910711]
-                 bcs _local_1267_10
+                 bcs l268_1
                  stx GKI__parm1                           ; screen#
 
                  jsr combyt                               ; get width
                  cpx #3                                   ; range 0-2 ???? 1280 mode ????
-                 bcs _local_1267_10
+                 bcs l268_1
                  stx GKI__parm2                           ; width
 
                  jsr combyt                               ; get height
                  cpx #2                                   ; range 0-1
-                 bcs _local_1267_10
+                 bcs l268_1
                  stx GKI__parm3                           ; height
 
                  jsr combyt                               ; get depth (# bitplanes)
                  dex                                      ; convert 1-8 to 0-7
                  cpx #8                                   ; range 0-7
-_local_1267_10   +lbcs fcerr                              ; illegal quantity error
+l268_1           +lbcs fcerr                              ; illegal quantity error
                  stx GKI__parm4                           ; depth
 
                  jmp ($8006)                              ; bra screendef
@@ -17659,28 +17659,28 @@ C65__setpen
 C65__setdmode
                  jsr getbyt                               ; jam mode
                  cpx #2
-                 bcs _local_1268_10
+                 bcs l269_1
                  stx GKI__parm1
 
                  jsr combyt                               ; complement (xor) mode
                  cpx #2                                   ; (ignores jam mode if set)
-                 bcs _local_1268_10
+                 bcs l269_1
                  stx GKI__parm2
 
                  jsr combyt                               ; stencil mode (not implemented)
                  cpx #2
-                 bcs _local_1268_10
+                 bcs l269_1
                  stx GKI__parm3
 
                  jsr combyt                               ; style mode
                  cpx #4                                   ; 0=solid, 1=pattern, 2=tile (not implemented), 3=reserved
-                 bcs _local_1268_10
+                 bcs l269_1
                  stx GKI__parm4
 
                  jsr combyt                               ; thickness mode (not implemented)
 ; dex   ; adjust to 0-7     [911003]
                  cpx #8+1
-_local_1268_10   +lbcs fcerr                              ; illegal quantity error
+l269_1           +lbcs fcerr                              ; illegal quantity error
                  stx GKI__parm5
 
                  jmp ($8014)                              ; bra setdmode
@@ -17702,37 +17702,37 @@ _local_1268_10   +lbcs fcerr                              ; illegal quantity err
 C65__setdpat
                  jsr getbyt                               ; get pattern type
                  cpx #4+1                                 ; 63+1       [911028]
-_local_1269_10   +lbcs fcerr                              ; if out of range
+l270_1           +lbcs fcerr                              ; if out of range
                  stx GKI__parm1
                  txa
-                 bne _local_1269_20                       ; if parm1 is 0 then get extra stuff
+                 bne l270_2                               ; if parm1 is 0 then get extra stuff
 
                  jsr combyt                               ; get number of bytes
                  cpx #5
-                 bcs _local_1269_10                       ; too many bytes
+                 bcs l270_1                               ; too many bytes
                  stx GKI__parm2
                  stx z_p_temp_1                           ; save for count
 
                  jsr combyt                               ; get byte 1
                  stx GKI__parm3
                  dec z_p_temp_1
-                 beq _local_1269_20
+                 beq l270_2
                  +lbmi fcerr                              ; too few bytes
 
                  jsr combyt                               ; get byte 2
                  stx GKI__parm4
                  dec z_p_temp_1
-                 beq _local_1269_20
+                 beq l270_2
 
                  jsr combyt                               ; get byte 3
                  stx GKI__parm5
                  dec z_p_temp_1
-                 beq _local_1269_20
+                 beq l270_2
 
                  jsr combyt                               ; get byte 4
                  stx GKI__parm6
 
-_local_1269_20   jmp ($8016)                              ; bra setdpat
+l270_2           jmp ($8016)                              ; bra setdpat
 
 ; .page
 ;*****************************************************************
@@ -17750,24 +17750,24 @@ _local_1269_20   jmp ($8016)                              ; bra setdpat
 
 C65__setpalette
                  cmp #restore_token                       ; restore palette?
-                 bne _local_1270_10                       ; no
+                 bne l271_1                               ; no
                  jsr chrget                               ; yes- advance past Restore token
                  jmp _palette_init
 
-_local_1270_10   cmp #color_token                         ; set physical color register?
-                 bne _local_1270_20                       ; no- set logical color register
+l271_1           cmp #color_token                         ; set physical color register?
+                 bne l271_2                               ; no- set logical color register
                  sta GKI__parm1
                  jsr chrget                               ; yes- advance past Color token
                  jsr getbyt
-                 bra _local_1270_30
+                 bra l271_3
 
-_local_1270_20   jsr getbyt                               ; get screen#
+l271_2           jsr getbyt                               ; get screen#
                  cpx #4                                   ; [910711]
                  +lbcs fcerr
                  stx GKI__parm1
 
                  jsr combyt                               ; get color reg #
-_local_1270_30   stx GKI__parm2                           ; (GKI will check for out of range????)
+l271_3           stx GKI__parm2                           ; (GKI will check for out of range????)
 
 set_palette
                  jsr combyt                               ; get red & fgbg
@@ -17786,7 +17786,7 @@ set_palette
                  stx GKI__parm5
 
                  lda GKI__parm1                           ; logical or physical color register?
-                 bpl _local_1271_40                       ; logical
+                 bpl l272_1                               ; logical
                  ldx GKI__parm2
                  lda GKI__parm3                           ; physical
                  sta _red,x
@@ -17794,12 +17794,12 @@ set_palette
                  sta _green,x
                  lda GKI__parm5
                  sta _blue,x
-                 bra _local_1271_50
+                 bra l272_2
 
-_local_1271_40   jsr ($8012)                              ; go set screen palette
+l272_1           jsr ($8012)                              ; go set screen palette
                  +lbcs NoGraphicArea                      ; illegal screen# or color#  [910917]
 
-_local_1271_50   jsr optbyt                               ; get another color reg # ?
+l272_2           jsr optbyt                               ; get another color reg # ?
                  stx GKI__parm2
                  bcs set_palette                          ; yes- loop
                  rts
@@ -17836,25 +17836,25 @@ C65__line
                  sta GKI__parm8
 
                  jsr optsad                               ; get x1     [910228]
-                 bcc _local_1272_10                       ; use x0
-_local_1272_1    sty GKI__parm5
+                 bcc l273_2                               ; use x0
+l273_1           sty GKI__parm5
                  sta GKI__parm6
 
-_local_1272_10   jsr optsad                               ; get y1     [910228]
-                 bcc _local_1272_20                       ; use y0
+l273_2           jsr optsad                               ; get y1     [910228]
+                 bcc l273_3                               ; use y0
                  sty GKI__parm7
                  sta GKI__parm8
 
-_local_1272_20   jsr ($8018)                              ; draw a line from x0,y0 to x1,y1
+l273_3           jsr ($8018)                              ; draw a line from x0,y0 to x1,y1
 
                  ldx #3
-_local_1272_30   lda GKI__parm5,x                         ; copy x1,y1 to x0,y0
+l273_4           lda GKI__parm5,x                         ; copy x1,y1 to x0,y0
                  sta GKI__parm1,x
                  dex
-                 bpl _local_1272_30
+                 bpl l273_4
 
                  jsr optsad                               ; more?
-                 bcs _local_1272_1                        ; yes, continue
+                 bcs l273_1                               ; yes, continue
                  rts
 
 ; .page
@@ -18037,23 +18037,23 @@ C65__polygon                                              ; changed BASIC syntax
 
                  jsr combyt                               ; get number of sides
                  cpx #3
-                 bcc _local_1273_20                       ; too few
+                 bcc l274_2                               ; too few
                  cpx #128
-_local_1273_10   +lbcs fcerr                              ; too many
+l274_1           +lbcs fcerr                              ; too many
                  stx GKI__parm13
 
 ; ldx GKI__parm13  ;get number of sides to draw (default=#sides)
                  jsr optbyt
                  cpx #1                                   ; must be at least 1 side
-_local_1273_20   +lbcc fcerr
+l274_2           +lbcc fcerr
                  stx GKI__parm12
                  dex
                  cpx GKI__parm13                          ; draw sides must be <= #sides
-                 bcs _local_1273_10
+                 bcs l274_1
 
                  jsr optzer                               ; get subtend flag
 ; cpx #2
-; bcs _local_1273_10
+; bcs l274_1
                  stx GKI__parm14
 
                  jsr optwrd                               ; get starting angle (default=0 degrees)
@@ -18062,7 +18062,7 @@ _local_1273_20   +lbcc fcerr
 
                  jsr optzer                               ; get solid flag
 ; cpx #2
-; bcs _local_1273_10
+; bcs l274_1
                  stx GKI__parm9
 
                  jmp ($801e)                              ; bra polygon
@@ -18077,7 +18077,7 @@ C65__set
                  cmp #verify_token                        ; SET VERIFY <ON | OFF>  new [910429]
                  +lbeq verify_mode
                  cmp #def_token                           ; SET DEF unit
-                 bne _local_1274_10
+                 bne l275_1
                  jsr getdisknum_1
                  stx _default_drive
                  stx dosfa                                ; Make last DOS device = current device
@@ -18085,7 +18085,7 @@ C65__set
 
 
 
-_local_1274_10   jsr chkesc                               ; Must be ESCape token
+l275_1           jsr chkesc                               ; Must be ESCape token
                  cmp #disk_token                          ; ok so far
                  +lbne bad_command                        ; unknown command
 
@@ -18098,11 +18098,11 @@ _local_1274_10   jsr chkesc                               ; Must be ESCape token
                  jsr chrgot                               ; check delimiter (comma, 'TO', or eos)
                  +lbeq Clear_DS                           ; eos- just change DOS' current drive [910417]
                  cmp #','                                 ; not eos, must be comma or 'TO'
-                 beq _local_1274_20
+                 beq l275_2
                  cmp #to_token
                  +lbne snerr
 
-_local_1274_20   jsr getdisknum_1                         ; skip delimiter
+l275_2           jsr getdisknum_1                         ; skip delimiter
                  stx dosds2                               ; got new disk unit #
 
 
@@ -18112,10 +18112,10 @@ _local_1274_20   jsr getdisknum_1                         ; skip delimiter
                  jsr dclall                               ; Close any open files????
 
                  ldx #6-1
-_local_1274_30   lda disk_renum_cmd,x                     ; move command to RAM, setup for open
+l275_3           lda disk_renum_cmd,x                     ; move command to RAM, setup for open
                  sta savram,x
                  dex
-                 bpl _local_1274_30
+                 bpl l275_3
                  lda dosds2
                  ora #32                                  ; make new # a talk/listen address
                  sta savram+6
@@ -18175,7 +18175,7 @@ verify_mode
                  jsr chrget                               ; eat 'verify' token, get next  new [910429]
                  cmp #on_token
                  sec
-                 beq _local_1275_10                       ; turn verify on (.c=1)
+                 beq l276_1                               ; turn verify on (.c=1)
                  jsr chkesc
                  cmp #off_token                           ; turn cursor off (.c=0)
                  +lbne snerr
@@ -18183,14 +18183,14 @@ verify_mode
 
 ;  Open disk command channel & pass it 'verify' command
 
-_local_1275_10   php                                      ; Save mode
+l276_1           php                                      ; Save mode
                  jsr chkeos                               ; eat 'on/off' token, error if not eos
 
                  ldx #4-1
-_local_1275_20   lda verify_cmd,x                         ; move command to RAM, setup for open
+l276_2           lda verify_cmd,x                         ; move command to RAM, setup for open
                  sta savram,x
                  dex
-                 bpl _local_1275_20
+                 bpl l276_2
 
                  lda #0                                   ; form on/off flag
                  plp
@@ -18264,20 +18264,20 @@ C65__char
                  jsr getspa
 
                  jsr optwrd                               ; get charset address (????bank)
-                 bcs _local_1276_10                       ; given
+                 bcs l277_1                               ; given
                  ldy #<$9800                              ; not given- use ROM as default   [910207] FAB
                  lda #>$9800                              ; ???? uc/lc or graphic set ????
-_local_1276_10   sty GKI__parm10                          ; lo
+l277_1           sty GKI__parm10                          ; lo
                  sta GKI__parm11                          ; hi
                  ldx #2                                   ; default to ROM bank 2    [910912] FAB
                  jsr optbyt
                  stx GKI__parm12
 
                  lda GKI__parm7                           ; ???? check for null string ????
-                 beq _local_1276_40
+                 beq l277_2
                  jmp ($802c)                              ; bra kg65.char
 
-_local_1276_40   rts
+l277_2           rts
 
 ; .page
 ; .subttl  PAINT
@@ -18319,7 +18319,7 @@ C65__paint                                                ; new [910228] FAB
                  jsr optbyt                               ; boundary color, default = 0
                  stx GKI__parm6
 
-_local_1277_10   jsr garba2                               ; create space in var bank for paint stack [910716]
+l278_1           jsr garba2                               ; create space in var bank for paint stack [910716]
                  lda strend
                  sta GKI__parm7                           ; pass pointer to bottom of bank-1 free space
                  lda strend+1                             ; (top of stack)
@@ -18333,10 +18333,10 @@ _local_1277_10   jsr garba2                               ; create space in var 
                  sta GKI__parm10
 
                  jsr ($802e)                              ; bra paint
-                 bcs _local_1277_20                       ; error- stack overflow or stop key
+                 bcs l278_2                               ; error- stack overflow or stop key
                  rts
 
-_local_1277_20   cpx #errom
+l278_2           cpx #errom
                  +lbeq error                              ; stack overflow, say 'out of memory'
                  +lbra break_exit                         ; user hit stop key
 
@@ -18360,12 +18360,12 @@ loadiff
                  ldy #fopn
                  ldx #4
                  jsr open_file                            ; open the file
-                 bcs _local_1278_10                       ; exit if error
+                 bcs l279_1                               ; exit if error
 
                  ldx dosla
 ; stx GKI__parm1
                  jsr _chkin                               ; get input channel
-_local_1278_10   +lbcs list_err                           ; exit if error
+l279_1           +lbcs list_err                           ; exit if error
 
                  jsr ($802a)                              ; Load it
 
@@ -18400,12 +18400,12 @@ saveiff
                  ldy #fopn
                  ldx #4
                  jsr open_file                            ; open the file
-                 bcs _local_1279_10                       ; exit if error
+                 bcs l280_1                               ; exit if error
 
                  ldx dosla
 ; stx GKI__parm1
                  jsr _chkout                              ; get output channel
-_local_1279_10   +lbcs list_err                           ; exit if error
+l280_1           +lbcs list_err                           ; exit if error
 
                  jsr ($803a)                              ; Save it
                  bra exit_GKI_disk_op
@@ -18455,13 +18455,13 @@ C65__Viewport
 
                  pla                                      ; dispatch per secondary token...
                  cmp #clr_token
-                 beq _local_1280_10
+                 beq l281_1
                  cmp #def_token
                  +lbne snerr                              ; error
 
                  jmp ($8030)                              ; define viewport & return
 
-_local_1280_10   jmp ($8022)                              ; clear viewport (???? make this a box command)
+l281_1           jmp ($8022)                              ; clear viewport (???? make this a box command)
 
 ; .page
 C65__copy
@@ -18480,7 +18480,7 @@ C65__paste
 
 genlock          sta GKI__parm1                           ; save token as flag for set palette   [910107]
                  cmp #on_token
-                 beq _local_1281_20
+                 beq l282_4
                  jsr chkesc
                  cmp #off_token
                  +lbne snerr
@@ -18488,43 +18488,43 @@ genlock          sta GKI__parm1                           ; save token as flag f
                  lda vic+49                               ; any interlaced bitplanes on?
                  and #%00011001
                  cmp #%00011001
-                 beq _local_1281_10                       ; yes, leave interlace mode on
+                 beq l282_1                               ; yes, leave interlace mode on
 
                  lda #%00000001
                  trb vic+49                               ; no, turn interlace off
-_local_1281_10   lda #%00000010
+l282_1           lda #%00000010
                  trb vic+48                               ; reset external sync mode
-; beq _local_1281_12   ;       [910114]
+; beq l282_2   ;       [910114]
 ; lda vic+63  ;       [910111]
 ; inc a   ;  adjust vert. position (chip bug ????)
 ; inc a   ;  (to be handled by a custom C65 genlock board)
 ; inc a
 ; sta vic+63
 
-_local_1281_12   jsr chrget                               ; eat token
+l282_2           jsr chrget                               ; eat token
                  jsr optbyt                               ; get (optional) color reg# in .X
                  stx GKI__parm2                           ; save it
                  +lbcs set_palette                        ; if present, go do it & exit
-_local_1281_15   rts                                      ; if not present (eol), exit
+l282_3           rts                                      ; if not present (eol), exit
 
 
-_local_1281_20   lda #%00000001                           ; TURN GENLOCK ON
+l282_4           lda #%00000001                           ; TURN GENLOCK ON
                  tsb vic+49                               ; set interlace mode
                  asl
                  tsb vic+48                               ; set external sync mode
-; bne _local_1281_22   ;       [910114]
+; bne l282_5   ;       [910114]
 ; lda vic+63  ;       [910111]
 ; dec a   ;  adjust vert. position (chip bug ????)
 ; dec a   ;  (to be handled by a custom C65 genlock board)
 ; dec a
 ; sta vic+63
 
-_local_1281_22   jsr chrget                               ; eat token
-_local_1281_25   jsr optbyt                               ; get (optional) color reg# in .X
-                 bcc _local_1281_15                       ; if not present (eol), exit
+l282_5           jsr chrget                               ; eat token
+l282_6           jsr optbyt                               ; get (optional) color reg# in .X
+                 bcc l282_3                               ; if not present (eol), exit
                  lda #%00010000                           ; if present, set FGBG bit in red palette
                  sta _red,x
-                 bra _local_1281_25                       ; loop
+                 bra l282_6                               ; loop
 
 ; .page
 ; .subttl  COLOR Control
@@ -18538,40 +18538,40 @@ _local_1281_25   jsr optbyt                               ; get (optional) color
 ;*****************************************************************
 
 color            cmp #','                                 ; optional first arg
-                 beq _local_1282_20
+                 beq l283_3
                  cmp #on_token                            ; SOFTWARE (Editor) color mode
-                 beq _local_1282_10
+                 beq l283_2
                  jsr chkesc
                  cmp #off_token
-_local_1282_5    +lbne snerr
+l283_1           +lbne snerr
 
                  ldy #'['                                 ; OFF (color & attributes)
                  !text $2c
-_local_1282_10   ldy #']'                                 ; ON
+l283_2           ldy #']'                                 ; ON
                  lda #esc
                  jsr _bsout                               ; do it
                  tya
                  jsr _bsout
                  jsr chrget                               ; eat token
-                 beq _local_1282_40                       ; eol- exit
+                 beq l283_6                               ; eol- exit
 
-_local_1282_20   jsr chkcom                               ; else must be comma, eat & get next
+l283_3           jsr chkcom                               ; else must be comma, eat & get next
 ; jsr chrgot  ;      [910930]
                  cmp #on_token                            ; HARDWARE (Vic) color mode
-                 beq _local_1282_30
+                 beq l283_4
                  jsr chkesc
                  cmp #off_token
-                 bne _local_1282_5
+                 bne l283_1
 
                  lda #%00000010                           ; OFF (monochrome)
                  tsb vic+49
-                 bra _local_1282_35
+                 bra l283_5
 
-_local_1282_30   lda #%00000010                           ; ON
+l283_4           lda #%00000010                           ; ON
                  trb vic+49
-_local_1282_35   +lbra chrget                             ; exit after eating last token
+l283_5           +lbra chrget                             ; exit after eating last token
 
-_local_1282_40   rts                                      ; exit after encountering eol
+l283_6           rts                                      ; exit after encountering eol
 
 ; .page
 foreground
@@ -18584,20 +18584,20 @@ foreground
 highlight
                  +lbeq snerr                              ; missing args??     [911017]
                  cmp #','
-                 beq _local_1283_10                       ; options byte only
+                 beq l284_1                               ; options byte only
 
                  jsr getbyt                               ; Set text highlight color
                  stx highlight_color
 
-_local_1283_10   jsr optzer                               ; set options:     [911001]
-                 bcc _local_1283_20                       ; comma but no value not given??
+l284_1           jsr optzer                               ; set options:     [911001]
+                 bcc l284_2                               ; comma but no value not given??
                  txa
                  and #3                                   ; 0= error msgs only
                  asl                                      ; 1= REMs
                  asl                                      ; 2= tokens
                  asl
                  sta helper
-_local_1283_20   rts
+l284_2           rts
 
 
 
@@ -18667,39 +18667,39 @@ sprite           cmp #clr_token                           ; SPRITE CLR: init env
 
                  jsr get_sprite_number                    ; get sprite number in z_p_temp_1
                  jsr optbyt                               ; look for (optional) enable
-                 bcc _local_1284_10                       ; none here, don't change
+                 bcc l285_1                               ; none here, don't change
                  ldy #21
                  jsr sprbit                               ; set/clear sprite bit
 
-_local_1284_10   jsr optbyt                               ; get (optional) color
-                 bcc _local_1284_20                       ; branch if no arg
+l285_1           jsr optbyt                               ; get (optional) color
+                 bcc l285_2                               ; branch if no arg
                  jsr chknyb                               ; [910109]
                  txa
                  ldx z_p_temp_1                           ; get back sprite number
 ; jsr put_io_in_map
                  sta vic+39,x
 
-_local_1284_20   jsr optbyt                               ; look for (optional) priority
-                 bcc _local_1284_30
+l285_2           jsr optbyt                               ; look for (optional) priority
+                 bcc l285_3
                  ldy #27
                  jsr sprbit
 
-_local_1284_30   jsr optbyt                               ; look for (optional) x expansion
-                 bcc _local_1284_40
+l285_3           jsr optbyt                               ; look for (optional) x expansion
+                 bcc l285_4
                  ldy #29
                  jsr sprbit
 
-_local_1284_40   jsr optbyt                               ; look for (optional) y expansion
-                 bcc _local_1284_50
+l285_4           jsr optbyt                               ; look for (optional) y expansion
+                 bcc l285_5
                  ldy #23
                  jsr sprbit
 
-_local_1284_50   jsr optbyt                               ; look for (optional) resolution
-                 bcc _local_1284_60
+l285_5           jsr optbyt                               ; look for (optional) resolution
+                 bcc l285_6
                  ldy #28
                  jsr sprbit
 
-_local_1284_60   rts
+l285_6           rts
 
 ; .page
 Sprite_Save                                               ; Just like Key_Save     [911001]
@@ -18738,9 +18738,9 @@ sprbit           txa
                  ldx z_p_temp_1                           ; get sprite number
                  lda sbits,x
                  ora vic,y
-                 bcs _local_1285_10
+                 bcs l286_1
                  eor sbits,x
-_local_1285_10   sta vic,y
+l286_1           sta vic,y
                  rts
 
 
@@ -18797,25 +18797,25 @@ movspr_1                                                  ; entry to eval destin
                  iny
 
                  ldx #3
-_local_1286_20   lsr sinval,x
+l287_1           lsr sinval,x
                  dex
                  ror sinval,x
                  dex
-                 bpl _local_1286_20
+                 bpl l287_1
 
-_local_1286_30   sei
+l287_2           sei
                  inx                                      ; x=0
                  lda angsgn,x                             ; move angle data to speed data
                  iny
                  sta sprite_data,y
                  cpx #4
-                 bne _local_1286_30
+                 bne l287_2
 
                  lda #0                                   ; clear speed angle counts
-_local_1286_40   iny
+l287_3           iny
                  sta sprite_data,y
                  dex
-                 bne _local_1286_40
+                 bne l287_3
 
                  pla                                      ; restore speed value
                  and #$3f                                 ; limit range (0-63) ????  [910806]
@@ -18837,14 +18837,14 @@ movspr_angle
                  ldx #xdest-vwork
                  clc
 
-_local_1287_60   jsr angmlt                               ; multiply lengths*angles for x and y
+l288_1           jsr angmlt                               ; multiply lengths*angles for x and y
                  sta vwork,x
                  tya
                  sta vwork+1,x
                  inx
                  inx
                  cpx #ydest-vwork
-                 beq _local_1287_60                       ; loop to do y-position
+                 beq l288_1                               ; loop to do y-position
 
                  ror numcnt                               ; shift in carry to set msb
                  bra movspr_position                      ; go place sprite
@@ -18864,78 +18864,78 @@ movspr_position
                  asl
                  tay                                      ; get sprite-number * 2 as another index
 
-                 bbr7 op,_local_1288_10
+                 bbr7 op,l289_1
                  rts                                      ; >>>exit here if movspr_to call   [910808]
 
-_local_1288_10   lda xdest+2                              ; get y-coordinate
+l289_1           lda xdest+2                              ; get y-coordinate
                  asl numcnt                               ; test if relative
-                 bcc _local_1288_80                       ; skip if absolute
+                 bcc l289_3                               ; skip if absolute
                  clc
-                 bpl _local_1288_75                       ; skip if normal coordinates
+                 bpl l289_2                               ; skip if normal coordinates
                  eor #$ff
                  sec                                      ; invert to subtract if angular
-_local_1288_75   adc vic+1,y                              ; add to current sprite y-value  ???vic_save
+l289_2           adc vic+1,y                              ; add to current sprite y-value  ???vic_save
 
-_local_1288_80   sta vic+1,y                              ; save new sprite y-position  ???vic_save
+l289_3           sta vic+1,y                              ; save new sprite y-position  ???vic_save
                  lda xdest                                ; get low byte of x-coordinate
                  asl numcnt                               ; test if relative
-                 bpl _local_1288_95                       ; skip if absolute
+                 bpl l289_5                               ; skip if absolute
                  clc
                  adc vic,y                                ; add current sprite x-position  ???vic_save
                  sta vic,y                                ; save sprite x-position   ???vic_save
-                 bcs _local_1288_90                       ; skip if carry
+                 bcs l289_4                               ; skip if carry
                  inc xdest+1                              ; invert lsb
 
-_local_1288_90   lda vic+16                               ; get x-position msb bits  ???vic_save
-                 bra _local_1288_98                       ; test if need to invert msb bit
+l289_4           lda vic+16                               ; get x-position msb bits  ???vic_save
+                 bra l289_6                               ; test if need to invert msb bit
 
-_local_1288_95   sta vic,y                                ; save new sprite x-position  ???vic_save
+l289_5           sta vic,y                                ; save new sprite x-position  ???vic_save
                  lda vic+16                               ; ???vic_save
                  ora sbits,x                              ; set x-position msb bit
 
-_local_1288_98   lsr xdest+1                              ; match to lsb of x-coordinate high byte
-                 bcs _local_1288_100                      ; skip if should be set
+l289_6           lsr xdest+1                              ; match to lsb of x-coordinate high byte
+                 bcs l289_7                               ; skip if should be set
                  eor sbits,x                              ; reset bit
 
-_local_1288_100  sta vic+16                               ; save position msb bits   ???vic_save
+l289_7           sta vic+16                               ; save position msb bits   ???vic_save
 ; cli
-;1_local_1288_10 rts   ; mouse or movspr_to
+;1l289_1 rts   ; mouse or movspr_to
 
 ; .page
 movspr_to                                                 ; setup for moving sprite to a particular position
 ;we have already positioned the sprite onscreen
                  jsr chrgot                               ; reget terminating character
                  cmp #to_token
-                 beq _local_1289_5                        ; not our call
+                 beq l290_1                               ; not our call
                  cli
                  rts
 
-_local_1289_5    smb7 op                                  ; it's for us- let everybody else know we're in charge
+l290_1           smb7 op                                  ; it's for us- let everybody else know we're in charge
                  jsr chrget                               ; move to next non-space character
                  clc
                  jsr sprcor_1                             ; go get & evaluate destination coordinate
                  jsr movspr_1                             ; returns with sprite# in .x, VIC sprite index in .y,
 ;P1 in VIC sprite regs, and P2 in x,ydest
                  asl numcnt                               ; Y: handle specific coordinate types
-                 bcc _local_1289_20                       ; skip if absolute
+                 bcc l290_3                               ; skip if absolute
                  clc
                  lda xdest+2                              ; get y-coordinate
-                 bpl _local_1289_10                       ; skip if normal coordinates
+                 bpl l290_2                               ; skip if normal coordinates
                  eor #$ff
                  sec                                      ; invert to subtract if angular
-_local_1289_10   adc vic+1,y                              ; add to current sprite y-value ???vic_save
+l290_2           adc vic+1,y                              ; add to current sprite y-value ???vic_save
                  sta xdest+2                              ; save sprite destination y-position
 
-_local_1289_20   asl numcnt                               ; X: handle specific coordinate types
-                 bpl _local_1289_30                       ; skip if absolute
+l290_3           asl numcnt                               ; X: handle specific coordinate types
+                 bpl l290_4                               ; skip if absolute
                  clc
                  lda xdest                                ; get low byte of x-coordinate
                  adc vic,y                                ; add current sprite x-position  ???vic_save
                  sta xdest                                ; save sprite destination x-position
-                 bcc _local_1289_30
+                 bcc l290_4
                  inc xdest+1
 
-_local_1289_30   phy
+l290_4           phy
                  jsr combyt                               ; get speed parameter
                  txa
                  and #$3f                                 ; limit range (0-63) ????
@@ -18955,9 +18955,9 @@ _local_1289_30   phy
                  tay
                  lda sbits,y
                  and vic+16
-                 beq _local_1289_40
+                 beq l290_5
                  inc xpos+1
-_local_1289_40
+l290_5
 ; .page
 ;******************************************************************
 ;  MOVSPR n, p1 TO p2 - move a sprite along line from p1 to p2
@@ -18992,21 +18992,21 @@ _local_1289_40
 movspr_line
                  ldx #ypos-vwork
                  ldy #ydest-vwork
-_local_1290_10   lda #0
+l291_1           lda #0
                  sta xsgn,x                               ; init direction pointers
                  sta xsgn+1,x
                  jsr abstwo                               ; get absolute value of coordinate differences
-                 bpl _local_1290_20                       ; and determine direction
+                 bpl l291_2                               ; and determine direction
                  dec xsgn,x                               ; negative direction
                  dec xsgn+1,x
-                 bra _local_1290_40
+                 bra l291_4
 
-_local_1290_20   cmp #0
-                 bne _local_1290_30
+l291_2           cmp #0
+                 bne l291_3
                  cpy #0
-                 beq _local_1290_40                       ; zero direction
-_local_1290_30   inc xsgn,x                               ; positive direction
-_local_1290_40   sta xabs,x
+                 beq l291_4                               ; zero direction
+l291_3           inc xsgn,x                               ; positive direction
+l291_4           sta xabs,x
                  asl
                  sta fct,x                                ; fct(x,y) = 2*abs(x,y)
                  tya
@@ -19017,7 +19017,7 @@ _local_1290_40   sta xabs,x
                  dex
                  ldy #xdest-vwork                         ; loop to do in x-direction
                  cpx #xpos-vwork
-                 beq _local_1290_10
+                 beq l291_1
 
                  ldx #yabs-savram                         ; determine max(xabs,yabs)
                  ldy #xabs-savram
@@ -19091,12 +19091,12 @@ _local_1290_40   sta xabs,x
                  ror
                  sta sprite_data+3,x
                  ldy #0                                   ; set f1, f2, and e
-_local_1290_50   lda fct,y
+l291_5           lda fct,y
                  sta sprite_data+5,x
                  inx
                  iny
                  cpy #6
-                 bcc _local_1290_50
+                 bcc l291_5
 
                  cli
                  rts                                      ; done!
@@ -19108,20 +19108,20 @@ _local_1290_50   lda fct,y
 sprcor           jsr chkcom_1                             ; check for a comma
 sprcor_1
                  ror numcnt                               ; reset msb if comma else set msb
-                 bpl _local_1291_10                       ; skip if got a comma
+                 bpl l292_1                               ; skip if got a comma
                  cmp #';'                                 ; test if angular data
-                 beq _local_1291_30                       ; skip if yes - 2 msb's = 1 1
+                 beq l292_3                               ; skip if yes - 2 msb's = 1 1
                  cmp #'#'                                 ; test if speed type
-                 beq _local_1291_20                       ; skip if yes - 2 msb's = 0 1
+                 beq l292_2                               ; skip if yes - 2 msb's = 0 1
                  +lbra snerr                              ; syntax error if none of above
 
-_local_1291_10   jsr chrgot                               ; test for relative coordinate
+l292_1           jsr chrgot                               ; test for relative coordinate
                  cmp #plus_token                          ; test if plus sign
-                 beq _local_1291_30                       ; skip if yes - show relative
+                 beq l292_3                               ; skip if yes - show relative
                  cmp #minus_token                         ; test if minus sign
-                 beq _local_1291_30                       ; skip if yes - show relative
-_local_1291_20   clc                                      ; reset to show absolute
-_local_1291_30   ror numcnt                               ; shift in second flag bit
+                 beq l292_3                               ; skip if yes - show relative
+l292_2           clc                                      ; reset to show absolute
+l292_3           ror numcnt                               ; shift in second flag bit
 
 sadwrd           jsr frmnum                               ; get number     label [910307]
                  +lbra getsad                             ; get signed 2 byte coordinate,do rts
@@ -19137,17 +19137,17 @@ sadwrd           jsr frmnum                               ; get number     label
 
 chkcom_1
                  jsr chrgot                               ; get character in input stream
-                 beq _local_1292_20                       ; skip if end of string
+                 beq l293_2                               ; skip if end of string
                  cmp #','                                 ; check if a comma
                  clc
-                 beq _local_1292_10                       ; skip if yes
+                 beq l293_1                               ; skip if yes
                  sec                                      ; set carry if not
-_local_1292_10   php
+l293_1           php
                  pha
                  jsr chrget                               ; move to next non-space character
                  pla
                  plp
-_local_1292_20   rts
+l293_2           rts
 
 
 sproff           !text 0,11,22,33,44,55,66,77             ; sprite offsets into speed table
@@ -19166,19 +19166,19 @@ sproff           !text 0,11,22,33,44,55,66,77             ; sprite offsets into 
 
 sprcolor
                  cmp #','                                 ; is there a first arg?
-                 beq _local_1293_10                       ; nope, skip to second
+                 beq l294_1                               ; nope, skip to second
 
                  jsr getnyb                               ; get 1 byte arg in .X, range 0-15
 ; jsr put_io_in_map
                  stx vic+37
 
-_local_1293_10   jsr optbyt                               ; get (optional) 1 byte arg in .X
-                 bcc _local_1293_20
+l294_1           jsr optbyt                               ; get (optional) 1 byte arg in .X
+                 bcc l294_2
                  jsr chknyb                               ; range 0-15
 ; jsr put_io_in_map
                  stx vic+38
 
-_local_1293_20   rts
+l294_2           rts
 
 ;.end
 ; .page
@@ -19193,15 +19193,15 @@ _local_1293_20   rts
 ;***************************************************************
 
 sprsav           jsr savinp                               ; evaluate 1st expression
-                 bcs _local_1294_20                       ; skip if source is a string
+                 bcs l295_2                               ; skip if source is a string
                  sta forpnt
                  sty forpnt+1                             ; save sprite address
                  ldy #62
 
-_local_1294_10   lda (forpnt),y                           ; move sprite def to save area
+l295_1           lda (forpnt),y                           ; move sprite def to save area
                  sta savram,y
                  dey
-                 bpl _local_1294_10
+                 bpl l295_1
 
                  iny                                      ; (0)
                  sty savram+64                            ; save sprite column length
@@ -19219,7 +19219,7 @@ _local_1294_10   lda (forpnt),y                           ; move sprite def to s
                  jsr strlit_1                             ; **get string space, copy savram to it
                  jsr desc_free                            ; **free up temp descriptor
 
-_local_1294_20   stx savsiz                               ; save source length
+l295_2           stx savsiz                               ; save source length
                  sta savsiz+1
                  sty savsiz+2                             ; save source start address
 
@@ -19238,16 +19238,16 @@ _local_1294_20   stx savsiz                               ; save source length
                  lda savsiz+2
                  sta forpnt+1
                  ldy #0
-_local_1294_40   cpy savsiz                               ; test index vs source length
-                 beq _local_1294_45                       ; exit if source depleted
+l295_3           cpy savsiz                               ; test index vs source length
+                 beq l295_4                               ; exit if source depleted
                  lda #forpnt                              ; move source byte to sprite
                  jsr lda_far_ram1                         ; (from ram bank 1)
 ; sta sw_rom_ram0
                  sta (grapnt),y                           ; (to sprite area in bank 0)????
                  iny
                  cpy #63
-                 bne _local_1294_40
-_local_1294_45   rts
+                 bne l295_3
+l295_4           rts
 
 
 savs50           lda sprtmp_1                             ; restore basic text pointer
@@ -19275,9 +19275,9 @@ savinp           jsr frmevl                               ; evaluate expression
                  ror
                  ror                                      ; get sprite address
                  ldy #>sprite_base
-                 bcc _local_1295_5
+                 bcc l296_1
                  iny
-_local_1295_5    clc                                      ; flag 'sprite' (as opposed to 'string')
+l296_1           clc                                      ; flag 'sprite' (as opposed to 'string')
                  rts
 
 
@@ -19331,9 +19331,9 @@ collision
                  lda intval                               ; this records valid interrupts
                  ora sbits,x                              ; set correct bit
 ; plp
-                 bcs _local_1296_10                       ; ..unless this is a 'clear',
+                 bcs l297_1                               ; ..unless this is a 'clear',
                  eor sbits,x                              ; ..in which case we'll reset bit
-_local_1296_10   sta intval
+l297_1           sta intval
                  rts
 
 ;.end
@@ -19399,43 +19399,43 @@ rgraphic
                  stx GKI__parm1
                  jsr combyt                               ; get param # in .X
                  cpx #10+1                                ; [911028]
-                 bcs _local_1297_1                        ; illegal param #
+                 bcs l298_1                               ; illegal param #
                  phx
                  jsr chkcls                               ; check for closing parens
 
                  jsr ($8038)                              ; read screen params
-_local_1297_1    +lbcs fcerr                              ; bad input????
+l298_1           +lbcs fcerr                              ; bad input????
 
                  lda GKI__parm2
                  plx                                      ; get back desired param #
                  dex
-                 bpl _local_1297_10
+                 bpl l298_2
                  eor #$80                                 ; make 0=closed, 1=open, >1=invalid
                  lsr
                  lsr
-                 bra _local_1297_12                       ; return screen open status
+                 bra l298_3                               ; return screen open status
 
-_local_1297_10   dex
-                 bpl _local_1297_20
-_local_1297_12   lsr
-_local_1297_15   lsr
+l298_2           dex
+                 bpl l298_5
+l298_3           lsr
+l298_4           lsr
                  lsr
                  lsr
                  and #3
-                 bra _local_1297_40                       ; return width, height
+                 bra l298_8                               ; return width, height
 
-_local_1297_20   dex
-                 bpl _local_1297_25
+l298_5           dex
+                 bpl l298_6
                  and #8
-                 bra _local_1297_15
-_local_1297_25   dex
-                 bpl _local_1297_30
+                 bra l298_4
+l298_6           dex
+                 bpl l298_7
                  and #7                                   ; return depth
                  inc                                      ; make depth 1-8
-                 bra _local_1297_40
+                 bra l298_8
 
-_local_1297_30   lda GKI__parm3,x                         ; return bp bask, banks, etc.
-_local_1297_40   tay
+l298_7           lda GKI__parm3,x                         ; return bp bask, banks, etc.
+l298_8           tay
                  jsr sngflt                               ; float 1 byte arg in .y
 
                  jsr PopParms                             ; restore Graphics parameters & LINNUM
@@ -19471,11 +19471,11 @@ rpen             jsr CheckGraphicMode                     ; verify screen open
 
                  jsr conint                               ; get 1 byte arg in .x (old style single arg function)
                  cpx #3
-                 bcs _local_1298_10                       ; illegal pen #?
+                 bcs l299_1                               ; illegal pen #?
                  stx GKI__parm1
 
                  jsr ($8036)                              ; convert to logical color# (palette index#)
-_local_1298_10   +lbcs fcerr                              ; drawscreen not set or illegal quantity somewhere
+l299_1           +lbcs fcerr                              ; drawscreen not set or illegal quantity somewhere
 
                  jsr sngflt                               ; go float 1 byte arg in .Y
 
@@ -19492,18 +19492,18 @@ rpalette
 
                  jsr conint                               ; get screen# in .x
                  cpx #4
-                 bcs _local_1299_10                       ; illegal screen#
+                 bcs l300_1                               ; illegal screen#
                  stx GKI__parm1
 
                  jsr combyt                               ; get color# in .x ????check for legal color#
                  stx GKI__parm2
 
                  jsr ($8034)                              ; get RGB components of color# in PARM3,4,5
-                 bcs _local_1299_10                       ; something is wrong????
+                 bcs l300_1                               ; something is wrong????
 
                  jsr combyt                               ; get r,g,b component#
                  cpx #3
-_local_1299_10   +lbcs fcerr                              ; illegal value
+l300_1           +lbcs fcerr                              ; illegal value
 
                  ldy GKI__parm3,x                         ; get r,g,b value
                  jsr sngflt                               ; float 1 byte arg in .y
@@ -19520,10 +19520,10 @@ PushParms                                                 ; [910820]
                  phw linnum                               ; Save 'poker' value
 
                  ldx #17-1
-_local_1300_10   lda GKI__parm1,x                         ; Save Graphics parameters
+l301_1           lda GKI__parm1,x                         ; Save Graphics parameters
                  pha                                      ; [eg: CHAR x,y,1,1,2,str$(PIXEL(x,y))]
                  dex
-                 bpl _local_1300_10
+                 bpl l301_1
 
                  phz                                      ; Restore return address
                  phy
@@ -19535,11 +19535,11 @@ PopParms                                                  ; [910820]
                  plz
 
                  ldx #0
-_local_1301_10   pla                                      ; Restore Graphics parameters
+l302_1           pla                                      ; Restore Graphics parameters
                  sta GKI__parm1,x
                  inx
                  cpx #17
-                 bcc _local_1301_10
+                 bcc l302_1
 
                  pla                                      ; Restore 'poker' value
                  sta linnum+1
@@ -19572,7 +19572,7 @@ _local_1301_10   pla                                      ; Restore Graphics par
 rsprite          jsr conint                               ; get first arg, sprite #, in .X
 ; dex  ;adjust [1..8] to [0..7]   [910220]
                  cpx #8  ; (318018-03 mod                 ; fab)
-                 bcs _local_1302_1                        ; value error
+                 bcs l303_1                               ; value error
                  txa
                  pha                                      ; save sprite number
 
@@ -19581,7 +19581,7 @@ rsprite          jsr conint                               ; get first arg, sprit
                  jsr combyt                               ; [910820]
                  jsr chkcls                               ; look for closing paren
                  cpx #6
-_local_1302_1    +lbcs fcerr                              ; value error
+l303_1           +lbcs fcerr                              ; value error
 
                  ply                                      ; sprite number
 ; jsr put_io_in_map
@@ -19589,16 +19589,16 @@ _local_1302_1    +lbcs fcerr                              ; value error
                  and #$0f                                 ; range 0-15
 ; inc a  ;adjust to 'keyboard' colors   [910724]
                  cpx #1
-                 beq _local_1302_10                       ; it was color. set up for float
+                 beq l303_2                               ; it was color. set up for float
 
                  lda rspmod,x                             ; get index for this function
                  tax
                  lda sbits,y                              ; get mask for this sprite number
                  and vic,x
-                 beq _local_1302_10
+                 beq l303_2
                  lda #1                                   ; return all non-zeros as '1'
 
-_local_1302_10   tay
+l303_2           tay
                  +lbra sngflt                             ; go float 1 byte arg in .Y
 
 
@@ -19651,7 +19651,7 @@ rspcolor
 rsppos           jsr conint                               ; get first arg, sprite #, in .X
 ; dex  ;adjust [1..8] to [0..7]   [910220]
                  cpx #8  ; (318018-03 mod                 ; fab)
-                 bcs _local_1303_1                        ; value error
+                 bcs l304_1                               ; value error
 
                  phx                                      ; save sprite number
 ; jsr chkcom ;check for proper delimiter
@@ -19659,11 +19659,11 @@ rsppos           jsr conint                               ; get first arg, sprit
                  jsr combyt                               ; [910820]
                  jsr chkcls                               ; look for closing paren
                  cpx #3
-_local_1303_1    +lbcs fcerr                              ; value error
+l304_1           +lbcs fcerr                              ; value error
 
                  ply                                      ; sprite number
                  cpx #2
-                 bne _local_1303_10                       ; branch if x or y position
+                 bne l304_2                               ; branch if x or y position
 
                  ldx sproff,y                             ; get offset into speed data
                  ldy sprite_data,x                        ; get speed data
@@ -19671,26 +19671,26 @@ _local_1303_1    +lbcs fcerr                              ; value error
 
 ; Get msb of sprite position (in case this is for x position)
 
-_local_1303_10   sei
+l304_2           sei
                  lda sbits,y                              ; get bit mask for this sprite
                  and vic+16                               ; ???vic_save
-                 beq _local_1303_20
+                 beq l304_3
                  lda #1                                   ; change any non-zero to a '1'
-_local_1303_20   pha                                      ; save msb
+l304_3           pha                                      ; save msb
 
                  tya                                      ; y = sprite# * 2
                  asl
                  tay
                  txa                                      ; see if this is y position
                  lsr                                      ; .C = 0 for x pos'n, 1 for y pos'n
-                 bcc _local_1303_30                       ; branch if x pos'n
+                 bcc l304_4                               ; branch if x pos'n
 
                  iny                                      ; adjust pointer to point to y pos'n in register data
                  pla
                  lda #0                                   ; ..and force 'msb' to be zero
                  pha
 
-_local_1303_30   lda vic,y                                ; get correct location lsb   ???vic_save
+l304_4           lda vic,y                                ; get correct location lsb   ???vic_save
                  cli
                  tay
                  pla                                      ; ..and get msb,
@@ -19741,27 +19741,27 @@ getang
 
 gtang1           ldx #0                                   ; init count of phase
 
-_local_1304_10   inx
+l305_1           inx
                  sec
                  sbc #90                                  ; subtract 90 until less than 0
-                 bcs _local_1304_10
+                 bcs l305_1
                  dey
-                 bpl _local_1304_10
+                 bpl l305_1
                  stx angsgn                               ; save phase (here it is 1-4)
                  pha
                  adc #90                                  ; make positive
-                 jsr _local_1304_20                       ; do division by 10
+                 jsr l305_2                               ; do division by 10
                  pla                                      ; get 2's comp of angle
                  clc
                  eor #$ff
                  adc #1                                   ; make positive
                  dec angsgn                               ; correct phase
 
-_local_1304_20   ldx #$ff
-_local_1304_30   inx                                      ; do division by 10
+l305_2           ldx #$ff
+l305_3           inx                                      ; do division by 10
                  sec
                  sbc #10
-                 bcs _local_1304_30
+                 bcs l305_3
                  adc #10                                  ; make positive
                  sta vtemp1                               ; save remainder
                  txa
@@ -19770,25 +19770,25 @@ _local_1304_30   inx                                      ; do division by 10
                  lda angval+1,x                           ; get low byte base
                  ldy angval,x                             ; get high byte value
 
-_local_1304_40   clc
+l305_4           clc
                  dec vtemp1
-                 bmi _local_1304_50                       ; done - remainder = 0
+                 bmi l305_5                               ; done - remainder = 0
                  adc incval+1,x                           ; add low byte increment
                  pha
                  tya
                  adc incval,x                             ; add high byte increment
                  tay
                  pla
-                 bcc _local_1304_40                       ; ...always
+                 bcc l305_4                               ; ...always
 
-_local_1304_50   pha                                      ; save low byte of result
+l305_5           pha                                      ; save low byte of result
                  ldx #0                                   ; point to sinval
                  lda angsgn
                  lsr
-                 bcs _local_1304_60                       ; skip if sine value
+                 bcs l305_6                               ; skip if sine value
                  ldx #2                                   ; point to cosval
 
-_local_1304_60   pla
+l305_6           pla
                  sta sinval,x                             ; save low byte result
                  tya
                  sta sinval+1,x                           ; save high byte result
@@ -19805,24 +19805,24 @@ _local_1304_60   pla
 
 angmlt
                  ldy #sinval-vwork                        ; get offset to angle value
-                 bcc _local_1305_10                       ; get cosine/sine offset
+                 bcc l306_1                               ; get cosine/sine offset
                  ldy #cosval-vwork
 
-_local_1305_10   lda angsgn
+l306_1           lda angsgn
                  adc #2                                   ; correct phase for cosine to look as sine
                  lsr
                  lsr
                  php                                      ; save if carry - means negative angle value
                  jsr settwo                               ; get angle fraction in y/a
                  cpy #$ff                                 ; test if value should be 1
-                 bcc _local_1305_20                       ; skip if not
+                 bcc l306_2                               ; skip if not
                  txa
                  tay                                      ; get offset to integer
                  jsr settwo                               ; just get integer - multiplied by 1
-                 bcs _local_1305_30
+                 bcs l306_3
 
-_local_1305_20   jsr twobyt                               ; multiply integer times angle value
-_local_1305_30   plp                                      ; get sign of angle
+l306_2           jsr twobyt                               ; multiply integer times angle value
+l306_3           plp                                      ; get sign of angle
                  bcc invert                               ; invert result if negative,do rts
                  rts
 
@@ -19867,16 +19867,16 @@ _local_1305_30   plp                                      ; get sign of angle
 ;
 ; lda colsel  ;get current color source selected
 ;
-; bne _local_1305_10   ;branch if NOT background
+; bne l306_1   ;branch if NOT background
 ; lda fg_bg
 ; bit _graphm  ;test if mode = hires
 ; bpl 25$   ;if so, go set up byte
 ; rts   ;else exit
 ;
-;_local_1305_10 cmp #2
-; bne _local_1305_30   ;branch if NOT multi-color 1
+;l306_1 cmp #2
+; bne l306_3   ;branch if NOT multi-color 1
 ;
-;_local_1305_20 lda fg_mc1  ;get correct packed colors for multicolor mode.
+;l306_2 lda fg_mc1  ;get correct packed colors for multicolor mode.
 ;25$ and #$0f
 ; sta z_p_temp_1
 ; lda (grapnt),y
@@ -19885,7 +19885,7 @@ _local_1305_30   plp                                      ; get sign of angle
 ; sta (grapnt),y
 ; rts
 ;
-;_local_1305_30 bcs 40$   ;branch if multicolor 2
+;l306_3 bcs 40$   ;branch if multicolor 2
 ;
 ; lda fg_bg  ;here for foreground. get packed colors.
 ; and #$f0
@@ -19929,7 +19929,7 @@ _local_1305_30   plp                                      ; get sign of angle
 ;7$=color_ram_lo+40*7
 ;8$=color_ram_lo+40*8
 ;9$=color_ram_lo+40*9
-;_local_1305_10=color_ram_lo+40*10
+;l306_1=color_ram_lo+40*10
 ;11$=color_ram_lo+40*11
 ;12$=color_ram_lo+40*12
 ;13$=color_ram_lo+40*13
@@ -19939,15 +19939,15 @@ _local_1305_30   plp                                      ; get sign of angle
 ;17$=color_ram_lo+40*17
 ;18$=color_ram_lo+40*18
 ;19$=color_ram_lo+40*19
-;_local_1305_20=color_ram_lo+40*20
+;l306_2=color_ram_lo+40*20
 ;21$=color_ram_lo+40*21
 ;22$=color_ram_lo+40*22
 ;23$=color_ram_lo+40*23
 ;24$=color_ram_lo+40*24
 ;
-; .byte >99$,>1$,>2$,>3$,>4$,>5$,>6$,>7$,>8$,>9$,>_local_1305_10
+; .byte >99$,>1$,>2$,>3$,>4$,>5$,>6$,>7$,>8$,>9$,>l306_1
 ; .byte >11$,>12$,>13$,>14$,>15$,>16$,>17$,>18$,>19$
-; .byte >_local_1305_20,>21$,>22$,>23$,>24$
+; .byte >l306_2,>21$,>22$,>23$,>24$
 
 ; .page
 ;******************************************************************
@@ -20003,18 +20003,18 @@ _local_1305_30   plp                                      ; get sign of angle
 ;
 ;divpos lda xpos+1
 ; lsr a
-; bne _local_1305_20       ;out of bounds if greater than 1
+; bne l306_2       ;out of bounds if greater than 1
 ; lda xpos
 ; ror a
 ; lsr a  ;get column position = xpos/8
 ; bit _graphm
-; bmi _local_1305_10  ;skip if multicolor mode
+; bmi l306_1  ;skip if multicolor mode
 ; lsr a  ;divide by 8 if a hires or text mode
-;_local_1305_10 tay
+;l306_1 tay
 ; cpy #llen
-; bcs _local_1305_20  ;error exit if out of bounds
+; bcs l306_2  ;error exit if out of bounds
 ; lda ypos+1
-; bne _local_1305_20  ;out of bounds error if not = 0
+; bne l306_2  ;out of bounds error if not = 0
 ; lda ypos
 ; lsr a
 ; lsr a  ;get row number = ypos/8
@@ -20022,7 +20022,7 @@ _local_1305_30   plp                                      ; get sign of angle
 ; tax
 ; cmp #nlines ;compare to max number of rows
 ; rts  ;carry clr if okay
-;_local_1305_20 sec
+;l306_2 sec
 ; rts
 
 ; .page
@@ -20173,9 +20173,9 @@ twobyt
                  sta vtemp3                               ; initialize result to zero
 
                  ldy #16                                  ; initialize count
-_local_1306_10   lsr vtemp1
+l307_1           lsr vtemp1
                  ror vtemp2
-                 bcc _local_1306_20                       ; skip if no bit set
+                 bcc l307_2                               ; skip if no bit set
                  clc
                  adc vwork,x                              ; add integer low byte
                  pha
@@ -20184,16 +20184,16 @@ _local_1306_10   lsr vtemp1
                  sta vtemp3
                  pla
 
-_local_1306_20   lsr vtemp3                               ; divide by 2
+l307_2           lsr vtemp3                               ; divide by 2
                  ror
                  dey
-                 bne _local_1306_10                       ; loop 16 times - test all bits in 2 bytes
+                 bne l307_1                               ; loop 16 times - test all bits in 2 bytes
 
                  adc #0                                   ; add back round factor
                  ldy vtemp3
-                 bcc _local_1306_30
+                 bcc l307_3
                  iny
-_local_1306_30   plp                                      ; pop sign
+l307_3           plp                                      ; pop sign
                  bra abstw2                               ; return with signed product in y/a
 
 ; .page
@@ -20258,18 +20258,18 @@ _local_1306_30   plp                                      ; pop sign
 
 incor2                                                    ; enter here for optional argument
                  jsr chrgot                               ; end of line?
-                 beq _local_1307_10                       ; yes, use defaults
+                 beq l308_1                               ; yes, use defaults
                  jsr chkcom
                  cmp #','                                 ; is there really an arg?
                  bne incord                               ; yes, let'er rip
 
-_local_1307_10   ldy #0                                   ; set default pos = current pos
-_local_1307_20   lda xpos,y
+l308_1           ldy #0                                   ; set default pos = current pos
+l308_2           lda xpos,y
                  sta vwork,x
                  inx
                  iny
                  cpy #4
-                 bcc _local_1307_20
+                 bcc l308_2
                  rts
 
 ; .page
@@ -20301,23 +20301,23 @@ incord
                  clc
                  ldx vtemp4
 
-_local_1308_10   jsr angmlt                               ; multiply length * angle
+l309_1           jsr angmlt                               ; multiply length * angle
                  sta vwork,x                              ; save angle result
                  tya
                  sta vwork+1,x
                  ldy #xpos-vwork
                  lsr vtemp5
-                 bcc _local_1308_20
+                 bcc l309_2
                  ldy #ypos-vwork
 
-_local_1308_20   jsr dotwo                                ; add/subtract value to current position
+l309_2           jsr dotwo                                ; add/subtract value to current position
                  sta vwork,x
                  tya                                      ; save result in destination
                  sta vwork+1,x
                  inx
                  inx
                  lsr vtemp5
-                 bne _local_1308_10                       ; do y-coordinate
+                 bne l309_1                               ; do y-coordinate
                  clc
                  rts
 
@@ -20356,11 +20356,11 @@ docor2           ldy #xpos-vwork
 
 cordsb           jsr chrgot                               ; read character
                  cmp #plus_token                          ; check if relative - plus sign
-                 beq _local_1309_10                       ; skip if yes
+                 beq l310_1                               ; skip if yes
                  cmp #minus_token
-                 beq _local_1309_10                       ; skip if relative - minus sign
+                 beq l310_1                               ; skip if relative - minus sign
                  clc                                      ; .c=1 if relative coord, .c=0 if absolute
-_local_1309_10   rol vtemp5                               ; save coord type for later
+l310_1           rol vtemp5                               ; save coord type for later
                  jsr frmnum
                  jsr getsad                               ; get signed 2 byte coordinate (y,a), do rts
                  ldx vtemp4
@@ -20419,18 +20419,18 @@ incval
 
 edit             jsr errind                               ; direct mode only command
                  cmp #on_token
-                 bne _local_1310_10
+                 bne l311_1
                  lda #%00010000                           ; EDIT ON
-                 bra _local_1310_30                       ; (this kills trace mode, too)
+                 bra l311_3                               ; (this kills trace mode, too)
 
-_local_1310_10   jsr chkesc                               ; [910930]
+l311_1           jsr chkesc                               ; [910930]
 ; cmp #esc_command_token
-; bne _local_1310_20
+; bne l311_2
 ; jsr chrget
                  cmp #off_token
-_local_1310_20   +lbne snerr
+l311_2           +lbne snerr
                  lda #0                                   ; EDIT OFF
-_local_1310_30   sta runmod
+l311_3           sta runmod
                  jmp chrget                               ; exit
 
 
@@ -20455,12 +20455,12 @@ edit_p1line                                               ; Edit mode only, list
                  lda #' '                                 ; print a space
 
                  ldy #3                                   ; start printing at text following line number
-_local_1311_10   jsr outch                                ; print character
+l312_1           jsr outch                                ; print character
                  iny
-                 bbr5 helper,_local_1311_20               ; if called from FIND/CHANGE check for highlighting
+                 bbr5 helper,l312_2                       ; if called from FIND/CHANGE check for highlighting
                  jsr helpsb
-_local_1311_20   jsr indlow                               ; get next character
-                 bne _local_1311_10                       ; loop until eol
+l312_2           jsr indlow                               ; get next character
+                 bne l312_1                               ; loop until eol
                  rts                                      ; done
 
 
@@ -20476,20 +20476,20 @@ edit_load                                                 ; Called by DLOAD/DVER
                  lda #dsdesc+1
                  jsr lda_far_ram1                         ; lda (dsdesc+1),y peek at first character
                  cmp #'2'
-                 +lbcs _local_1312_30                     ; exit if error
+                 +lbcs l313_12                            ; exit if error
                  jsr Clear_DS                             ; else zap 'ok' message so user gets fresh one
                  ldx dosla
                  jsr _chkin                               ; get input channel
-                 +lbcs _local_1312_30                     ; error
+                 +lbcs l313_12                            ; error
 
-                 bbs0 verck,_local_1312_1
+                 bbs0 verck,l313_1
                  jsr _primm
                  !text cr,"LOADING",0
-                 bra _local_1312_2
-_local_1312_1    jsr _primm
+                 bra l313_2
+l313_1           jsr _primm
                  !text cr,"VERIFYING",0
 
-_local_1312_2    lda #<1000                               ; default starting line #
+l313_2           lda #<1000                               ; default starting line #
                  ldx #>1000
                  sta linnum
                  stx linnum+1
@@ -20499,17 +20499,17 @@ _local_1312_2    lda #<1000                               ; default starting lin
                  sta index
                  stx index+1
 
-_local_1312_10   ldy #0                                   ; Input one line of text
+l313_3           ldy #0                                   ; Input one line of text
                  jsr _stop                                ; check stop key
-                 beq _local_1312_28                       ; exit if down
+                 beq l313_11                              ; exit if down
                  jsr _readst                              ; check channel status
-                 bne _local_1312_28                       ; exit if eof or error
+                 bne l313_11                              ; exit if eof or error
 
-                 bbr0 verck,_local_1312_15
+                 bbr0 verck,l313_4
                  ldy #3
-                 bra _local_1312_20                       ; skip ahead if verify op
+                 bra l313_5                               ; skip ahead if verify op
 
-_local_1312_15   lda #1                                   ; install fake line links for this line
+l313_4           lda #1                                   ; install fake line links for this line
                  jsr sta_far_in1
                  iny                                      ; 1
                  jsr sta_far_in1
@@ -20523,51 +20523,51 @@ _local_1312_15   lda #1                                   ; install fake line li
                  lda linnum                               ; generate next line number
                  adc #10
                  sta linnum
-                 bcc _local_1312_20
+                 bcc l313_5
                  inc linnum+1
 
 ; .page
-_local_1312_20   iny                                      ; bump buffer pointer
+l313_5           iny                                      ; bump buffer pointer
                  cpy #buflen                              ; check buffer (160 max. input buffer size to edit)
-                 beq _local_1312_25                       ; split long lines into two????
+                 beq l313_8                               ; split long lines into two????
                  jsr _basin                               ; read file data
-                 beq _local_1312_25                       ; CR or null terminates line
+                 beq l313_8                               ; CR or null terminates line
                  cmp #cr
-                 beq _local_1312_25
+                 beq l313_8
 ; cmp #$20  ;adjust invisible characters less than space
-; bcc _local_1312_21   ; ????make them appear in reverse field, but note
+; bcc l313_6   ; ????make them appear in reverse field, but note
 ; ora #$80  ; that these lines can't be edited without losing them.
 
-_local_1312_21   bbr0 verck,_local_1312_22
+l313_6           bbr0 verck,l313_7
                  jsr indcmp_in1                           ; Compare to memory
-                 beq _local_1312_20                       ; ok
+                 beq l313_5                               ; ok
                  jsr list_exit
                  ldx #ervfy                               ; verify error
                  +lbra error
 
-_local_1312_22   jsr sta_far_in1                          ; Load into memory
-                 bra _local_1312_20                       ; loop until eol or error (kernel returns CR in case of error)
+l313_7           jsr sta_far_in1                          ; Load into memory
+                 bra l313_5                               ; loop until eol or error (kernel returns CR in case of error)
 
-_local_1312_25   bbs0 verck,_local_1312_26
+l313_8           bbs0 verck,l313_9
                  lda #0
                  jsr sta_far_in1                          ; terminate line with null (replaces CR)
-_local_1312_26   iny
+l313_9           iny
                  tya
                  clc
                  adc index
                  sta index
-                 bcc _local_1312_27
+                 bcc l313_10
                  inc index+1
-_local_1312_27   lda index+1
+l313_10          lda index+1
                  cmp max_mem_0+1                          ; out of memory????
-                 bcc _local_1312_10                       ; no, continue until eof
+                 bcc l313_3                               ; no, continue until eof
                  bsr edit_load_done                       ; yes, patch things up best we can
                  jsr list_exit                            ; close disk
                  +lbra omerr                              ; report error & exit
 
-_local_1312_28   bbs0 verck,_local_1312_30
+l313_11          bbs0 verck,l313_12
                  jsr edit_load_done                       ; EOF: terminate memory with a pair of nulls
-_local_1312_30   +lbra list_exit                          ; release channel, close file, etc.
+l313_12          +lbra list_exit                          ; release channel, close file, etc.
 
 ; bbr0 verck,40$
 ; jsr verify_ok  ;if Verify, report 'ok'
@@ -20601,46 +20601,46 @@ edit_save
                  +lbcs list_err                           ; exit if error
                  ldx dosla
                  jsr _chkout                              ; get output channel
-                 bcs _local_1313_30                       ; error
+                 bcs l314_5                               ; error
 
                  lda txttab                               ; save address
                  ldx txttab+1
                  sta index
                  stx index+1
 
-_local_1313_10   jsr _stop                                ; check stop key
-                 beq _local_1313_30                       ; exit if down
+l314_1           jsr _stop                                ; check stop key
+                 beq l314_5                               ; exit if down
                  jsr _readst                              ; check channel status
-                 bne _local_1313_30                       ; exit if eof or error????
+                 bne l314_5                               ; exit if eof or error????
 
                  ldy #3                                   ; save a line, starting past links & line#
-_local_1313_20   iny                                      ; bump buffer pointer
+l314_2           iny                                      ; bump buffer pointer
 ; cpy #buflen  ;check buffer (160 max. input buffer size to edit)
 ; beq ??$   ; split long lines into two????
                  jsr indin1
                  tax                                      ; save character for eol check
-                 bne _local_1313_21
+                 bne l314_3
                  lda #cr                                  ; eol: substitute CR ???? allow some other terminator
-_local_1313_21   jsr _bsout                               ; write file data
+l314_3           jsr _bsout                               ; write file data
                  txa
-                 bne _local_1313_20                       ; loop until eol
+                 bne l314_2                               ; loop until eol
 
                  iny                                      ; advance text index to start of next line
                  tya
                  clc
                  adc index
                  sta index
-                 bcc _local_1313_26
+                 bcc l314_4
                  inc index+1
 
-_local_1313_26   ldy #0                                   ; check for EOF: a pair of null links
+l314_4           ldy #0                                   ; check for EOF: a pair of null links
                  jsr indin1
-                 bne _local_1313_10
+                 bne l314_1
                  iny
                  jsr indin1
-                 bne _local_1313_10                       ; loop until end of text
+                 bne l314_1                               ; loop until end of text
 
-_local_1313_30   +lbra list_exit                          ; release channel, close file, exit
+l314_5           +lbra list_exit                          ; release channel, close file, exit
 
 ;.end
 ; .page
@@ -20653,10 +20653,10 @@ Sound_CLR_1
 ; jsr go_slow  ;      [910716] 4567R7A
                  lda #0
                  ldx #24-1
-_local_1314_40   sta sid1,x                               ; initialize SID chips
+l315_1           sta sid1,x                               ; initialize SID chips
                  sta sid2,x
                  dex
-                 bpl _local_1314_40
+                 bpl l315_1
 
                  sta filters1+2                           ; set filters off
                  sta filters2+2
@@ -20671,13 +20671,13 @@ _local_1314_40   sta sid1,x                               ; initialize SID chips
 ; jsr go_fast  ;      [910716] 4567R7A
 
                  bit _pal_ntsc                            ; determine if PAL or NTSC system  [910724]
-                 bmi _local_1314_1                        ; ...branch if PAL
+                 bmi l315_2                               ; ...branch if PAL
                  lda #(<beats_ntsc)/4                     ; set beat to quarter note (4/4 time = .5 sec)
                  ldy #>beats_ntsc/4
-                 bra _local_1314_2
-_local_1314_1    lda #<beats_pal/4
+                 bra l315_3
+l315_2           lda #<beats_pal/4
                  ldy #>beats_pal/4
-_local_1314_2    sta ntime
+l315_3           sta ntime
                  sty ntime+1
 
                  lda #4                                   ; set default octave
@@ -20686,33 +20686,33 @@ _local_1314_2    sta ntime
                  sta tempo_rate                           ; 12 makes whole note in 4/4 time last 2 seconds
 
                  ldy #30-1                                ; initialize music tables
-_local_1314_10   lda atkmus,y
+l315_4           lda atkmus,y
                  sta atktab,y
                  dey
-                 bpl _local_1314_10
+                 bpl l315_4
 
                  ldx #10-1                                ; initialize pulse widths
-_local_1314_20   lda pwhmus,x
+l315_5           lda pwhmus,x
                  sta pulshi,x
                  dex
-                 bpl _local_1314_20
+                 bpl l315_5
 
                  txa                                      ; $ff
                  ldx #6-1                                 ; stereo SIDs   (save space) [911119]
                  ldy #1
-_local_1314_25   sta sound_time_hi,x                      ; turn all SOUND counters off
+l315_6           sta sound_time_hi,x                      ; turn all SOUND counters off
                  sta voices,y                             ; turn all PLAY counters off
                  iny
                  iny
                  dex
-                 bpl _local_1314_25
+                 bpl l315_6
 
                  ldy #6-1                                 ; set default envelope (piano) for all voices (6)
                  sty voice
-_local_1314_30   ldx #0
+l315_7           ldx #0
                  jsr set_envelope_1
                  dec voice
-                 bpl _local_1314_30
+                 bpl l315_7
                  inc voice                                ; set default voice (0)
 
                  plp
@@ -20732,19 +20732,19 @@ Sprite_CLR_1
                  sta vic+29
 
                  ldx #init_as_0                           ; Init sprite tables
-_local_1315_40   sta sprite_data,x
+l316_1           sta sprite_data,x
                  dex
-                 bpl _local_1315_40
+                 bpl l316_1
 
                  lda #sprite_base/64+7                    ; Set up sprite pointers
                  ldy #7
-_local_1315_10   bbr7 _mode,_local_1315_20
+l316_2           bbr7 _mode,l316_3
                  sta sprite_ptrs_40,y                     ; 40 col screen
-                 bra _local_1315_30
-_local_1315_20   sta sprite_ptrs_80,y                     ; 80 col screen
-_local_1315_30   dec
+                 bra l316_4
+l316_3           sta sprite_ptrs_80,y                     ; 80 col screen
+l316_4           dec
                  dey
-                 bpl _local_1315_10
+                 bpl l316_2
 
                  plp
 ; rts
@@ -20868,11 +20868,11 @@ basic_nmi                                                 ; removed [910826]
 
 graphic
                  cmp #clr_token                           ; GRAPHIC CLR (graphic system initialize)
-                 bne _local_1316_10                       ; no
+                 bne l317_1                               ; no
                  jsr chrget                               ; yes advance past token
                  jmp ($8000)                              ; go initialize graphic kernel
 
-_local_1316_10
+l317_1
 ; tax
 ; bmi snerr  ;Syntax error if any other secondary token
 ;

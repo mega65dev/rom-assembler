@@ -14,7 +14,7 @@ C65__paste
 
 genlock          sta GKI__parm1                           ; save token as flag for set palette   [910107]
                  cmp #on_token                            
-                 beq _local_1281_20                       
+                 beq l282_4                               
                  jsr chkesc                               
                  cmp #off_token                           
                  +lbne snerr                              
@@ -22,43 +22,43 @@ genlock          sta GKI__parm1                           ; save token as flag f
                  lda vic+49                               ; any interlaced bitplanes on?
                  and #%00011001                           
                  cmp #%00011001                           
-                 beq _local_1281_10                       ; yes, leave interlace mode on
+                 beq l282_1                               ; yes, leave interlace mode on
 
                  lda #%00000001                           
                  trb vic+49                               ; no, turn interlace off
-_local_1281_10   lda #%00000010                           
+l282_1           lda #%00000010                           
                  trb vic+48                               ; reset external sync mode
-; beq _local_1281_12   ;       [910114]
+; beq l282_2   ;       [910114]
 ; lda vic+63  ;       [910111]
 ; inc a   ;  adjust vert. position (chip bug ????)
 ; inc a   ;  (to be handled by a custom C65 genlock board)
 ; inc a
 ; sta vic+63
 
-_local_1281_12   jsr chrget                               ; eat token
+l282_2           jsr chrget                               ; eat token
                  jsr optbyt                               ; get (optional) color reg# in .X
                  stx GKI__parm2                           ; save it
                  +lbcs set_palette                        ; if present, go do it & exit
-_local_1281_15   rts                                      ; if not present (eol), exit
+l282_3           rts                                      ; if not present (eol), exit
 
 
-_local_1281_20   lda #%00000001                           ; TURN GENLOCK ON
+l282_4           lda #%00000001                           ; TURN GENLOCK ON
                  tsb vic+49                               ; set interlace mode
                  asl                                      
                  tsb vic+48                               ; set external sync mode
-; bne _local_1281_22   ;       [910114]
+; bne l282_5   ;       [910114]
 ; lda vic+63  ;       [910111]
 ; dec a   ;  adjust vert. position (chip bug ????)
 ; dec a   ;  (to be handled by a custom C65 genlock board)
 ; dec a
 ; sta vic+63
 
-_local_1281_22   jsr chrget                               ; eat token
-_local_1281_25   jsr optbyt                               ; get (optional) color reg# in .X
-                 bcc _local_1281_15                       ; if not present (eol), exit
+l282_5           jsr chrget                               ; eat token
+l282_6           jsr optbyt                               ; get (optional) color reg# in .X
+                 bcc l282_3                               ; if not present (eol), exit
                  lda #%00010000                           ; if present, set FGBG bit in red palette
                  sta _red,x                               
-                 bra _local_1281_25                       ; loop
+                 bra l282_6                               ; loop
 
 ; .page
 ; .subttl  COLOR Control

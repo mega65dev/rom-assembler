@@ -28,13 +28,13 @@ zerot1           dec z_p_temp_1                           ; count leading zeros
 
                  jsr indfrm                               ; take a peek at the next character in the format string
                  cmp #','                                 ; if it's a comma, we got problems
-                 bne _local_1209_10                       ; ...branch if no comma & resume normal processing
+                 bne l210_1                               ; ...branch if no comma & resume normal processing
 
                  lda blfd                                 ; here's the "$,999.99" bug fix:
                  jsr cdout                                ; print a 'fill' character instead of the '$'
                  iny                                      ; and increment format string pointer past comma
 
-_local_1209_10   sec                                      ; resume normal processing
+l210_1           sec                                      ; resume normal processing
                  ror dolr                                 ; clear the dollar flag & go on to print '$'
 ; sta sw_rom_ram0 ;????
                  lda pumony                               

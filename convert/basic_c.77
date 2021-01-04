@@ -13,9 +13,9 @@ chk_escape
                  beq hop_1                                ; end of line ,abort
                  cmp #collision_token                     
                  bne next_char                            
-_local_1076_40   jsr chrget                               ; got it! skip over first argument
+l77_1            jsr chrget                               ; got it! skip over first argument
                  beq hop_1                                ; end of line, abort
                  cmp #','                                 
-                 bne _local_1076_40                       ; not there yet
+                 bne l77_1                                ; not there yet
 
 

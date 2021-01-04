@@ -18,14 +18,14 @@ response_fake
 ;*****************************************************************
 
 optwrd           jsr chrgot                               
-                 beq _local_1247_10                       
+                 beq l248_1                               
                  jsr chkcom                               
                  cmp #','                                 
-                 beq _local_1247_10                       
+                 beq l248_1                               
                  jsr getwrd                               
                  sec                                      
                  rts                                      
 
-_local_1247_10   lda #0                                   
+l248_1           lda #0                                   
                  tay                                      
 

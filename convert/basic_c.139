@@ -41,12 +41,12 @@ dcml             jsr len1                                 ; find length of strin
                  sty strng2+1                             ; zero out value
                  sty strng2                               
 
-_local_1138_10   cpy index2                               ; evaluated all characters?
-                 beq _local_1138_50                       ; branch if so
+l139_1           cpy index2                               ; evaluated all characters?
+                 beq l139_4                               ; branch if so
                  jsr indin1_ram1                          ; get next character from string
                  iny                                      
                  cmp #' '                                 ; ignore spaces
-                 beq _local_1138_10                       
+                 beq l139_1                               
                  inc index2+1                             
                  ldx index2+1                             
                  cpx #5                                   
@@ -55,28 +55,28 @@ _local_1138_10   cpy index2                               ; evaluated all charac
                  cmp #'0'                                 
                  bcc decbad                               ; bad if < 0
                  cmp #':'                                 ; '9'+1
-                 bcc _local_1138_30                       ; ok if  = 0-9
+                 bcc l139_2                               ; ok if  = 0-9
                  cmp #'A'                                 
                  bcc decbad                               ; bad if > 9  and < A
                  cmp #'G'                                 
                  bcs decbad                               ; bad if > F
 
                  sbc #7                                   ; adjust if A-F  (.c is clr)
-_local_1138_30   sbc #$2f                                 ; adjust to $00..$0f (.c is set)
+l139_2           sbc #$2f                                 ; adjust to $00..$0f (.c is set)
                  asl                                      ; shift low nibble to high
                  asl                                      
                  asl                                      
                  asl                                      
 
                  ldx #4                                   ; mult. old val. by 16, add new
-_local_1138_40   asl                                      
+l139_3           asl                                      
                  rol strng2                               
                  rol strng2+1                             
                  dex                                      
-                 bne _local_1138_40                       
-                 bra _local_1138_10                       
+                 bne l139_3                               
+                 bra l139_1                               
 
-_local_1138_50   ldy strng2                               ; get lsb of value,
+l139_4           ldy strng2                               ; get lsb of value,
                  lda strng2+1                             ; & msb,
                  +lbra nosflt                             ; go float 2 byte unsigned integer
 

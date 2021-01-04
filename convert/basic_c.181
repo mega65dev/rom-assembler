@@ -15,9 +15,9 @@ linprt           sta facho
 
 fout             ldy #1                                   
 foutc            lda #' '                                 ; if positive, print space
-                 bbr7 facsgn,_local_1180_10               
+                 bbr7 facsgn,l181_1                       
                  lda #'-'                                 ; if neg
-_local_1180_10   sta fbuffr-1,y                           ; store the character
+l181_1           sta fbuffr-1,y                           ; store the character
                  sta facsgn                               ; make FAC pos for QINT
                  sty fbufpt                               ; save for later
                  iny                                      
@@ -27,69 +27,69 @@ _local_1180_10   sta fbuffr-1,y                           ; store the character
 
                  lda #0                                   
                  cpx #$80                                 ; is number < 1?
-                 beq _local_1180_20                       ; no
-                 bcs _local_1180_30                       
+                 beq l181_2                               ; no
+                 bcs l181_3                               
 
-_local_1180_20   lda #<nmil                               ; mult by 10~6
+l181_2           lda #<nmil                               ; mult by 10~6
                  ldy #>nmil                               
                  jsr rommlt                               
                  lda #$f7                                 
-_local_1180_30   sta deccnt                               ; save count or zero it
+l181_3           sta deccnt                               ; save count or zero it
 
-_local_1180_40   lda #<n9999                              
+l181_4           lda #<n9999                              
                  ldy #>n9999                              
                  jsr fcomp                                ; is number > 999999.499 or 999999999.5?
-                 beq _local_1180_100                      ; go to biggies
-                 bpl _local_1180_70                       ; yes, make it smaller
+                 beq l181_9                               ; go to biggies
+                 bpl l181_7                               ; yes, make it smaller
 
-_local_1180_50   lda #<n0999                              
+l181_5           lda #<n0999                              
                  ldy #>n0999                              
                  jsr fcomp                                ; is number > 99999.9499 or 99999999.90625?
-                 beq _local_1180_60                       
-                 bpl _local_1180_80                       ; yes. done multiplying
+                 beq l181_6                               
+                 bpl l181_8                               ; yes. done multiplying
 
-_local_1180_60   jsr mul10                                ; make it bigger
+l181_6           jsr mul10                                ; make it bigger
                  dec deccnt                               
-                 bne _local_1180_50                       ; see if that does it (this always goes)
+                 bne l181_5                               ; see if that does it (this always goes)
 
-_local_1180_70   jsr div10                                ; make it smaller
+l181_7           jsr div10                                ; make it smaller
                  inc deccnt                               
-                 bne _local_1180_40                       ; see if that does it (this always goes)
+                 bne l181_4                               ; see if that does it (this always goes)
 
-_local_1180_80   jsr faddh                                ; add a half to round up
+l181_8           jsr faddh                                ; add a half to round up
 
 
-_local_1180_100  jsr qint                                 ; biggies.
+l181_9           jsr qint                                 ; biggies.
                  ldx #1                                   ; decimal point count
                  lda deccnt                               
                  clc                                      
                  adc #$0a                                 ; should number be printed in E notation?  (ie, is number .lt. .01?)
-                 bmi _local_1180_110                      ; yes
+                 bmi l181_10                              ; yes
                  cmp #$0b                                 ; is it > 999999 or 9999999999?
-                 bcs _local_1180_120                      ; yes, use E notation
+                 bcs l181_11                              ; yes, use E notation
                  adc #$ff                                 ; number of places before decimal point
                  tax                                      ; put into accx
                  lda #2                                   ; no E notation
-_local_1180_110  sec                                      
+l181_10          sec                                      
 
-_local_1180_120  sbc #2                                   ; effectively add 5 to orig exp
+l181_11          sbc #2                                   ; effectively add 5 to orig exp
                  sta tenexp                               ; that is the exponent to print
                  stx deccnt                               ; number of decimal places
                  txa                                      
-                 beq _local_1180_130                      
-                 bpl _local_1180_150                      ; some places before dec pnt
+                 beq l181_12                              
+                 bpl l181_14                              ; some places before dec pnt
 
-_local_1180_130  ldy fbufpt                               ; get pointer to output
+l181_12          ldy fbufpt                               ; get pointer to output
                  lda #'.'                                 ; put in "."
                  iny                                      
                  sta fbuffr-1,y                           
                  txa                                      
-                 beq _local_1180_140                      
+                 beq l181_13                              
                  lda #'0'                                 ; get the ensuing zero
                  iny                                      
                  sta fbuffr-1,y                           
 
-_local_1180_140  sty fbufpt                               ; save it for later
+l181_13          sty fbufpt                               ; save it for later
 
-_local_1180_150  ldy #0                                   
+l181_14          ldy #0                                   
 

@@ -23,9 +23,9 @@ savinp           jsr frmevl                               ; evaluate expression
                  ror                                      
                  ror                                      ; get sprite address
                  ldy #>sprite_base                        
-                 bcc _local_1295_5                        
+                 bcc l296_1                               
                  iny                                      
-_local_1295_5    clc                                      ; flag 'sprite' (as opposed to 'string')
+l296_1           clc                                      ; flag 'sprite' (as opposed to 'string')
                  rts                                      
 
 

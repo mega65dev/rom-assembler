@@ -15,21 +15,21 @@ set_note_length
 ; sty ntime+1
 
                  bit _pal_ntsc                            ; determine if PAL or NTSC system  [910724]
-                 bmi _local_1107_1                        ; ...branch if PAL
+                 bmi l108_1                               ; ...branch if PAL
                  ldz #<beats_ntsc                         ; (whole note 4/4 time = 2 sec)
                  ldy #>beats_ntsc                         
-                 bra _local_1107_2                        
-_local_1107_1    ldz #<beats_pal                          
+                 bra l108_2                               
+l108_1           ldz #<beats_pal                          
                  ldy #>beats_pal                          
-_local_1107_2    stz ntime                                
+l108_2           stz ntime                                
                  sty ntime+1                              
 
-_local_1107_10   dex                                      
-                 bmi _local_1107_20                       ; finished dividing, exit
+l108_3           dex                                      
+                 bmi l108_4                               ; finished dividing, exit
                  lsr ntime+1                              
                  ror ntime                                
-                 bra _local_1107_10                       
+                 bra l108_3                               
 
-_local_1107_20   rts                                      
+l108_4           rts                                      
 
 ; .page

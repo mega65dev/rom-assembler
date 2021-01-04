@@ -1,27 +1,27 @@
 rwindow          jsr chkcls                               
                  jsr conint                               
                  cpx #2                                   
-                 beq _local_1148_50                       ; return current console
+                 beq l149_2                               ; return current console
                  +lbcs fcerr                              
 
                  cpx #0                                   
-                 bne _local_1148_10                       
+                 bne l149_1                               
 
                  lda _screen_bottom                       
                  sec                                      
                  sbc _screen_top                          
-                 bra _local_1148_60                       ; always
+                 bra l149_3                               ; always
 
-_local_1148_10   lda _screen_right                        
+l149_1           lda _screen_right                        
                  sec                                      
                  sbc _screen_left                         
-                 bra _local_1148_60                       ; always
+                 bra l149_3                               ; always
 
 
-_local_1148_50   lda #80                                  ; assume 80 col
-                 bbr7 _mode,_local_1148_60                
+l149_2           lda #80                                  ; assume 80 col
+                 bbr7 _mode,l149_3                        
                  lsr                                      
-_local_1148_60   tay                                      
+l149_3           tay                                      
                  +lbra sngflt                             ; float 1 byte arg in .Y
 
 ;.end

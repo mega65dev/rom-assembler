@@ -5,24 +5,24 @@ AutoScrolldn                                              ; wanting to scroll do
                  ldy #0                                   ; put cursor at top of screen
                  clc                                      
                  jsr _plot                                
-_local_1263_10   jsr _primm                               ; and scroll screen (kill any pending Editor modes, too)
+l264_1           jsr _primm                               ; and scroll screen (kill any pending Editor modes, too)
                  !text esc,esc,esc,"W",0                  
                  jsr FindLine                             ; find the line in program whose number we found on screen
                  lda lowtr                                ; (does not matter if it or next higher line is found)
                  cmp txttab                               
-                 bne _local_1263_20                       
+                 bne l264_2                               
                  lda lowtr+1                              
                  cmp txttab+1                             
-                 bne _local_1263_20                       
+                 bne l264_2                               
                  lda #$ff                                 ; special case- it's the very first line, want to wrap to last line
                  sta linnum+1                             ; fake pointer to the last line,
                  jsr _primm                               ; scroll screen to insert extra space,
                  !text esc,"W",0                          
-                 bra _local_1263_10                       ; and go around again
+                 bra l264_1                               ; and go around again
 
-_local_1263_20   lda txttab                               ; start at beginning of program (txttab) and find the line which points at (lowtr)
+l264_2           lda txttab                               ; start at beginning of program (txttab) and find the line which points at (lowtr)
                  ldx txttab+1                             
-_local_1263_30   sta index                                ; pointer to link bytes
+l264_3           sta index                                ; pointer to link bytes
                  stx index+1                              
                  ldy #1                                   
                  jsr indin1                               ; get link bytes
@@ -30,9 +30,9 @@ _local_1263_30   sta index                                ; pointer to link byte
                  dey                                      
                  jsr indin1                               
                  cpx lowtr+1                              ; do link bytes point at target line?
-                 bne _local_1263_30                       
+                 bne l264_3                               
                  cmp lowtr                                
-                 bne _local_1263_30                       ; no- use these link bytes to find next line
+                 bne l264_3                               ; no- use these link bytes to find next line
 
                  lda index                                ; yes- copy pointer
                  ldx index+1                              

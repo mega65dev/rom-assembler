@@ -8,10 +8,10 @@ dverify          lda #1                                   ; flag 'verify'
 dload            lda #0                                   
                  sta verck                                ; set load flag (for verify check later)
 
-                 bbr4 runmod,_local_1222_10               ; PROGRAM or EDIT mode?    [910620]
+                 bbr4 runmod,l223_1                       ; PROGRAM or EDIT mode?    [910620]
                  +lbra edit_load                          ; edit
 
-_local_1222_10   lda #$e6                                 ; set error flags
+l223_1           lda #$e6                                 ; set error flags
                  jsr dosprs                               ; parse the line
                  jsr chk2                                 ; check required parameters
 

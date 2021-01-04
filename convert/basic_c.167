@@ -10,9 +10,9 @@ slr1             dex                                      ; .x = ptr to temp. st
                  clc                                      
                  adc tempf2                               ; want ptr to string's backpointer
                  sta tempf2                               
-                 bcc _local_1166_1                        
+                 bcc l167_1                               
                  inc tempf2+1                             
-_local_1166_1    pla   ;.a=len & set z flag               ; .x=next desc. ptr
+l167_1           pla   ;.a=len & set z flag               ; .x=next desc. ptr
                  rts                                      
 
 ;.end

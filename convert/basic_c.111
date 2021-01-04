@@ -16,8 +16,8 @@ play_rest
                  pha                                      ; save flag
                  ldx voice                                
                  ldy times2,x                             ; y=x*2
-_local_1110_10   lda voices+1,y                           ; test if there is a note playing
-                 bpl _local_1110_10                       ; and loop if so
+l111_1           lda voices+1,y                           ; test if there is a note playing
+                 bpl l111_1                               ; and loop if so
 
                  sei                                      
                  lda ntime                                ; load counter for current length
@@ -25,7 +25,7 @@ _local_1110_10   lda voices+1,y                           ; test if there is a n
                  lda ntime+1                              
                  sta voices+1,y                           
                  lda dnote                                ; test if this is a dotted note
-                 beq _local_1110_20                       ; no
+                 beq l111_2                               ; no
                  lda ntime+1                              
                  lsr                                      ; duration is 1.5 x current length
                  pha                                      
@@ -38,8 +38,8 @@ _local_1110_10   lda voices+1,y                           ; test if there is a n
                  adc voices+1,y                           
                  sta voices+1,y                           
 
-_local_1110_20   pla                                      ; test if this is a rest
-                 bmi _local_1110_30                       ; and branch if so- clear play flags and exit [910722]
+l111_2           pla                                      ; test if this is a rest
+                 bmi l111_3                               ; and branch if so- clear play flags and exit [910722]
 
 ; jsr put_io_in_map
 ; jsr go_slow  ;      [910716] 4567R7A
@@ -53,6 +53,6 @@ _local_1110_20   pla                                      ; test if this is a re
                  lda waveform,x                           ; and finally, turn on gate
                  sta sid1+4,y                             
 ; jsr go_fast  ;      [910716] 4567R7A
-_local_1110_30   cli                                      
+l111_3           cli                                      
 
 ; .page

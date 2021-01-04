@@ -22,9 +22,9 @@ setexc           smb7 runmod                              ; set up run mode
                  sta _autoinsert                          ; disable auto-insert mode ?????
 
                  ldx #2                                   ; turn off all interrupt trip flags
-_local_1071_10   sta int_trip_flag,x                      
+l72_1            sta int_trip_flag,x                      
                  dex                                      
-                 bpl _local_1071_10                       
+                 bpl l72_1                                
 
                  jsr _setmsg                              ; turn kernel messages off & rts
 

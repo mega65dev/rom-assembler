@@ -25,46 +25,46 @@ edit_save
                  +lbcs list_err                           ; exit if error
                  ldx dosla                                
                  jsr _chkout                              ; get output channel
-                 bcs _local_1313_30                       ; error
+                 bcs l314_5                               ; error
 
                  lda txttab                               ; save address
                  ldx txttab+1                             
                  sta index                                
                  stx index+1                              
 
-_local_1313_10   jsr _stop                                ; check stop key
-                 beq _local_1313_30                       ; exit if down
+l314_1           jsr _stop                                ; check stop key
+                 beq l314_5                               ; exit if down
                  jsr _readst                              ; check channel status
-                 bne _local_1313_30                       ; exit if eof or error????
+                 bne l314_5                               ; exit if eof or error????
 
                  ldy #3                                   ; save a line, starting past links & line#
-_local_1313_20   iny                                      ; bump buffer pointer
+l314_2           iny                                      ; bump buffer pointer
 ; cpy #buflen  ;check buffer (160 max. input buffer size to edit)
 ; beq ??$   ; split long lines into two????
                  jsr indin1                               
                  tax                                      ; save character for eol check
-                 bne _local_1313_21                       
+                 bne l314_3                               
                  lda #cr                                  ; eol: substitute CR ???? allow some other terminator
-_local_1313_21   jsr _bsout                               ; write file data
+l314_3           jsr _bsout                               ; write file data
                  txa                                      
-                 bne _local_1313_20                       ; loop until eol
+                 bne l314_2                               ; loop until eol
 
                  iny                                      ; advance text index to start of next line
                  tya                                      
                  clc                                      
                  adc index                                
                  sta index                                
-                 bcc _local_1313_26                       
+                 bcc l314_4                               
                  inc index+1                              
 
-_local_1313_26   ldy #0                                   ; check for EOF: a pair of null links
+l314_4           ldy #0                                   ; check for EOF: a pair of null links
                  jsr indin1                               
-                 bne _local_1313_10                       
+                 bne l314_1                               
                  iny                                      
                  jsr indin1                               
-                 bne _local_1313_10                       ; loop until end of text
+                 bne l314_1                               ; loop until end of text
 
-_local_1313_30   +lbra list_exit                          ; release channel, close file, exit
+l314_5           +lbra list_exit                          ; release channel, close file, exit
 
 ;.end
 ; .page

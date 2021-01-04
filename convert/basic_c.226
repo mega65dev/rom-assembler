@@ -10,10 +10,10 @@ header           jsr dospar                               ; parse the line
                  ldy #fhed                                ; tabld index
                  lda #4                                   ; length
                  ldx dosdid                               ; check for diskid
-                 beq _local_1225_10                       
+                 beq l226_1                               
                  lda #6                                   ; length with id
 
-_local_1225_10   jsr trans                                ; build and send command
+l226_1           jsr trans                                ; build and send command
 ;fall into 'print_dos_error'
 
 ; .page

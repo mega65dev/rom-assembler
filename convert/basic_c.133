@@ -21,16 +21,16 @@ Get_TI_String
                  jsr sta_far_ram1                         ; put period (special case)   [910103]
                  dey                                      
                  ldx #1                                   
-                 bra _local_1132_20                       
+                 bra l133_2                               
 
-_local_1132_10   phx                                      ; element pointer (1=secs, 2=mins, 3=hrs)
+l133_1           phx                                      ; element pointer (1=secs, 2=mins, 3=hrs)
                  ldx #dsctmp+1                            
                  lda #':'                                 
                  jsr sta_far_ram1                         ; put colon
                  dey                                      
                  plx                                      
 
-_local_1132_20   lda time,x                               
+l133_2           lda time,x                               
                  taz                                      
                  and #$0f                                 ; do lsd first, since we're working backwards
                  ora #'0'                                 
@@ -48,7 +48,7 @@ _local_1132_20   lda time,x
                  plx                                      
                  inx                                      ; next packed element
                  dey                                      
-                 bpl _local_1132_10                       ; loop until done
+                 bpl l133_1                               ; loop until done
 
                  lda #10                                  ; length
                  jsr mvdone                               ; update frespc ????

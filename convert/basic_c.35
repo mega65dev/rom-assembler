@@ -28,7 +28,7 @@ list_file
                  jsr _basin                               ; waste 'load address'
                  jsr _basin                               
 
-_local_1034_10   jsr _basin                               ; get link bytes
+l35_1            jsr _basin                               ; get link bytes
                  sta dosstr                               
                  jsr _basin                               
                  sta dosstr+1                             
@@ -49,7 +49,7 @@ _local_1034_10   jsr _basin                               ; get link bytes
                  jsr _basin                               ; 2-byte line #
                  sta dosstr,x                             
                  inx                                      
-_local_1034_20   cpx #255                                 ; check buffer (buflen????)
+l35_2            cpx #255                                 ; check buffer (buflen????)
                  +lbcs errlen                             ; 'too long' error
                  jsr _basin                               
                  sta dosstr,x                             
@@ -60,7 +60,7 @@ _local_1034_20   cpx #255                                 ; check buffer (buflen
                  jsr _stop                                
                  beq list_exit                            ; exit if stop key down
                  tya                                      
-                 bne _local_1034_20                       ; loop until eol
+                 bne l35_2                                ; loop until eol
 
                  jsr dcato                                ; get output channel
                  jsr crdo                                 ; start new line
@@ -70,5 +70,5 @@ _local_1034_20   cpx #255                                 ; check buffer (buflen
                  jsr _clrch                               
                  ldx dosla                                
                  jsr _chkin                               ; get input channel
-                 bcc _local_1034_10                       ; [900730]
+                 bcc l35_1                                ; [900730]
 

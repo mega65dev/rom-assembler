@@ -10,19 +10,19 @@ execute_a_line                                            ; EXECUTE PLAIN TEXT I
                  jsr chrget                               ; get first character of null-terminated string
                  tax                                      
                  beq main                                 ; got null input
-                 bcc _local_1024_10                       ; got line number
+                 bcc l25_1                                ; got line number
                  jsr crunch                               ; got text- tokenize buffer,
                  jsr chrgot                               ; get first command (token),
                  +lbra xeqdir                             ; and execute it
 
 ;ADD or DELETE NEW LINE
-_local_1024_10   jsr linget                               ; evaluate line number, put into into linnum
-                 bbr4 runmod,_local_1024_20               
+l25_1            jsr linget                               ; evaluate line number, put into into linnum
+                 bbr4 runmod,l25_2                        
                  jsr edit_crunch                          ; if edit mode, find end of input   [910620]
-                 bra _local_1024_30                       
+                 bra l25_3                                
 
-_local_1024_20   jsr crunch                               ; tokenize rest of input if not edit mode
-_local_1024_30   sty count                                ; save length
+l25_2            jsr crunch                               ; tokenize rest of input if not edit mode
+l25_3            sty count                                ; save length
                  jsr FindLine                             ; locate line in program
                  +lbcc nodel                              ; not found, go insert line into program
 ; else delete current line and insert this one
@@ -45,15 +45,15 @@ _local_1024_30   sty count                                ; save length
                  sec                                      ; ignore borrow (gives abs. value)
                  sbc #4                                   ; allow for link & line number
                  sbc count                                ; compare with new length
-                 bcs _local_1024_2                        ; new line is shorter, no problem
+                 bcs l25_5                                ; new line is shorter, no problem
                  neg                                      ; convert to positive delta
 
                  ldy text_top+1                           ; get msb of end of text (.c=0)
                  adc text_top                             ; add our calculated delta to end of text
-                 bcc _local_1024_1                        
+                 bcc l25_4                                
                  iny                                      
-_local_1024_1    cpy max_mem_0+1                          
-                 bcc _local_1024_2                        ; result is less than top-of-memory: ok
+l25_4            cpy max_mem_0+1                          
+                 bcc l25_5                                ; result is less than top-of-memory: ok
                  +lbne omerr                              ; msb >  top, overflow
                  cmp max_mem_0                            ; msb's the same, test lsb's
                  +lbcs omerr                              ; lsb >= top, overflow
@@ -65,7 +65,7 @@ _local_1024_1    cpy max_mem_0+1
 ; text_top-(lowtr) = number of bytes to move (text_top points to old top of text)
 ; new text_top     = text_top -( (lowtr)-lowtr )
 
-_local_1024_2    lda lowtr                                ; set up DMA destination
+l25_5            lda lowtr                                ; set up DMA destination
                  sta dma1_dest_lo                         
                  lda lowtr+1                              
                  sta dma1_dest_hi                         

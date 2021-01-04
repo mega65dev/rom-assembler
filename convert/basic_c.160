@@ -6,9 +6,9 @@ frefac           lda facmo                                ; free up string point
 fretmp           sta index                                ; get length for later
                  sty index+1                              
                  jsr fretms                               ; check desc. if last
-                 bne _local_1159_30                       ; one then scratch it
+                 bne l160_3                               ; one then scratch it
                  jsr stradj                               ; index points to link
-                 bcc _local_1159_30                       ; literal no fix
+                 bcc l160_3                               ; literal no fix
 
                  phx                                      ; .x=length
                  dey                                      ; .y=1
@@ -25,9 +25,9 @@ fretmp           sta index                                ; get length for later
                  sec                                      ; to first byte
                  adc index                                
                  ldy index+1                              
-                 bcs _local_1159_10                       
+                 bcs l160_1                               
                  dey                                      
-_local_1159_10   sta index                                
+l160_1           sta index                                
                  sty index+1                              
 
                  tax                                      ; lo into x
@@ -45,14 +45,14 @@ _local_1159_10   sta index
                  sec                                      ; plus one
                  adc fretop                               
                  sta fretop                               
-                 bcc _local_1159_20                       
+                 bcc l160_2                               
                  inc fretop+1                             
-_local_1159_20   inw fretop                               ; + one more
+l160_2           inw fretop                               ; + one more
                  pla                                      ; pull length off stack
                  rts                                      
 
 
-_local_1159_30   ldy #0                                   ; set up x,y,a and index
+l160_3           ldy #0                                   ; set up x,y,a and index
                  jsr indin1_ram1                          ; length
                  pha                                      ; on stack
                  iny                                      

@@ -53,10 +53,10 @@ notfdd
                  jsr sta_far_ram1                         ; sta (lowtr),y
                  plx                                      
                  plp                                      
-                 bpl _local_1127_10                       
+                 bpl l128_1                               
                  dex                                      
 
-_local_1127_10   iny                                      ; notflt.
+l128_1           iny                                      ; notflt.
                  lda varnam+1                             
                  php                                      
                  phx                                      
@@ -64,11 +64,11 @@ _local_1127_10   iny                                      ; notflt.
                  jsr sta_far_ram1                         ; sta (lowtr),y
                  plx                                      
                  plp                                      
-                 bpl _local_1127_20                       
+                 bpl l128_2                               
                  dex                                      
                  dex                                      
 
-_local_1127_20   stx curtol                               
+l128_2           stx curtol                               
                  lda count                                ; save number of dimensions
                  iny                                      
                  iny                                      
@@ -76,9 +76,9 @@ _local_1127_20   stx curtol
                  ldx #lowtr                               ; point to string/array bank
                  jsr sta_far_ram1                         ; sta (lowtr),y
 
-_local_1127_30   ldx #11                                  ; loppta. default size
+l128_3           ldx #11                                  ; loppta. default size
                  lda #0                                   
-                 bbr6 dimflg,_local_1127_40               ; not in a dim statement
+                 bbr6 dimflg,l128_4                       ; not in a dim statement
                  pla                                      ; get low order of indice
                  clc                                      
                  adc #1                                   
@@ -86,7 +86,7 @@ _local_1127_30   ldx #11                                  ; loppta. default size
                  pla                                      ; get high order of indice
                  adc #0                                   
 
-_local_1127_40   iny                                      ; notdim.
+l128_4           iny                                      ; notdim.
                  phx                                      
                  ldx #lowtr                               
                  jsr sta_far_ram1 ;sta (lowtr),y          ; store high part of indice
@@ -102,37 +102,37 @@ _local_1127_40   iny                                      ; notdim.
                  sta curtol+1                             
                  ldy index                                
                  dec count                                ; any more indices left?
-                 bne _local_1127_30                       ; yes
+                 bne l128_3                               ; yes
                  adc arypnt+1                             
                  +lbcs omerr                              ; overflow
                  sta arypnt+1                             ; compute where to zero
                  tay                                      
                  txa                                      
                  adc arypnt                               
-                 bcc _local_1127_50                       
+                 bcc l128_5                               
                  iny                                      
                  +lbeq omerr                              
 
-_local_1127_50   jsr reason                               ; grease.  get room
+l128_5           jsr reason                               ; grease.  get room
                  sta strend                               
                  sty strend+1                             ; new end of storage
                  lda #0                                   ; storing (a) is faster than clear
                  inc curtol+1                             
                  ldy curtol                               
-                 beq _local_1127_70                       
+                 beq l128_7                               
 
-_local_1127_60   dey                                      ; zero out new entry
+l128_6           dey                                      ; zero out new entry
                  php                                      
                  phx                                      
                  ldx #arypnt                              
                  jsr sta_far_ram1                         ; sta (arypnt),y
                  plx                                      
                  plp                                      
-                 bne _local_1127_60                       ; no. continue
+                 bne l128_6                               ; no. continue
 
-_local_1127_70   dec arypnt+1                             ; deccur.
+l128_7           dec arypnt+1                             ; deccur.
                  dec curtol+1                             
-                 bne _local_1127_60                       ; do another block
+                 bne l128_6                               ; do another block
                  inc arypnt+1                             ; bump back up. will use later
                  sec                                      
                  lda strend                               ; restore (a)

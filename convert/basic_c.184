@@ -36,33 +36,33 @@ exp              lda #<logeb2                             ; multiply by LOG(e) b
                  jsr rommlt                               ; LOGEB2->ARG, FAC=FAC*ARG
                  lda facov                                
                  adc #$50                                 ; ????
-                 bcc _local_1183_10                       
+                 bcc l184_1                               
                  jsr incrnd                               
 
-_local_1183_10   sta oldov                                
+l184_1           sta oldov                                
                  jsr movef                                ; to save in ARG without round.  ARG=FAC, facov=0)
                  lda facexp                               
                  cmp #$88                                 ; if ABS(FAC) >= 128, too big
-                 bcc _local_1183_30                       
+                 bcc l184_3                               
 
-_local_1183_20   jsr mldvex                               ; overflow or overflow
-_local_1183_30   jsr int                                  ; FAC=INT(FAC), uses facov
+l184_2           jsr mldvex                               ; overflow or overflow
+l184_3           jsr int                                  ; FAC=INT(FAC), uses facov
                  lda integr                               ; get low part
                  clc                                      
                  adc #$81                                 
-                 beq _local_1183_20                       ; overflow or overflow!!
+                 beq l184_2                               ; overflow or overflow!!
 
                  sec                                      
                  sbc #1                                   ; subtract it
                  pha                                      ; save a while
 
                  ldx #5                                   ; swap FAC and ARG
-_local_1183_40   lda argexp,x                             
+l184_4           lda argexp,x                             
                  ldy facexp,x                             
                  sta facexp,x                             
                  sty argexp,x                             
                  dex                                      
-                 bpl _local_1183_40                       
+                 bpl l184_4                               
 
                  lda oldov                                
                  sta facov                                

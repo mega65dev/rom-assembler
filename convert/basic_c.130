@@ -49,9 +49,9 @@ fmaptr           lda count
                  adc #5                                   ; point to entries. ((c) cleared by asl)
                  adc lowtr                                
                  ldy lowtr+1                              
-                 bcc _local_1129_1                        
+                 bcc l130_1                               
                  iny                                      
-_local_1129_1    sta arypnt                               
+l130_1           sta arypnt                               
                  sty arypnt+1                             
                  rts                                      
 

@@ -59,20 +59,20 @@ C65__char
                  jsr getspa                               
 
                  jsr optwrd                               ; get charset address (????bank)
-                 bcs _local_1276_10                       ; given
+                 bcs l277_1                               ; given
                  ldy #<$9800                              ; not given- use ROM as default   [910207] FAB
                  lda #>$9800                              ; ???? uc/lc or graphic set ????
-_local_1276_10   sty GKI__parm10                          ; lo
+l277_1           sty GKI__parm10                          ; lo
                  sta GKI__parm11                          ; hi
                  ldx #2                                   ; default to ROM bank 2    [910912] FAB
                  jsr optbyt                               
                  stx GKI__parm12                          
 
                  lda GKI__parm7                           ; ???? check for null string ????
-                 beq _local_1276_40                       
+                 beq l277_2                               
                  jmp ($802c)                              ; bra kg65.char
 
-_local_1276_40   rts                                      
+l277_2           rts                                      
 
 ; .page
 ; .subttl  PAINT

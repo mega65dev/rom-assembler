@@ -39,8 +39,8 @@ leftd            jsr pream                                ; test parameters
                  cmp syntmp                               
                  tya                                      ; that's all there is to LEFT$
 
-rleft            bcc _local_1151_1                        
+rleft            bcc l152_1                               
                  jsr inddpt                               
                  tax                                      ; put length into x
                  tya                                      ; zero (a), the offset
-_local_1151_1    pha                                      ; save offset
+l152_1           pha                                      ; save offset

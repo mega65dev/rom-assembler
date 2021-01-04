@@ -67,11 +67,11 @@ print_esc_fn
 
 print_foreign_esc                                          
                  cpx #esc_command_token                   
-                 bne _local_1039_1                        
+                 bne l40_1                                
                  ldx #0                                   
                  !text $2c                                
 
-_local_1039_1    ldx #$ff                                 
+l40_1            ldx #$ff                                 
                  sec                                      
                  jmp (iescpr)                             
 

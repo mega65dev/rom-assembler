@@ -127,15 +127,15 @@ dosprx                                                    ; spec aux error flag 
                  sta parstx                               
 
                  ldx #dosspc                              ; clear DOS scratch area   [900522]
-_local_1232_10   sta xcnt-1,x                             
+l233_1           sta xcnt-1,x                             
                  dex                                      ; no filenames, null lengths
-                 bne _local_1232_10                       
+                 bne l233_1                               
 
                  ldx #dossa-dosofl                        ; set some defaults from table
-_local_1232_20   lda dostbl,x                             
+l233_2           lda dostbl,x                             
                  sta dosofl,x                             ; start/end adr = $FFFF, la/fa/sa
                  dex                                      
-                 bpl _local_1232_20                       
+                 bpl l233_2                               
 
                  ldx _default_drive                       ; set default device   [900522]
                  stx dosfa                                

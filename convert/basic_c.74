@@ -129,11 +129,11 @@ set_end          rts
 ; checks for non-existant line number destinations.
 
 ren_pass_2                                                
-                 bbr4 runmod,_local_1073_10               ; skip pass two and three if plain text (edit mode) [910620]
+                 bbr4 runmod,l74_1                        ; skip pass two and three if plain text (edit mode) [910620]
                  jsr n1_reset                             ; yes- just setup up starting line # and reset txtptr
                  bra ren_pass_4                           ; then renumber just the text's line numbers
 
-_local_1073_10   lda #$01                                 ; set flag for 'pass 2'
+l74_1            lda #$01                                 ; set flag for 'pass 2'
                  sta z_p_temp_1                           
                  lda text_top                             ; copy top-of-text pointer for later use
                  ldx text_top+1                           ; (we don't want to change original here)

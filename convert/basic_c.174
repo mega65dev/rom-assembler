@@ -1,8 +1,8 @@
 movaf            jsr round                                
 
 movef            ldx #6                                   
-_local_1173_1    lda facexp-1,x                           
+l174_1           lda facexp-1,x                           
                  sta argexp-1,x                           
                  dex                                      
-                 bne _local_1173_1                        
+                 bne l174_1                               
                  stx facov                                ; zero it since rounded

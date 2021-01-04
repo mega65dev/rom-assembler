@@ -21,20 +21,20 @@ PromptedInput                                             ; qinlin.
 
 InputLine                                                 ; inlin.
                  ldx #0                                   ; read & buffer data until 'return' or buffer full
-_local_1027_10   jsr inchr                                ; get a character
+l28_1            jsr inchr                                ; get a character
                  cmp #0                                   
-                 beq _local_1027_20                       
+                 beq l28_2                                
                  cmp #cr                                  ; a carriage return?
-                 beq _local_1027_20                       ; yes...done build
+                 beq l28_2                                ; yes...done build
 
                  sta buf,x                                ; no...buffer it
                  inx                                      
                  cpx #buflen                              ; buffer full?
-                 bcc _local_1027_10                       ; no...continue
+                 bcc l28_1                                ; no...continue
                  +lbra errlen                             ; yes...string too long error
 
 
-_local_1027_20   lda #0                                   ; fininl.  terminate input with a null
+l28_2            lda #0                                   ; fininl.  terminate input with a null
                  sta buf,x                                
                  ldx #<buf_txtptr                         ; set up pointer to start of buffer-1 (for chrget)
                  ldy #>buf_txtptr                         

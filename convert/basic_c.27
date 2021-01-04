@@ -7,17 +7,17 @@ link_program
 
 chead            ldy #0                                   
                  jsr indin1                               ; lda (index),y .. check for null link
-                 bne _local_1026_10                       
+                 bne l27_1                                
                  iny                                      
                  jsr indin1                               ; lda (index),y
                  beq lnkrts                               
 
-_local_1026_10   ldy #3                                   ; [900524]
-_local_1026_20   iny                                      ; ???? very expensive loop ????
+l27_1            ldy #3                                   ; [900524]
+l27_2            iny                                      ; ???? very expensive loop ????
                  cpy #254                                 
                  bcs link_error                           ; failsafe- program is mangled  [910103]
                  jsr indin1                               ; lda (index),y
-                 bne _local_1026_20                       
+                 bne l27_2                                
                  iny                                      
                  tya                                      
                  adc index                                

@@ -12,16 +12,16 @@ sadwrd           jsr frmnum                               ; get number     label
 
 chkcom_1                                                  
                  jsr chrgot                               ; get character in input stream
-                 beq _local_1292_20                       ; skip if end of string
+                 beq l293_2                               ; skip if end of string
                  cmp #','                                 ; check if a comma
                  clc                                      
-                 beq _local_1292_10                       ; skip if yes
+                 beq l293_1                               ; skip if yes
                  sec                                      ; set carry if not
-_local_1292_10   php                                      
+l293_1           php                                      
                  pha                                      
                  jsr chrget                               ; move to next non-space character
                  pla                                      
                  plp                                      
-_local_1292_20   rts                                      
+l293_2           rts                                      
 
 

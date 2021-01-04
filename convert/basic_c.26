@@ -6,28 +6,28 @@ nodel            jsr init_stack                           ; 'clearc' removed sin
                  lda (txtptr),y                           ; delete line? ("common")
                  +lbeq main                               ; yes
 
-_local_1025_5    clc                                      ; no...something to insert
+l26_1            clc                                      ; no...something to insert
                  ldy text_top+1                           
                  lda text_top                             
                  sty hightr+1                             ; top of block to move (old text_top)
                  sta hightr                               
                  adc count                                ; number of characters in line to be inserted
-                 bcc _local_1025_1                        
+                 bcc l26_2                                
                  iny                                      
-_local_1025_1    clc                                      
+l26_2            clc                                      
                  adc #4                                   ; plus link and line #
-                 bcc _local_1025_2                        ; gives us destination of move (new text_top)
+                 bcc l26_3                                ; gives us destination of move (new text_top)
                  iny                                      
 
-_local_1025_2    sta highds                               ; destination of top
+l26_3            sta highds                               ; destination of top
                  sty highds+1                             
                  cpy max_mem_0+1                          ; make sure new top doesn't crash into top of available ram
-                 bcc _local_1025_4                        ; ok
+                 bcc l26_4                                ; ok
                  +lbne omerr                              ; out of memory, don't insert
                  cmp max_mem_0                            
                  +lbcs omerr                              ; out of memory, don't insert
 
-_local_1025_4    sta text_top                             ; set new top of text
+l26_4            sta text_top                             ; set new top of text
                  sty text_top+1                           
                  sec                                      ; compute number of things to move up
                  lda hightr                               
@@ -49,14 +49,14 @@ _local_1025_4    sta text_top                             ; set new top of text
 
 ; lda dma_ctlr+3  ;dma controller version    [910520] F018A
 ; and #1
-; beq _local_1025_10   ; F018    removed [910808] F018B
+; beq l26_5   ; F018    removed [910808] F018B
                  lda #%00110000                           ; F018A, B
-_local_1025_10   sta dma1_cmd                             ; command=copy, source=endpt   [910102]
+l26_5            sta dma1_cmd                             ; command=copy, source=endpt   [910102]
                  sty dma1_cnt_lo                          ; count
                  stx dma1_cnt_hi                          
                  tya                                      
                  ora dma1_cnt_hi                          
-                 beq _local_1025_70                       ; special case= nothing to move???? should not happen
+                 beq l26_7                                ; special case= nothing to move???? should not happen
 
                  lda hightr                               
                  ldy hightr+1                             
@@ -68,10 +68,10 @@ _local_1025_10   sta dma1_cmd                             ; command=copy, source
                  sty dma1_dest_hi                         
                  lda text_bank                            ; [910520] F018A
 ; ldx dma1_cmd  ;version?    removed [910808] F018B
-; bne _local_1025_20   ; F018A
+; bne l26_6   ; F018A
 ; and #%00001111  ;      [910102]
 ; ora #%01000000  ;(copy source=endpoint)    [910102]
-_local_1025_20   sta dma1_src_bank                        ; banks
+l26_6            sta dma1_src_bank                        ; banks
                  sta dma1_dest_bank                       
                  lda #0                                   
                  sta dma1_subcmd                          ; [910520] F018A
@@ -83,7 +83,7 @@ _local_1025_20   sta dma1_src_bank                        ; banks
 
 ; Make links non-null to fool 'chead'
 
-_local_1025_70   ldy #0                                   
+l26_7            ldy #0                                   
                  lda #1                                   
                  ldx #lowtr                               
                  jsr sta_far_ram0                         ; sta (lowtr),y  y=0 (bleed-thru)
@@ -105,22 +105,22 @@ _local_1025_70   ldy #0
                  lda lowtr                                
                  adc #4                                   
                  sta lowtr                                
-                 bcc _local_1025_80                       
+                 bcc l26_8                                
                  inc lowtr+1                              
 
 
 ; Block move line to text
 
-_local_1025_80   ldy count                                ; use dma ???? [910925]
+l26_8            ldy count                                ; use dma ???? [910925]
                  dey                                      
 
-_local_1025_90   lda (txtptr),y                           ; (from common area)
+l26_9            lda (txtptr),y                           ; (from common area)
                  jsr sta_far_ram0                         ; sta (lowtr),y   (bleed-thru)
                  dey                                      
                  cpy #$ff                                 
-                 bne _local_1025_90                       
+                 bne l26_9                                
 
-; beq _local_1025_90   ;special case= nothing to move???? should not happen
+; beq l26_9   ;special case= nothing to move???? should not happen
 ; lda #0   ; F018A, B
 ; sta dma1_cmd  ;command=copy, source=start
 ; sty dma1_cnt_lo  ;count
@@ -144,7 +144,7 @@ _local_1025_90   lda (txtptr),y                           ; (from common area)
 ; lda #<dma1_cmd
 ; stx dma_ctlr+1  ;dma_list hi
 ; sta dma_ctlr  ;dma_list lo & trigger
-;_local_1025_90
+;l26_9
                  jsr link_program                         
                  jsr reset_txtptr                         ; set up txtptr (was jsr runc)
 
@@ -152,7 +152,7 @@ _local_1025_90   lda (txtptr),y                           ; (from common area)
 
                  lda autinc                               ; if in auto mode, increment val <> 0
                  ora autinc+1                             
-                 beq _local_1025_120                      ; not in
+                 beq l26_12                               ; not in
 
                  lda linnum                               ; yes, construct new line number
                  clc                                      
@@ -160,9 +160,9 @@ _local_1025_90   lda (txtptr),y                           ; (from common area)
                  sta facho+1                              
                  lda linnum+1                             
                  adc autinc+1                             
-                 bcs _local_1025_120                      ; no auto if wrapped
+                 bcs l26_12                               ; no auto if wrapped
                  cmp #$fa                                 ; test if # >= 64000
-                 bcs _local_1025_120                      ; no auto if so.
+                 bcs l26_12                               ; no auto if so.
                  sta facho                                
                  ldx #$90                                 
                  sec                                      
@@ -171,19 +171,19 @@ _local_1025_90   lda (txtptr),y                           ; (from common area)
 
                  sei                                      ; [910710]
                  ldx #0                                   ; move string into kbd buffer
-_local_1025_100  lda fbuffr+1,x                           ; copy number formed into buffer, ignoring leading space
-                 beq _local_1025_110                      ; a null marks end
+l26_10           lda fbuffr+1,x                           ; copy number formed into buffer, ignoring leading space
+                 beq l26_11                               ; a null marks end
                  sta _keyd,x                              
                  inx                                      
-                 bne _local_1025_100                      ; always
+                 bne l26_10                               ; always
 
-_local_1025_110  lda #29                                  ; cursor right
+l26_11           lda #29                                  ; cursor right
                  sta _keyd,x                              
                  inx                                      
                  stx _ndx                                 
                  cli                                      ; [910710]
 
-_local_1025_120  +lbra main                               
+l26_12           +lbra main                               
 
 
 ; .page

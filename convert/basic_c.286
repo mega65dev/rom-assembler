@@ -34,9 +34,9 @@ sprbit           txa
                  ldx z_p_temp_1                           ; get sprite number
                  lda sbits,x                              
                  ora vic,y                                
-                 bcs _local_1285_10                       
+                 bcs l286_1                               
                  eor sbits,x                              
-_local_1285_10   sta vic,y                                
+l286_1           sta vic,y                                
                  rts                                      
 
 

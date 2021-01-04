@@ -9,11 +9,11 @@ Set_TI_String
                  sty time+3                               
 
                  ldx #3                                   ; parameter pointer (3=hr,2=min,1=sec,0=tenths)
-_local_1130_10   jsr GetTimeDigit                         ; get first digit, convert to BCD
-                 bcs _local_1130_20                       ; colon or eos
+l131_1           jsr GetTimeDigit                         ; get first digit, convert to BCD
+                 bcs l131_2                               ; colon or eos
                  sta time,x                               
                  jsr GetTimeDigit                         ; get second digit, convert to BCD
-                 bcs _local_1130_20                       ; colon or eos
+                 bcs l131_2                               ; colon or eos
 
                  asl time,x                               ; move first digit to msd
                  asl time,x                               
@@ -22,29 +22,29 @@ _local_1130_10   jsr GetTimeDigit                         ; get first digit, con
                  ora time,x                               ; combine with second digit
                  sta time,x                               ; now we have a time element of packed BCD
 
-_local_1130_20   lda time,x                               
+l131_2           lda time,x                               
                  cmp MaxTimeValues,x                      ; check for parameter too big
                  +lbcs fcerr                              ; hr>23, min>59, sec>59, tenths>9
 
                  dex                                      ; check if done
-                 bmi _local_1130_30                       ; yes- all parameters accounted for
+                 bmi l131_4                               ; yes- all parameters accounted for
                  cpy count                                
-                 bcs _local_1130_40                       ; yes- end of string
+                 bcs l131_5                               ; yes- end of string
 
                  jsr indin1_ram1                          ; check for optional colon (or period)   [910103]
                  cmp #':'                                 
-                 beq _local_1130_25                       
+                 beq l131_3                               
                  cmp #'.'                                 
-                 bne _local_1130_10                       ; not there
-_local_1130_25   iny                                      ; it's there- skip over it
+                 bne l131_1                               ; not there
+l131_3           iny                                      ; it's there- skip over it
 
-                 bra _local_1130_10                       ; loop until done
+                 bra l131_1                               ; loop until done
 
 
-_local_1130_30   cpy count                                ; done
+l131_4           cpy count                                ; done
                  +lbcc errlen                             ; error if string too long
 
-_local_1130_40   ldz time                                 ; tenths  0-9
+l131_5           ldz time                                 ; tenths  0-9
                  lda time+1                               ; seconds 0-59
                  ldx time+2                               ; minutes 0-59
                  ldy time+3                               ; hours  0-23

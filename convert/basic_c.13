@@ -1,7 +1,7 @@
 xeqdir           jsr xeqcm3                               
 
 newstt           jsr is_stop_key_down                     
-                 bbr7 runmod,_local_1012_10               ; branch if direct mode
+                 bbr7 runmod,l13_1                        ; branch if direct mode
 
 ; In run mode...save txtptr for CONTinue command
 
@@ -9,11 +9,11 @@ newstt           jsr is_stop_key_down
                  tsx                                      
                  stx oldstk                               
 
-_local_1012_10   ldy #0                                   
+l13_1            ldy #0                                   
                  jsr indtxt                               ; end of the line?
                  +lbne morsts                             ; no...out of statement
 
-_local_1012_20   bit runmod                               ; in direct mode?
+l13_2            bit runmod                               ; in direct mode?
                  +lbpl ready                              ; yes, go to ready
                  ldy #2                                   
                  jsr indtxt                               ; end of text?
@@ -28,9 +28,9 @@ _local_1012_20   bit runmod                               ; in direct mode?
                  clc                                      
                  adc txtptr                               ; point @ character before line start
                  sta txtptr                               
-                 bcc _local_1012_30                       
+                 bcc l13_3                                
                  inc txtptr+1                             
-_local_1012_30   +lbra xeqcm                              ; execute new line
+l13_3            +lbra xeqcm                              ; execute new line
 
 
 

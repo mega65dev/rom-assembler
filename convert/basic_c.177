@@ -54,9 +54,9 @@ fin              stx fin_bank                             ; save bank number whe
 
                  ldy #0                                   ; zero facsgn, sgnflg
                  ldx #$0a                                 ; zero exp and ho (and moh)
-_local_1176_10   sty deccnt,x                             ; zero mo and lo
+l177_1           sty deccnt,x                             ; zero mo and lo
                  dex                                      ; zero tenexp and expsgn
-                 bpl _local_1176_10                       ; zero deccnt, dptflg
+                 bpl l177_1                               ; zero deccnt, dptflg
 
                  bcc findgq                               ; flags still set from chrget
                  cmp #'-'                                 ; a negative sign?

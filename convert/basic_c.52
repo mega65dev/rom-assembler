@@ -39,7 +39,7 @@ copyc            sta dscpnt
 ;   string by pointing it to its new descriptor.
 
                  jsr stradj                               ; set up new string
-                 bcc _local_1051_10                       ; leave it alone
+                 bcc l52_1                                ; leave it alone
                  ldy #0                                   
                  lda forpnt                               ; put in backwards link
                  phx                                      
@@ -50,12 +50,12 @@ copyc            sta dscpnt
                  jsr sta_far_ram1                         
                  plx                                      
 
-_local_1051_10   lda forpnt                               ; fix old string
+l52_1            lda forpnt                               ; fix old string
                  sta index                                
                  lda forpnt+1                             
                  sta index+1                              
                  jsr stradj                               ; point to old string
-                 bcc _local_1051_20                       ; in text do not fix
+                 bcc l52_2                                ; in text do not fix
                  dey                                      ; restore y
                  phx                                      
                  ldx #index                               
@@ -67,14 +67,14 @@ _local_1051_10   lda forpnt                               ; fix old string
                  jsr sta_far_ram1                         ; store length
                  plx                                      
 
-_local_1051_20   ldy #2                                   ; set the descriptor
+l52_2            ldy #2                                   ; set the descriptor
                  phx                                      
                  ldx #forpnt                              
-_local_1051_30   lda #dscpnt                              
+l52_3            lda #dscpnt                              
                  jsr lda_far_ram1                         ; lda (dscpnt),y from RAM1
                  jsr sta_far_ram1                         ; sta (forpnt),y to   RAM1
                  dey                                      
-                 bpl _local_1051_30                       
+                 bpl l52_3                                
                  plx                                      
                  rts                                      
 

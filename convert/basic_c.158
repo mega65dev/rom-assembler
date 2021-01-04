@@ -78,11 +78,11 @@ movdo            tay
                  pha                                      
                  phx                                      
                  ldx #frespc                              
-_local_1157_10   dey                                      
+l158_1           dey                                      
                  jsr indin1_ram1                          
                  jsr sta_far_ram1                         ; sta (frespc),y
                  tya                                      
-                 bne _local_1157_10                       
+                 bne l158_1                               
                  plx                                      
                  pla                                      
 

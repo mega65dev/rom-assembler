@@ -4,9 +4,9 @@ sound            cmp #clr_token                           ; SOUND CLR: init soun
                  jsr getbyt                               ; get voice number in .X
                  dex                                      ; adjust 1..3 to 0..2
                  cpx #6                                   ; [910612]
-_local_1114_98   +lbcs fcerr                              ; illegal value
+l115_1           +lbcs fcerr                              ; illegal value
 
-_local_1114_10   stx sound_voice                          
+l115_2           stx sound_voice                          
 
 ; Get frequency
 
@@ -20,7 +20,7 @@ _local_1114_10   stx sound_voice
 
                  jsr comwrd                               ; eat comma, get number of jiffys to play
                  cmp #$80                                 
-                 bcs _local_1114_98                       
+                 bcs l115_1                               
                  sty temp_time_lo                         
                  sta temp_time_hi                         
 
@@ -28,7 +28,7 @@ _local_1114_10   stx sound_voice
 
                  jsr optzer                               ; get optional sweep (default = 0, up)
                  cpx #3                                   
-                 bcs _local_1114_98                       
+                 bcs l115_1                               
                  txa                                      
                  sta temp_direction                       
                  and #1                                   ; set .Z if sweep up or oscillate
@@ -44,7 +44,7 @@ _local_1114_10   stx sound_voice
 
                  jsr optwrd                               ; get optional step, default is zero
                  plp                                      ; get flags from direction
-                 beq _local_1114_75                       ; branch if 'up' or oscillate
+                 beq l115_3                               ; branch if 'up' or oscillate
                  pha                                      ; if 'down', make step 2's complement
                  tya                                      
                  eor #$ff                                 
@@ -54,7 +54,7 @@ _local_1114_10   stx sound_voice
                  pla                                      
                  eor #$ff                                 
                  adc #0                                   
-_local_1114_75   sta temp_step_hi                         
+l115_3           sta temp_step_hi                         
                  tya                                      
                  sta temp_step_lo                         
 
@@ -63,7 +63,7 @@ _local_1114_75   sta temp_step_hi
                  ldx #2                                   ; get waveform. default is square (2)
                  jsr optbyt                               
                  cpx #4                                   
-                 bcs _local_1114_98                       ; illegal value
+                 bcs l115_1                               ; illegal value
                  lda sbits+4,x                            ; get bit pattern for selected waveform
                  ora #1                                   ; add in the gate bit
                  sta temp_waveform                        
@@ -71,11 +71,11 @@ _local_1114_75   sta temp_step_hi
 ; Get pulse width
 
                  jsr optwrd                               ; get optional pulse width in y,a
-                 bcs _local_1114_80                       
+                 bcs l115_4                               
                  lda #8                                   ; no arg's given, use default pulse width
                  ldy #0                                   
-_local_1114_80   cmp #16                                  
-                 bcs _local_1114_98                       
+l115_4           cmp #16                                  
+                 bcs l115_1                               
                  sty temp_pulse_lo                        
                  sta temp_pulse_hi                        
 
@@ -83,7 +83,7 @@ _local_1114_80   cmp #16
 
                  lda temp_time_lo                         
                  ora temp_time_hi                         
-                 beq _local_1114_100                      ; special case: time=0 means 'kill it NOW'
+                 beq l115_9                               ; special case: time=0 means 'kill it NOW'
 
 ; Wait for all current uses of this voice to time out
 
@@ -91,16 +91,16 @@ _local_1114_80   cmp #16
                  txa                                      ; make an index into PLAY's tables
                  asl                                      
                  tay                                      
-_local_1114_60   lda voices+1,y                           
-                 bpl _local_1114_60                       
+l115_5           lda voices+1,y                           
+                 bpl l115_5                               
 
-_local_1114_70   lda sound_time_hi,x                      ; now test 'SOUND'
-                 bpl _local_1114_70                       
+l115_6           lda sound_time_hi,x                      ; now test 'SOUND'
+                 bpl l115_6                               
 
 ; All clear, now set up for current effect
 
                  ldy #0                                   ; download max freq l&h, min freq l&h,
-_local_1114_90   lda temp_max_lo,y                        ; ..sweep direction, step value l&h, & freq l&h
+l115_7           lda temp_max_lo,y                        ; ..sweep direction, step value l&h, & freq l&h
                  sta sound_max_lo,x                       
                  inx                                      
                  inx                                      
@@ -110,7 +110,7 @@ _local_1114_90   lda temp_max_lo,y                        ; ..sweep direction, s
                  inx                                      
                  iny                                      
                  cpy #9                                   
-                 bcc _local_1114_90                       
+                 bcc l115_7                               
 
 ; Now set up SID
 
@@ -128,17 +128,17 @@ _local_1114_90   lda temp_max_lo,y                        ; ..sweep direction, s
                  sta sid1+6,y                             
 
                  ldx #0                                   ; set up freq (l&h), pulse width (l&h), & waveform
-_local_1114_95   lda temp_freq_lo,x                       
+l115_8           lda temp_freq_lo,x                       
                  sta sid1,y                               
                  iny                                      
                  inx                                      
                  cpx #5                                   
-                 bne _local_1114_95                       
+                 bne l115_8                               
 ; jsr go_fast  ;      [910716] 4567R7A
 
 ; Now set up time to play
 
-_local_1114_100  ldx sound_voice                          
+l115_9           ldx sound_voice                          
                  ldy temp_time_lo                         
                  lda temp_time_hi                         
 

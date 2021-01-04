@@ -27,7 +27,7 @@ inlpn2           iny
 inlpn1           lda curtol+1                             ; don't multiply if curtol=0
                  ora curtol                               
                  clc                                      ; prepare to get indice back
-                 beq _local_1128_10                       ; get high part of indice back
+                 beq l129_1                               ; get high part of indice back
                  jsr umult                                ; multiply (curtol) by (5&6,lowtr)
                  txa                                      
                  adc indice                               ; add in (indice)
@@ -35,20 +35,20 @@ inlpn1           lda curtol+1                             ; don't multiply if cu
                  tya                                      
                  ldy index1                               
 
-_local_1128_10   adc indice+1                             
+l129_1           adc indice+1                             
                  stx curtol                               
                  dec count                                ; any more?
                  bne inlpnm                               ; yes
                  sta curtol+1                             
                  ldx #5                                   
                  lda varnam                               
-                 bpl _local_1128_20                       
+                 bpl l129_2                               
                  dex                                      
-_local_1128_20   lda varnam+1                             
-                 bpl _local_1128_30                       
+l129_2           lda varnam+1                             
+                 bpl l129_3                               
                  dex                                      
                  dex                                      
-_local_1128_30   stx addend                               
+l129_3           stx addend                               
                  lda #0                                   
                  jsr umultd                               ; on rts, a & y = hi. x = lo.
                  txa                                      

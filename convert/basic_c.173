@@ -223,10 +223,10 @@ movfa            lda argsgn
 movfa1           sta facsgn                               
 
                  ldx #5                                   
-_local_1172_1    lda argexp-1,x                           
+l173_1           lda argexp-1,x                           
                  sta facexp-1,x                           
                  dex                                      
-                 bne _local_1172_1                        
+                 bne l173_1                               
                  stx facov                                
                  rts                                      
 

@@ -6,20 +6,20 @@ edit_load                                                 ; Called by DLOAD/DVER
                  lda #dsdesc+1                            
                  jsr lda_far_ram1                         ; lda (dsdesc+1),y peek at first character
                  cmp #'2'                                 
-                 +lbcs _local_1312_30                     ; exit if error
+                 +lbcs l313_12                            ; exit if error
                  jsr Clear_DS                             ; else zap 'ok' message so user gets fresh one
                  ldx dosla                                
                  jsr _chkin                               ; get input channel
-                 +lbcs _local_1312_30                     ; error
+                 +lbcs l313_12                            ; error
 
-                 bbs0 verck,_local_1312_1                 
+                 bbs0 verck,l313_1                        
                  jsr _primm                               
                  !text cr,"LOADING",0                     
-                 bra _local_1312_2                        
-_local_1312_1    jsr _primm                               
+                 bra l313_2                               
+l313_1           jsr _primm                               
                  !text cr,"VERIFYING",0                   
 
-_local_1312_2    lda #<1000                               ; default starting line #
+l313_2           lda #<1000                               ; default starting line #
                  ldx #>1000                               
                  sta linnum                               
                  stx linnum+1                             
@@ -29,17 +29,17 @@ _local_1312_2    lda #<1000                               ; default starting lin
                  sta index                                
                  stx index+1                              
 
-_local_1312_10   ldy #0                                   ; Input one line of text
+l313_3           ldy #0                                   ; Input one line of text
                  jsr _stop                                ; check stop key
-                 beq _local_1312_28                       ; exit if down
+                 beq l313_11                              ; exit if down
                  jsr _readst                              ; check channel status
-                 bne _local_1312_28                       ; exit if eof or error
+                 bne l313_11                              ; exit if eof or error
 
-                 bbr0 verck,_local_1312_15                
+                 bbr0 verck,l313_4                        
                  ldy #3                                   
-                 bra _local_1312_20                       ; skip ahead if verify op
+                 bra l313_5                               ; skip ahead if verify op
 
-_local_1312_15   lda #1                                   ; install fake line links for this line
+l313_4           lda #1                                   ; install fake line links for this line
                  jsr sta_far_in1                          
                  iny                                      ; 1
                  jsr sta_far_in1                          
@@ -53,51 +53,51 @@ _local_1312_15   lda #1                                   ; install fake line li
                  lda linnum                               ; generate next line number
                  adc #10                                  
                  sta linnum                               
-                 bcc _local_1312_20                       
+                 bcc l313_5                               
                  inc linnum+1                             
 
 ; .page
-_local_1312_20   iny                                      ; bump buffer pointer
+l313_5           iny                                      ; bump buffer pointer
                  cpy #buflen                              ; check buffer (160 max. input buffer size to edit)
-                 beq _local_1312_25                       ; split long lines into two????
+                 beq l313_8                               ; split long lines into two????
                  jsr _basin                               ; read file data
-                 beq _local_1312_25                       ; CR or null terminates line
+                 beq l313_8                               ; CR or null terminates line
                  cmp #cr                                  
-                 beq _local_1312_25                       
+                 beq l313_8                               
 ; cmp #$20  ;adjust invisible characters less than space
-; bcc _local_1312_21   ; ????make them appear in reverse field, but note
+; bcc l313_6   ; ????make them appear in reverse field, but note
 ; ora #$80  ; that these lines can't be edited without losing them.
 
-_local_1312_21   bbr0 verck,_local_1312_22                
+l313_6           bbr0 verck,l313_7                        
                  jsr indcmp_in1                           ; Compare to memory
-                 beq _local_1312_20                       ; ok
+                 beq l313_5                               ; ok
                  jsr list_exit                            
                  ldx #ervfy                               ; verify error
                  +lbra error                              
 
-_local_1312_22   jsr sta_far_in1                          ; Load into memory
-                 bra _local_1312_20                       ; loop until eol or error (kernel returns CR in case of error)
+l313_7           jsr sta_far_in1                          ; Load into memory
+                 bra l313_5                               ; loop until eol or error (kernel returns CR in case of error)
 
-_local_1312_25   bbs0 verck,_local_1312_26                
+l313_8           bbs0 verck,l313_9                        
                  lda #0                                   
                  jsr sta_far_in1                          ; terminate line with null (replaces CR)
-_local_1312_26   iny                                      
+l313_9           iny                                      
                  tya                                      
                  clc                                      
                  adc index                                
                  sta index                                
-                 bcc _local_1312_27                       
+                 bcc l313_10                              
                  inc index+1                              
-_local_1312_27   lda index+1                              
+l313_10          lda index+1                              
                  cmp max_mem_0+1                          ; out of memory????
-                 bcc _local_1312_10                       ; no, continue until eof
+                 bcc l313_3                               ; no, continue until eof
                  bsr edit_load_done                       ; yes, patch things up best we can
                  jsr list_exit                            ; close disk
                  +lbra omerr                              ; report error & exit
 
-_local_1312_28   bbs0 verck,_local_1312_30                
+l313_11          bbs0 verck,l313_12                       
                  jsr edit_load_done                       ; EOF: terminate memory with a pair of nulls
-_local_1312_30   +lbra list_exit                          ; release channel, close file, etc.
+l313_12          +lbra list_exit                          ; release channel, close file, etc.
 
 ; bbr0 verck,40$
 ; jsr verify_ok  ;if Verify, report 'ok'

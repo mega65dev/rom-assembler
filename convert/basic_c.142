@@ -1,43 +1,43 @@
 errd             jsr sign                                 ; get sign
-                 bmi _local_1141_1                        ; (allow err$(er) when er=-1)
+                 bmi l142_1                               ; (allow err$(er) when er=-1)
                  jsr conint                               ; get integer arg in x
                  dex                                      
                  txa                                      ; error # (0 to max-1)
                  cmp #last_error_message                  ; check range
-                 bcc _local_1141_2                        ; ok
+                 bcc l142_2                               ; ok
                  ldx #0                                   ; too high, return null
                  !text $2c                                
 
-_local_1141_1    ldx #2                                   ; no error, return "ok"    [910911]
+l142_1           ldx #2                                   ; no error, return "ok"    [910911]
                  lda #<ok_error_message                   
                  ldy #>ok_error_message                   
                  sta index2                               
                  sty index2+1                             
-                 bra _local_1141_30                       ; pass it
+                 bra l142_5                               ; pass it
 
-_local_1141_2    jsr erstup                               ; look up the error, set up a pointer to it
+l142_2           jsr erstup                               ; look up the error, set up a pointer to it
                  ldy #$ff                                 ; determine how long it is
                  ldx #0                                   
-_local_1141_10   inx                                      ; count printing characters
-_local_1141_20   iny                                      
+l142_3           inx                                      ; count printing characters
+l142_4           iny                                      
                  lda (index2),y                           ; (rom: ind.ok)
-                 bmi _local_1141_30                       ; msb set means last
+                 bmi l142_5                               ; msb set means last
                  cmp #' '                                 
-                 bcc _local_1141_20                       ; don't count non-printers
-                 bra _local_1141_10                       ; count all others
+                 bcc l142_4                               ; don't count non-printers
+                 bra l142_3                               ; count all others
 
-_local_1141_30   txa                                      ; message length
+l142_5           txa                                      ; message length
                  jsr strspa                               ; get space
                  tax                                      
-                 beq _local_1141_50                       ; null
+                 beq l142_7                               ; null
 
 ; sta sw_rom_ram1  ;set up string bank????
                  ldx #0                                   
                  ldy #$ff                                 
-_local_1141_40   iny                                      ; copy message into memory
+l142_6           iny                                      ; copy message into memory
                  lda (index2),y                           ; (rom: ind.ok)
                  cmp #' '                                 
-                 bcc _local_1141_40                       ; skip non-printers
+                 bcc l142_6                               ; skip non-printers
 
                  pha                                      
                  and #$7f                                 
@@ -51,9 +51,9 @@ _local_1141_40   iny                                      ; copy message into me
                  ply                                      
                  inx                                      
                  pla                                      ; test if msb was set
-                 bpl _local_1141_40                       
+                 bpl l142_6                               
 
-_local_1141_50   +lbra chrd1                              ; pla,pla,jmp putnew
+l142_7           +lbra chrd1                              ; pla,pla,jmp putnew
 
 
 ;.end

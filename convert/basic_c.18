@@ -23,14 +23,14 @@ isfun            cmp #esc_function_token                  ; is this an escape fu
                  cmp #last_function_token+1               
                  bcs snerr1                               ; no- must be syntax error
                  cmp #mid_token+1                         
-                 bcc _local_1017_1                        ; no need to adjust
+                 bcc l18_1                                ; no need to adjust
                  sbc #rgraphic_token-mid_token-1          
 
-_local_1017_1    pha                                      ; save token
+l18_1            pha                                      ; save token
                  tax                                      
                  jsr chrget                               ; set up for synchk.
                  cpx #instr_token-1                       ; look for (adjusted) instr token
-                 beq _local_1017_2                        ; yes
+                 beq l18_2                                ; yes
                  cpx #rgraphic_token-1                    ; look for rgraphic which now takes 2 args [910801]
                  +lbeq rgraphic                           ; yes
 
@@ -52,7 +52,7 @@ _local_1017_1    pha                                      ; save token
 ; description of the string argument is stored on the stack underneath the
 ; value of the integer argument.
 
-_local_1017_2    jsr chkopn                               ; check for an open parenthesis
+l18_2            jsr chkopn                               ; check for an open parenthesis
                  jsr frmevl                               ; eat open paren and first argument
                  jsr chkcom                               ; two args so comma must delimit
                  jsr chkstr                               ; make sure first was string

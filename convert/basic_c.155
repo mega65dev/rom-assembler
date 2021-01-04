@@ -37,11 +37,11 @@ len1             jsr frestr                               ; free up string
 ; decimal equivalent of the PETSCII string argument.
 
 asc              jsr len1                                 
-                 beq _local_1154_1                        ; it was null (zero length)
+                 beq l155_1                               ; it was null (zero length)
                  ldy #0                                   
                  jsr indin1_ram1                          ; get 1st character
                  tay                                      
-_local_1154_1    +lbra sngflt                             
+l155_1           +lbra sngflt                             
 
 ;.end
 ; .page

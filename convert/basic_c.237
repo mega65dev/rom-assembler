@@ -27,7 +27,7 @@ nxxx             cmp #','
 
 parse2           jsr chrget                               
 pars22           cmp #'D'                                 
-                 beq _local_1236_10                       
+                 beq l237_1                               
                  cmp #on_token                            ; "on" token
                  beq on2                                  
                  cmp #'U'                                 
@@ -37,7 +37,7 @@ pars22           cmp #'D'
                  cmp #'('                                 
                  beq name2                                
 
-_local_1236_10   lda #$20                                 
+l237_1           lda #$20                                 
                  jsr prmrpt                               ; check for repeated parameter
                  jsr gtbytc                               ; getval
                  cpx #10                                  

@@ -27,10 +27,10 @@ szer             jsr cmo                                  ; zero in no?
 ; Using- chout: print number
 
 chout            lda dolr                                 ; dollar flag set?
-                 bmi _local_1207_10                       ; no...
+                 bmi l208_1                               ; no...
                  inc z_p_temp_1                           ; make room for $
 
-_local_1207_10   ldx bnr                                  ; start of #
+l208_1           ldx bnr                                  ; start of #
                  dex                                      
                  ldy begfd                                ; begin of field
 

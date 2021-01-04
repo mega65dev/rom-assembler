@@ -135,24 +135,24 @@ ptrgt2           sta varnam
                  stx valtyp                               ; default is numeric
                  stx intflg                               ; assume floating
                  jsr chrget                               ; get following character
-                 bcc _local_1118_10                       ; branch if numeric
+                 bcc l119_1                               ; branch if numeric
                  jsr isletc                               ; is it alpha?
-                 bcc _local_1118_30                       ; no, no second character. branch
-_local_1118_10   tax                                      ; issec. save second character of name
+                 bcc l119_3                               ; no, no second character. branch
+l119_1           tax                                      ; issec. save second character of name
 
-_local_1118_20   jsr chrget                               ; skip over remainder of name. we only care about 2 chars.
-                 bcc _local_1118_20                       ; ..eat numbers,
+l119_2           jsr chrget                               ; skip over remainder of name. we only care about 2 chars.
+                 bcc l119_2                               ; ..eat numbers,
                  jsr isletc                               
-                 bcs _local_1118_20                       ; ..and alphas, too!
+                 bcs l119_2                               ; ..and alphas, too!
 
-_local_1118_30   cmp #'$'                                 ; nosec. is this a string?
-                 bne _local_1118_40                       ; if not, VALTYP = 0
+l119_3           cmp #'$'                                 ; nosec. is this a string?
+                 bne l119_4                               ; if not, VALTYP = 0
                  lda #$ff                                 
                  sta valtyp                               ; ..else, flag 'string'
-                 bra _local_1118_50                       
+                 bra l119_5                               
 
-_local_1118_40   cmp #'%'                                 ; notstr. isn't string. is it integer?
-                 bne _local_1118_60                       ; branch if not
+l119_4           cmp #'%'                                 ; notstr. isn't string. is it integer?
+                 bne l119_6                               ; branch if not
                  lda subflg                               
 ; bne snerr ; syntax error if integers disabled
                  +lbne chkerr                             ; integers disallowed- type mismatch error  [910114]
@@ -160,12 +160,12 @@ _local_1118_40   cmp #'%'                                 ; notstr. isn't string
                  sta intflg                               
                  tsb varnam                               
 
-_local_1118_50   txa                                      ; turnon. turn on msb of second character
+l119_5           txa                                      ; turnon. turn on msb of second character
                  ora #$80                                 
                  tax                                      
                  jsr chrget                               ; get character after $ or %
 
-_local_1118_60   stx varnam+1                             ; strnam. store away second character
+l119_6           stx varnam+1                             ; strnam. store away second character
                  sec                                      
                  ora subflg                               ; add flag whether to allow arrays
                  sbc #'('                                 
@@ -176,28 +176,28 @@ _local_1118_60   stx varnam+1                             ; strnam. store away s
                  lda vartab                               ; place to start search
                  ldx vartab+1                             
 
-_local_1118_70   stx lowtr+1                              ; stxfnd.
-_local_1118_80   sta lowtr                                
+l119_7           stx lowtr+1                              ; stxfnd.
+l119_8           sta lowtr                                
                  cpx arytab+1                             ; at end of table yet?
-                 bne _local_1118_90                       
+                 bne l119_9                               
                  cmp arytab                               
                  beq notfns                               ; yes, we couldn't find it
 
-_local_1118_90   jsr indlow_ram1                          ; lda (lowtr),y
+l119_9           jsr indlow_ram1                          ; lda (lowtr),y
                  cmp varnam                               ; compare high orders
-                 bne _local_1118_100                      
+                 bne l119_10                              
                  iny                                      
                  jsr indlow_ram1                          
                  cmp varnam+1                             ; and the low part?
                  +lbeq finptr                             ; !!that's it!!
 
                  dey                                      
-_local_1118_100  clc                                      
+l119_10          clc                                      
                  lda lowtr                                
                  adc #7                                   ; makes no difference among types
-                 bcc _local_1118_80                       
+                 bcc l119_8                               
                  inx                                      
-                 bra _local_1118_70                       ; branch always
+                 bra l119_7                               ; branch always
 
 
 

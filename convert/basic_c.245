@@ -1,6 +1,6 @@
 Clear_DS                                                  ; oldclr.
                  lda dsdesc                               ; check for allocation
-                 beq _local_1244_10                       ; branch if not allocated
+                 beq l245_1                               ; branch if not allocated
 
                  phy                                      ; mark current DS$ string as garbage
                  phx                                      
@@ -16,7 +16,7 @@ Clear_DS                                                  ; oldclr.
                  plx                                      
                  ply                                      
 
-_local_1244_10   rts                                      
+l245_1           rts                                      
 
 ; .page
 ; Read DOS error message, but don't care what it is.  Want to stop disk LED blink.

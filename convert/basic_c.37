@@ -1,7 +1,7 @@
-p1line           bbr4 runmod,_local_1036_10               ; [910620]
+p1line           bbr4 runmod,l37_1                        ; [910620]
                  +lbra edit_p1line                        ; handle things differently for plain text
 
-_local_1036_10   ldy #3                                   
+l37_1            ldy #3                                   
                  sty lstpnt                               
                  sty dores                                ; reset quote-switch
                  jsr linprt                               ; print line number

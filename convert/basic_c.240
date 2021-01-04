@@ -217,11 +217,11 @@ rsca             lda dossa_temp                           ; secondary address (r
                  bra sdp5                                 ; always
 
 
-rfat             bbr7 parsts,_local_1239_10               ; if "@" not encountered
+rfat             bbr7 parsts,l240_1                       ; if "@" not encountered
                  lda #'@'                                 
                  bra sdp5                                 ; always
 
-_local_1239_10   lda dosflags                             
+l240_1           lda dosflags                             
                  lsr                                      
                  bcc sdp1                                 ; if "/" not encountered
                  lda #'/'                                 

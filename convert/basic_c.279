@@ -9,12 +9,12 @@ loadiff
                  ldy #fopn                                
                  ldx #4                                   
                  jsr open_file                            ; open the file
-                 bcs _local_1278_10                       ; exit if error
+                 bcs l279_1                               ; exit if error
 
                  ldx dosla                                
 ; stx GKI__parm1
                  jsr _chkin                               ; get input channel
-_local_1278_10   +lbcs list_err                           ; exit if error
+l279_1           +lbcs list_err                           ; exit if error
 
                  jsr ($802a)                              ; Load it
 

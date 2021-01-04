@@ -3,7 +3,7 @@ notfns           tsx                                      ; check who's calling?
                  cmp #>pointer_ret                        
                  beq ldzr                                 ; special case if called by pointer function
 
-_local_1120_20   = isvret-1                               
-                 cmp #>_local_1120_20                     ; is eval calling????
+l121_1           = isvret-1                               
+                 cmp #>l121_1                             ; is eval calling????
                  bne notevl                               ; no, carry on
 

@@ -38,16 +38,16 @@ TimeMultiply
                  sta product+2                            ; hi
 
                  ldy #16                                  ; 16-bit multiplicand
-_local_1134_10   asl                                      
+l135_1           asl                                      
                  row product+1                            
                  row multiplicand                         ; multiplier * multiplicand -> product
-                 bcc _local_1134_20                       
+                 bcc l135_2                               
                  clc                                      
                  adc time,x                               
-                 bcc _local_1134_20                       
+                 bcc l135_2                               
                  inw product+1                            ; (does no error check, since using time factors
-_local_1134_20   dey                                      ; in ROM and maximum time multiplier of 59 there
-                 bne _local_1134_10                       ; is no danger of overflow)
+l135_2           dey                                      ; in ROM and maximum time multiplier of 59 there
+                 bne l135_1                               ; is no danger of overflow)
 
 ; sta product
                  rts                                      ; (.X is preserved)

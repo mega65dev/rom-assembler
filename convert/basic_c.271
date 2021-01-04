@@ -1,21 +1,21 @@
 C65__setpalette                                           
                  cmp #restore_token                       ; restore palette?
-                 bne _local_1270_10                       ; no
+                 bne l271_1                               ; no
                  jsr chrget                               ; yes- advance past Restore token
                  jmp _palette_init                        
 
-_local_1270_10   cmp #color_token                         ; set physical color register?
-                 bne _local_1270_20                       ; no- set logical color register
+l271_1           cmp #color_token                         ; set physical color register?
+                 bne l271_2                               ; no- set logical color register
                  sta GKI__parm1                           
                  jsr chrget                               ; yes- advance past Color token
                  jsr getbyt                               
-                 bra _local_1270_30                       
+                 bra l271_3                               
 
-_local_1270_20   jsr getbyt                               ; get screen#
+l271_2           jsr getbyt                               ; get screen#
                  cpx #4                                   ; [910711]
                  +lbcs fcerr                              
                  stx GKI__parm1                           
 
                  jsr combyt                               ; get color reg #
-_local_1270_30   stx GKI__parm2                           ; (GKI will check for out of range????)
+l271_3           stx GKI__parm2                           ; (GKI will check for out of range????)
 

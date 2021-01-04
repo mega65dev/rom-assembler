@@ -41,21 +41,21 @@ snrjmp           +lbra snerr
 
 fndend           jsr chrget                               
 
-fnd010           beq _local_1095_20                       ; end of statement
+fnd010           beq l96_2                                ; end of statement
                  cmp #loop_token                          
                  +lbeq data                               ; a hit!  read to end of statement, rts
                  cmp #'"'                                 ; quote
-                 beq _local_1095_10                       
+                 beq l96_1                                
                  cmp #do_token                            
                  bne fndend                               ; keep looking
                  jsr fndend                               ; recursivly
                  bra dono                                 ; do a chrgot, go to fnd010
 
 
-_local_1095_10   jsr un_quote                             ; look for terminating quote, or end of statement
+l96_1            jsr un_quote                             ; look for terminating quote, or end of statement
                  bne fndend                               ; character after quote wasn't terminator, keep going
 
-_local_1095_20   cmp #':'                                 ; end of line or end of stmt?
+l96_2            cmp #':'                                 ; end of line or end of stmt?
                  beq fndend                               ; just stmt, keep going
                  bbr7 runmod,fnderr                       ; if direct mode, not found error
                  ldy #2                                   

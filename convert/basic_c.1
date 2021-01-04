@@ -158,21 +158,21 @@ init_storage
 
                  lda #sprite_base/64+7                    
                  ldy #7                                   
-_local_1000_10   bbr7 _mode,_local_1000_20                
+l1_1             bbr7 _mode,l1_2                          
                  sta sprite_ptrs_40,y                     ; 40 col screen
-                 bra _local_1000_30                       
-_local_1000_20   sta sprite_ptrs_80,y                     ; 80 col screen
-_local_1000_30   dec                                      
+                 bra l1_3                                 
+l1_2             sta sprite_ptrs_80,y                     ; 80 col screen
+l1_3             dec                                      
                  dey                                      
-                 bpl _local_1000_10                       
+                 bpl l1_1                                 
 
 ; Zero out sprite movement stuff and some VIC stuff too
 
                  lda #0                                   
                  ldx #init_as_0                           
-_local_1000_40   sta sprite_data,x                        
+l1_4             sta sprite_data,x                        
                  dex                                      
-                 bpl _local_1000_40                       
+                 bpl l1_4                                 
 
                  jsr init_sound_sprites                   ; init misc. interrupt & dma stuff
 

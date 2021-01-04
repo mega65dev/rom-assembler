@@ -50,8 +50,8 @@ insy             cpy hulp                                 ; end of no reached?
 
 lsg              lda fbuffr,y                             
                  cmp #'-'                                 ; sign of exponent negative
-                 bne _local_1200_10                       ; no...
+                 bne l201_1                               ; no...
                  ror usgn                                 ; make sign negative
-_local_1200_10   iny                                      
+l201_1           iny                                      
                  sty uexp                                 ; set exponent pointer
 

@@ -1,7 +1,7 @@
 datlop           jsr datan                                ; skip some text
                  iny                                      
                  tax                                      ; end of line?
-                 bne _local_1060_10                       ; no
+                 bne l61_1                                ; no
                  ldx #errod                               ; yes, "no data" error
                  iny                                      
                  jsr indtxt                               
@@ -15,7 +15,7 @@ datlop           jsr datan                                ; skip some text
                  iny                                      
                  sta datlin+1                             
 
-_local_1060_10   jsr addon                                ; nowlin.  txtptr+.y
+l61_1            jsr addon                                ; nowlin.  txtptr+.y
                  jsr chrgot                               ; span blanks
                  tax                                      ; used later
                  cpx #data_token                          ; is it a DATA statement?

@@ -4,10 +4,10 @@ puctrl           jsr frmstr                               ; do frmevl,frestr. re
                  cpy #4                                   
                  +lbcs fcerr                              ; len > 4 is illegal value error
 
-_local_1090_1    jsr indin1_ram1                          ; lda (index),y
+l91_1            jsr indin1_ram1                          ; lda (index),y
                  sta puchrs,y                             
                  dey                                      
-                 bpl _local_1090_1                        
+                 bpl l91_1                                
                  rts                                      
 
 ;.end

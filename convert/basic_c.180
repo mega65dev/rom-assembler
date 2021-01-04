@@ -8,14 +8,14 @@ fin_chrget_2
                  ldy #0                                   
                  jsr indin1_ram1                          
                  cmp #':'                                 
-                 bcs _local_1179_10                       
+                 bcs l180_1                               
                  cmp #' '                                 
                  beq fin_chrget_1                         ; skip over spaces
                  sec                                      
                  sbc #'0'                                 ; set up .c as CHRGET would
                  sec                                      
                  sbc #$d0                                 
-_local_1179_10   rts                                      
+l180_1           rts                                      
 
 ;.end
 ; .page

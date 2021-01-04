@@ -72,10 +72,10 @@ Read_DS_1
 Read_DS_2                                                 
                  ldx dosfa                                ; fa
                  cpx #2                                   
-                 bcs _local_1243_10                       ; if =0 or 1 use default  [910429]
+                 bcs l244_1                               ; if =0 or 1 use default  [910429]
                  ldx _default_drive                       ; (was dosffn)   [900710]
                  stx dosfa                                
-_local_1243_10   lda #doslfn                              ; la (reserved la)
+l244_1           lda #doslfn                              ; la (reserved la)
                  ldy #$6f                                 ; sa (command channel)
                  jsr _setlfs                              
                  lda #0                                   ; no name (so no setbank)
@@ -83,19 +83,19 @@ _local_1243_10   lda #doslfn                              ; la (reserved la)
                  jsr _open                                ; get command channel
                  ldx #doslfn                              
                  jsr _chkin                               
-                 bcs _local_1243_40                       ; a problem (file already open??)
+                 bcs l244_4                               ; a problem (file already open??)
 
                  ldy #$ff                                 
-_local_1243_20   iny                                      ; read disk error message
+l244_2           iny                                      ; read disk error message
                  jsr _basin                               
                  cmp #cr                                  
-                 beq _local_1243_30                       ; if eol
+                 beq l244_3                               ; if eol
                  ldx #dsdesc+1                            
                  jsr sta_far_ram1                         ; sta (dsdesc+1),y copy to DS$
                  cpy #40                                  
-                 bcc _local_1243_20                       ; loop unless too long
+                 bcc l244_2                               ; loop unless too long
 
-_local_1243_30   lda #0                                   ; errend.
+l244_3           lda #0                                   ; errend.
                  ldx #dsdesc+1                            ; terminate DS$ with a null
                  jsr sta_far_ram1                         ; sta (dsdesc+1),y
 
@@ -104,8 +104,8 @@ _local_1243_30   lda #0                                   ; errend.
                  sec                                      ; not a real close
                  jmp _close                               ; close it and rts
 
-_local_1243_40   pha                                      ; errbad.
-                 jsr _local_1243_30                       
+l244_4           pha                                      ; errbad.
+                 jsr l244_3                               
                  jsr Clear_DS                             ; flag 'no DS available'
                  plx                                      ; get error
                  +lbra error                              

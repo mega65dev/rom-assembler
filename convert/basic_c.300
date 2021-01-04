@@ -4,18 +4,18 @@ rpalette
 
                  jsr conint                               ; get screen# in .x
                  cpx #4                                   
-                 bcs _local_1299_10                       ; illegal screen#
+                 bcs l300_1                               ; illegal screen#
                  stx GKI__parm1                           
 
                  jsr combyt                               ; get color# in .x ????check for legal color#
                  stx GKI__parm2                           
 
                  jsr ($8034)                              ; get RGB components of color# in PARM3,4,5
-                 bcs _local_1299_10                       ; something is wrong????
+                 bcs l300_1                               ; something is wrong????
 
                  jsr combyt                               ; get r,g,b component#
                  cpx #3                                   
-_local_1299_10   +lbcs fcerr                              ; illegal value
+l300_1           +lbcs fcerr                              ; illegal value
 
                  ldy GKI__parm3,x                         ; get r,g,b value
                  jsr sngflt                               ; float 1 byte arg in .y

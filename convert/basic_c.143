@@ -24,9 +24,9 @@ hexit            pha
 
 dohex            and #$0f                                 
                  cmp #$0a                                 
-                 bcc _local_1142_1                        
+                 bcc l143_1                               
                  adc #6                                   
-_local_1142_1    adc #'0'                                 
+l143_1           adc #'0'                                 
                  phx                                      
                  ldx #dsctmp+1                            
                  jsr sta_far_ram1                         ; sta (dsctmp+1),y

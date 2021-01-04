@@ -54,10 +54,10 @@ varok            lda arytab
                  sty hightr+1                             
                  clc                                      
                  adc #7                                   
-                 bcc _local_1121_10                       ; not even
+                 bcc l122_1                               ; not even
                  iny                                      
 
-_local_1121_10   sta highds                               
+l122_1           sta highds                               
                  sty highds+1                             
                  jsr bltu                                 
                  lda highds                               

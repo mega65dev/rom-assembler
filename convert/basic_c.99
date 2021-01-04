@@ -4,20 +4,20 @@ lsloop           lda _pky_buffer,y                        ; print key definition
                  phx                                      ; save position in output string
 
                  ldx #4                                   ; check for special (non-printable) characters
-_local_1098_50   cmp keychr-1,x                           
+l99_1            cmp keychr-1,x                           
                  beq list_special                         ; yes, display it as 'CHR$(...)'
                  dex                                      
-                 bne _local_1098_50                       
+                 bne l99_1                                
 
                  plx                                      ; restore position
                  cpx #8                                   
-                 bcc _local_1098_60                       ; 1st time thru- display leading quote
-                 bne _local_1098_70                       ; previous was a character- no additions needed
+                 bcc l99_2                                ; 1st time thru- display leading quote
+                 bne l99_3                                ; previous was a character- no additions needed
                  lda #'+'                                 ; add since previous was quote or return
                  jsr _bsout                               
-_local_1098_60   lda #'"'                                 
+l99_2            lda #'"'                                 
                  jsr _bsout                               ; add leading quote
-_local_1098_70   pla                                      ; restore character
+l99_3            pla                                      ; restore character
                  jsr _bsout                               ; display it
                  ldx #9                                   ; mark normal character
 

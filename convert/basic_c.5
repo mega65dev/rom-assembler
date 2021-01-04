@@ -4,12 +4,12 @@ chrgot           ldy #0                                   ; re-get current chara
 qnum             cmp #' '                                 
                  beq chrget                               ; skip spaces
 chrtst           cmp #':'                                 ; [910513]
-                 bcs _local_1004_10                       ; eol
+                 bcs l5_1                                 ; eol
                  sec                                      
                  sbc #'0'                                 ; alpha or numeric?
                  sec                                      
                  sbc #$d0                                 
-_local_1004_10   rts                                      
+l5_1             rts                                      
 
 
 ;.end

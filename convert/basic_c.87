@@ -10,23 +10,23 @@ find_loop
 find_loop_1                                               
                  ldy #1                                   
                  jsr indlow                               ; check link
-                 bne _local_1086_10                       ; not null- continue
+                 bne l87_1                                ; not null- continue
                  dey                                      
                  jsr indlow                               
                  +lbeq find_exit                          ; null- exit
 
-_local_1086_10   ldy #2                                   
+l87_1            ldy #2                                   
                  jsr indlow                               ; check line number
                  tax                                      
                  iny                                      
                  jsr indlow                               
                  cmp linnum+1                             
-                 bne _local_1086_20                       
+                 bne l87_2                                
                  cpx linnum                               
-                 beq _local_1086_30                       ; line is <= last line requested, continue
-_local_1086_20   +lbcs find_exit                          ; line is >  last line requested, exit
+                 beq l87_3                                ; line is <= last line requested, continue
+l87_2            +lbcs find_exit                          ; line is >  last line requested, exit
 
-_local_1086_30   ldx #3                                   ; set initial position - 1 (past link & line#)
+l87_3            ldx #3                                   ; set initial position - 1 (past link & line#)
                  stx fndpnt                               
 
 ; .page

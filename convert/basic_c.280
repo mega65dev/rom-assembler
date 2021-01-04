@@ -29,12 +29,12 @@ saveiff
                  ldy #fopn                                
                  ldx #4                                   
                  jsr open_file                            ; open the file
-                 bcs _local_1279_10                       ; exit if error
+                 bcs l280_1                               ; exit if error
 
                  ldx dosla                                
 ; stx GKI__parm1
                  jsr _chkout                              ; get output channel
-_local_1279_10   +lbcs list_err                           ; exit if error
+l280_1           +lbcs list_err                           ; exit if error
 
                  jsr ($803a)                              ; Save it
                  bra exit_GKI_disk_op                     

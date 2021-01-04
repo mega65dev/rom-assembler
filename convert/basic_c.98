@@ -10,10 +10,10 @@ lstky1           inx                                      ; get key number = 1-1
 
                  phy                                      
                  ldx #3                                   
-_local_1097_20   lda preamb,x                             ; print key preamble:
+l98_1            lda preamb,x                             ; print key preamble:
                  jsr _bsout                               
                  dex                                      ; 'KEY '
-                 bpl _local_1097_20                       
+                 bpl l98_1                                
                  ldx z_p_temp_1                           ; key number
                  lda #0                                   
                  jsr linprt                               

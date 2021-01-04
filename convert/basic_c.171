@@ -180,8 +180,8 @@ mltply           +lbeq mulshf                             ; normalize result and
 mltpl1           lsr                                      
                  ora #$80                                 ; will flag end of shifting
 
-_local_1170_10   tay                                      
-                 bcc _local_1170_20                       ; if mult bit=0, just shift
+l171_1           tay                                      
+                 bcc l171_2                               ; if mult bit=0, just shift
                  clc                                      
                  lda reslo                                
                  adc arglo                                
@@ -196,12 +196,12 @@ _local_1170_10   tay
                  adc argho                                
                  sta resho                                
 
-_local_1170_20   ror resho                                
+l171_2           ror resho                                
                  ror resmoh                               
                  ror resmo                                
                  ror reslo                                
                  ror facov                                ; save for rounding
                  tya                                      
                  lsr                                      ; clear msb so we get a closer to 0
-                 bne _local_1170_10                       ; slow as a turtle
+                 bne l171_1                               ; slow as a turtle
 

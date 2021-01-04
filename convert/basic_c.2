@@ -76,16 +76,16 @@ init_sound_sprites                                          ; [910523]
 
                  lda #0                                   ; [910523] F018A
                  ldx #12+12-1                             ; init DMA lists
-_local_1001_40   sta dma1_cmd,x                           
+l2_1             sta dma1_cmd,x                           
                  dex                                      
-                 bpl _local_1001_40                       
+                 bpl l2_1                                 
 
 ; stop_sprites   ;Stop all moving sprites (a=0)   [910523]
                  ldy #7                                   ; for sprites 0...7
-_local_1001_50   ldx sproff,y                             ; get table offset
+l2_2             ldx sproff,y                             ; get table offset
                  sta sprite_data,x                        ; reset speed for this sprite
                  dey                                      
-                 bpl _local_1001_50                       ; loop until done
+                 bpl l2_2                                 ; loop until done
 
                  sta vic+21                               ; Turn off all sprites    [910717]
 

@@ -14,9 +14,9 @@ gfor             jsr ansub
                  tax                                      ; save char
 
 sfur             jsr ansub                                ; get next format char
-                 bcs _local_1211_10                       ; stop on wrap-around
+                 bcs l212_1                               ; stop on wrap-around
                  jsr com1                                 ; compare specials
                  beq foun1                                ; found some...
 
-_local_1211_10   ldy begfd                                
+l212_1           ldy begfd                                
                  txa                                      

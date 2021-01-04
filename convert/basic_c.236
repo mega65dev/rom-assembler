@@ -30,11 +30,11 @@ name1            lda #1                                   ; name1 allowed only o
                  sta dosf1l                               
 
                  ldy #0                                   
-_local_1235_10   jsr indin1_ram1                          
+l236_1           jsr indin1_ram1                          
                  sta savram,y                             ; copy name into buffer
                  iny                                      
                  cpy dosf1l                               
-                 bcc _local_1235_10                       ; ...copy all of it
+                 bcc l236_1                               ; ...copy all of it
                  lda #1                                   ; set name1 flag
 
 

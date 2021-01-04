@@ -39,11 +39,11 @@ aryvgo           sta index1
 
 aryget           ldx index1+1                             
                  cpx arypnt+1                             ; done with this array?
-                 bne _local_1122_10                       
+                 bne l123_1                               
                  cmp arypnt                               
                  beq aryva3                               ; yes
 
-_local_1122_10   ldy #0                                   ; process string pointer
+l123_1           ldy #0                                   ; process string pointer
                  jsr indin1_ram1                          ; get length of string
                  beq dvarts                               ; skip if null string
                  sta syntmp                               

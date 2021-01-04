@@ -26,20 +26,20 @@ poly1            jsr mov2f                                ; save FAC (rounds, .y
                  lda polypt                               
                  ldy polypt+1                             
 
-_local_1184_10   jsr rommlt                               
+l185_1           jsr rommlt                               
                  lda polypt                               ; get current pointer
                  ldy polypt+1                             
                  clc                                      
                  adc #5                                   
-                 bcc _local_1184_20                       
+                 bcc l185_2                               
                  iny                                      
-_local_1184_20   sta polypt                               
+l185_2           sta polypt                               
                  sty polypt+1                             
                  jsr romadd                               ; add in constant
                  lda #<tempf2                             ; multiply the original FAC
                  ldy #>tempf2                             
                  dec degree                               ; done?
-                 bne _local_1184_10                       
+                 bne l185_1                               
                  rts                                      ; yes
 
 ;.end

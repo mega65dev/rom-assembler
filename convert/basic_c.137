@@ -2,24 +2,24 @@ wait             jsr getnum                               ; get required mask1
                  stx andmsk                               
                  ldx #0                                   
                  jsr chrgot                               
-                 beq _local_1136_10                       
+                 beq l137_1                               
                  jsr combyt                               ; get optional mask2
-_local_1136_10   stx eormsk                               
+l137_1           stx eormsk                               
 
                  phz                                      
                  ldz current_bank                         ; set up bank number for fetch
                  ldx #poker                               ; ..and address
                  ldy #0                                   ; ..and index
 
-_local_1136_15   bit current_bank                         
-                 bmi _local_1136_20                       ; NOMAP?
+l137_2           bit current_bank                         
+                 bmi l137_3                               ; NOMAP?
                  jsr _lda_far                             ; lda (poker),y
                  !text $2c                                
 
-_local_1136_20   lda (poker),y                            
+l137_3           lda (poker),y                            
                  eor eormsk                               
                  and andmsk                               
-                 beq _local_1136_15                       
+                 beq l137_2                               
                  plz                                      
                  rts                                      ; got a nonzero
 

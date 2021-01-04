@@ -113,11 +113,11 @@ basic_nmi                                                 ; removed [910826]
 
 graphic                                                   
                  cmp #clr_token                           ; GRAPHIC CLR (graphic system initialize)
-                 bne _local_1316_10                       ; no
+                 bne l317_1                               ; no
                  jsr chrget                               ; yes advance past token
                  jmp ($8000)                              ; go initialize graphic kernel
 
-_local_1316_10                                            
+l317_1                                                    
 ; tax
 ; bmi snerr  ;Syntax error if any other secondary token
 ;

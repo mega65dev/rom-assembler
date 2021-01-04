@@ -48,9 +48,9 @@ collision
                  lda intval                               ; this records valid interrupts
                  ora sbits,x                              ; set correct bit
 ; plp
-                 bcs _local_1296_10                       ; ..unless this is a 'clear',
+                 bcs l297_1                               ; ..unless this is a 'clear',
                  eor sbits,x                              ; ..in which case we'll reset bit
-_local_1296_10   sta intval                               
+l297_1           sta intval                               
                  rts                                      
 
 ;.end

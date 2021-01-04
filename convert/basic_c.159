@@ -1,9 +1,9 @@
 mvdone           clc                                      ; update frespc pointer
                  adc frespc                               
                  sta frespc                               
-                 bcc _local_1158_10                       
+                 bcc l159_1                               
                  inc frespc+1                             
-_local_1158_10   rts                                      
+l159_1           rts                                      
 
 ; .page
 ; FRETMP is passed a string descriptor pntr in (a,y).  A check is made to see

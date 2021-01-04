@@ -1,14 +1,14 @@
 cursor           cmp #on_token                            ; Check for ON | OFF
                  clc                                      
-                 beq _local_1260_20                       ; turn cursor on (.c=0)
+                 beq l261_3                               ; turn cursor on (.c=0)
                  cmp #esc_command_token                   
-                 bne _local_1260_1                        ; (might be a function)
+                 bne l261_1                               ; (might be a function)
                  jsr chkesc                               
                  cmp #off_token                           ; turn cursor off (.c=1)
-                 beq _local_1260_20                       
+                 beq l261_3                               
                  +lbra snerr                              
 
-_local_1260_1    pha                                      ; Evaluate cursor position parameters
+l261_1           pha                                      ; Evaluate cursor position parameters
                  sec                                      
                  jsr _plot                                ; get current cursor position & save it
                  stx srow                                 
@@ -17,9 +17,9 @@ _local_1260_1    pha                                      ; Evaluate cursor posi
                  ldx column                               ; get new column, default=current column
                  pla                                      
                  cmp #','                                 
-                 beq _local_1260_10                       ; not given, use default
+                 beq l261_2                               ; not given, use default
                  jsr getbyt                               
-_local_1260_10   stx column                               
+l261_2           stx column                               
                  ldx srow                                 ; get new row, default=current row
                  jsr optbyt                               
 ; stx srow
@@ -29,7 +29,7 @@ _local_1260_10   stx column
                  +lbcs fcerr                              ; error if bad position
 
                  jsr optzer                               ; Get new cursor type   ???? assumes screen output
-                 bcc _local_1260_30                       ; not given, exit
+                 bcc l261_4                               ; not given, exit
                  lda #esc                                 
                  jsr _bsout                               ; use escape sequence to set
                  txa                                      
@@ -39,14 +39,14 @@ _local_1260_10   stx column
                  adc #'E'                                 ; 0=F=flash, 1=E=solid
                  jmp _bsout                               ; set it and exit
 
-_local_1260_20   jsr _cursor                              ; Turn cursor ON or OFF per .c
+l261_3           jsr _cursor                              ; Turn cursor ON or OFF per .c
 
                  jsr chrget                               ; eat token, get next character
-                 beq _local_1260_30                       ; eol- exit
+                 beq l261_4                               ; eol- exit
                  jsr chkcom                               ; else, must be comma
-                 bra _local_1260_1                        ; it is- go evaluate position
+                 bra l261_1                               ; it is- go evaluate position
 
-_local_1260_30   rts                                      ; eol
+l261_4           rts                                      ; eol
 
 ; .page
 ;************************************************************************

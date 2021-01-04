@@ -21,12 +21,12 @@ inloop           jsr ptrget                               ; get a pointer to the
                  sty forpnt+1                             
 
                  ldx #1                                   
-_local_1056_1    lda txtptr,x                             ; move variable list pointer to 'vartxt'
+l57_1            lda txtptr,x                             ; move variable list pointer to 'vartxt'
                  sta vartxt,x                             
                  lda inpptr,x                             ; move data line pointer to 'txtptr'
                  sta txtptr,x                             
                  dex                                      
-                 bpl _local_1056_1                        
+                 bpl l57_1                                
 
                  jsr chrgot                               ; get first data byte
                  bne datbk1                               ; not null, so we got something
@@ -34,15 +34,15 @@ _local_1056_1    lda txtptr,x                             ; move variable list p
                  bvc qdata                                ; branch if READ or INPUT
                  lda z_p_temp_1                           ; GET or GETKEY?
                  cmp #key_token                           
-                 bne _local_1056_3                        ; branch if GET
+                 bne l57_3                                ; branch if GET
 
-_local_1056_2    jsr cgetl                                ; GETKEY
+l57_2            jsr cgetl                                ; GETKEY
                  tax                                      ; test if null
-                 beq _local_1056_2                        ; it is null, keep scanning
-                 bne _local_1056_4                        ; got a key, go put it in var
+                 beq l57_2                                ; it is null, keep scanning
+                 bne l57_4                                ; got a key, go put it in var
 
-_local_1056_3    jsr cgetl                                ; get a key if pressed, otherwise gets a zero
-_local_1056_4    sta buf                                  
+l57_3            jsr cgetl                                ; get a key if pressed, otherwise gets a zero
+l57_4            sta buf                                  
                  ldx #<buf_txtptr                         
                  ldy #>buf_txtptr                         
                  bra datbk                                

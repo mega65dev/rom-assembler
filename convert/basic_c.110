@@ -1,6 +1,6 @@
 play_command                                              
                  cmp #'M'                                 ; measure?
-                 beq _local_1109_10                       
+                 beq l110_1                               
 
                  lda rbits,x                              ; all others, set flag for next number
                  sta flag                                 
@@ -8,20 +8,20 @@ play_command
 
 ; Wait for msb of all 3 voice counters to underflow
 
-;_local_1109_10 ldy #5
-;_local_1109_20 lda voices,y
-; bpl _local_1109_20
+;l110_1 ldy #5
+;l110_2 lda voices,y
+; bpl l110_2
 ; dey
 ; dey
-; bpl _local_1109_20
+; bpl l110_2
 ; rts
 
-_local_1109_10   ldy #5                                   ; [910626]
-_local_1109_20   ldx times2,y                             
-_local_1109_30   bit voices+1,x                           ; wait for voice to be inactive (IRQ)
-                 bpl _local_1109_30                       
+l110_1           ldy #5                                   ; [910626]
+l110_2           ldx times2,y                             
+l110_3           bit voices+1,x                           ; wait for voice to be inactive (IRQ)
+                 bpl l110_3                               
                  dey                                      ; next voice
-                 bpl _local_1109_20                       ; until done 6 voices
+                 bpl l110_2                               ; until done 6 voices
                  rts                                      
 
 

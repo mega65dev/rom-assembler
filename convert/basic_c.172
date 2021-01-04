@@ -72,12 +72,12 @@ muldiv
 mldexp           beq zeremv                               ; so we get zero exponent
                  clc                                      
                  adc facexp                               ; result is in (a)
-                 bcc _local_1171_10                       ; find (c) xor (n)
+                 bcc l172_1                               ; find (c) xor (n)
                  +lbmi overr                              ; overflow if bits match
                  clc                                      
                  !text $2c                                
 
-_local_1171_10   bpl zeremv                               ; underflow
+l172_1           bpl zeremv                               ; underflow
                  adc #$80                                 ; add bias
                  sta facexp                               
                  +lbeq zeroml                             ; zero the rest of it

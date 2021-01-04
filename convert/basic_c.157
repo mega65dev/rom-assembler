@@ -5,11 +5,11 @@ strlit_1                                                  ; //// entry from SPRS
                  pha                                      ; save length
                  phx                                      
                  ldx #frespc                              
-_local_1156_10   dey                                      
+l157_1           dey                                      
                  jsr indst1                               ; lda (strng1),y in bank 0
                  jsr sta_far_ram1                         ; sta (frespc),y in bank 1
                  tya                                      
-                 bne _local_1156_10                       
+                 bne l157_1                               
                  plx                                      
                  pla                                      ; restore length
                  jsr mvdone                               ; finish up by updating frespc

@@ -1,21 +1,21 @@
 movspr_line                                               
                  ldx #ypos-vwork                          
                  ldy #ydest-vwork                         
-_local_1290_10   lda #0                                   
+l291_1           lda #0                                   
                  sta xsgn,x                               ; init direction pointers
                  sta xsgn+1,x                             
                  jsr abstwo                               ; get absolute value of coordinate differences
-                 bpl _local_1290_20                       ; and determine direction
+                 bpl l291_2                               ; and determine direction
                  dec xsgn,x                               ; negative direction
                  dec xsgn+1,x                             
-                 bra _local_1290_40                       
+                 bra l291_4                               
 
-_local_1290_20   cmp #0                                   
-                 bne _local_1290_30                       
+l291_2           cmp #0                                   
+                 bne l291_3                               
                  cpy #0                                   
-                 beq _local_1290_40                       ; zero direction
-_local_1290_30   inc xsgn,x                               ; positive direction
-_local_1290_40   sta xabs,x                               
+                 beq l291_4                               ; zero direction
+l291_3           inc xsgn,x                               ; positive direction
+l291_4           sta xabs,x                               
                  asl                                      
                  sta fct,x                                ; fct(x,y) = 2*abs(x,y)
                  tya                                      
@@ -26,7 +26,7 @@ _local_1290_40   sta xabs,x
                  dex                                      
                  ldy #xdest-vwork                         ; loop to do in x-direction
                  cpx #xpos-vwork                          
-                 beq _local_1290_10                       
+                 beq l291_1                               
 
                  ldx #yabs-savram                         ; determine max(xabs,yabs)
                  ldy #xabs-savram                         
@@ -100,12 +100,12 @@ _local_1290_40   sta xabs,x
                  ror                                      
                  sta sprite_data+3,x                      
                  ldy #0                                   ; set f1, f2, and e
-_local_1290_50   lda fct,y                                
+l291_5           lda fct,y                                
                  sta sprite_data+5,x                      
                  inx                                      
                  iny                                      
                  cpy #6                                   
-                 bcc _local_1290_50                       
+                 bcc l291_5                               
 
                  cli                                      
                  rts                                      ; done!

@@ -33,11 +33,11 @@ delimit_string                                            ; command is in buffer
                  lda #$ff                                 ; set string length
                  sta fstr1+2,x                            
 
-_local_1089_10   inc fstr1+2,x                            
+l90_1            inc fstr1+2,x                            
                  jsr chargt                               ; build string
                  +lbeq snerr                              ; error if eol encountered inside string
                  cmp match                                
-                 bne _local_1089_10                       ; continue until matching delimiter found
+                 bne l90_1                                ; continue until matching delimiter found
                  rts                                      
 
 ;.end

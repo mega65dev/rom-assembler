@@ -61,12 +61,12 @@ close_out_1
                  pha                                      
                  lda _fa                                  ; special error checking if disk op
                  cmp #8                                   
-                 bcc _local_1194_10                       
+                 bcc l195_1                               
                  pla                                      
                  plp                                      
                  +lbra exit_disk_operation                ; disk
 
-_local_1194_10   pla                                      ; something else
+l195_1           pla                                      ; something else
                  plp                                      
                  +lbcs erexit                             
                  rts                                      

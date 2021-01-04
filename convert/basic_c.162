@@ -35,10 +35,10 @@ garbag           lda garbfl
 
 
 garba2           ldx temppt                               ; ptr to temp. strings
-_local_1161_10   cpx #tempst                              ; any out there?
-                 beq _local_1161_20                       ; none
+l162_1           cpx #tempst                              ; any out there?
+                 beq l162_2                               ; none
                  jsr slr1                                 ; setup ptr (tempf2) to temp. string's bkptr
-                 beq _local_1161_10                       ; (skip if null string!)
+                 beq l162_1                               ; (skip if null string!)
                  txa                                      ; .x = lsb of ptr to descriptor
                  phx                                      ; set up string bank
                  ldx #tempf2                              
@@ -48,10 +48,10 @@ _local_1161_10   cpx #tempst                              ; any out there?
                  iny                                      
                  jsr sta_far_ram1                         ; (tempf2),y
                  plx                                      
-                 bra _local_1161_10                       ; always
+                 bra l162_1                               ; always
 
 
-_local_1161_20   ldy #0                                   ; set up flag
+l162_2           ldy #0                                   ; set up flag
                  sty highds                               
                  ldx max_mem_1                            
                  ldy max_mem_1+1                          

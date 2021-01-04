@@ -15,20 +15,20 @@ delete_line
                  stx index1+1                             
 
                  jsr FindLine                             ; find ending line
-                 bcc _local_1082_20                       ; branch if not found
+                 bcc l83_2                                ; branch if not found
                  ldy #1                                   
                  jsr indlow                               ; if eot, use this ptr.  else, need ptr to next
                  dey                                      
                  tax                                      ; save it in case of swap
-                 bne _local_1082_10                       ; branch if not eot (end-of-text)
+                 bne l83_1                                ; branch if not eot (end-of-text)
                  jsr indlow                               
-                 beq _local_1082_20                       ; branch if eot (null link bytes)
+                 beq l83_2                                ; branch if eot (null link bytes)
 
-_local_1082_10   jsr indlow                               
+l83_1            jsr indlow                               
                  sta lowtr                                ; (source)
                  stx lowtr+1                              
 
-_local_1082_20   lda lowtr                                ; check that start <= end
+l83_2            lda lowtr                                ; check that start <= end
                  sec                                      
                  sbc index1                               ; calculate delta
                  sta count                                ; (count)

@@ -17,7 +17,7 @@ C65__paint                                                ; new [910228] FAB
                  jsr optbyt                               ; boundary color, default = 0
                  stx GKI__parm6                           
 
-_local_1277_10   jsr garba2                               ; create space in var bank for paint stack [910716]
+l278_1           jsr garba2                               ; create space in var bank for paint stack [910716]
                  lda strend                               
                  sta GKI__parm7                           ; pass pointer to bottom of bank-1 free space
                  lda strend+1                             ; (top of stack)
@@ -31,10 +31,10 @@ _local_1277_10   jsr garba2                               ; create space in var 
                  sta GKI__parm10                          
 
                  jsr ($802e)                              ; bra paint
-                 bcs _local_1277_20                       ; error- stack overflow or stop key
+                 bcs l278_2                               ; error- stack overflow or stop key
                  rts                                      
 
-_local_1277_20   cpx #errom                               
+l278_2           cpx #errom                               
                  +lbeq error                              ; stack overflow, say 'out of memory'
                  +lbra break_exit                         ; user hit stop key
 

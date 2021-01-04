@@ -4,10 +4,10 @@ not_quote
                  bpl next_char                            ; not a token...
 
                  ldx #8                                   ; check special token list
-_local_1075_30   cmp testwd-1,x                           
+l76_1            cmp testwd-1,x                           
                  beq iline_10                             ; a match...
                  dex                                      
-                 bne _local_1075_30                       ; continue until zero
+                 bne l76_1                                ; continue until zero
 
                  cmp #go_token                            ; wasn't in the token list. check for 'go to'
                  bne chk_escape                           ; not 'go', go check for 'collision' *c128 fix*

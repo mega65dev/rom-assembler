@@ -44,7 +44,7 @@ AutoScrollup                                              ; wanting to scroll up
                  tax                                      
                  jsr AutoSearch                           ; search for a line number on screen, put it in linnum
                  jsr FindLine                             ; find the line in program
-                 bcc _local_1262_10   ;  line not found   ; we have a pointer to the next line
+                 bcc l263_1   ;  line not found           ; we have a pointer to the next line
                  ldy #0                                   
                  jsr indlow                               ; find the next line, the one we want to print, via link bytes
                  tax                                      
@@ -52,11 +52,11 @@ AutoScrollup                                              ; wanting to scroll up
                  jsr indlow                               
                  stx lowtr                                ; advance pointer to it
                  sta lowtr+1                              
-_local_1262_10   ldx form+1                               ; put cursor back at bottom of screen
+l263_1           ldx form+1                               ; put cursor back at bottom of screen
                  ldy #0                                   
                  clc                                      
                  jsr _plot                                
-_local_1262_20   jsr crdo                                 ; get a blank line to print on- scroll screen up
+l263_2           jsr crdo                                 ; get a blank line to print on- scroll screen up
                  ldy #1                                   
                  jsr indlow                               ; end of program marker?
                  bne AutoScrollprint                      ; no-  print this line & exit
@@ -65,6 +65,6 @@ _local_1262_20   jsr crdo                                 ; get a blank line to 
                  sta lowtr                                
                  stx lowtr+1                              
                  jsr crdo                                 ; and add an extra newline
-                 bra _local_1262_20                       
+                 bra l263_2                               
 
 ; .page

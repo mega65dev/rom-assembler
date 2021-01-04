@@ -3,11 +3,11 @@ PopParms                                                  ; [910820]
                  plz                                      
 
                  ldx #0                                   
-_local_1301_10   pla                                      ; Restore Graphics parameters
+l302_1           pla                                      ; Restore Graphics parameters
                  sta GKI__parm1,x                         
                  inx                                      
                  cpx #17                                  
-                 bcc _local_1301_10                       
+                 bcc l302_1                               
 
                  pla                                      ; Restore 'poker' value
                  sta linnum+1                             

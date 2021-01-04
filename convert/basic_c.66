@@ -12,11 +12,11 @@ midwrk           =midd2-1
                  stx hulp                                 ; store    " "
 
                  cmp #')'                                 ; finished?
-                 beq _local_1065_10                       ; branch if so (use default length)
+                 beq l66_1                                ; branch if so (use default length)
                  jsr combyt                               ; ..else get length
                  !text $2c                                
 
-_local_1065_10   ldx #$ff                                 ; default length
+l66_1            ldx #$ff                                 ; default length
                  stx z_p_temp_1                           
                  jsr chkcls                               ; look for ')'
                  lda #equal_token                         ; look for '='
@@ -25,13 +25,13 @@ _local_1065_10   ldx #$ff                                 ; default length
                  jsr chkstr                               ; nothing funny
 
                  ldy #2                                   ; get string descriptors
-_local_1065_20   lda #forpnt                              ; target
+l66_2            lda #forpnt                              ; target
                  jsr lda_far_ram1                         ; lda (forpnt),y
                  sta str1,y                               
                  jsr indfmo                               ; source
                  sta str2,y                               
                  dey                                      
-                 bpl _local_1065_20                       
+                 bpl l66_2                                
 
 ; Test for target string in text was removed-  all strings are copied to
 ; string RAM when they are created.
@@ -40,24 +40,24 @@ _local_1065_20   lda #forpnt                              ; target
                  lda str2+1                               ; ..index can load & save
                  sbc hulp                                 
                  sta str2+1                               
-                 bcs _local_1065_30                       
+                 bcs l66_3                                
                  dec str2+2                               
 
-_local_1065_30   lda z_p_temp_1                           ; get specified length (or default)
+l66_3            lda z_p_temp_1                           ; get specified length (or default)
                  cmp str2                                 ; compare with length of source
-                 bcc _local_1065_40                       ; ok if less,
+                 bcc l66_4                                ; ok if less,
                  lda str2                                 ; ..else use length of source
-_local_1065_40   tax                                      
-                 beq _local_1065_80                       ; done if length=0
+l66_4            tax                                      
+                 beq l66_7                                ; done if length=0
                  clc                                      
                  adc hulp                                 ; add length to starting posn.
                  +lbcs fcerr                              ; illegal quantity error if > 256
                  cmp str1                                 
-                 bcc _local_1065_60                       
+                 bcc l66_5                                
                  +lbne fcerr                              ; ...or if > target length
 
-_local_1065_60   ldy hulp                                 ; get adjusted starting address
-_local_1065_70   phx                                      
+l66_5            ldy hulp                                 ; get adjusted starting address
+l66_6            phx                                      
                  ldx #str1+1                              
                  lda #str2+1                              
                  jsr lda_far_ram1                         ; fetch from string bank
@@ -65,9 +65,9 @@ _local_1065_70   phx
                  iny                                      
                  plx                                      
                  dex                                      
-                 bne _local_1065_70                       ; keep going for specified length
+                 bne l66_6                                ; keep going for specified length
 
-_local_1065_80   +lbra frefac                             ; free up temp. string, rts
+l66_7            +lbra frefac                             ; free up temp. string, rts
 
 ;.end
 

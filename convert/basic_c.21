@@ -27,17 +27,17 @@ nerror           txa
                  bbr7 runmod,errisd                       ; branch if direct mode- always display error
 
                  ldy #1                                   ; copy curlin to errlin, oldtxt to errtxt
-_local_1020_10   lda curlin,y                             
+l21_1            lda curlin,y                             
                  sta errlin,y                             ; line# where error occurred
                  lda oldtxt,y                             
                  sta errtxt,y                             ; statement where error occured
                  dey                                      
-                 bpl _local_1020_10                       
+                 bpl l21_1                                
                  inc errtxt                               ; point to a token, not ':' for HELP
-                 bne _local_1020_20                       
+                 bne l21_2                                
                  inc errtxt+1                             
 
-_local_1020_20   ldy trapno+1                             ; is trap set?
+l21_2            ldy trapno+1                             ; is trap set?
                  cpy #$ff                                 
                  beq errisd                               ; no
                  sty linnum+1                             

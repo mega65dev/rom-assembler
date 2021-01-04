@@ -161,23 +161,23 @@ C65__polygon                                              ; changed BASIC syntax
 
                  jsr combyt                               ; get number of sides
                  cpx #3                                   
-                 bcc _local_1273_20                       ; too few
+                 bcc l274_2                               ; too few
                  cpx #128                                 
-_local_1273_10   +lbcs fcerr                              ; too many
+l274_1           +lbcs fcerr                              ; too many
                  stx GKI__parm13                          
 
 ; ldx GKI__parm13  ;get number of sides to draw (default=#sides)
                  jsr optbyt                               
                  cpx #1                                   ; must be at least 1 side
-_local_1273_20   +lbcc fcerr                              
+l274_2           +lbcc fcerr                              
                  stx GKI__parm12                          
                  dex                                      
                  cpx GKI__parm13                          ; draw sides must be <= #sides
-                 bcs _local_1273_10                       
+                 bcs l274_1                               
 
                  jsr optzer                               ; get subtend flag
 ; cpx #2
-; bcs _local_1273_10
+; bcs l274_1
                  stx GKI__parm14                          
 
                  jsr optwrd                               ; get starting angle (default=0 degrees)
@@ -186,7 +186,7 @@ _local_1273_20   +lbcc fcerr
 
                  jsr optzer                               ; get solid flag
 ; cpx #2
-; bcs _local_1273_10
+; bcs l274_1
                  stx GKI__parm9                           
 
                  jmp ($801e)                              ; bra polygon

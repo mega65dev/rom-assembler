@@ -29,17 +29,17 @@ tryag2           tax                                      ; save in x also
                  sec                                      ; for subtract
                  sbc #2                                   ; minus 2 (link bytes)
                  ldy fretop+1                             
-                 bcs _local_1160_10                       
+                 bcs l161_1                               
                  dey                                      
-_local_1160_10   sta index1                               ; save for later
+l161_1           sta index1                               ; save for later
                  sty index1+1                             
                  txa                                      
                  eor #$ff                                 
                  sec                                      
                  adc index1                               
-                 bcs _local_1160_20                       
+                 bcs l161_2                               
                  dey                                      
-_local_1160_20   cpy strend+1                             
+l161_2           cpy strend+1                             
                  bcc garbag                               
                  bne strfre                               
                  cmp strend                               

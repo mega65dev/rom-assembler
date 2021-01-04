@@ -15,7 +15,7 @@ set_palette
                  stx GKI__parm5                           
 
                  lda GKI__parm1                           ; logical or physical color register?
-                 bpl _local_1271_40                       ; logical
+                 bpl l272_1                               ; logical
                  ldx GKI__parm2                           
                  lda GKI__parm3                           ; physical
                  sta _red,x                               
@@ -23,12 +23,12 @@ set_palette
                  sta _green,x                             
                  lda GKI__parm5                           
                  sta _blue,x                              
-                 bra _local_1271_50                       
+                 bra l272_2                               
 
-_local_1271_40   jsr ($8012)                              ; go set screen palette
+l272_1           jsr ($8012)                              ; go set screen palette
                  +lbcs NoGraphicArea                      ; illegal screen# or color#  [910917]
 
-_local_1271_50   jsr optbyt                               ; get another color reg # ?
+l272_2           jsr optbyt                               ; get another color reg # ?
                  stx GKI__parm2                           
                  bcs set_palette                          ; yes- loop
                  rts                                      

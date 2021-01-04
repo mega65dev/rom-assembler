@@ -3,15 +3,15 @@ getstk           eor #$ff                                 ; make value 2's comp.
                  adc tos                                  
                  sta tos                                  
                  ldy tos+1                                
-                 bcs _local_1029_10                       
+                 bcs l30_1                                
                  dey                                      
-_local_1029_10   sty tos+1                                
+l30_1            sty tos+1                                
                  cpy #>stktop                             
                  +lbcc omerr                              
-                 bne _local_1029_20                       
+                 bne l30_2                                
                  cmp tos                                  
                  +lbcc omerr                              
-_local_1029_20   rts                                      
+l30_2            rts                                      
 
 ; .page
 ; (a,y) is a certain address.  REASON makes sure it is less than (fretop).

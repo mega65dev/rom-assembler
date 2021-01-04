@@ -16,12 +16,12 @@ rescnt           ldx #errcr
 ; .subttl  DO  LOOP  UNTIL  WHILE  EXIT
 
 do               ldy #1                                   
-_local_1094_1    lda txtptr,y                             ; save current pointers for stack entry
+l95_1            lda txtptr,y                             ; save current pointers for stack entry
                  sta tmptxt,y                             
                  lda curlin,y                             
                  sta tmplin,y                             
                  dey                                      
-                 bpl _local_1094_1                        
+                 bpl l95_1                                
 
                  jsr chrgot                               ; look for 'while' or 'until'
                  beq doyes                                ; unconditional

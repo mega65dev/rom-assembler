@@ -5,12 +5,12 @@ ready_1
                  trb runmod                               ; turn run modes off, leave trace mode on????
 
 ready_2                                                   
-                 bbs4 runmod,_local_1023_10               ; print appropriate system prompt
+                 bbs4 runmod,l24_1                        ; print appropriate system prompt
                  jsr _primm                               ; Program mode: print 'ready.'
                  !text cr,"READY.",cr,0                   
                  bra main                                 
 
-_local_1023_10   jsr _primm                               ; Edit mode: print 'ok.'
+l24_1            jsr _primm                               ; Edit mode: print 'ok.'
                  !text cr,"OK.",cr,0                      
 
 

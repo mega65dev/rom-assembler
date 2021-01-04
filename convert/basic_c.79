@@ -1,25 +1,25 @@
 p3code                                                    
                  inx                                      
                  lda fbuffr+1,x                           ; get character from number
-                 beq _local_1078_30                       ; end of number
+                 beq l79_3                                ; end of number
 
                  pha                                      ; save digit from new number
                  jsr chargt                               ; get digit from old number
                  cmp #':'                                 ; command terminator or letter?
-                 bcs _local_1078_10                       
+                 bcs l79_1                                
                  cmp #' '                                 ; space? (fix for goto10 :rem)
-                 beq _local_1078_10                       
+                 beq l79_1                                
                  sec                                      
                  sbc #'0'                                 ; number?
                  sec                                      
                  sbc #$d0                                 
-                 bcc _local_1078_20                       ; digit...move on
+                 bcc l79_2                                ; digit...move on
 
-_local_1078_10   jsr move_init                            ; other char...move up
+l79_1            jsr move_init                            ; other char...move up
                  jsr moveup                               
                  inw text_top                             
 
-_local_1078_20   pla                                      
+l79_2            pla                                      
                  phx                                      
                  ldy #0                                   
                  jsr sta_far_txt                          ; put new digit in new number (bleed-thru)
@@ -27,14 +27,14 @@ _local_1078_20   pla
                  bra p3code                               
 
 
-_local_1078_30   jsr chrget                               
+l79_3            jsr chrget                               
                  bcs iline_20                             ; old stuff after # is other char
 
-_local_1078_40   jsr move_init                            ; digit...move down
+l79_4            jsr move_init                            ; digit...move down
                  jsr movedown                             
                  dew text_top                             
                  jsr chrgot                               
-                 bcc _local_1078_40                       ; still digits...
+                 bcc l79_4                                ; still digits...
 
                  bra iline_20                             ; branch always
 

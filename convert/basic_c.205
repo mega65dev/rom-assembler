@@ -23,14 +23,14 @@ tag3             lda fbuffr,x                             ; get digit of exp
 
 ansub            clc                                      
                  iny                                      ; begin format?
-                 beq _local_1204_10                       ; yes...
+                 beq l205_1                               ; yes...
                  cpy lfor                                 ; end?
-                 bcc _local_1204_20                       ; no...
+                 bcc l205_2                               ; no...
 
-_local_1204_10   ldy z_p_temp_1                           ; <>0?
+l205_1           ldy z_p_temp_1                           ; <>0?
                  bne retrn                                ; yes...
 
-_local_1204_20   jsr indfrm                               
+l205_2           jsr indfrm                               
                  inc cform                                ; pointer to field
                  rts                                      
 

@@ -64,21 +64,21 @@ reclen           tax                                      ; save char
                  lda #$40                                 
                  jsr prmrpt                               ; check for repeated parameter
                  cpx #'W'                                 
-                 bne _local_1233_10                       
+                 bne l234_1                               
                  jsr chrget                               
-                 bra _local_1233_20                       ; set parsts
+                 bra l234_4                               ; set parsts
 
-_local_1233_10   ldx #1                                   ; a kludge to allow  DOPEN#lf,"relfile",L  [911024]
+l234_1           ldx #1                                   ; a kludge to allow  DOPEN#lf,"relfile",L  [911024]
                  jsr chrget                               
-                 beq _local_1233_12                       ; eol? open existing rel file
+                 beq l234_2                               ; eol? open existing rel file
                  jsr getbyt                               ; get reclen (was getval)
-_local_1233_12   stx dosrcl                               ; store parcel
+l234_2           stx dosrcl                               ; store parcel
                  txa                                      ; cpx #0
-                 beq _local_1233_15                       ; zero illegal dosrcl
+                 beq l234_3                               ; zero illegal dosrcl
                  inx                                      ; cpx #255
-_local_1233_15   +lbeq fcerr                              ; illegal dosrcl
+l234_3           +lbeq fcerr                              ; illegal dosrcl
 
-_local_1233_20   lda #$40                                 ; set dosrcl flag &
+l234_4           lda #$40                                 ; set dosrcl flag &
                  +lbra del1                               
 
 

@@ -67,14 +67,14 @@ exit_disk_operation
                  jsr print_dos_error                      ; print DOS error msg if any only in direct mode
                  pla                                      
                  plp                                      
-                 bcc _local_1191_30                       ; branch if no error (rts)
-                 bbs7 runmod,_local_1191_20               ; branch if run mode (erexit)
+                 bcc l192_3                               ; branch if no error (rts)
+                 bbs7 runmod,l192_2                       ; branch if run mode (erexit)
                  cmp #errfnf                              ; is it 'file not found' catch-all?
-                 bne _local_1191_10                       ; no  (erexit)
+                 bne l192_1                               ; no  (erexit)
                  sta errnum                               ; yes- save error # for 'er'
                  ora #$80                                 ; but no errdis
-_local_1191_10   sec                                      
-_local_1191_20   bcs erexit                               ; exit if kernel problem (rts)
-_local_1191_30   rts                                      
+l192_1           sec                                      
+l192_2           bcs erexit                               ; exit if kernel problem (rts)
+l192_3           rts                                      
 
 ; .page

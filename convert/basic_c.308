@@ -1,17 +1,17 @@
 incor2                                                    ; enter here for optional argument
                  jsr chrgot                               ; end of line?
-                 beq _local_1307_10                       ; yes, use defaults
+                 beq l308_1                               ; yes, use defaults
                  jsr chkcom                               
                  cmp #','                                 ; is there really an arg?
                  bne incord                               ; yes, let'er rip
 
-_local_1307_10   ldy #0                                   ; set default pos = current pos
-_local_1307_20   lda xpos,y                               
+l308_1           ldy #0                                   ; set default pos = current pos
+l308_2           lda xpos,y                               
                  sta vwork,x                              
                  inx                                      
                  iny                                      
                  cpy #4                                   
-                 bcc _local_1307_20                       
+                 bcc l308_2                               
                  rts                                      
 
 ; .page

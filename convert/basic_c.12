@@ -2,13 +2,13 @@ xeqcm            jmp (igone)
 
 ; Check if there is an interrupt from VIC that needs to be serviced
 
-ngone            bbr7 runmod,_local_1011_30               ; get off here if we are in direct mode
+ngone            bbr7 runmod,l12_3                        ; get off here if we are in direct mode
                  lda intval                               ; check if there is an interrupt already in progress
-                 bmi _local_1011_30                       ; yes, don't go any further
+                 bmi l12_3                                ; yes, don't go any further
 
                  ldx #2                                   ; check for 3 types of interrupts: s/s, s/b, & lp
-_local_1011_10   lda int_trip_flag,x                      
-                 beq _local_1011_20                       ; this wasn't set, go check next
+l12_1            lda int_trip_flag,x                      
+                 beq l12_2                                ; this wasn't set, go check next
 
                  lda #0                                   
                  sta int_trip_flag,x                      ; reset this flag to show 'serviced'
@@ -34,8 +34,8 @@ _local_1011_10   lda int_trip_flag,x
                  sta txtptr                               
                  plx                                      
 
-_local_1011_20   dex                                      
-                 bpl _local_1011_10                       
+l12_2            dex                                      
+                 bpl l12_1                                
 
 
-_local_1011_30   jsr chrget                               ; get statement type
+l12_3            jsr chrget                               ; get statement type

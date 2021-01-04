@@ -5,7 +5,7 @@ normal           ldy #0
                  tya                                      
                  clc                                      
 
-_local_1168_10   ldx facho                                
+l169_1           ldx facho                                
                  bne norm1                                
                  ldx facho+1                              ; shift 8 bits at a time for speed
                  stx facho                                
@@ -18,5 +18,5 @@ _local_1168_10   ldx facho
                  sty facov                                
                  adc #8                                   
                  cmp #32                                  
-                 bne _local_1168_10                       
+                 bne l169_1                               
 

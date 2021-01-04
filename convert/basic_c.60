@@ -7,38 +7,38 @@ ott              lda oldtxt
 
 
 trmok            ldx #1                                   
-_local_1059_1    lda txtptr,x                             
+l60_1            lda txtptr,x                             
                  sta inpptr,x                             ; save for more reads
                  lda vartxt,x                             
                  sta txtptr,x                             ; point to variable list
                  dex                                      
-                 bpl _local_1059_1                        
+                 bpl l60_1                                
 
                  jsr chrgot                               ; look at last vartab character
-                 beq _local_1059_2                        ; that's the end of the list
+                 beq l60_2                                ; that's the end of the list
                  jsr chkcom                               ; not end. check for comma
                  +lbra inloop                             
 
-_local_1059_2    lda inpptr                               ; put away a new data pntr name
+l60_2            lda inpptr                               ; put away a new data pntr name
                  ldy inpptr+1                             
-                 bbr7 input_flag,_local_1059_3            
+                 bbr7 input_flag,l60_3                    
                  sta datptr                               
                  sty datptr+1                             
                  rts                                      
 
-_local_1059_3    ldy #0                                   ; last data chr could have been ',' or ':' but should be null
+l60_3            ldy #0                                   ; last data chr could have been ',' or ':' but should be null
                  lda #inpptr                              
                  jsr lda_far_ram0                         
-                 beq _local_1059_4                        ; it is null
+                 beq l60_4                                ; it is null
                  lda channl                               ; if not terminal, no type
-                 bne _local_1059_4                        
+                 bne l60_4                                
 
                  jsr highlight_text                       ; [911119]
                  jsr _primm                               
                  !text "?EXTRA IGNORED", cr,0             
                  jsr highlight_done                       ; [911119]
 
-_local_1059_4    rts                                      ; do next statement
+l60_4            rts                                      ; do next statement
 
 ; .page
 ; DATLOP Routine Subroutine to find data.

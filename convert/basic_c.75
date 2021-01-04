@@ -76,9 +76,9 @@ next_char
 chk_quote                                                 
                  cmp #'"'                                 ; opening double quote?
                  bne not_quote                            ; no...
-_local_1074_20   jsr chargt                               ; scan line
+l75_1            jsr chargt                               ; scan line
                  beq next_line                            ; end...
                  cmp #'"'                                 ; close double quote
-                 bne _local_1074_20                       ; no... continue
+                 bne l75_1                                ; no... continue
                  bra next_char                            ; yes... resume renumber
 
