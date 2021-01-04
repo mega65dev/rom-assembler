@@ -4,7 +4,7 @@ nodel            jsr init_stack                           ; 'clearc' removed sin
  ;; @@2fc7 26
                  ldy #0                                    ;; @@2fc7 26
                  lda (txtptr),y                           ; delete line? ("common") ;; @@2fc9 26
-                 beq main                                 ; yes ;; @@2fcb 26
+                 +lbeq main                               ; yes ;; @@2fcb 26
  ;; @@2fce 26
 _local_1025_5    clc                                      ; no...something to insert ;; @@2fce 26
                  ldy text_top+1                            ;; @@2fcf 26
@@ -23,9 +23,9 @@ _local_1025_2    sta highds                               ; destination of top ;
                  sty highds+1                              ;; @@2fe4 26
                  cpy max_mem_0+1                          ; make sure new top doesn't crash into top of available ram ;; @@2fe6 26
                  bcc _local_1025_4                        ; ok ;; @@2fe9 26
-                 bne omerr                                ; out of memory, don't insert ;; @@2feb 26
+                 +lbne omerr                              ; out of memory, don't insert ;; @@2feb 26
                  cmp max_mem_0                             ;; @@2fee 26
-                 bcs omerr                                ; out of memory, don't insert ;; @@2ff1 26
+                 +lbcs omerr                              ; out of memory, don't insert ;; @@2ff1 26
  ;; @@2ff4 26
 _local_1025_4    sta text_top                             ; set new top of text ;; @@2ff4 26
                  sty text_top+1                            ;; @@2ff6 26
@@ -183,7 +183,7 @@ _local_1025_110  lda #29                                  ; cursor right ;; @@30
                  stx _ndx                                  ;; @@30b3 26
                  cli                                      ; [910710] ;; @@30b5 26
  ;; @@30b6 26
-_local_1025_120  bra main                                  ;; @@30b6 26
+_local_1025_120  +lbra main                                ;; @@30b6 26
  ;; @@30b9 26
  ;; @@30b9 26
 ; .page ;; @@30b9 26

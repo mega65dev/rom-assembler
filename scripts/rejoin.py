@@ -10,11 +10,12 @@
 # ***************************************************************************************************************
 
 print("Rebuilding source file")
-srcFiles = [ "basic_c.header" ]
+srcFiles = [ "convert/basic_c.header" ]
+srcFiles.append("patches/patch.asm")
 for i in range(1,319):
-	srcFiles.append("basic_c."+str(i))
+	srcFiles.append("convert/basic_c."+str(i))
 tgt = open("tmp/basic.asm","w")
 for f in srcFiles:
-	for l in open("convert/"+f).readlines():
+	for l in open(f).readlines():
 		tgt.write(l.rstrip()+"\n")
 tgt.close()

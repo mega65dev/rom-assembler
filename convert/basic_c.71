@@ -2,13 +2,13 @@ gosub            bbs4 runmod,edit_err                     ; [910620] ;; @@3cec 7
                  jsr gosub_sub                             ;; @@3cef 71
                  jsr chrgot                               ; get character and set carry for linget ;; @@3cf2 71
                  jsr goto                                  ;; @@3cf5 71
-                 bra newstt                                ;; @@3cf8 71
+                 +lbra newstt                              ;; @@3cf8 71
  ;; @@3cfb 71
 ; .page ;; @@3cfb 71
 goto             bbs4 runmod,edit_err                     ; [910620] ;; @@3cfb 71
                  jsr linget                               ; pick up the line number in LINNUM ;; @@3cfe 71
                  lda endchr                               ; test if linget found any number ;; @@3d01 71
-                 beq snerr                                ; no number error ;; @@3d03 71
+                 +lbeq snerr                              ; no number error ;; @@3d03 71
  ;; @@3d06 71
 goto_1           jsr remn                                 ; jump to end of line (entry for interrupt code) ;; @@3d06 71
                  sec                                       ;; @@3d09 71
@@ -30,7 +30,7 @@ luk4it           lda txttab                                ;; @@3d1f 71
                  ldx txttab+1                              ;; @@3d21 71
  ;; @@3d23 71
 lukall           jsr FindLink                             ; (a,x) are all set up ;; @@3d23 71
-                 bcc userr                                ; undefined statement error ;; @@3d26 71
+                 +lbcc userr                              ; undefined statement error ;; @@3d26 71
                  lda lowtr                                 ;; @@3d29 71
                  sbc #1                                    ;; @@3d2b 71
                  sta txtptr                                ;; @@3d2d 71
@@ -65,7 +65,7 @@ gosub_sub                                                  ;; @@3d39 71
  ;; @@3d59 71
 edit_err                                                   ;; @@3d59 71
                  ldx #edit_mode_error                     ; [910620] ;; @@3d59 71
-                 bra error                                 ;; @@3d5b 71
+                 +lbra error                               ;; @@3d5b 71
  ;; @@3d5e 71
 ;.end ;; @@3d5e 71
 ; .page ;; @@3d5e 71
@@ -80,7 +80,7 @@ go_without_to                                              ;; @@3d5e 71
  ;; @@3d6a 71
 _local_1070_1    jsr getbyt                               ; is it GO 64? ;; @@3d6a 71
                  cpx #64                                   ;; @@3d6d 71
-                 bne snerr                                ; ...no, error ;; @@3d6f 71
+                 +lbne snerr                              ; ...no, error ;; @@3d6f 71
  ;; @@3d72 71
 ; The user wants to go to C64 mode. ;; @@3d72 71
  ;; @@3d72 71

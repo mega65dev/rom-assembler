@@ -49,7 +49,7 @@ _local_1264_15   inx                                      ; move down one line ;
                  bra AutoSearch                           ; loop until we find a numeric digit or run out of lines ;; @@7ed4 265
  ;; @@7ed6 265
 _local_1264_20   clc                                      ; found a digit, get entire number into linnum & rts ;; @@7ed6 265
-                 bra linget                                ;; @@7ed7 265
+                 +lbra linget                              ;; @@7ed7 265
  ;; @@7eda 265
 _local_1264_30   lda #$ff                                 ; no line found, fake end of program   [910716] ;; @@7eda 265
                  sta linnum+1                              ;; @@7edc 265

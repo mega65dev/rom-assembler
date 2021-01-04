@@ -60,7 +60,7 @@ _local_1147_10   lda facexp,x                              ;; @@57d1 148
                  jsr negop                                ; -range*INT(number/range) ;; @@57ee 148
                  jsr movaf                                ; move to FAC2 ;; @@57f1 148
                  jsr pullf1                               ; retrieve arg1 (number) ;; @@57f4 148
-                 bra faddt_c65                            ; number-range*INT(number/range) ;; @@57f7 148
+                 +lbra faddt_c65                          ; number-range*INT(number/range) ;; @@57f7 148
  ;; @@57fa 148
  ;; @@57fa 148
 ;.end ;; @@57fa 148

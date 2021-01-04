@@ -48,7 +48,7 @@ _local_1115_20   bcs _local_1115_98                        ;; @@4c83 116
 _local_1115_30   txa                                       ;; @@4cbf 116
                  jmp _bsout                                ;; @@4cc0 116
  ;; @@4cc3 116
-_local_1115_98   bra fcerr                                ; illegal value error ;; @@4cc3 116
+_local_1115_98   +lbra fcerr                              ; illegal value error ;; @@4cc3 116
  ;; @@4cc6 116
 ;.end ;; @@4cc6 116
 ; .page ;; @@4cc6 116

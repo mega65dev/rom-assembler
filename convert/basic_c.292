@@ -6,7 +6,7 @@ sprcor_1                                                   ;; @@b7c6 292
                  beq _local_1291_30                       ; skip if yes - 2 msb's = 1 1 ;; @@b7cd 292
                  cmp #'#'                                 ; test if speed type ;; @@b7cf 292
                  beq _local_1291_20                       ; skip if yes - 2 msb's = 0 1 ;; @@b7d1 292
-                 bra snerr                                ; syntax error if none of above ;; @@b7d3 292
+                 +lbra snerr                              ; syntax error if none of above ;; @@b7d3 292
  ;; @@b7d6 292
 _local_1291_10   jsr chrgot                               ; test for relative coordinate ;; @@b7d6 292
                  cmp #plus_token                          ; test if plus sign ;; @@b7d9 292

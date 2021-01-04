@@ -69,7 +69,7 @@ instr            lda facmo                                ; save pointer to temp
  ;; @@6e95 214
 _local_1213_1    jsr chkcls                               ; look for ) ;; @@6e95 214
                  ldx faclo                                 ;; @@6e98 214
-                 beq fcerr                                ; starting position can't be 0 ;; @@6e9a 214
+                 +lbeq fcerr                              ; starting position can't be 0 ;; @@6e9a 214
                  dex                                       ;; @@6e9d 214
                  stx positn                                ;; @@6e9e 214
  ;; @@6ea0 214
@@ -139,7 +139,7 @@ _local_1213_50   lda #0                                   ; not found ;; @@6efe 
                  ldy tmpdes+1                              ;; @@6f0d 214
                  jsr fretmp                                ;; @@6f10 214
                  ply                                       ;; @@6f13 214
-                 bra sngflt                               ; float 1 byte in .y ;; @@6f14 214
+                 +lbra sngflt                             ; float 1 byte in .y ;; @@6f14 214
  ;; @@6f17 214
 ;.end ;; @@6f17 214
 ; .page ;; @@6f17 214

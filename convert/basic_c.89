@@ -23,7 +23,7 @@ change_line                                                ;; @@434e 89
                  cmp #'Y'                                  ;; @@4362 89
                  beq _local_1088_100                      ; yes, change it ;; @@4364 89
                  cmp #cr                                   ;; @@4366 89
-                 beq find_exit                            ; cr only, abort entire operation ;; @@4368 89
+                 +lbeq find_exit                          ; cr only, abort entire operation ;; @@4368 89
                  cmp #'*'                                  ;; @@436b 89
                  bne find_loop_2                          ; *, change all.  else don't change ;; @@436d 89
                  smb6 op                                   ;; @@436f 89
@@ -53,7 +53,7 @@ _local_1088_100  lda text_top                             ; setup upper address 
                  bpl _local_1088_10                       ; branch if string1 > string2 (delete) ;; @@438f 89
 ; else      string1 < string2 (insert) ;; @@4391 89
  ;; @@4391 89
-                 neg a                                    ; Move memory up to make room for larger string2 ;; @@4391 89
+                 neg                                      ; Move memory up to make room for larger string2 ;; @@4391 89
                  sta count                                 ;; @@4392 89
                  ldy #0                                   ; first check for line too long ;; @@4394 89
                  jsr indlow                                ;; @@4396 89
@@ -68,7 +68,7 @@ _local_1088_100  lda text_top                             ; setup upper address 
                  sbc lowtr                                 ;; @@43a5 89
                  tya                                       ;; @@43a7 89
                  sbc lowtr+1                               ;; @@43a8 89
-                 bne errlen                               ; error, line > 255 characters ;; @@43aa 89
+                 +lbne errlen                             ; error, line > 255 characters ;; @@43aa 89
  ;; @@43ad 89
                  clc                                      ; now check for sufficient memory ;; @@43ad 89
                  ldy text_top+1                            ;; @@43ae 89
@@ -78,9 +78,9 @@ _local_1088_100  lda text_top                             ; setup upper address 
                  iny                                       ;; @@43b6 89
 _local_1088_1    cpy max_mem_0+1                           ;; @@43b7 89
                  bcc _local_1088_2                        ; result is less than top-of-memory: ok ;; @@43ba 89
-                 bne omerr                                ; msb >  top, overflow ;; @@43bc 89
+                 +lbne omerr                              ; msb >  top, overflow ;; @@43bc 89
                  cmp max_mem_0                            ; msb's the same, test lsb's ;; @@43bf 89
-                 bcs omerr                                ; lsb >= top, overflow ;; @@43c2 89
+                 +lbcs omerr                              ; lsb >= top, overflow ;; @@43c2 89
 _local_1088_2    sta text_top                              ;; @@43c5 89
                  sty text_top+1                           ; set new top of text pointer ;; @@43c7 89
                  jsr moveup                               ; make room ;; @@43c9 89
@@ -114,8 +114,8 @@ _local_1088_40   jsr link_program                         ; relink program ;; @@
                  clc                                       ;; @@43fd 89
                  lda fndpnt                               ; place find position after new text ;; @@43fe 89
                  adc fstr2+2                               ;; @@4400 89
-                 dec a                                     ;; @@4402 89
+                 dec                                       ;; @@4402 89
                  sta fndpnt                                ;; @@4403 89
-                 bra find_loop_2                          ; and resume searching ;; @@4405 89
+                 +lbra find_loop_2                        ; and resume searching ;; @@4405 89
  ;; @@4408 89
 ; .page ;; @@4408 89

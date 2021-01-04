@@ -20,7 +20,7 @@ C65__screendef                                             ;; @@af69 268
                  jsr combyt                               ; get depth (# bitplanes) ;; @@af87 268
                  dex                                      ; convert 1-8 to 0-7 ;; @@af8a 268
                  cpx #8                                   ; range 0-7 ;; @@af8b 268
-_local_1267_10   bcs fcerr                                ; illegal quantity error ;; @@af8d 268
+_local_1267_10   +lbcs fcerr                              ; illegal quantity error ;; @@af8d 268
                  stx GKI__parm4                           ; depth ;; @@af90 268
  ;; @@af93 268
                  jmp ($8006)                              ; bra screendef ;; @@af93 268

@@ -9,7 +9,7 @@ movspr_position                                            ;; @@b64a 289
                  sei                                      ; [910123] ;; @@b64a 289
                  lda z_p_temp_1                           ; get sprite number ;; @@b64b 289
                  tax                                      ; use as an index ;; @@b64d 289
-                 asl a                                     ;; @@b64e 289
+                 asl                                       ;; @@b64e 289
                  tay                                      ; get sprite-number * 2 as another index ;; @@b64f 289
  ;; @@b650 289
                  bbr7 op,_local_1288_10                    ;; @@b650 289

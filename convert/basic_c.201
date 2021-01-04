@@ -9,7 +9,7 @@ reay             jsr chrgot                               ; get old character ;;
                  jsr fretmp                                ;; @@6a96 201
                  jsr chrgot                                ;; @@6a99 201
                  cmp #';'                                 ; semi-colon? ;; @@6a9c 201
-                 bne crdo                                 ; end of print using ;; @@6a9e 201
+                 +lbne crdo                               ; end of print using ;; @@6a9e 201
                  jmp chrget                               ; branch if yes ;; @@6aa1 201
  ;; @@6aa4 201
 ; .page ;; @@6aa4 201

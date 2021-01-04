@@ -11,7 +11,7 @@ Clear_DS                                                  ; oldclr. ;; @@7882 24
                  iny                                       ;; @@788e 245
                  lda #$ff                                  ;; @@788f 245
                  jsr sta_far_ram1                         ; sta (dsdesc+1),y garbage flagged ;; @@7891 245
-                 inc a                                     ;; @@7894 245
+                 inc                                       ;; @@7894 245
                  sta dsdesc                               ; (0)    kill DS$ ;; @@7895 245
                  plx                                       ;; @@7897 245
                  ply                                       ;; @@7898 245

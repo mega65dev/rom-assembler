@@ -8,7 +8,7 @@ find_it                                                    ;; @@4026 80
                  sta curlin                               ; fake error routine into saying 'in line xxxxx' ;; @@402f 80
                  lda forpnt+1                              ;; @@4031 80
                  sta curlin+1                              ;; @@4033 80
-                 bra error                                 ;; @@4035 80
+                 +lbra error                               ;; @@4035 80
  ;; @@4038 80
 _local_1079_70   jsr chargt                               ; get line number low ;; @@4038 80
                  sta highds                               ; highds = current line# in loop ;; @@403b 80
@@ -34,7 +34,7 @@ _local_1079_80   lda linnum                               ; use same line# ;; @@
 _local_1079_90   ldx #$90                                 ; make replacement string ;; @@405f 80
                  sec                                       ;; @@4061 80
                  jsr floatc                                ;; @@4062 80
-                 bra fout                                  ;; @@4065 80
+                 +lbra fout                                ;; @@4065 80
  ;; @@4068 80
  ;; @@4068 80
 _local_1079_100  jsr chargt                                ;; @@4068 80

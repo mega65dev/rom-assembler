@@ -53,7 +53,7 @@ _local_1141_40   iny                                      ; copy message into me
                  pla                                      ; test if msb was set ;; @@5669 142
                  bpl _local_1141_40                        ;; @@566a 142
  ;; @@566c 142
-_local_1141_50   bra chrd1                                ; pla,pla,jmp putnew ;; @@566c 142
+_local_1141_50   +lbra chrd1                              ; pla,pla,jmp putnew ;; @@566c 142
  ;; @@566f 142
  ;; @@566f 142
 ;.end ;; @@566f 142

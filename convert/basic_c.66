@@ -51,10 +51,10 @@ _local_1065_40   tax                                       ;; @@3c35 66
                  beq _local_1065_80                       ; done if length=0 ;; @@3c36 66
                  clc                                       ;; @@3c38 66
                  adc hulp                                 ; add length to starting posn. ;; @@3c39 66
-                 bcs fcerr                                ; illegal quantity error if > 256 ;; @@3c3b 66
+                 +lbcs fcerr                              ; illegal quantity error if > 256 ;; @@3c3b 66
                  cmp str1                                  ;; @@3c3e 66
                  bcc _local_1065_60                        ;; @@3c40 66
-                 bne fcerr                                ; ...or if > target length ;; @@3c42 66
+                 +lbne fcerr                              ; ...or if > target length ;; @@3c42 66
  ;; @@3c45 66
 _local_1065_60   ldy hulp                                 ; get adjusted starting address ;; @@3c45 66
 _local_1065_70   phx                                       ;; @@3c47 66
@@ -67,7 +67,7 @@ _local_1065_70   phx                                       ;; @@3c47 66
                  dex                                       ;; @@3c54 66
                  bne _local_1065_70                       ; keep going for specified length ;; @@3c55 66
  ;; @@3c57 66
-_local_1065_80   bra frefac                               ; free up temp. string, rts ;; @@3c57 66
+_local_1065_80   +lbra frefac                             ; free up temp. string, rts ;; @@3c57 66
  ;; @@3c5a 66
 ;.end ;; @@3c5a 66
  ;; @@3c5a 66

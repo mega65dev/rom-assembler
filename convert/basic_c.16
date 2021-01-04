@@ -1,9 +1,9 @@
 nescex           bcc xeqchr                               ; jmp chrget ;; @@2cc0 16
  ;; @@2cc2 16
-snerr1           bra snerr                                 ;; @@2cc2 16
+snerr1           +lbra snerr                               ;; @@2cc2 16
  ;; @@2cc5 16
 morsts           cmp #':'                                  ;; @@2cc5 16
-                 beq xeqcm                                ; if ':', continue statement ;; @@2cc7 16
+                 +lbeq xeqcm                              ; if ':', continue statement ;; @@2cc7 16
                  bra snerr1                                ;; @@2cca 16
  ;; @@2ccc 16
 ; .page ;; @@2ccc 16
@@ -23,7 +23,7 @@ break_exit                                                ; STOP KEY:     [91010
 _local_1015_10   jsr _stop                                ; wait for the user to release the key ;; @@2cd1 16
                  beq _local_1015_10                        ;; @@2cd4 16
                  ldx #erbrk                               ; take the vector thru error to ready ;; @@2cd6 16
-                 bra error                                 ;; @@2cd8 16
+                 +lbra error                               ;; @@2cd8 16
  ;; @@2cdb 16
  ;; @@2cdb 16
  ;; @@2cdb 16

@@ -39,7 +39,7 @@ _local_1190_20   iny                                      ; Copy filename from R
                  stx text_top                             ; success- set end address & run it ;; @@681f 191
                  sty text_top+1                            ;; @@6821 191
                  cli                                       ;; @@6823 191
-                 bra run_a_program                         ;; @@6824 191
+                 +lbra run_a_program                       ;; @@6824 191
  ;; @@6827 191
 _local_1190_30   rts                                      ; failure- go_ready ;; @@6827 191
  ;; @@6828 191

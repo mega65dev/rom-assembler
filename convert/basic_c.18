@@ -3,7 +3,7 @@ break            jsr release_channels                     ; make sure we're in t
                  jsr highlight_text                       ; ????      [910624] ;; @@2cfc 18
                  jsr _primm                                ;; @@2cff 18
                  !text cr,"BREAK",0                        ;; @@2d02 18
-                 bra errfin                               ; exit via 'in line #' ;; @@2d09 18
+                 +lbra errfin                             ; exit via 'in line #' ;; @@2d09 18
  ;; @@2d0c 18
 do_rts           rts                                       ;; @@2d0c 18
  ;; @@2d0d 18
@@ -32,7 +32,7 @@ _local_1017_1    pha                                      ; save token ;; @@2d1b
                  cpx #instr_token-1                       ; look for (adjusted) instr token ;; @@2d20 18
                  beq _local_1017_2                        ; yes ;; @@2d22 18
                  cpx #rgraphic_token-1                    ; look for rgraphic which now takes 2 args [910801] ;; @@2d24 18
-                 beq rgraphic                             ; yes ;; @@2d26 18
+                 +lbeq rgraphic                           ; yes ;; @@2d26 18
  ;; @@2d29 18
                  cpx #mid_token+1                          ;; @@2d29 18
                  bcs oknorm                               ; LEFT$,RIGHT$,MID$ require multiple args ;; @@2d2b 18
@@ -59,7 +59,7 @@ _local_1017_2    jsr chkopn                               ; check for an open pa
  ;; @@2d3d 18
                  pla                                      ; check token ;; @@2d3d 18
                  cmp #instr_token-1                       ; special case: INSTR() bails out here ;; @@2d3e 18
-                 beq instr                                 ;; @@2d40 18
+                 +lbeq instr                               ;; @@2d40 18
                  ldx facmo+1                              ; push address of string arg1 ;; @@2d43 18
                  phx                                       ;; @@2d45 18
                  ldx facmo                                 ;; @@2d46 18

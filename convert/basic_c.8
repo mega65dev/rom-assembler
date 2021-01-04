@@ -76,7 +76,7 @@ crun20           bcc crun10                               ; don't crunch numbers
                  jmp (iesclk)                             ; give others a chance at this.  (carry is set) ;; @@232f 8
  ;; @@2332 8
 nesclk                                                     ;; @@2332 8
-                 bcc _local_1007_130                      ; carry clear if someone wanted it ;; @@2332 8
+                 +lbcc _local_1007_130                    ; carry clear if someone wanted it ;; @@2332 8
                  cmp #0                                   ; end of line? ;; @@2335 8
                  beq _local_1007_110                      ; yes ;; @@2337 8
                  cmp #':'                                 ; multi-stmt char? ;; @@2339 8
@@ -141,7 +141,7 @@ _local_1007_90   ldy #0                                    ;; @@2395 8
                  bne crun10                                ;; @@23a0 8
                  jsr chrget                                ;; @@23a2 8
                  jsr data                                  ;; @@23a5 8
-                 bra crun05                                ;; @@23a8 8
+                 +lbra crun05                              ;; @@23a8 8
  ;; @@23ab 8
 _local_1007_100  jsr chrget                                ;; @@23ab 8
                  jsr rem                                   ;; @@23ae 8
@@ -182,7 +182,7 @@ _local_1007_140  ldy #0                                    ;; @@23ce 8
                  pla                                       ;; @@23d4 8
                  jsr sta_far_txt                          ; ..and second token  (bleed-thru) ;; @@23d5 8
                  jsr chrget                               ; skip over token, ;; @@23d8 8
-                 bra crun10                               ; ..and continue with line. ;; @@23db 8
+                 +lbra crun10                             ; ..and continue with line. ;; @@23db 8
  ;; @@23de 8
 ; .page ;; @@23de 8
 ;      KLOOP ;; @@23de 8

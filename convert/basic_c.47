@@ -54,5 +54,5 @@ _local_1046_35   cmp #esc_command_token                   ; is this a BEND? ;; @
 _local_1046_40   rts                                       ;; @@362c 47
  ;; @@362d 47
 _local_1046_99   ldx #err_no_bend                          ;; @@362d 47
-                 bra error                                 ;; @@362f 47
+                 +lbra error                               ;; @@362f 47
  ;; @@3632 47

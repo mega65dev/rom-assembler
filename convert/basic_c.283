@@ -4,7 +4,7 @@ color            cmp #','                                 ; optional first arg ;
                  beq _local_1282_10                        ;; @@b4a0 283
                  jsr chkesc                                ;; @@b4a2 283
                  cmp #off_token                            ;; @@b4a5 283
-_local_1282_5    bne snerr                                 ;; @@b4a7 283
+_local_1282_5    +lbne snerr                               ;; @@b4a7 283
  ;; @@b4aa 283
                  ldy #'['                                 ; OFF (color & attributes) ;; @@b4aa 283
                  !text $2c                                 ;; @@b4ac 283
@@ -30,7 +30,7 @@ _local_1282_20   jsr chkcom                               ; else must be comma, 
  ;; @@b4d2 283
 _local_1282_30   lda #%00000010                           ; ON ;; @@b4d2 283
                  trb vic+49                                ;; @@b4d4 283
-_local_1282_35   bra chrget                               ; exit after eating last token ;; @@b4d7 283
+_local_1282_35   +lbra chrget                             ; exit after eating last token ;; @@b4d7 283
  ;; @@b4da 283
 _local_1282_40   rts                                      ; exit after encountering eol ;; @@b4da 283
  ;; @@b4db 283

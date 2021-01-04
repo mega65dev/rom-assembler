@@ -1,5 +1,5 @@
 sadwrd           jsr frmnum                               ; get number     label [910307] ;; @@b7e5 293
-                 bra getsad                               ; get signed 2 byte coordinate,do rts ;; @@b7e8 293
+                 +lbra getsad                             ; get signed 2 byte coordinate,do rts ;; @@b7e8 293
  ;; @@b7eb 293
 ; .page ;; @@b7eb 293
 ;************************************************************* ;; @@b7eb 293

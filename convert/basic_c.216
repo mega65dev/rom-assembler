@@ -16,7 +16,7 @@ disk                                                       ;; @@6f7a 216
                  jsr _close                               ; close it ;; @@6f98 216
                  pla                                      ; [910404] ;; @@6f9b 216
                  plp                                       ;; @@6f9c 216
-                 bra exit_disk_op                         ; common error check & exit path ???? ;; @@6f9d 216
+                 +lbra exit_disk_op                       ; common error check & exit path ???? ;; @@6f9d 216
  ;; @@6fa0 216
  ;; @@6fa0 216
 ;.end ;; @@6fa0 216
@@ -41,13 +41,13 @@ directory                                                 ; display disk directo
                  bne _local_1215_1                         ;; @@6fa5 216
                  jsr chrget                               ; (esc token + another) ;; @@6fa7 216
                  cmp #ectory_token                         ;; @@6faa 216
-                 bne snerr                                 ;; @@6fac 216
+                 +lbne snerr                               ;; @@6fac 216
                  jsr chrget                               ; yes- get next good char ;; @@6faf 216
  ;; @@6fb2 216
 _local_1215_1    jsr dospar                               ; parse the line ;; @@6fb2 216
                  lda parsts                               ; check options ;; @@6fb5 216
                  and #$e6                                  ;; @@6fb7 216
-                 bne snerr                                 ;; @@6fb9 216
+                 +lbne snerr                               ;; @@6fb9 216
  ;; @@6fbc 216
                  ldy #fdir                                ; table offset for directory ;; @@6fbc 216
                  bit dosflags                             ; want recoverable files? [901024] ;; @@6fbe 216
@@ -57,7 +57,7 @@ _local_1215_2    ldx #1                                   ; just $ ;; @@6fc5 216
                  lda parsts                               ; check for default ;; @@6fc7 216
                  and #$11                                 ; no drive? ;; @@6fc9 216
                  beq _local_1215_20                        ;; @@6fcb 216
-                 lsr a                                     ;; @@6fcd 216
+                 lsr                                       ;; @@6fcd 216
                  bcc _local_1215_10                       ; just drive ;; @@6fce 216
                  inx                                      ; drive and filename ;; @@6fd0 216
                  inx                                       ;; @@6fd1 216
@@ -79,7 +79,7 @@ _local_1215_20   txa                                      ; a now has length ;; 
                  jsr dcat11                               ; ...error, shut down and report ;; @@6fed 216
                  plx                                       ;; @@6ff0 216
                  sec                                       ;; @@6ff1 216
-                 bra error                                 ;; @@6ff2 216
+                 +lbra error                               ;; @@6ff2 216
  ;; @@6ff5 216
 _local_1215_30   lda channl                               ; determine DIR vs LDIR ;; @@6ff5 216
                  bne ldir                                 ; if output channel not default (screen) ;; @@6ff7 216

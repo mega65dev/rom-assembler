@@ -1,6 +1,6 @@
 fin_chrget                                                 ;; @@6457 180
                  lda fin_bank                             ; text or string bank? ;; @@6457 180
-                 beq chrget                               ; get byte from text bank via normal CHRGET mechanism ;; @@645a 180
+                 +lbeq chrget                             ; get byte from text bank via normal CHRGET mechanism ;; @@645a 180
  ;; @@645d 180
 fin_chrget_1                                              ; get byte from string bank via modified CHRGET mechanism ;; @@645d 180
                  inw index1                                ;; @@645d 180

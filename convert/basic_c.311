@@ -50,7 +50,7 @@ _local_1310_10   jsr chkesc                               ; [910930] ;; @@bcd2 3
 ; bne _local_1310_20 ;; @@bcd5 311
 ; jsr chrget ;; @@bcd5 311
                  cmp #off_token                            ;; @@bcd5 311
-_local_1310_20   bne snerr                                 ;; @@bcd7 311
+_local_1310_20   +lbne snerr                               ;; @@bcd7 311
                  lda #0                                   ; EDIT OFF ;; @@bcda 311
 _local_1310_30   sta runmod                                ;; @@bcdc 311
                  jmp chrget                               ; exit ;; @@bcde 311

@@ -15,7 +15,7 @@ volrts                                                     ;; @@4b45 114
 ;* ;; @@4b46 114
 ;*************************************************************** ;; @@4b46 114
  ;; @@4b46 114
-volume           beq snerr                                ; stereo parameters    [910612] ;; @@4b46 114
+volume           +lbeq snerr                              ; stereo parameters    [910612] ;; @@4b46 114
                  cmp #','                                  ;; @@4b49 114
                  beq _local_1113_10                       ; left volume only ;; @@4b4b 114
 ; jsr getbyt  ;right volume in .x ;; @@4b4d 114
@@ -46,7 +46,7 @@ volume           beq snerr                                ; stereo parameters   
                  beq volrts                                ;; @@4b62 114
  ;; @@4b64 114
 _local_1113_10   jsr optbyt                               ; get optional left parameter   [910612] ;; @@4b64 114
-                 bcc snerr                                ; comma but no value not given?? ;; @@4b67 114
+                 +lbcc snerr                              ; comma but no value not given?? ;; @@4b67 114
                  jsr chknyb                               ; [910930] ;; @@4b6a 114
 ; cpx #16 ;; @@4b6d 114
 ; bcs fcerr  ;too large ;; @@4b6d 114

@@ -10,7 +10,7 @@ open_SEQ_file                                              ;; @@6f19 215
                  ldy #fopnseq                              ;; @@6f28 215
                  ldx #6                                    ;; @@6f2a 215
                  jsr open_file                            ; open the file ;; @@6f2c 215
-                 bcs list_err                             ; exit if error ;; @@6f2f 215
+                 +lbcs list_err                           ; exit if error ;; @@6f2f 215
                  plz                                      ; [910620] ;; @@6f32 215
                  beq _local_1214_20                        ;; @@6f33 215
                  rts                                      ; or exit if called by EDIT load routine ;; @@6f35 215
@@ -48,7 +48,7 @@ _local_1214_28   jsr _clrch                                ;; @@6f71 215
                  plp                                      ; check input status ;; @@6f74 215
                  beq _local_1214_20                       ; loop until eof or bad status ;; @@6f75 215
  ;; @@6f77 215
-_local_1214_30   bra list_exit                            ; release channel, close file, return to main ;; @@6f77 215
+_local_1214_30   +lbra list_exit                          ; release channel, close file, return to main ;; @@6f77 215
  ;; @@6f7a 215
 ;99$ jsr _clrch  ;non-I/O trouble   removed [910620] ;; @@6f7a 215
 ; lda dosla  ; shut down disk & report BASIC error ;; @@6f7a 215

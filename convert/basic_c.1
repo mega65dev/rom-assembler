@@ -43,7 +43,7 @@ hard_reset                                                 ;; @@2025 1
  ;; @@2053 1
 go_ready                                                   ;; @@2053 1
                  cli                                      ; enable IRQ ;; @@2053 1
-                 bra ready                                 ;; @@2054 1
+                 +lbra ready                               ;; @@2054 1
  ;; @@2057 1
 ; .page ;; @@2057 1
 init_storage                                               ;; @@2057 1
@@ -147,7 +147,7 @@ init_storage                                               ;; @@2057 1
  ;; @@20da 1
                  lda #0                                   ; init text input buffer  (these are for autoboot) ;; @@20da 1
                  sta buf                                   ;; @@20dc 1
-                 dec a                                     ;; @@20df 1
+                 dec                                       ;; @@20df 1
                  sta curlin+1                             ; init line pointer ;; @@20e0 1
                  ldx #<buf_txtptr                         ; init txtptr ;; @@20e2 1
                  ldy #>buf_txtptr                          ;; @@20e4 1
@@ -162,7 +162,7 @@ _local_1000_10   bbr7 _mode,_local_1000_20                 ;; @@20ee 1
                  sta sprite_ptrs_40,y                     ; 40 col screen ;; @@20f1 1
                  bra _local_1000_30                        ;; @@20f4 1
 _local_1000_20   sta sprite_ptrs_80,y                     ; 80 col screen ;; @@20f6 1
-_local_1000_30   dec a                                     ;; @@20f9 1
+_local_1000_30   dec                                       ;; @@20f9 1
                  dey                                       ;; @@20fa 1
                  bpl _local_1000_10                        ;; @@20fb 1
  ;; @@20fd 1
@@ -181,6 +181,6 @@ _local_1000_40   sta sprite_data,x                         ;; @@2101 1
 ; lda #$d8 ;; @@210a 1
 ; sta upper_lower ;; @@210a 1
  ;; @@210a 1
-                 bra init_text                            ; go to 'new' ;; @@210a 1
+                 +lbra init_text                          ; go to 'new' ;; @@210a 1
  ;; @@210d 1
 ; .page ;; @@210d 1

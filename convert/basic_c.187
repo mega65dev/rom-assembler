@@ -16,8 +16,8 @@ tan              jsr mov1f                                ; move FAC into tempor
                  ldy #>tempf3                             ; address of sine value ;; @@6711 187
 ; bra fdiv ;divide sine by cosine and return ;; @@6713 187
                  jsr conupk                               ; unpack constant    [910226] FAB ;; @@6713 187
-                 beq overr                                ; overflow error     " ;; @@6716 187
-                 bra fdivt                                ; " ;; @@6719 187
+                 +lbeq overr                              ; overflow error     " ;; @@6716 187
+                 +lbra fdivt                              ; " ;; @@6719 187
  ;; @@671c 187
 _local_1186_10   pha                                      ; cosc. ;; @@671c 187
                  bra sin1                                  ;; @@671d 187

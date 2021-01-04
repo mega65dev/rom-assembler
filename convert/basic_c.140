@@ -1,5 +1,5 @@
 decbad                                                     ;; @@55c4 140
-                 bra fcerr                                ; illegal qty error ;; @@55c4 140
+                 +lbra fcerr                              ; illegal qty error ;; @@55c4 140
  ;; @@55c7 140
 ;.end ;; @@55c7 140
 ; .page ;; @@55c7 140
@@ -26,6 +26,6 @@ _local_1139_10   lda (poker),y                             ;; @@55e2 140
                  sta poker+1                              ; restore linnum ;; @@55e6 140
                  pla                                       ;; @@55e8 140
                  sta poker                                 ;; @@55e9 140
-                 bra sngflt                               ; float it ;; @@55eb 140
+                 +lbra sngflt                             ; float it ;; @@55eb 140
  ;; @@55ee 140
 ; .page ;; @@55ee 140

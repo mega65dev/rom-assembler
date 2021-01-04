@@ -1,12 +1,12 @@
 delete           bcc delete_line                          ; branch if a number (assume range parameter) ;; @@41e8 83
                  cmp #minus_token                          ;; @@41ea 83
                  beq delete_line                          ; branch if a dash (assume range parameter) ;; @@41ec 83
-                 bra scratch                              ; branch if string (assume filename or U#) ;; @@41ee 83
+                 +lbra scratch                            ; branch if string (assume filename or U#) ;; @@41ee 83
  ;; @@41f1 83
 delete_line                                                ;; @@41f1 83
                  jsr errind                               ; direct mode only command ;; @@41f1 83
                  jsr chrgot                               ; requires line# or range, no default ;; @@41f4 83
-                 beq snerr                                ; error, none given ;; @@41f7 83
+                 +lbeq snerr                              ; error, none given ;; @@41f7 83
  ;; @@41fa 83
                  jsr range                                ; parse range, find starting line, ptr to ending line ;; @@41fa 83
                  lda lowtr                                 ;; @@41fd 83
@@ -37,7 +37,7 @@ _local_1082_20   lda lowtr                                ; check that start <= 
                  sta argmo                                ; but it does no harm) ;; @@422a 83
                  ora count                                 ;; @@422c 83
                  beq fix_links                            ; all done- nothing to move!? ;; @@422e 83
-                 bcc snerr                                ; error- bad range (start > end) ;; @@4230 83
+                 +lbcc snerr                              ; error- bad range (start > end) ;; @@4230 83
  ;; @@4233 83
                  lda text_top                             ; setup for common DMA move routine: [900530] ;; @@4233 83
                  ldx text_top+1                            ;; @@4235 83

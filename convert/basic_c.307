@@ -126,7 +126,7 @@ _local_1306_10   lsr vtemp1                                ;; @@bbb2 307
                  pla                                       ;; @@bbc8 307
  ;; @@bbc9 307
 _local_1306_20   lsr vtemp3                               ; divide by 2 ;; @@bbc9 307
-                 ror a                                     ;; @@bbcc 307
+                 ror                                       ;; @@bbcc 307
                  dey                                       ;; @@bbcd 307
                  bne _local_1306_10                       ; loop 16 times - test all bits in 2 bytes ;; @@bbce 307
  ;; @@bbd0 307

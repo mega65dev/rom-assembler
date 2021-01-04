@@ -24,7 +24,7 @@ midd             lda #255                                 ; default ;; @@5a10 15
                  jsr combyt                               ; [910820] ;; @@5a1b 154
  ;; @@5a1e 154
 _local_1153_1    jsr pream                                ; check it out ;; @@5a1e 154
-                 beq fcerr                                ; illegal qty error ;; @@5a21 154
+                 +lbeq fcerr                              ; illegal qty error ;; @@5a21 154
                  dex                                      ; compute offset ;; @@5a24 154
                  phx                                       ;; @@5a25 154
                  phx                                      ; preserve a while (2 copies) ;; @@5a26 154

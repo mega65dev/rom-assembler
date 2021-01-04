@@ -4,10 +4,10 @@ boot             cmp #sys_token                           ; BOOTSYS?      [91011
                  jsr _bootsys                             ; attempt to boot a new OS ;; @@6756 189
                  bcc _local_1188_15                       ; returned to us after successful install ;; @@6759 189
                  ldx #errbdk                              ; bootsys failed, report 'bad disk'???? ;; @@675b 189
-                 bra error                                 ;; @@675d 189
+                 +lbra error                               ;; @@675d 189
  ;; @@6760 189
 _local_1188_1    bbr4 runmod,_local_1188_2                ; Error if in Edit mode     [910620] ;; @@6760 189
-                 bra edit_err                              ;; @@6763 189
+                 +lbra edit_err                            ;; @@6763 189
  ;; @@6766 189
 _local_1188_2    lda #0                                   ; BOOT "filename"     [910417] ;; @@6766 189
                  sta verck                                ; want 'load', not 'verify' ;; @@6768 189
@@ -16,7 +16,7 @@ _local_1188_2    lda #0                                   ; BOOT "filename"     
                  jsr dosprx                               ; parse the command ;; @@676e 189
                  bbr0 parsts,_local_1188_20               ; was there a filename?  branch if not ;; @@6771 189
                  jsr bload_boot                           ; yes- bload it ;; @@6774 189
-                 bcs erexit                               ; load error ;; @@6777 189
+                 +lbcs erexit                             ; load error ;; @@6777 189
  ;; @@677a 189
 ; ldx current_bank ;assume no B(ank) arg was given    [910114] ;; @@677a 189
 ; bbr0 parstx,_local_1188_10  ; correct, use current setup ;; @@677a 189
@@ -38,8 +38,8 @@ _local_1188_30   iny                                      ; Copy default filenam
                  sty dosf1l                               ; length not counting terminator ;; @@6796 189
                  smb6 runmod                              ; set flag for load not to go to ready ;; @@6799 189
                  jsr dload_boot                           ; Load it ;; @@679b 189
-                 bcs erexit                               ; error if problems ;; @@679e 189
-                 bra run_a_program                        ; else go run it ;; @@67a1 189
+                 +lbcs erexit                             ; error if problems ;; @@679e 189
+                 +lbra run_a_program                      ; else go run it ;; @@67a1 189
  ;; @@67a4 189
 ; .page ;; @@67a4 189
 ; AUTOBOOT_CSG Runs a system diagnostic if PB0 is low after initialization. ;; @@67a4 189

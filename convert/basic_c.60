@@ -17,7 +17,7 @@ _local_1059_1    lda txtptr,x                              ;; @@3a01 60
                  jsr chrgot                               ; look at last vartab character ;; @@3a0c 60
                  beq _local_1059_2                        ; that's the end of the list ;; @@3a0f 60
                  jsr chkcom                               ; not end. check for comma ;; @@3a11 60
-                 bra inloop                                ;; @@3a14 60
+                 +lbra inloop                              ;; @@3a14 60
  ;; @@3a17 60
 _local_1059_2    lda inpptr                               ; put away a new data pntr name ;; @@3a17 60
                  ldy inpptr+1                              ;; @@3a19 60

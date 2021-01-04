@@ -1,6 +1,6 @@
 find_loop_2                                                ;; @@4304 88
                  jsr _stop                                ; check stop key ;; @@4304 88
-                 beq find_break                           ; exit if down ;; @@4307 88
+                 +lbeq find_break                         ; exit if down ;; @@4307 88
  ;; @@430a 88
                  ldx fndpnt                               ; duh, where are we? ;; @@430a 88
                  clc                                       ;; @@430c 88

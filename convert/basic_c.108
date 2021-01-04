@@ -1,6 +1,6 @@
 play_bad_value                                             ;; @@4890 108
                  jsr clear_flag                            ;; @@4890 108
-                 bra fcerr                                ; illegal quantity ;; @@4893 108
+                 +lbra fcerr                              ; illegal quantity ;; @@4893 108
  ;; @@4896 108
 play_dot                                                   ;; @@4896 108
                  sta dnote                                 ;; @@4896 108

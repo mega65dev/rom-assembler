@@ -15,7 +15,7 @@ rpalette                                                   ;; @@b9b8 300
  ;; @@b9d3 300
                  jsr combyt                               ; get r,g,b component# ;; @@b9d3 300
                  cpx #3                                    ;; @@b9d6 300
-_local_1299_10   bcs fcerr                                ; illegal value ;; @@b9d8 300
+_local_1299_10   +lbcs fcerr                              ; illegal value ;; @@b9d8 300
  ;; @@b9db 300
                  ldy GKI__parm3,x                         ; get r,g,b value ;; @@b9db 300
                  jsr sngflt                               ; float 1 byte arg in .y ;; @@b9de 300

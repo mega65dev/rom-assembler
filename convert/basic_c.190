@@ -1,6 +1,6 @@
 autobootCSG                                               ; Run ROMed diagnostic if PB0 low   [911105] ;; @@67a4 190
                  lda $dd01                                 ;; @@67a4 190
-                 lsr a                                     ;; @@67a7 190
+                 lsr                                       ;; @@67a7 190
                  bcs autoboot                             ; no, try to boot from disk ;; @@67a8 190
  ;; @@67aa 190
                  sei                                      ; prevent IRQ from wacking code DL'd to $1xxx  [911106] ;; @@67aa 190

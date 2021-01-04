@@ -3,7 +3,7 @@ n1_reset                                                   ;; @@4072 81
                  sta facho+1                               ;; @@4075 81
                  lda renum_tmp_1+1                         ;; @@4077 81
                  sta facho                                 ;; @@407a 81
-                 bra reset_txtptr                          ;; @@407c 81
+                 +lbra reset_txtptr                        ;; @@407c 81
  ;; @@407f 81
  ;; @@407f 81
 ;*************************** LINE_ADD ********************************** ;; @@407f 81
@@ -55,7 +55,7 @@ chargt_x2                                                  ;; @@40a3 81
 chargt                                                     ;; @@40a5 81
                  ldy #0                                   ; increment txtptr ;; @@40a5 81
                  inw txtptr                                ;; @@40a7 81
-                 bra indtxt                                ;; @@40a9 81
+                 +lbra indtxt                              ;; @@40a9 81
  ;; @@40ac 81
 ; .page ;; @@40ac 81
 ;*********************************************************************** ;; @@40ac 81
@@ -79,7 +79,7 @@ move_init                                                  ;; @@40ac 81
  ;; @@40bc 81
                  lda #1                                   ; move 1 character ;; @@40bc 81
                  sta count                                ; lo ;; @@40be 81
-                 dec a                                     ;; @@40c0 81
+                 dec                                       ;; @@40c0 81
                  sta argmo                                ; hi ;; @@40c1 81
  ;; @@40c3 81
                  rts                                       ;; @@40c3 81

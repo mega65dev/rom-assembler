@@ -30,7 +30,7 @@ help             ldx errnum                               ; check for error stat
                  jsr p1line                               ; display line & highlight error ;; @@3c8c 67
                  stz helper                                ;; @@3c8f 67
 _local_1066_1    rmb7 helper                              ; reset 'help' flag ;; @@3c91 67
-                 bra crdo                                 ; and return to caller ;; @@3c93 67
+                 +lbra crdo                               ; and return to caller ;; @@3c93 67
  ;; @@3c96 67
  ;; @@3c96 67
  ;; @@3c96 67

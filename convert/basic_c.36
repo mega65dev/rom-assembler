@@ -12,7 +12,7 @@ list_err                                                   ;; @@3327 36
                  jsr _close                                ;; @@3330 36
                  pla                                      ; pop error status, if any ;; @@3333 36
                  plp                                       ;; @@3334 36
-                 bra exit_disk_op                          ;; @@3335 36
+                 +lbra exit_disk_op                        ;; @@3335 36
  ;; @@3338 36
 ; .page ;; @@3338 36
 ; LIST command is of the form  LIST [range] ;; @@3338 36
@@ -25,7 +25,7 @@ _local_1035_10   ldy #1                                    ;; @@333b 36
                  bne _local_1035_20                       ; ok if not zero, but.. ;; @@3340 36
                  dey                                       ;; @@3342 36
                  jsr indlow                                ;; @@3343 36
-                 beq crdo                                 ; ..if ls byte is also zero, we're done ;; @@3346 36
+                 +lbeq crdo                               ; ..if ls byte is also zero, we're done ;; @@3346 36
  ;; @@3349 36
 _local_1035_20   jsr is_stop_key_down                      ;; @@3349 36
                  jsr crdo                                 ; new line ;; @@334c 36
@@ -39,7 +39,7 @@ _local_1035_20   jsr is_stop_key_down                      ;; @@3349 36
                  bne _local_1035_30                        ;; @@335b 36
                  cpx linnum                                ;; @@335d 36
                  beq _local_1035_40                        ;; @@335f 36
-_local_1035_30   bcs crdo                                 ; next line is > last line requested, exit ;; @@3361 36
+_local_1035_30   +lbcs crdo                               ; next line is > last line requested, exit ;; @@3361 36
 _local_1035_40   jsr p1line                               ; print line #, space, and the line of code ;; @@3364 36
                  ldy #0                                   ; move 'pointer to next line' into (lowtr) ;; @@3367 36
                  jsr indlow                                ;; @@3369 36

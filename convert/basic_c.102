@@ -1,6 +1,6 @@
 preamb           !text " YEK"                             ; key preamble ;; @@468c 102
  ;; @@4690 102
-keydat           !text "($RHC+""                          ; chr$( string ;; @@4690 102
+keydat           !text "($RHC+",$22                       ; chr$( string ;; @@4690 102
  ;; @@4697 102
 keychr           !text cr,$8d,$22,esc                     ; special KEY chars- return, sft-return, quote, esc ;; @@4697 102
  ;; @@469b 102
@@ -16,7 +16,7 @@ Key_Change                                                 ;; @@469b 102
                  stx z_p_temp_1                           ; save key number     [910925] ;; @@469e 102
                  dex                                       ;; @@46a0 102
                  cpx #number_fkeys                         ;; @@46a1 102
-                 bcs fcerr                                ; exit - key number invalid ;; @@46a3 102
+                 +lbcs fcerr                              ; exit - key number invalid ;; @@46a3 102
  ;; @@46a6 102
 ; stx z_p_temp_1 ;save key number ;; @@46a6 102
                  jsr chkcom                               ; look for comma ;; @@46a6 102
@@ -30,7 +30,7 @@ Key_Change                                                 ;; @@469b 102
 key_restore                                                ;; @@46b5 102
 ; jsr put_io_in_map ;; @@46b5 102
                  jsr _doakey                              ; re-define the key ;; @@46b5 102
-                 bcs omerr                                ; bad return (.c=1) ;; @@46b8 102
+                 +lbcs omerr                              ; bad return (.c=1) ;; @@46b8 102
                  rts                                      ; ok return  (.c=0) ;; @@46bb 102
  ;; @@46bc 102
 ; .page ;; @@46bc 102
@@ -38,12 +38,12 @@ key_restore                                                ;; @@46b5 102
 ;   Key_Load  Load function key definitions (from disk)   [900725] ;; @@46bc 102
 ;************************************************************************ ;; @@46bc 102
  ;; @@46bc 102
-Key_Load                                                   ;; @@46bc 102
+Key_load                                                   ;; @@46bc 102
                  jsr GetLoadChannel                       ; get a channel      [911001] ;; @@46bc 102
                  ldy #>_pky_lengths                        ;; @@46bf 102
                  lda #<_pky_lengths                        ;; @@46c1 102
                  jsr LoadBlock                            ; load it ;; @@46c3 102
-                 bra list_err                             ; release channel, close file, return to main ;; @@46c6 102
+                 +lbra list_err                           ; release channel, close file, return to main ;; @@46c6 102
  ;; @@46c9 102
  ;; @@46c9 102
 GetLoadChannel                                            ; Used by KeyLoad and SpriteLoad    [911001] ;; @@46c9 102

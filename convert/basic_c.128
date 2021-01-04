@@ -2,13 +2,13 @@ bserr            ldx #errbs                               ; get bad sub error nu
                  !text $2c                                 ;; @@51fd 128
  ;; @@51fe 128
 fcerr            ldx #errfc                               ; too big. Illegal Quantity error ;; @@51fe 128
-                 bra error                                 ;; @@5200 128
+                 +lbra error                               ;; @@5200 128
  ;; @@5203 128
  ;; @@5203 128
  ;; @@5203 128
 gotary           ldx #errdd                               ; perhaps a "re-dimension" error ;; @@5203 128
                  lda dimflg                               ; test the DIMFLG ;; @@5205 128
-                 bne error                                 ;; @@5207 128
+                 +lbne error                               ;; @@5207 128
                  jsr fmaptr                                ;; @@520a 128
                  ldy #4                                    ;; @@520d 128
                  jsr indlow_ram1                           ;; @@520f 128
@@ -16,7 +16,7 @@ gotary           ldx #errdd                               ; perhaps a "re-dimens
                  lda count                                ; get number of dims input. ;; @@5214 128
                  cmp syntmp                               ; # of dims the same? ;; @@5216 128
                  bne bserr                                ; same so get definition. ;; @@5218 128
-                 bra getdef                                ;; @@521a 128
+                 +lbra getdef                              ;; @@521a 128
  ;; @@521d 128
 ; .page ;; @@521d 128
 ; Come here when variable is not found in the array table to build an entry. ;; @@521d 128
@@ -104,14 +104,14 @@ _local_1127_40   iny                                      ; notdim. ;; @@5262 12
                  dec count                                ; any more indices left? ;; @@527c 128
                  bne _local_1127_30                       ; yes ;; @@527e 128
                  adc arypnt+1                              ;; @@5280 128
-                 bcs omerr                                ; overflow ;; @@5282 128
+                 +lbcs omerr                              ; overflow ;; @@5282 128
                  sta arypnt+1                             ; compute where to zero ;; @@5285 128
                  tay                                       ;; @@5287 128
                  txa                                       ;; @@5288 128
                  adc arypnt                                ;; @@5289 128
                  bcc _local_1127_50                        ;; @@528b 128
                  iny                                       ;; @@528d 128
-                 beq omerr                                 ;; @@528e 128
+                 +lbeq omerr                               ;; @@528e 128
  ;; @@5291 128
 _local_1127_50   jsr reason                               ; grease.  get room ;; @@5291 128
                  sta strend                                ;; @@5294 128

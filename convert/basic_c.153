@@ -13,7 +13,7 @@ rleft3           pha                                      ; save length ;; @@59e
                  inc index+1                               ;; @@59f6 153
 _local_1152_1    tya                                       ;; @@59f8 153
                  jsr movdo                                ; go move it ;; @@59f9 153
-                 bra putnew                                ;; @@59fc 153
+                 +lbra putnew                              ;; @@59fc 153
  ;; @@59ff 153
  ;; @@59ff 153
  ;; @@59ff 153

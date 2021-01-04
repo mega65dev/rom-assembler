@@ -24,7 +24,7 @@ xeqcm3           beq xeqrts                               ; nothing here...null 
 xeqcm2           cmp #esc_command_token                   ; special case: escape token ;; @@2c69 14
                  beq xeqesc                                ;; @@2c6b 14
                  cmp #go_token                            ; special case: go to ;; @@2c6d 14
-                 beq go_without_to                         ;; @@2c6f 14
+                 +lbeq go_without_to                       ;; @@2c6f 14
                  cmp #mid_token                           ; special case: mid$()= ;; @@2c72 14
                  beq xeqmid                                ;; @@2c74 14
  ;; @@2c76 14
@@ -42,9 +42,9 @@ xeqcm2           cmp #esc_command_token                   ; special case: escape
  ;; @@2c84 14
 xeqcm4           sec                                      ; convert adjusted token into an index into a jump table. ;; @@2c84 14
                  sbc #end_token                            ;; @@2c85 14
-                 bcc let                                  ; it wasn't a token after all!  assume an assignment ;; @@2c87 14
+                 +lbcc let                                ; it wasn't a token after all!  assume an assignment ;; @@2c87 14
  ;; @@2c8a 14
-xeqcm5           asl a                                    ; *2 to convert into word pointer ;; @@2c8a 14
+xeqcm5           asl                                      ; *2 to convert into word pointer ;; @@2c8a 14
                  tay                                       ;; @@2c8b 14
                  bcs _local_1013_10                       ; dispatch table 1 or 2?     [901212] ;; @@2c8c 14
                  lda stmdsp+1,y                           ; one ;; @@2c8e 14

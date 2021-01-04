@@ -2,8 +2,8 @@ foreign_esc_fn                                             ;; @@2d8b 20
                  sec                                      ; flag 'up for grabs' ;; @@2d8b 20
                  jsr go_foreign_esc_fn                     ;; @@2d8c 20
 n_esc_fn_vec                                               ;; @@2d8f 20
-                 bcs snerr                                ; it's unwanted. off to the refuse pile ;; @@2d8f 20
-                 bra chknum                                ;; @@2d92 20
+                 +lbcs snerr                              ; it's unwanted. off to the refuse pile ;; @@2d8f 20
+                 +lbra chknum                              ;; @@2d92 20
  ;; @@2d95 20
 go_foreign_esc_fn                                           ;; @@2d95 20
                  jmp (esc_fn_vec)                          ;; @@2d95 20
@@ -32,7 +32,7 @@ andop            ldy #0                                    ;; @@2d9b 20
                  eor count                                 ;; @@2dbf 20
                  and integr                                ;; @@2dc1 20
                  eor count                                 ;; @@2dc3 20
-                 bra givayf                               ; float (a,y) and return to user ;; @@2dc5 20
+                 +lbra givayf                             ; float (a,y) and return to user ;; @@2dc5 20
  ;; @@2dc8 20
  ;; @@2dc8 20
  ;; @@2dc8 20
@@ -105,11 +105,11 @@ getcmp           lda #argmo                                ;; @@2e17 20
 docmp                                                      ;; @@2e2f 20
                  inx                                      ; -1 to 1, 0 to 2, 1 to 4 ;; @@2e2f 20
                  txa                                       ;; @@2e30 20
-                 rol a                                     ;; @@2e31 20
+                 rol                                       ;; @@2e31 20
                  and domask                                ;; @@2e32 20
                  beq _local_1019_10                        ;; @@2e34 20
                  lda #$ff                                 ; map 0 to 0, map all others to -1 ;; @@2e36 20
-_local_1019_10   bra float                                ; float the one-byte result into FAC ;; @@2e38 20
+_local_1019_10   +lbra float                              ; float the one-byte result into FAC ;; @@2e38 20
  ;; @@2e3b 20
  ;; @@2e3b 20
 ;.end ;; @@2e3b 20

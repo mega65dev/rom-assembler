@@ -11,7 +11,7 @@ trans            jsr sendp                                ; build string to outp
                  jsr _close                               ; special close... ;; @@740e 233
                  pla                                      ; pop error ;; @@7411 233
                  plp                                      ; pop error status ;; @@7412 233
-                 bcs erexit                               ; ...branch if there was an error opening ;; @@7413 233
+                 +lbcs erexit                             ; ...branch if there was an error opening ;; @@7413 233
                  rts                                       ;; @@7416 233
  ;; @@7417 233
 ;.end ;; @@7417 233

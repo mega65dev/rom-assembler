@@ -4,7 +4,7 @@ getbyt           jsr frmnum                               ; read formula into FA
  ;; @@5d6f 168
 conint           jsr posint                               ; convert the FAC to a single byte int ;; @@5d6f 168
                  ldx facmo                                 ;; @@5d72 168
-                 bne fcerr                                ; result must be <= 255 ;; @@5d74 168
+                 +lbne fcerr                              ; result must be <= 255 ;; @@5d74 168
                  ldx faclo                                 ;; @@5d77 168
                  jmp chrgot                               ; set condition codes on terminator ;; @@5d79 168
  ;; @@5d7c 168
@@ -23,12 +23,12 @@ comwrd           jsr chkcom                                ;; @@5d87 168
 getwrd           jsr frmnum                               ; get an unsigned 2-byte value in y,a ;; @@5d8a 168
  ;; @@5d8d 168
 getadr           lda facsgn                               ; for this entry, value can't be < 0 ;; @@5d8d 168
-                 bmi fcerr                                ; function call error ;; @@5d8f 168
+                 +lbmi fcerr                              ; function call error ;; @@5d8f 168
  ;; @@5d92 168
 getsad                                                    ; get a signed 2-byte value in (y,a), ///entry from sprcor ;; @@5d92 168
                  lda facexp                               ; examine exponent ;; @@5d92 168
                  cmp #145                                  ;; @@5d94 168
-                 bcs fcerr                                ; function call error ;; @@5d96 168
+                 +lbcs fcerr                              ; function call error ;; @@5d96 168
                  jsr qint                                 ; integerize it ;; @@5d99 168
                  lda facmo                                 ;; @@5d9c 168
                  ldy facmo+1                               ;; @@5d9e 168
@@ -102,14 +102,14 @@ fadd5            jsr shiftr                               ; do a long shift ;; @
                  bcc fadd4                                ; continue with addition ;; @@5db9 168
  ;; @@5dbb 168
 fadd             jsr conupk                                ;; @@5dbb 168
-faddt            beq movfa                                ; if fac=0, result is in arg ;; @@5dbe 168
+faddt            +lbeq movfa                              ; if fac=0, result is in arg ;; @@5dbe 168
                  ldx facov                                 ;; @@5dc1 168
                  stx oldov                                 ;; @@5dc3 168
                  ldx #argexp                              ; default is shift argument ;; @@5dc5 168
                  lda argexp                               ; if arg=0, fac is result ;; @@5dc7 168
  ;; @@5dc9 168
 faddc            tay                                      ; also copy (a) into (y) ;; @@5dc9 168
-                 beq zerrts                               ; return ;; @@5dca 168
+                 +lbeq zerrts                             ; return ;; @@5dca 168
                  sec                                       ;; @@5dcd 168
                  sbc facexp                                ;; @@5dce 168
                  beq fadd4                                ; no shifting ;; @@5dd0 168

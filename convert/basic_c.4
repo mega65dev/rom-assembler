@@ -8,11 +8,11 @@ _local_1003_1    lda _local_1003_2,x                       ;; @@2261 4
                  rts                                       ;; @@226a 4
  ;; @@226b 4
  ;; @@226b 4
-_local_1003_2    !word  AutoScroll                        ; autoscroll vector ;; @@226b 4
-                 !word  n_esc_fn_vec                      ; escape function vector ;; @@226d 4
-                 !word  graphic_kernel                    ; graphic extension vector ;; @@226f 4
-                 !word  nerror,nmain,ncrnch,nqplop,ngone,neval ; traditional vectors ;; @@2271 4
-                 !word  nesclk,nescpr,nescex              ; escape command vectors ;; @@227d 4
+_local_1003_2    !word AutoScroll                         ; autoscroll vector ;; @@226b 4
+                 !word n_esc_fn_vec                       ; escape function vector ;; @@226d 4
+                 !word graphic_kernel                     ; graphic extension vector ;; @@226f 4
+                 !word nerror,nmain,ncrnch,nqplop,ngone,neval ; traditional vectors ;; @@2271 4
+                 !word nesclk,nescpr,nescex               ; escape command vectors ;; @@227d 4
 _local_1003_3                                              ;; @@2283 4
  ;; @@2283 4
 ; .page ;; @@2283 4

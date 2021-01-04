@@ -39,10 +39,10 @@ _local_1132_20   lda time,x                                ;; @@541d 133
                  jsr sta_far_ram1                         ; put lsd ;; @@5427 133
                  dey                                       ;; @@542a 133
                  tza                                      ; then do msd ;; @@542b 133
-                 lsr a                                     ;; @@542c 133
-                 lsr a                                     ;; @@542d 133
-                 lsr a                                     ;; @@542e 133
-                 lsr a                                     ;; @@542f 133
+                 lsr                                       ;; @@542c 133
+                 lsr                                       ;; @@542d 133
+                 lsr                                       ;; @@542e 133
+                 lsr                                       ;; @@542f 133
                  ora #'0'                                  ;; @@5430 133
                  jsr sta_far_ram1                         ; put msd ;; @@5432 133
                  plx                                       ;; @@5435 133
@@ -52,7 +52,7 @@ _local_1132_20   lda time,x                                ;; @@541d 133
  ;; @@543a 133
                  lda #10                                  ; length ;; @@543a 133
                  jsr mvdone                               ; update frespc ???? ;; @@543c 133
-                 bra putnew                               ; make descriptor in dsctmp real ;; @@543f 133
+                 +lbra putnew                             ; make descriptor in dsctmp real ;; @@543f 133
  ;; @@5442 133
 ; .page ;; @@5442 133
 ; TI. Convert 24-hour TOD into tenths of seconds.  901010 F.Bowen ;; @@5442 133

@@ -19,16 +19,16 @@ pot              jsr chkcls                               ; look for closing par
                  jsr conint                               ; get 1-byte arg in .x ;; @@56f6 145
                  dex                                       ;; @@56f9 145
                  cpx #4                                    ;; @@56fa 145
-                 bcs fcerr                                ; value error ;; @@56fc 145
+                 +lbcs fcerr                              ; value error ;; @@56fc 145
  ;; @@56ff 145
 ; jsr put_io_in_map ;; @@56ff 145
                  txa                                      ; convert arg (0-3) into paddle enables ;; @@56ff 145
-                 lsr a                                    ; .c= X/Y   .a= port 1/2 ;; @@5700 145
+                 lsr                                      ; .c= X/Y   .a= port 1/2 ;; @@5700 145
                  tax                                       ;; @@5701 145
                  lda sbits+6,x                             ;; @@5702 145
                  tax                                      ; (CIA paddle port, $40/$80) ;; @@5705 145
                  lda #0                                    ;; @@5706 145
-                 rol a                                     ;; @@5708 145
+                 rol                                       ;; @@5708 145
                  tay                                      ; (SID x/y offset,  $00/$01) ;; @@5709 145
  ;; @@570a 145
                  stx pot_temp_1                           ; save which port ;; @@570a 145
@@ -56,7 +56,7 @@ _local_1144_40   lda sid1+25,y                            ; read pot ;; @@571e 1
 _local_1144_50   lda #04                                  ; use joy line-2 ;; @@5734 145
                  dey                                      ; test if pot-x or pot-y ;; @@5736 145
                  bmi _local_1144_60                       ; skip if pot-x ;; @@5737 145
-                 asl a                                    ; use joy line-3 ;; @@5739 145
+                 asl                                      ; use joy line-3 ;; @@5739 145
 _local_1144_60   ldy #$ff                                  ;; @@573a 145
                  sty d1pra                                ; disable keybd inputs ;; @@573c 145
                  iny                                      ; set to zero for no trigger ;; @@573f 145
@@ -68,7 +68,7 @@ _local_1144_70   pla                                       ;; @@5746 145
                  tya                                       ;; @@574a 145
                  ldy pot_temp_2                           ; restore pot value ;; @@574b 145
                  plp                                      ; restore status ;; @@574e 145
-                 bra nosflt                               ; output 2-byte result ;; @@574f 145
+                 +lbra nosflt                             ; output 2-byte result ;; @@574f 145
  ;; @@5752 145
 ; .page ;; @@5752 145
 ;************************************************************* ;; @@5752 145

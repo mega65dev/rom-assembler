@@ -47,7 +47,7 @@ _local_1289_30   phy                                       ;; @@b6d2 290
                  sta xpos+1                                ;; @@b6ed 290
                  sta ypos+1                                ;; @@b6f0 290
                  tya                                       ;; @@b6f3 290
-                 lsr a                                     ;; @@b6f4 290
+                 lsr                                       ;; @@b6f4 290
                  tay                                       ;; @@b6f5 290
                  lda sbits,y                               ;; @@b6f6 290
                  and vic+16                                ;; @@b6f9 290

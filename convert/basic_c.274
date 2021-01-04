@@ -68,7 +68,7 @@ C65__circle                                                ;; @@b15b 274
  ;; @@b179 274
                  jsr optzer                               ; get solid flag ;; @@b179 274
                  cpx #2                                    ;; @@b17c 274
-                 bcs fcerr                                 ;; @@b17e 274
+                 +lbcs fcerr                               ;; @@b17e 274
                  stx GKI__parm7                            ;; @@b181 274
  ;; @@b184 274
                  jmp ($801c)                              ; bra circle ;; @@b184 274
@@ -112,7 +112,7 @@ C65__ellipse                                               ;; @@b187 274
  ;; @@b1ae 274
                  jsr optzer                               ; get solid flag ;; @@b1ae 274
                  cpx #2                                    ;; @@b1b1 274
-                 bcs fcerr                                 ;; @@b1b3 274
+                 +lbcs fcerr                               ;; @@b1b3 274
                  stx GKI__parm9                            ;; @@b1b6 274
  ;; @@b1b9 274
                  jmp ($8020)                              ; bra ellipse ;; @@b1b9 274
@@ -163,13 +163,13 @@ C65__polygon                                              ; changed BASIC syntax
                  cpx #3                                    ;; @@b1e6 274
                  bcc _local_1273_20                       ; too few ;; @@b1e8 274
                  cpx #128                                  ;; @@b1ea 274
-_local_1273_10   bcs fcerr                                ; too many ;; @@b1ec 274
+_local_1273_10   +lbcs fcerr                              ; too many ;; @@b1ec 274
                  stx GKI__parm13                           ;; @@b1ef 274
  ;; @@b1f2 274
 ; ldx GKI__parm13  ;get number of sides to draw (default=#sides) ;; @@b1f2 274
                  jsr optbyt                                ;; @@b1f2 274
                  cpx #1                                   ; must be at least 1 side ;; @@b1f5 274
-_local_1273_20   bcc fcerr                                 ;; @@b1f7 274
+_local_1273_20   +lbcc fcerr                               ;; @@b1f7 274
                  stx GKI__parm12                           ;; @@b1fa 274
                  dex                                       ;; @@b1fd 274
                  cpx GKI__parm13                          ; draw sides must be <= #sides ;; @@b1fe 274

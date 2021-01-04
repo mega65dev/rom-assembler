@@ -1,7 +1,7 @@
 joy              jsr conint                               ; get 1 byte arg in x ;; @@56ae 144
                  dex                                       ;; @@56b1 144
                  cpx #2                                   ; make sure arg. is valid ;; @@56b2 144
-                 bcs fcerr                                ; >1, error ;; @@56b4 144
+                 +lbcs fcerr                              ; >1, error ;; @@56b4 144
  ;; @@56b7 144
                  txa                                       ;; @@56b7 144
                  eor #1                                   ; invert to match legends on case ;; @@56b8 144
@@ -34,5 +34,5 @@ _local_1143_10   lda d1pra,x                              ; read joystick values
                  tya                                       ;; @@56e1 144
                  ora #$80                                 ; show trigger depressed ;; @@56e2 144
                  tay                                       ;; @@56e4 144
-_local_1143_20   bra sngflt                               ; float 1 byte arg in y. ;; @@56e5 144
+_local_1143_20   +lbra sngflt                             ; float 1 byte arg in y. ;; @@56e5 144
  ;; @@56e8 144

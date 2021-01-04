@@ -47,7 +47,7 @@ sin2             lda #<fr4                                ; pointer to 1/4 ;; @@
  ;; @@66e7 186
 _local_1185_10   lda #<sincon                              ;; @@66e7 186
                  ldy #>sincon                              ;; @@66e9 186
-                 bra polyx                                ; do approximation polyomial ;; @@66eb 186
+                 +lbra polyx                              ; do approximation polyomial ;; @@66eb 186
  ;; @@66ee 186
  ;; @@66ee 186
  ;; @@66ee 186

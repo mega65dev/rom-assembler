@@ -3,7 +3,7 @@ dma                                                       ; params are not longe
 _local_1063_1    bcc _local_1063_10                        ;; @@3b37 64
                  txa                                      ; [910102] ;; @@3b39 64
                  and #%00000100                           ;  ;; @@3b3a 64
-                 bne fcerr                                ; (disallow chained DMA lists) ;; @@3b3c 64
+                 +lbne fcerr                              ; (disallow chained DMA lists) ;; @@3b3c 64
                  stx dma2_cmd                              ;; @@3b3f 64
  ;; @@3b42 64
 _local_1063_10   jsr comwrd                               ; get length ;; @@3b42 64

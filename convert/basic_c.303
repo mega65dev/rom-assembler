@@ -10,7 +10,7 @@ rsprite          jsr conint                               ; get first arg, sprit
                  jsr combyt                               ; [910820] ;; @@ba18 303
                  jsr chkcls                               ; look for closing paren ;; @@ba1b 303
                  cpx #6                                    ;; @@ba1e 303
-_local_1302_1    bcs fcerr                                ; value error ;; @@ba20 303
+_local_1302_1    +lbcs fcerr                              ; value error ;; @@ba20 303
  ;; @@ba23 303
                  ply                                      ; sprite number ;; @@ba23 303
 ; jsr put_io_in_map ;; @@ba24 303
@@ -28,6 +28,6 @@ _local_1302_1    bcs fcerr                                ; value error ;; @@ba2
                  lda #1                                   ; return all non-zeros as '1' ;; @@ba39 303
  ;; @@ba3b 303
 _local_1302_10   tay                                       ;; @@ba3b 303
-                 bra sngflt                               ; go float 1 byte arg in .Y ;; @@ba3c 303
+                 +lbra sngflt                             ; go float 1 byte arg in .Y ;; @@ba3c 303
  ;; @@ba3f 303
  ;; @@ba3f 303

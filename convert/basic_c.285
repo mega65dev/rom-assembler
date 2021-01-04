@@ -17,23 +17,23 @@ getnyb                                                     ;; @@b50d 285
                  jsr getbyt                               ; Get a nybble, check range (0-15) ;; @@b50d 285
 chknyb                                                     ;; @@b510 285
                  cpx #16                                   ;; @@b510 285
-                 bcs fcerr                                 ;; @@b512 285
+                 +lbcs fcerr                               ;; @@b512 285
                  rts                                       ;; @@b515 285
  ;; @@b516 285
  ;; @@b516 285
  ;; @@b516 285
 chkesc                                                    ; Check for escape token, error if not, else get next token ;; @@b516 285
                  cmp #esc_command_token                    ;; @@b516 285
-                 bne snerr                                 ;; @@b518 285
+                 +lbne snerr                               ;; @@b518 285
                  jsr chrget                                ;; @@b51b 285
-                 beq snerr                                ; eos? report error if so ;; @@b51e 285
+                 +lbeq snerr                              ; eos? report error if so ;; @@b51e 285
                  rts                                       ;; @@b521 285
  ;; @@b522 285
  ;; @@b522 285
  ;; @@b522 285
 chkeos                                                    ; Check for next byte = end of statement, error if not ;; @@b522 285
                  jsr chrget                                ;; @@b522 285
-                 bne snerr                                ; eos? report error if not ;; @@b525 285
+                 +lbne snerr                              ; eos? report error if not ;; @@b525 285
                  rts                                       ;; @@b528 285
  ;; @@b529 285
  ;; @@b529 285
@@ -56,7 +56,7 @@ chkeos                                                    ; Check for next byte 
 ;************************************************************************************ ;; @@b529 285
  ;; @@b529 285
 sprite           cmp #clr_token                           ; SPRITE CLR: init environment   [910717] ;; @@b529 285
-                 beq Sprite_CLR                           ; yes ;; @@b52b 285
+                 +lbeq Sprite_CLR                         ; yes ;; @@b52b 285
                  cmp #save_token                          ; SPRITE SAVE: save sprite data   [911001] ;; @@b52e 285
                  beq Sprite_Save                          ; yes ;; @@b530 285
                  cmp #load_token                          ; SPRITE LOAD: load sprite data   [911001] ;; @@b532 285

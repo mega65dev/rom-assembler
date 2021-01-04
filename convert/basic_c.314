@@ -10,7 +10,7 @@ edit_load_done                                             ;; @@bdde 314
                  ldy index+1                               ;; @@bdee 314
                  stx text_top                              ;; @@bdf0 314
                  sty text_top+1                            ;; @@bdf2 314
-                 bra link_program                         ; relink & RTS ;; @@bdf4 314
+                 +lbra link_program                       ; relink & RTS ;; @@bdf4 314
  ;; @@bdf7 314
 ; .page ;; @@bdf7 314
 edit_save                                                  ;; @@bdf7 314
@@ -22,7 +22,7 @@ edit_save                                                  ;; @@bdf7 314
                  ldy #fsavseq                              ;; @@be05 314
                  ldx #8                                    ;; @@be07 314
                  jsr open_file                            ; open the file ;; @@be09 314
-                 bcs list_err                             ; exit if error ;; @@be0c 314
+                 +lbcs list_err                           ; exit if error ;; @@be0c 314
                  ldx dosla                                 ;; @@be0f 314
                  jsr _chkout                              ; get output channel ;; @@be12 314
                  bcs _local_1313_30                       ; error ;; @@be15 314
@@ -64,7 +64,7 @@ _local_1313_26   ldy #0                                   ; check for EOF: a pai
                  jsr indin1                                ;; @@be4d 314
                  bne _local_1313_10                       ; loop until end of text ;; @@be50 314
  ;; @@be52 314
-_local_1313_30   bra list_exit                            ; release channel, close file, exit ;; @@be52 314
+_local_1313_30   +lbra list_exit                          ; release channel, close file, exit ;; @@be52 314
  ;; @@be55 314
 ;.end ;; @@be55 314
 ; .page ;; @@be55 314

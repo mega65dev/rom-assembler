@@ -6,7 +6,7 @@ strd             jsr chknum                               ; arg has to be numeri
  ;; @@59af 152
 timstr           lda #<lofbuf                              ;; @@59af 152
                  ldy #>lofbuf                              ;; @@59b1 152
-                 bra strlit                                ;; @@59b3 152
+                 +lbra strlit                              ;; @@59b3 152
  ;; @@59b6 152
  ;; @@59b6 152
 ; CHR$() creates a string which contains as its only character the PETSCII ;; @@59b6 152
@@ -25,7 +25,7 @@ chrd             jsr conint                               ; get integer in range
  ;; @@59c7 152
 chrd1            pla                                      ; get rid of "chknum" return address ;; @@59c7 152
                  pla                                       ;; @@59c8 152
-                 bra putnew                               ; setup FAC to point to desc ;; @@59c9 152
+                 +lbra putnew                             ; setup FAC to point to desc ;; @@59c9 152
 ; .page ;; @@59cc 152
  ;; @@59cc 152
 ; The following is the LEFT$($,#) function.  It takes the leftmost # characters ;; @@59cc 152

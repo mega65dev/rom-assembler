@@ -9,7 +9,7 @@ round            lda facexp                               ; zero? ;; @@62b2 175
  ;; @@62ba 175
 incrnd           jsr incfac                               ; yes, add one to lsb(FAC) /// entry from EXP ;; @@62ba 175
 ;note .c=1 since incfac doesn't touch .c ;; @@62bd 175
-                 beq rndshf                               ; carry:   squeeze msb in and rts ;; @@62bd 175
+                 +lbeq rndshf                             ; carry:   squeeze msb in and rts ;; @@62bd 175
                  rts                                      ; no carry: rts now ;; @@62c0 175
  ;; @@62c1 175
  ;; @@62c1 175
@@ -20,7 +20,7 @@ sign             lda facexp                                ;; @@62c1 175
                  beq signrt                               ; if number is zero, so is result ;; @@62c3 175
  ;; @@62c5 175
 fcsign           lda facsgn                                ;; @@62c5 175
-fcomps           rol a                                     ;; @@62c7 175
+fcomps           rol                                       ;; @@62c7 175
                  lda #$ff                                 ; assume negative ;; @@62c8 175
                  bcs signrt                                ;; @@62ca 175
                  lda #1                                   ; get +1 ;; @@62cc 175
@@ -42,7 +42,7 @@ float            sta facho                                ; put (accb) in high o
  ;; @@62da 175
 floats           lda facho                                 ;; @@62da 175
                  eor #$ff                                  ;; @@62dc 175
-                 rol a                                    ; get comp of sign in carry ;; @@62de 175
+                 rol                                      ; get comp of sign in carry ;; @@62de 175
 floatc           lda #0                                   ; zero (a) but not carry ;; @@62df 175
                  sta faclo                                 ;; @@62e1 175
                  sta facmo                                 ;; @@62e3 175
@@ -50,7 +50,7 @@ floatc           lda #0                                   ; zero (a) but not car
 floatb           stx facexp                                ;; @@62e5 175
                  sta facov                                 ;; @@62e7 175
                  sta facsgn                                ;; @@62e9 175
-                 bra fadflt                                ;; @@62eb 175
+                 +lbra fadflt                              ;; @@62eb 175
  ;; @@62ee 175
  ;; @@62ee 175
  ;; @@62ee 175

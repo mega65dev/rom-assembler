@@ -6,7 +6,7 @@ cursor           cmp #on_token                            ; Check for ON | OFF ;
                  jsr chkesc                                ;; @@7d31 261
                  cmp #off_token                           ; turn cursor off (.c=1) ;; @@7d34 261
                  beq _local_1260_20                        ;; @@7d36 261
-                 bra snerr                                 ;; @@7d38 261
+                 +lbra snerr                               ;; @@7d38 261
  ;; @@7d3b 261
 _local_1260_1    pha                                      ; Evaluate cursor position parameters ;; @@7d3b 261
                  sec                                       ;; @@7d3c 261
@@ -26,7 +26,7 @@ _local_1260_10   stx column                                ;; @@7d4e 261
                  ldy column                                ;; @@7d55 261
                  clc                                       ;; @@7d57 261
                  jsr _plot                                ; set new cursor position ;; @@7d58 261
-                 bcs fcerr                                ; error if bad position ;; @@7d5b 261
+                 +lbcs fcerr                              ; error if bad position ;; @@7d5b 261
  ;; @@7d5e 261
                  jsr optzer                               ; Get new cursor type   ???? assumes screen output ;; @@7d5e 261
                  bcc _local_1260_30                       ; not given, exit ;; @@7d61 261

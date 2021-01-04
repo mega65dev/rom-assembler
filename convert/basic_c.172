@@ -73,14 +73,14 @@ mldexp           beq zeremv                               ; so we get zero expon
                  clc                                       ;; @@612b 172
                  adc facexp                               ; result is in (a) ;; @@612c 172
                  bcc _local_1171_10                       ; find (c) xor (n) ;; @@612e 172
-                 bmi overr                                ; overflow if bits match ;; @@6130 172
+                 +lbmi overr                              ; overflow if bits match ;; @@6130 172
                  clc                                       ;; @@6133 172
                  !text $2c                                 ;; @@6134 172
  ;; @@6135 172
 _local_1171_10   bpl zeremv                               ; underflow ;; @@6135 172
                  adc #$80                                 ; add bias ;; @@6137 172
                  sta facexp                                ;; @@6139 172
-                 beq zeroml                               ; zero the rest of it ;; @@613b 172
+                 +lbeq zeroml                             ; zero the rest of it ;; @@613b 172
                  lda arisgn                                ;; @@613e 172
                  sta facsgn                               ; arisgn is result's sign ;; @@6140 172
                  rts                                      ; done ;; @@6142 172

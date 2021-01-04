@@ -27,10 +27,10 @@ _local_1110_10   lda voices+1,y                           ; test if there is a n
                  lda dnote                                ; test if this is a dotted note ;; @@4941 111
                  beq _local_1110_20                       ; no ;; @@4944 111
                  lda ntime+1                               ;; @@4946 111
-                 lsr a                                    ; duration is 1.5 x current length ;; @@4949 111
+                 lsr                                      ; duration is 1.5 x current length ;; @@4949 111
                  pha                                       ;; @@494a 111
                  lda ntime                                 ;; @@494b 111
-                 ror a                                     ;; @@494e 111
+                 ror                                       ;; @@494e 111
                  clc                                       ;; @@494f 111
                  adc voices,y                              ;; @@4950 111
                  sta voices,y                              ;; @@4953 111

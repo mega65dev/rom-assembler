@@ -11,7 +11,7 @@ let              jsr ptrget                               ; get pntr to variable
  ;; @@3688 51
                  jsr frmevl                               ; get value of formula into FAC ;; @@3688 51
                  pla                                       ;; @@368b 51
-                 rol a                                    ; carry set for string, off for numeric ;; @@368c 51
+                 rol                                      ; carry set for string, off for numeric ;; @@368c 51
                  jsr chkval                               ; make sure VALTYP matches carry ;; @@368d 51
 ;and set zero flag for numeric ;; @@3690 51
                  bne copstr                               ; if numeric, copy it ;; @@3690 51
@@ -35,7 +35,7 @@ qintgr           bpl copflt                               ; store a floating poi
  ;; @@36ad 51
 copflt           ldx forpnt                                ;; @@36ad 51
                  ldy forpnt+1                              ;; @@36af 51
-                 bra movmf_ram1                           ; put number @forpnt in var bank ;; @@36b1 51
+                 +lbra movmf_ram1                         ; put number @forpnt in var bank ;; @@36b1 51
  ;; @@36b4 51
  ;; @@36b4 51
  ;; @@36b4 51
@@ -43,7 +43,7 @@ copstr           pla                                      ; if string, no INTFLG
  ;; @@36b5 51
 inpcom           ldy forpnt+1                             ; TI$? ;; @@36b5 51
                  cpy #>zero                               ; (only TI$ can be this on assign) ;; @@36b7 51
-                 beq Set_TI_String                        ; yes ;; @@36b9 51
+                 +lbeq Set_TI_String                      ; yes ;; @@36b9 51
                  bra getspt                               ; no ;; @@36bc 51
  ;; @@36be 51
 ; .page ;; @@36be 51

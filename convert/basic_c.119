@@ -10,7 +10,7 @@ is_numeric                                                 ;; @@4ed2 119
                  jsr indfmo                               ; fetch low ;; @@4edc 119
                  tay                                      ; put low in y ;; @@4edf 119
                  txa                                      ; get high in a ;; @@4ee0 119
-                 bra givayf                               ; float and return ;; @@4ee1 119
+                 +lbra givayf                             ; float and return ;; @@4ee1 119
  ;; @@4ee4 119
  ;; @@4ee4 119
 ; Screen out TI, ST, ER, and EL, and assign values to them.  First test ;; @@4ee4 119
@@ -32,7 +32,7 @@ is_floating                                                ;; @@4ee4 119
                  bne qstatv                               ; no ;; @@4ef2 119
                  cpy #'I'                                  ;; @@4ef4 119
                  bne gomovf                               ; no, and it can't be ST either ;; @@4ef6 119
-                 beq Get_TI                                ;; @@4ef8 119
+                 +lbeq Get_TI                              ;; @@4ef8 119
  ;; @@4efb 119
  ;; @@4efb 119
 qstatv           cpx #'S'                                 ; ST? ;; @@4efb 119
@@ -40,7 +40,7 @@ qstatv           cpx #'S'                                 ; ST? ;; @@4efb 119
                  cpy #'T'                                  ;; @@4eff 119
                  bne gomovf                                ;; @@4f01 119
                  jsr _readst                              ; (???? system bank for rs232 st) ;; @@4f03 119
-                 bra float                                 ;; @@4f06 119
+                 +lbra float                               ;; @@4f06 119
  ;; @@4f09 119
  ;; @@4f09 119
 qdsav            cpx #'D'                                 ; DS? ;; @@4f09 119
@@ -55,10 +55,10 @@ qdsav            cpx #'D'                                 ; DS? ;; @@4f09 119
                  lda #dsdesc+1                             ;; @@4f16 119
                  jsr lda_far_ram1                         ; lda (dsdesc+1),y ;; @@4f18 119
                  and #$0f                                  ;; @@4f1b 119
-                 asl a                                     ;; @@4f1d 119
+                 asl                                       ;; @@4f1d 119
                  sta garbfl                                ;; @@4f1e 119
-                 asl a                                     ;; @@4f20 119
-                 asl a                                     ;; @@4f21 119
+                 asl                                       ;; @@4f20 119
+                 asl                                       ;; @@4f21 119
                  adc garbfl                                ;; @@4f22 119
                  sta garbfl                                ;; @@4f24 119
                  iny                                       ;; @@4f26 119
@@ -66,7 +66,7 @@ qdsav            cpx #'D'                                 ; DS? ;; @@4f09 119
                  jsr lda_far_ram1                         ; lda (dsdesc+1),y ;; @@4f29 119
                  and #$0f                                  ;; @@4f2c 119
                  adc garbfl                                ;; @@4f2e 119
-                 bra float                                 ;; @@4f30 119
+                 +lbra float                               ;; @@4f30 119
  ;; @@4f33 119
  ;; @@4f33 119
 qerlin           cpx #'E'                                 ; ER or EL? ;; @@4f33 119
@@ -78,10 +78,10 @@ qerlin           cpx #'E'                                 ; ER or EL? ;; @@4f33 
  ;; @@4f3f 119
                  lda errlin+1                             ; want EL (last error line #) ;; @@4f3f 119
                  ldy errlin                                ;; @@4f42 119
-                 bra nosflt                                ;; @@4f45 119
+                 +lbra nosflt                              ;; @@4f45 119
  ;; @@4f48 119
 qnumer           lda errnum                               ; want ER (number of last error) ;; @@4f48 119
-                 bra float                                 ;; @@4f4b 119
+                 +lbra float                               ;; @@4f4b 119
  ;; @@4f4e 119
 ; .page ;; @@4f4e 119
 gomovf           lda facmo                                 ;; @@4f4e 119
@@ -129,7 +129,7 @@ ptrgt1           stx dimflg                               ; store flag away ;; @
 ptrgt2           sta varnam                                ;; @@4f83 119
                  jsr chrgot                               ; get current character ;; @@4f85 119
                  jsr isletc                               ; check for a letter ;; @@4f88 119
-                 bcc snerr                                ; not a letter ;; @@4f8b 119
+                 +lbcc snerr                              ; not a letter ;; @@4f8b 119
  ;; @@4f8e 119
                  ldx #0                                   ; assume no second character ;; @@4f8e 119
                  stx valtyp                               ; default is numeric ;; @@4f90 119
@@ -155,7 +155,7 @@ _local_1118_40   cmp #'%'                                 ; notstr. isn't string
                  bne _local_1118_60                       ; branch if not ;; @@4fb5 119
                  lda subflg                                ;; @@4fb7 119
 ; bne snerr ; syntax error if integers disabled ;; @@4fb9 119
-                 bne chkerr                               ; integers disallowed- type mismatch error  [910114] ;; @@4fb9 119
+                 +lbne chkerr                             ; integers disallowed- type mismatch error  [910114] ;; @@4fb9 119
                  lda #$80                                 ; flag integer by turning on both high bits ;; @@4fbc 119
                  sta intflg                                ;; @@4fbe 119
                  tsb varnam                                ;; @@4fc0 119
@@ -169,7 +169,7 @@ _local_1118_60   stx varnam+1                             ; strnam. store away s
                  sec                                       ;; @@4fcb 119
                  ora subflg                               ; add flag whether to allow arrays ;; @@4fcc 119
                  sbc #'('                                  ;; @@4fce 119
-                 beq is_array                             ; note: won't match if SUBFLG set ;; @@4fd0 119
+                 +lbeq is_array                           ; note: won't match if SUBFLG set ;; @@4fd0 119
  ;; @@4fd3 119
                  ldy #0                                    ;; @@4fd3 119
                  sty subflg                               ; allow subscripts again ;; @@4fd5 119
@@ -189,7 +189,7 @@ _local_1118_90   jsr indlow_ram1                          ; lda (lowtr),y ;; @@4
                  iny                                       ;; @@4fee 119
                  jsr indlow_ram1                           ;; @@4fef 119
                  cmp varnam+1                             ; and the low part? ;; @@4ff2 119
-                 beq finptr                               ; !!that's it!! ;; @@4ff4 119
+                 +lbeq finptr                             ; !!that's it!! ;; @@4ff4 119
  ;; @@4ff7 119
                  dey                                       ;; @@4ff7 119
 _local_1118_100  clc                                       ;; @@4ff8 119

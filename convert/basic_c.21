@@ -22,7 +22,7 @@ ready            ldx #$80                                 ; no error ;; @@2e4d 2
 error            jmp (ierror)                              ;; @@2e4f 21
  ;; @@2e52 21
 nerror           txa                                       ;; @@2e52 21
-                 bmi ready_1                              ; ...branch if no error (from 'ready') ;; @@2e53 21
+                 +lbmi ready_1                            ; ...branch if no error (from 'ready') ;; @@2e53 21
                  stx errnum                               ; save error # for 'er' ;; @@2e56 21
                  bbr7 runmod,errisd                       ; branch if direct mode- always display error ;; @@2e59 21
  ;; @@2e5c 21
@@ -52,6 +52,6 @@ _local_1020_20   ldy trapno+1                             ; is trap set? ;; @@2e
                  ldx oldstk                                ;; @@2e8f 21
                  txs                                       ;; @@2e91 21
                  jsr luk4it                                ;; @@2e92 21
-                 bra newstt                                ;; @@2e95 21
+                 +lbra newstt                              ;; @@2e95 21
  ;; @@2e98 21
 ; .page ;; @@2e98 21

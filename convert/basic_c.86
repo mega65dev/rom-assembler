@@ -11,13 +11,13 @@ change                                                     ;; @@428c 86
                  ldx #0                                   ; evaluate string args ;; @@4296 86
                  jsr delimit_string                       ; string1 ;; @@4298 86
                  lda fstr1+2                               ;; @@429b 86
-                 beq fcerr                                ; error if string1 null ;; @@429d 86
+                 +lbeq fcerr                              ; error if string1 null ;; @@429d 86
                  bbr7 op,_local_1085_10                   ; branch if no string2 ;; @@42a0 86
                  jsr chrget                               ; pick up required 'to' token ;; @@42a3 86
                  cmp #to_token                             ;; @@42a6 86
-                 bne snerr                                ; error if missing ;; @@42a8 86
+                 +lbne snerr                              ; error if missing ;; @@42a8 86
                  jsr chrget                                ;; @@42ab 86
-                 beq snerr                                ; error if eol ;; @@42ae 86
+                 +lbeq snerr                              ; error if eol ;; @@42ae 86
                  ldx #3                                    ;; @@42b1 86
                  jsr delimit_string                       ; string2 ;; @@42b3 86
  ;; @@42b6 86

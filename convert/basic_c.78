@@ -41,7 +41,7 @@ _local_1077_10   inw fndpnt                                ;; @@3fc3 78
                  sbc max_mem_0                             ;; @@3fc8 78
                  lda fndpnt+1                              ;; @@3fcb 78
                  sbc max_mem_0+1                           ;; @@3fcd 78
-                 bcs omerr                                ; yes- out of memory error ;; @@3fd0 78
+                 +lbcs omerr                              ; yes- out of memory error ;; @@3fd0 78
                  inx                                      ; no - next... ;; @@3fd3 78
                  lda fbuffr+1,x                            ;; @@3fd4 78
                  bne _local_1077_10                        ;; @@3fd7 78

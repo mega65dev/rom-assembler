@@ -1,10 +1,10 @@
 mldvex           lda facsgn                               ; get sign ;; @@6143 173
                  eor #$ff                                 ; complement it ;; @@6145 173
-                 bmi overr                                 ;; @@6147 173
+                 +lbmi overr                               ;; @@6147 173
  ;; @@614a 173
 zeremv           pla                                      ; get addr off stack ;; @@614a 173
                  pla                                       ;; @@614b 173
-                 bra zerofc                               ; underflow ;; @@614c 173
+                 +lbra zerofc                             ; underflow ;; @@614c 173
  ;; @@614f 173
 ; .page ;; @@614f 173
 ; Multiply FAC by 10 ;; @@614f 173
@@ -14,13 +14,13 @@ mul10            jsr movaf                                ; copy FAC into ARG ;;
                  beq mul10r                               ; if (FAC)=0, got answer ;; @@6153 173
                  clc                                       ;; @@6155 173
                  adc #2                                   ; augment exp by 2 ;; @@6156 173
-                 bcs overr                                ; overflow ;; @@6158 173
+                 +lbcs overr                              ; overflow ;; @@6158 173
  ;; @@615b 173
 finml6           ldx #0                                    ;; @@615b 173
                  stx arisgn                               ; signs are same ;; @@615d 173
                  jsr faddc                                ; add together ;; @@615f 173
                  inc facexp                               ; multiply by two ;; @@6162 173
-                 beq overr                                ; overflow ;; @@6164 173
+                 +lbeq overr                              ; overflow ;; @@6164 173
  ;; @@6167 173
 mul10r           rts                                       ;; @@6167 173
  ;; @@6168 173
@@ -42,7 +42,7 @@ fdivt_c65                                                 ; [910402] ;; @@6178 1
                  bra fdivt                                ; go divide ;; @@6180 173
  ;; @@6182 173
 fdiv             jsr conupk                               ; unpack constant ;; @@6182 173
-fdivt            beq doverr                               ; can't divide by zero ;; @@6185 173
+fdivt            +lbeq doverr                             ; can't divide by zero ;; @@6185 173
                  jsr round                                ; take FACOV into account in FAC ;; @@6188 173
                  lda #0                                   ; negate facexp ;; @@618b 173
                  sec                                       ;; @@618d 173
@@ -50,7 +50,7 @@ fdivt            beq doverr                               ; can't divide by zero
                  sta facexp                                ;; @@6190 173
                  jsr muldiv                               ; fix up exponents ;; @@6192 173
                  inc facexp                               ; scale it right ;; @@6195 173
-                 beq overr                                ; overflow ;; @@6197 173
+                 +lbeq overr                              ; overflow ;; @@6197 173
                  ldx #$fc                                 ; set up procedure ;; @@619a 173
                  lda #1                                    ;; @@619c 173
  ;; @@619e 173
@@ -69,7 +69,7 @@ divide                                                    ; this is the best cod
                  cpy faclo                                 ;; @@61b2 173
  ;; @@61b4 173
 savquo           php                                       ;; @@61b4 173
-                 rol a                                    ; save result ;; @@61b5 173
+                 rol                                      ; save result ;; @@61b5 173
                  bcc qshft                                ; if not done, continue ;; @@61b6 173
                  inx                                       ;; @@61b8 173
                  sta reslo,x                               ;; @@61b9 173
@@ -112,12 +112,12 @@ ld100            lda #$40                                 ; only want two more b
  ;; @@61f2 173
  ;; @@61f2 173
  ;; @@61f2 173
-divnrm           asl a                                    ; get last two bits into MSB and B6 ;; @@61f2 173
-                 asl a                                     ;; @@61f3 173
-                 asl a                                     ;; @@61f4 173
-                 asl a                                     ;; @@61f5 173
-                 asl a                                     ;; @@61f6 173
-                 asl a                                     ;; @@61f7 173
+divnrm           asl                                      ; get last two bits into MSB and B6 ;; @@61f2 173
+                 asl                                       ;; @@61f3 173
+                 asl                                       ;; @@61f4 173
+                 asl                                       ;; @@61f5 173
+                 asl                                       ;; @@61f6 173
+                 asl                                       ;; @@61f7 173
                  sta facov                                 ;; @@61f8 173
                  plp                                       ;; @@61fa 173
  ;; @@61fb 173
@@ -131,7 +131,7 @@ movfr            lda resho                                ; move result to FAC ;
                  sta facmo                                 ;; @@6205 173
                  lda reslo                                ; move lo and sign ;; @@6207 173
                  sta faclo                                 ;; @@6209 173
-                 bra normal                               ; all done ;; @@620b 173
+                 +lbra normal                             ; all done ;; @@620b 173
  ;; @@620e 173
  ;; @@620e 173
  ;; @@620e 173

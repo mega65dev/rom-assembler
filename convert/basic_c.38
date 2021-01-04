@@ -22,7 +22,7 @@ _local_1037_10   iny                                      ; point to next charac
 _local_1037_15   jsr helpsb                                ;; @@33b2 38
  ;; @@33b5 38
 _local_1037_20   jsr indlow                                ;; @@33b5 38
-                 beq highlight_done                       ; finished when trailing null is found ;; @@33b8 38
+                 +lbeq highlight_done                     ; finished when trailing null is found ;; @@33b8 38
                  jmp (iqplop)                             ; usually points to nqplop ;; @@33bb 38
  ;; @@33be 38
 ; .page ;; @@33be 38

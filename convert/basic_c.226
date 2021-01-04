@@ -2,7 +2,7 @@ header           jsr dospar                               ; parse the line ;; @@
                  jsr chk1                                 ; check parameter errors ;; @@724e 226
                  and #$01                                  ;; @@7251 226
                  cmp #$01                                  ;; @@7253 226
-                 bne snerr                                ; if required parameters not present ;; @@7255 226
+                 +lbne snerr                              ; if required parameters not present ;; @@7255 226
  ;; @@7258 226
                  jsr _clall                               ; close all files ;; @@7258 226
                  jsr are_you_sure                         ; confirm if in direct mode ;; @@725b 226

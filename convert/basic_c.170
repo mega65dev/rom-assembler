@@ -38,7 +38,7 @@ norm1            bpl norm2                                ; if msb=0 shift again
  ;; @@5e87 170
 squeez           bcc rndrts                               ; bits to shift? ;; @@5e87 170
 rndshf           inc facexp                                ;; @@5e89 170
-                 beq overr                                 ;; @@5e8b 170
+                 +lbeq overr                               ;; @@5e8b 170
                  ror facho                                 ;; @@5e8e 170
                  ror facmoh                                ;; @@5e90 170
                  ror facmo                                 ;; @@5e92 170

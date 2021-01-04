@@ -22,7 +22,7 @@ dcat5            jsr crdo                                 ; output new line ;; @
 dcat10           jsr crdo                                 ; flush current line ;; @@704c 218
 dcat11           jsr release_channels                     ; release cmd channel, restore terminal ;; @@704f 218
                  lda #doslfn                               ;; @@7052 218
-                 bra close_out                            ; [900725] ;; @@7054 218
+                 +lbra close_out                          ; [900725] ;; @@7054 218
  ;; @@7057 218
 ; .page ;; @@7057 218
 ; LDIR  same as DIR, except it buffers each line to reduce ;; @@7057 218

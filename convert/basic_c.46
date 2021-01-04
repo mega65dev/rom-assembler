@@ -1,7 +1,7 @@
 if_true          jsr chrgot                                ;; @@35b7 46
                  beq _local_1045_20                       ; branch if end of statement ;; @@35ba 46
                  bcs _local_1045_10                       ; branch if not a number ;; @@35bc 46
-                 bra goto                                 ; here if of the form 'THEN line#' ;; @@35be 46
+                 +lbra goto                               ; here if of the form 'THEN line#' ;; @@35be 46
  ;; @@35c1 46
 _local_1045_10   cmp #esc_command_token                   ; is this the beginning of a b-block? ;; @@35c1 46
                  bne _local_1045_20                       ; no, must be an escape command ;; @@35c3 46
@@ -13,6 +13,6 @@ _local_1045_10   cmp #esc_command_token                   ; is this the beginnin
                  jsr chrget                               ; ..and the second token, as well. ;; @@35d0 46
  ;; @@35d3 46
 _local_1045_20   jsr chrgot                               ; get back original character, & set up flags ;; @@35d3 46
-                 bra xeqcm3                               ; ..and go execute whatever it is ;; @@35d6 46
+                 +lbra xeqcm3                             ; ..and go execute whatever it is ;; @@35d6 46
  ;; @@35d9 46
 ; .page ;; @@35d9 46

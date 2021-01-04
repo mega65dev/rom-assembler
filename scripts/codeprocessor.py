@@ -36,6 +36,27 @@ class CodeProcessor(BaseProcessor):
 	#
 	def tryConvert(self):
 		#
+		#		Casing errors.
+		#
+		if self.body == ".word  screen-1":
+			self.body = ".word Screen-1"
+		if self.body == ".word  C65__viewport-1":
+			self.body = ".word C65__Viewport-1"
+		if self.label == "Key_Load":
+			self.label = "Key_load"
+		#
+		#		A label called "inz" at $6BD7 confuses it.
+		#
+		if self.label == "inz":
+			self.label = "inz1"
+		#
+		#		A weird text string.
+		#
+		if self.label == "keydat":
+			self.body = '!text "($RHC+",$22'
+			self.currentPC += 7
+			return True
+		#
 		#		Check for * = <hex>
 		#
 		if self.body.startswith("*"):
@@ -81,8 +102,50 @@ class CodeProcessor(BaseProcessor):
 		if romOpcode not in opList:
 			print("ROM mismatch error looking for {0:02x}".format(romOpcode))
 			sys.exit(0)
+		#
+		#		This fudge required because ACME BRA long does not work. It replaces
+		#		long BRA with +lbra etc.
+		#
+		if 	romOpcode == 0x83 or romOpcode == 0x93 or romOpcode == 0xD3 or romOpcode == 0x13 or \
+			romOpcode == 0xF3 or romOpcode == 0xB3 or romOpcode == 0x33 or romOpcode == 0x73 or \
+			romOpcode == 0x53:
+			self.body = "+l"+self.body
+			print(self.body)
+		#
+		else: 
+			if ((romOpcode & 0x1F) == 0x13):
+				print("{0:02x} {1}".format(romOpcode,self.body))
+				sys.exit(0)
+		#
 		self.currentPC += opList[romOpcode]										# adjust the program counter.
-	#
+		#
+		#		ACME does not like NEG A/DEC A
+		#
+		if self.body == "neg a" or self.body == "dec a" or self.body == "asl a" or \
+		   self.body == "lsr a" or self.body == "rol a" or self.body == "ror a" or \
+		   self.body == "inc a":
+			self.body = self.body[:-1].strip()
+		#
+		#		We jump to a local, a really good idea.
+		#
+		if self.body == "jsr restore$1":
+			self.body = "jsr restore__1"
+		#
+		#		A lda #';' gets mangled due to my lazy parsing.
+		#
+		if self.body == "lda #'":
+			self.body = "lda #';'"
+		#
+		#		Fix binary constants which seem confusing.
+		#
+		if self.body == "lda #%11" or self.body == "lda #%10":
+			self.body = "lda #{0}".format(int(self.body[-2:],2))
+		#
+		#		Handle INZ branch replacement.
+		#
+		if self.body == "beq inz":
+			self.body = "beq inz1"
+	#			
 	#		Read ROM.
 	#		
 	def readROM(self,addr):
@@ -123,6 +186,8 @@ class CodeProcessor(BaseProcessor):
 			else:																# something else, which is probably a single byte.
 				element = s.split(",")[0]										# if not we have problems. take it off.
 				s = s[len(element)+1:].strip()
+				if element[0] == "@": 											# octal conversion
+					element = str(int(element[1:],8))
 				byteElements.append(element)
 				if re.match("^\\d+$",element) is not None:						# can we check it ? if so do so.
 					assert self.readROM(self.currentPC) == int(element)		
@@ -133,8 +198,13 @@ class CodeProcessor(BaseProcessor):
 	#		Process word
 	#
 	def processWord(self):
+		#
+		#	Line at $2846 which has this comment in the code.
+		#
+		self.body = self.body.replace("[910109]","")
+		#
 		wordCount = len(self.body[5:].split(","))
-		self.body = "!word"+self.body[5:]
+		self.body = "!word "+self.body[5:].strip()
 		self.currentPC += (wordCount * 2)
 	#
 	#		Find position of closing quote

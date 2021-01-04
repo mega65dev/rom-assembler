@@ -16,7 +16,7 @@ eex2             jsr synchr                               ; check character ;; @
                  ldx #'='                                  ;; @@6a3a 199
                  cpx chsn                                 ; = in field ;; @@6a3c 199
                  bne _local_1198_50                       ; branch if not ;; @@6a3f 199
-                 lsr a                                    ; .a=.a/2 ;; @@6a41 199
+                 lsr                                      ; .a=.a/2 ;; @@6a41 199
                  adc #0                                   ; add 1 if odd ;; @@6a42 199
  ;; @@6a44 199
 _local_1198_50   tax                                      ; store no of blanks in x ;; @@6a44 199

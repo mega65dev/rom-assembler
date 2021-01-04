@@ -27,7 +27,7 @@ _local_1084_20   lda endchr                               ; was a # input? ;; @@
 _local_1084_30   rts                                       ;; @@4285 85
  ;; @@4286 85
  ;; @@4286 85
-_local_1084_40   bra snerr                                ; syntax error ;; @@4286 85
+_local_1084_40   +lbra snerr                              ; syntax error ;; @@4286 85
  ;; @@4289 85
 ;.end ;; @@4289 85
 ; .page ;; @@4289 85

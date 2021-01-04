@@ -13,7 +13,7 @@ execute_a_line                                            ; EXECUTE PLAIN TEXT I
                  bcc _local_1024_10                       ; got line number ;; @@2f1b 25
                  jsr crunch                               ; got text- tokenize buffer, ;; @@2f1d 25
                  jsr chrgot                               ; get first command (token), ;; @@2f20 25
-                 bra xeqdir                               ; and execute it ;; @@2f23 25
+                 +lbra xeqdir                             ; and execute it ;; @@2f23 25
  ;; @@2f26 25
 ;ADD or DELETE NEW LINE ;; @@2f26 25
 _local_1024_10   jsr linget                               ; evaluate line number, put into into linnum ;; @@2f26 25
@@ -24,7 +24,7 @@ _local_1024_10   jsr linget                               ; evaluate line number
 _local_1024_20   jsr crunch                               ; tokenize rest of input if not edit mode ;; @@2f31 25
 _local_1024_30   sty count                                ; save length ;; @@2f34 25
                  jsr FindLine                             ; locate line in program ;; @@2f36 25
-                 bcc nodel                                ; not found, go insert line into program ;; @@2f39 25
+                 +lbcc nodel                              ; not found, go insert line into program ;; @@2f39 25
 ; else delete current line and insert this one ;; @@2f3c 25
 ; .page ;; @@2f3c 25
 ; Test: IF new line is longer than the line it replaces, ;; @@2f3c 25
@@ -46,7 +46,7 @@ _local_1024_30   sty count                                ; save length ;; @@2f3
                  sbc #4                                   ; allow for link & line number ;; @@2f45 25
                  sbc count                                ; compare with new length ;; @@2f47 25
                  bcs _local_1024_2                        ; new line is shorter, no problem ;; @@2f49 25
-                 neg a                                    ; convert to positive delta ;; @@2f4b 25
+                 neg                                      ; convert to positive delta ;; @@2f4b 25
  ;; @@2f4c 25
                  ldy text_top+1                           ; get msb of end of text (.c=0) ;; @@2f4c 25
                  adc text_top                             ; add our calculated delta to end of text ;; @@2f4e 25
@@ -54,9 +54,9 @@ _local_1024_30   sty count                                ; save length ;; @@2f3
                  iny                                       ;; @@2f52 25
 _local_1024_1    cpy max_mem_0+1                           ;; @@2f53 25
                  bcc _local_1024_2                        ; result is less than top-of-memory: ok ;; @@2f56 25
-                 bne omerr                                ; msb >  top, overflow ;; @@2f58 25
+                 +lbne omerr                              ; msb >  top, overflow ;; @@2f58 25
                  cmp max_mem_0                            ; msb's the same, test lsb's ;; @@2f5b 25
-                 bcs omerr                                ; lsb >= top, overflow ;; @@2f5e 25
+                 +lbcs omerr                              ; lsb >= top, overflow ;; @@2f5e 25
  ;; @@2f61 25
 ; Using DMA device to move text downwards (to delete or replace a line)... ;; @@2f61 25
 ; ;; @@2f61 25

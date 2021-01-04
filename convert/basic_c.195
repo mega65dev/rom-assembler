@@ -20,7 +20,7 @@ cld50                                                      ;; @@68da 195
  ;; @@68e0 195
 load_error                                                 ;; @@68e0 195
                  ldx #erload                               ;; @@68e0 195
-cld55            bra error                                 ;; @@68e2 195
+cld55            +lbra error                               ;; @@68e2 195
  ;; @@68e5 195
  ;; @@68e5 195
 cld60            stx text_top                              ;; @@68e5 195
@@ -31,14 +31,14 @@ cld60            stx text_top                              ;; @@68e5 195
  ;; @@68ef 195
                  jsr link_program                         ; relink ;; @@68ef 195
                  jsr runc                                 ; clear vars ;; @@68f2 195
-                 bra ready_2                              ; print 'ready' & return to main ;; @@68f5 195
+                 +lbra ready_2                            ; print 'ready' & return to main ;; @@68f5 195
  ;; @@68f8 195
  ;; @@68f8 195
 ; Program load ;; @@68f8 195
  ;; @@68f8 195
 cld70            jsr reset_txtptr                          ;; @@68f8 195
                  jsr link_program                          ;; @@68fb 195
-                 bra fload                                 ;; @@68fe 195
+                 +lbra fload                               ;; @@68fe 195
  ;; @@6901 195
 ; .page ;; @@6901 195
 open             jsr paoc                                 ; parse statement ;; @@6901 195
@@ -64,11 +64,11 @@ close_out_1                                                ;; @@6912 195
                  bcc _local_1194_10                        ;; @@6918 195
                  pla                                       ;; @@691a 195
                  plp                                       ;; @@691b 195
-                 bra exit_disk_operation                  ; disk ;; @@691c 195
+                 +lbra exit_disk_operation                ; disk ;; @@691c 195
  ;; @@691f 195
 _local_1194_10   pla                                      ; something else ;; @@691f 195
                  plp                                       ;; @@6920 195
-                 bcs erexit                                ;; @@6921 195
+                 +lbcs erexit                              ;; @@6921 195
                  rts                                       ;; @@6924 195
  ;; @@6925 195
 ; .page ;; @@6925 195

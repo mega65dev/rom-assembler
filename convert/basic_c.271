@@ -13,7 +13,7 @@ _local_1270_10   cmp #color_token                         ; set physical color r
  ;; @@b05f 271
 _local_1270_20   jsr getbyt                               ; get screen# ;; @@b05f 271
                  cpx #4                                   ; [910711] ;; @@b062 271
-                 bcs fcerr                                 ;; @@b064 271
+                 +lbcs fcerr                               ;; @@b064 271
                  stx GKI__parm1                            ;; @@b067 271
  ;; @@b06a 271
                  jsr combyt                               ; get color reg # ;; @@b06a 271

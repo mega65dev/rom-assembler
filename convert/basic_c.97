@@ -15,7 +15,7 @@ popdgo           lda #do_token                            ; pop, but don't go ;;
                  bne poperr                               ; branch if not found ;; @@45a5 97
                  jsr movfnd                                ;; @@45a7 97
                  ldy #5                                    ;; @@45aa 97
-                 bra rlsstk                                ;; @@45ac 97
+                 +lbra rlsstk                              ;; @@45ac 97
  ;; @@45af 97
  ;; @@45af 97
 fnderr                                                     ;; @@45af 97
@@ -28,7 +28,7 @@ fnderr                                                     ;; @@45af 97
                  !text $2c                                 ;; @@45bb 97
 poperr                                                     ;; @@45bc 97
                  ldx #errlwd                              ; loop without do ;; @@45bc 97
-                 bra error                                 ;; @@45be 97
+                 +lbra error                               ;; @@45be 97
  ;; @@45c1 97
  ;; @@45c1 97
  ;; @@45c1 97
@@ -50,11 +50,11 @@ popngo                                                     ;; @@45c6 97
                  jsr retpat                               ; (** 01/18/84 fixes 'loop' to a direct mode 'do') ;; @@45c9 97
 ; lda (fndpnt),y ;; @@45cc 97
 ; sta curlin ;; @@45cc 97
-                 bra do                                    ;; @@45cc 97
+                 +lbra do                                  ;; @@45cc 97
  ;; @@45cf 97
 frmjmp                                                     ;; @@45cf 97
                  jsr chrget                                ;; @@45cf 97
-                 bra frmevl                                ;; @@45d2 97
+                 +lbra frmevl                              ;; @@45d2 97
  ;; @@45d5 97
 ;.end ;; @@45d5 97
 ; .page ;; @@45d5 97
@@ -77,10 +77,10 @@ _local_1096_1    ldx _kyndx                               ; is function key buff
                  bra _local_1096_30                       ; exit ;; @@45e1 97
  ;; @@45e3 97
 _local_1096_10   cmp #load_token                          ; KEY LOAD <filename>[,D#,U#] ;; @@45e3 97
-                 beq Key_load                              ;; @@45e5 97
+                 +lbeq Key_load                            ;; @@45e5 97
  ;; @@45e8 97
                  cmp #save_token                          ; KEY SAVE <filename>[,D#,U#] ;; @@45e8 97
-                 beq Key_Save                              ;; @@45ea 97
+                 +lbeq Key_Save                            ;; @@45ea 97
  ;; @@45ed 97
                  cmp #restore_token                       ; KEY RESTORE ?      [910925] ;; @@45ed 97
                  bne _local_1096_20                       ; no ;; @@45ef 97
@@ -89,12 +89,12 @@ _local_1096_10   cmp #load_token                          ; KEY LOAD <filename>[
                  bra _local_1096_30                       ; exit ;; @@45f6 97
  ;; @@45f8 97
 _local_1096_20   cmp #esc_command_token                   ; KEY OFF ? ;; @@45f8 97
-                 bne Key_Change                           ; no- must be new key definition ;; @@45fa 97
+                 +lbne Key_Change                         ; no- must be new key definition ;; @@45fa 97
                  jsr chrget                                ;; @@45fd 97
                  cmp #off_token                            ;; @@4600 97
-                 bne snerr                                ; no- bad syntax ;; @@4602 97
+                 +lbne snerr                              ; no- bad syntax ;; @@4602 97
                  smb5 _locks                              ; yes- set Editor's lock bit ;; @@4605 97
-_local_1096_30   bra chrget                               ; exit ;; @@4607 97
+_local_1096_30   +lbra chrget                             ; exit ;; @@4607 97
  ;; @@460a 97
 ; .page ;; @@460a 97
 ;************************************************************** ;; @@460a 97

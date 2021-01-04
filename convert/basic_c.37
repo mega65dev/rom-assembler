@@ -1,5 +1,5 @@
 p1line           bbr4 runmod,_local_1036_10               ; [910620] ;; @@3377 37
-                 bra edit_p1line                          ; handle things differently for plain text ;; @@337a 37
+                 +lbra edit_p1line                        ; handle things differently for plain text ;; @@337a 37
  ;; @@337d 37
 _local_1036_10   ldy #3                                    ;; @@337d 37
                  sty lstpnt                                ;; @@337f 37

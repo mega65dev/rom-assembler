@@ -21,7 +21,7 @@ pream            jsr chkcls                               ; param list should en
 ; The function LEN$() returns the length of the string passed as an argument. ;; @@5a56 155
  ;; @@5a56 155
 len              bsr len1                                  ;; @@5a56 155
-                 bra sngflt                                ;; @@5a59 155
+                 +lbra sngflt                              ;; @@5a59 155
  ;; @@5a5c 155
 len1             jsr frestr                               ; free up string ;; @@5a5c 155
                  ldx #0                                    ;; @@5a5f 155
@@ -41,7 +41,7 @@ asc              jsr len1                                  ;; @@5a65 155
                  ldy #0                                    ;; @@5a6a 155
                  jsr indin1_ram1                          ; get 1st character ;; @@5a6c 155
                  tay                                       ;; @@5a6f 155
-_local_1154_1    bra sngflt                                ;; @@5a70 155
+_local_1154_1    +lbra sngflt                              ;; @@5a70 155
  ;; @@5a73 155
 ;.end ;; @@5a73 155
 ; .page ;; @@5a73 155

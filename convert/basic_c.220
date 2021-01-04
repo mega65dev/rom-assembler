@@ -23,7 +23,7 @@ append           lda #$e2                                 ; set error flags ;; @
                  ldx #5                                   ; length ;; @@70f5 220
 open_it                                                    ;; @@70f7 220
                  jsr open_file                            ; open it ;; @@70f7 220
-                 bra exit_disk_op                         ; report any DOS errors, & return to main [910404] ;; @@70fa 220
+                 +lbra exit_disk_op                       ; report any DOS errors, & return to main [910404] ;; @@70fa 220
  ;; @@70fd 220
  ;; @@70fd 220
  ;; @@70fd 220

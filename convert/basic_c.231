@@ -24,7 +24,7 @@ _local_1230_10   lda parsts                                ;; @@73a9 231
 _local_1230_20   ldy #fcopy                               ; tabld offset ;; @@73ae 231
                  lda #8                                   ; length ;; @@73b0 231
                  jsr trans                                ; send command ;; @@73b2 231
-                 bra print_dos_error                      ; if any ;; @@73b5 231
+                 +lbra print_dos_error                    ; if any ;; @@73b5 231
  ;; @@73b8 231
  ;; @@73b8 231
  ;; @@73b8 231

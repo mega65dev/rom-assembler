@@ -1,6 +1,6 @@
 gonprc           pla                                      ; get rid of rts addr. ;; @@4e6e 118
                  pla                                       ;; @@4e6f 118
-                 bra negprc                               ; do negation ;; @@4e70 118
+                 +lbra negprc                             ; do negation ;; @@4e70 118
  ;; @@4e73 118
 ;.end ;; @@4e73 118
 ; .page ;; @@4e73 118
@@ -35,7 +35,7 @@ isvret           sta facmo                                ; save pointer to vari
                  lda facmo                                 ;; @@4e94 118
                  cmp #<zero                                ;; @@4e96 118
                  bne ds_rts                                ;; @@4e98 118
-                 bra Get_TI_String                        ; the one and only TI$ ;; @@4e9a 118
+                 +lbra Get_TI_String                      ; the one and only TI$ ;; @@4e9a 118
  ;; @@4e9d 118
 ; .page ;; @@4e9d 118
 isvds            cpx #'D'                                 ; is this DS$? ;; @@4e9d 118
@@ -69,5 +69,5 @@ _local_1117_20   lda #dsdesc+1                            ; copy DS$ into temp ;
                  lda dsdesc                               ; a=length     [901014] FAB ;; @@4ec9 118
                  jsr mvdone                               ; ???? (does nothing on C128 - bug or oversight?) ;; @@4ecb 118
  ;; @@4ece 118
-_local_1117_30   bra putnew                                ;; @@4ece 118
+_local_1117_30   +lbra putnew                              ;; @@4ece 118
  ;; @@4ed1 118

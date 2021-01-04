@@ -8,10 +8,10 @@ rnd_0            bmi _local_1149_20                       ; /// entry from jump 
  ;; @@582a 150
                  jsr go_slow                              ; Use CIA#1 timer B & SID#2 pot X & Y for seeds  [910314] ;; @@582a 150
                  lda sid2+25                              ; go slow to read POT-X ;; @@582d 150
-                 asl a                                     ;; @@5830 150
-                 asl a                                     ;; @@5831 150
-                 asl a                                     ;; @@5832 150
-                 asl a                                     ;; @@5833 150
+                 asl                                       ;; @@5830 150
+                 asl                                       ;; @@5831 150
+                 asl                                       ;; @@5832 150
+                 asl                                       ;; @@5833 150
                  ora sid2+26                              ; and POT-Y ;; @@5834 150
                  eor vic+18                               ; ???? should be okay- we're in Slow mode ;; @@5837 150
                  sta facmoh                                ;; @@583a 150
@@ -56,5 +56,5 @@ _local_1149_30   lda #0                                   ; strnex.  make number
                  jsr normal                               ; normalize ;; @@5886 150
                  ldx #<rndx                                ;; @@5889 150
                  ldy #>rndx                                ;; @@588b 150
-                 bra movmf                                ; put new one into memory ;; @@588d 150
+                 +lbra movmf                              ; put new one into memory ;; @@588d 150
  ;; @@5890 150

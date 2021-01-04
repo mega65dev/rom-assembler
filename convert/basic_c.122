@@ -28,7 +28,7 @@ qst003           cpy #'R'                                 ; check for ER ;; @@50
                  bne varok                                 ;; @@503d 122
  ;; @@503f 122
  ;; @@503f 122
-gobadv           bra snerr                                 ;; @@503f 122
+gobadv           +lbra snerr                               ;; @@503f 122
  ;; @@5042 122
  ;; @@5042 122
  ;; @@5042 122

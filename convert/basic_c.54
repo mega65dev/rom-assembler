@@ -1,5 +1,5 @@
 printn           jsr cmd                                  ; docmd ;; @@37a8 54
-                 bra release_channels                     ; restore terminal ;; @@37ab 54
+                 +lbra release_channels                   ; restore terminal ;; @@37ab 54
  ;; @@37ae 54
  ;; @@37ae 54
 cmd              jsr getbyt                                ;; @@37ae 54

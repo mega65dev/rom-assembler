@@ -2,9 +2,9 @@ rcolor           jsr conint                               ; evaluate integer arg
 ; jsr put_io_in_map ;; @@b902 298
  ;; @@b902 298
                  cpx #4                                    ;; @@b902 298
-                 bcs fcerr                                ; illegal qty ;; @@b904 298
+                 +lbcs fcerr                              ; illegal qty ;; @@b904 298
                  txa                                       ;; @@b907 298
-                 asl a                                    ; make into word pointer ;; @@b908 298
+                 asl                                      ; make into word pointer ;; @@b908 298
                  tax                                       ;; @@b909 298
                  lda color_source,x                       ; get address of source ;; @@b90a 298
                  sta grapnt                                ;; @@b90d 298
@@ -15,10 +15,10 @@ rcolor           jsr conint                               ; evaluate integer arg
                  and #$0f                                 ; mask unused bits ;; @@b918 298
                  tay                                       ;; @@b91a 298
 ; iny   ; make color match keytops ;; @@b91b 298
-                 bra sngflt                               ; float 1 byte in .Y ;; @@b91b 298
+                 +lbra sngflt                             ; float 1 byte in .Y ;; @@b91b 298
  ;; @@b91e 298
 color_source                                               ;; @@b91e 298
-                 !word  vic+33,_color,highlight_color,vic+32  ;; @@b91e 298
+                 !word vic+33,_color,highlight_color,vic+32  ;; @@b91e 298
  ;; @@b926 298
 ; .page ;; @@b926 298
 ; .subttl Graphic Functions ;; @@b926 298
@@ -54,23 +54,23 @@ rgraphic                                                   ;; @@b926 298
                  jsr chkcls                               ; check for closing parens ;; @@b93b 298
  ;; @@b93e 298
                  jsr ($8038)                              ; read screen params ;; @@b93e 298
-_local_1297_1    bcs fcerr                                ; bad input???? ;; @@b941 298
+_local_1297_1    +lbcs fcerr                              ; bad input???? ;; @@b941 298
  ;; @@b944 298
                  lda GKI__parm2                            ;; @@b944 298
                  plx                                      ; get back desired param # ;; @@b947 298
                  dex                                       ;; @@b948 298
                  bpl _local_1297_10                        ;; @@b949 298
                  eor #$80                                 ; make 0=closed, 1=open, >1=invalid ;; @@b94b 298
-                 lsr a                                     ;; @@b94d 298
-                 lsr a                                     ;; @@b94e 298
+                 lsr                                       ;; @@b94d 298
+                 lsr                                       ;; @@b94e 298
                  bra _local_1297_12                       ; return screen open status ;; @@b94f 298
  ;; @@b951 298
 _local_1297_10   dex                                       ;; @@b951 298
                  bpl _local_1297_20                        ;; @@b952 298
-_local_1297_12   lsr a                                     ;; @@b954 298
-_local_1297_15   lsr a                                     ;; @@b955 298
-                 lsr a                                     ;; @@b956 298
-                 lsr a                                     ;; @@b957 298
+_local_1297_12   lsr                                       ;; @@b954 298
+_local_1297_15   lsr                                       ;; @@b955 298
+                 lsr                                       ;; @@b956 298
+                 lsr                                       ;; @@b957 298
                  and #3                                    ;; @@b958 298
                  bra _local_1297_40                       ; return width, height ;; @@b95a 298
  ;; @@b95c 298
@@ -81,7 +81,7 @@ _local_1297_20   dex                                       ;; @@b95c 298
 _local_1297_25   dex                                       ;; @@b963 298
                  bpl _local_1297_30                        ;; @@b964 298
                  and #7                                   ; return depth ;; @@b966 298
-                 inc a                                    ; make depth 1-8 ;; @@b968 298
+                 inc                                      ; make depth 1-8 ;; @@b968 298
                  bra _local_1297_40                        ;; @@b969 298
  ;; @@b96b 298
 _local_1297_30   lda GKI__parm3,x                         ; return bp bask, banks, etc. ;; @@b96b 298

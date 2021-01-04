@@ -21,12 +21,12 @@ umultd           sta addend+1                              ;; @@5342 130
                  ldy #0                                   ; result initially zero ;; @@534a 130
  ;; @@534c 130
 umultc           txa                                       ;; @@534c 130
-                 asl a                                    ; multiply by two ;; @@534d 130
+                 asl                                      ; multiply by two ;; @@534d 130
                  tax                                       ;; @@534e 130
                  tya                                       ;; @@534f 130
-                 rol a                                     ;; @@5350 130
+                 rol                                       ;; @@5350 130
                  tay                                       ;; @@5351 130
-                 bcs omerr                                ; to much! ;; @@5352 130
+                 +lbcs omerr                              ; to much! ;; @@5352 130
                  asl curtol                                ;; @@5355 130
                  rol curtol+1                              ;; @@5357 130
                  bcc umlcnt                               ; nothing in this position to multiply ;; @@5359 130
@@ -37,7 +37,7 @@ umultc           txa                                       ;; @@534c 130
                  tya                                       ;; @@5360 130
                  adc addend+1                              ;; @@5361 130
                  tay                                       ;; @@5363 130
-                 bcs omerr                                ; man, just too much! ;; @@5364 130
+                 +lbcs omerr                              ; man, just too much! ;; @@5364 130
  ;; @@5367 130
 umlcnt           dec deccnt                               ; done? ;; @@5367 130
                  bne umultc                               ; keep it up ;; @@5369 130
@@ -45,7 +45,7 @@ umlcnt           dec deccnt                               ; done? ;; @@5367 130
  ;; @@536c 130
  ;; @@536c 130
 fmaptr           lda count                                 ;; @@536c 130
-                 asl a                                     ;; @@536e 130
+                 asl                                       ;; @@536e 130
                  adc #5                                   ; point to entries. ((c) cleared by asl) ;; @@536f 130
                  adc lowtr                                 ;; @@5371 130
                  ldy lowtr+1                               ;; @@5373 130

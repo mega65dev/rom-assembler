@@ -3,7 +3,7 @@ movspr_to_irq                                             ; [910809] ;; @@7a24 2
                  and #$3f                                 ; speed factor ;; @@7a25 254
                  taz                                       ;; @@7a27 254
                  tya                                      ; vic sprite index ;; @@7a28 254
-                 asl a                                     ;; @@7a29 254
+                 asl                                       ;; @@7a29 254
                  tay                                       ;; @@7a2a 254
  ;; @@7a2b 254
 _local_1253_10   sec                                      ; for i = 1 to abs(greatr) ;; @@7a2b 254
@@ -27,7 +27,7 @@ _local_1253_20   lda sprite_data+3,x                      ; ptr(lesser) ;; @@7a4
                  jsr drwinc                               ; pos(lesser) = pos(lesser) + sgn(lesser) ;; @@7a52 254
  ;; @@7a55 254
                  lda sprite_data+4,x                      ; ptr(greater) ;; @@7a55 254
-_local_1253_30   lsr a                                    ; which f? ;; @@7a58 254
+_local_1253_30   lsr                                      ; which f? ;; @@7a58 254
                  bcs _local_1253_40                        ;; @@7a59 254
                  lda sprite_data+9,x                      ; e = e + f1 ;; @@7a5b 254
                  adc sprite_data+5,x                       ;; @@7a5e 254

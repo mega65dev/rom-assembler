@@ -23,7 +23,7 @@ _local_1187_20   lda #<atncon                             ; pointer to arctan co
  ;; @@6748 188
 _local_1187_30   pla                                      ; was original aurgument positive? ;; @@6748 188
                  bpl _local_1187_40                       ; yes ;; @@6749 188
-                 bra negop                                ; if negative, negate result ;; @@674b 188
+                 +lbra negop                              ; if negative, negate result ;; @@674b 188
  ;; @@674e 188
 _local_1187_40   rts                                      ; all done ;; @@674e 188
  ;; @@674f 188

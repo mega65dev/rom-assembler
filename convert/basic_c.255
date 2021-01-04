@@ -7,12 +7,12 @@ _local_1254_5    plp                                       ;; @@7a96 255
                  bvc _local_1254_30                        ;; @@7a99 255
  ;; @@7a9b 255
                  lda vic,y                                ; positive direction ;; @@7a9b 255
-                 inc a                                     ;; @@7a9e 255
+                 inc                                       ;; @@7a9e 255
                  sta vic,y                                 ;; @@7a9f 255
                  bra _local_1254_20                        ;; @@7aa2 255
  ;; @@7aa4 255
 _local_1254_10   lda vic,y                                ; negative direction ;; @@7aa4 255
-                 dec a                                     ;; @@7aa7 255
+                 dec                                       ;; @@7aa7 255
                  sta vic,y                                 ;; @@7aa8 255
                  cmp #$ff                                  ;; @@7aab 255
  ;; @@7aad 255
@@ -20,13 +20,13 @@ _local_1254_20   bne _local_1254_30                       ; no wrap ;; @@7aad 25
                  tya                                       ;; @@7aaf 255
                  bit #1                                    ;; @@7ab0 255
                  bne _local_1254_30                       ; wrap in y okay ;; @@7ab2 255
-                 lsr a                                     ;; @@7ab4 255
+                 lsr                                       ;; @@7ab4 255
                  tay                                       ;; @@7ab5 255
                  lda sbits,y                              ; wrap in x- toggle msb ;; @@7ab6 255
                  eor vic+16                                ;; @@7ab9 255
                  sta vic+16                                ;; @@7abc 255
                  tya                                       ;; @@7abf 255
-                 asl a                                     ;; @@7ac0 255
+                 asl                                       ;; @@7ac0 255
                  tay                                       ;; @@7ac1 255
  ;; @@7ac2 255
 _local_1254_30   tya                                      ; restore y to sprite offset ;; @@7ac2 255

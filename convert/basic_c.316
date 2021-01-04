@@ -21,7 +21,7 @@ _local_1315_10   bbr7 _mode,_local_1315_20                 ;; @@bef6 316
                  sta sprite_ptrs_40,y                     ; 40 col screen ;; @@bef9 316
                  bra _local_1315_30                        ;; @@befc 316
 _local_1315_20   sta sprite_ptrs_80,y                     ; 80 col screen ;; @@befe 316
-_local_1315_30   dec a                                     ;; @@bf01 316
+_local_1315_30   dec                                       ;; @@bf01 316
                  dey                                       ;; @@bf02 316
                  bpl _local_1315_10                        ;; @@bf03 316
  ;; @@bf05 316

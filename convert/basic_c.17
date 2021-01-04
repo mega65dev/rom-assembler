@@ -1,7 +1,7 @@
 stop             bcs stopc                                ; STOP: .c=1 ;; @@2cdb 17
  ;; @@2cdd 17
 end              clc                                      ; END: .c=0 ;; @@2cdd 17
-stopc            bne snerr                                ; error if args present   [910410] ;; @@2cde 17
+stopc            +lbne snerr                              ; error if args present   [910410] ;; @@2cde 17
  ;; @@2ce1 17
 stop_1           bbr7 runmod,_local_1016_10               ; branch if direct mode ;; @@2ce1 17
                  jsr tto                                  ; transfer txtptr to oldtxt ;; @@2ce4 17
@@ -11,6 +11,6 @@ stop_1           bbr7 runmod,_local_1016_10               ; branch if direct mod
                  sty oldlin+1                              ;; @@2cee 17
 _local_1016_10   pla                                      ; .diris ;; @@2cf1 17
                  pla                                       ;; @@2cf2 17
-                 bcc ready                                ; say 'ready' if END, say 'break' if STOP ;; @@2cf3 17
+                 +lbcc ready                              ; say 'ready' if END, say 'break' if STOP ;; @@2cf3 17
  ;; @@2cf6 17
  ;; @@2cf6 17

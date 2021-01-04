@@ -14,7 +14,7 @@ _local_1255_100  ldy voices+1,x                            ;; @@7ac9 256
                  bcs _local_1255_110                      ; ok, no underflow ;; @@7ae0 256
  ;; @@7ae2 256
                  txa                                       ;; @@7ae2 256
-                 lsr a                                    ; get offset to waveform ;; @@7ae3 256
+                 lsr                                      ; get offset to waveform ;; @@7ae3 256
                  tay                                       ;; @@7ae4 256
                  lda waveform,y                           ; get waveform ;; @@7ae5 256
                  and #$fe                                 ; mask out gate bit ;; @@7ae8 256

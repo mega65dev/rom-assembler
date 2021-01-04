@@ -2,7 +2,7 @@ sswe             jsr shpn                                 ; shift decimal point 
                  jsr uround                               ; round number ;; @@6b34 203
                  jsr shpn                                 ; shift again if necessary ;; @@6b37 203
  ;; @@6b3a 203
-hup              bra chout                                ; output number ;; @@6b3a 203
+hup              +lbra chout                              ; output number ;; @@6b3a 203
  ;; @@6b3d 203
  ;; @@6b3d 203
  ;; @@6b3d 203

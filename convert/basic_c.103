@@ -5,7 +5,7 @@ LoadERR                                                    ;; @@4714 103
  ;; @@4718 103
 LoadEOF                                                    ;; @@4718 103
                  clc                                       ;; @@4718 103
-                 bra list_err                             ; release channel, close file, return to main ;; @@4719 103
+                 +lbra list_err                           ; release channel, close file, return to main ;; @@4719 103
  ;; @@471c 103
 ; .page ;; @@471c 103
 ;************************************************************************ ;; @@471c 103
@@ -21,7 +21,7 @@ Key_Save                                                   ;; @@471c 103
                  stx highds                                ;; @@4727 103
                  iny                                      ; end address = start address + 256 + 1 ;; @@4729 103
                  inx                                       ;; @@472a 103
-                 bra savenb                               ; [910925] ;; @@472b 103
+                 +lbra savenb                             ; [910925] ;; @@472b 103
 ; jsr _savesp  ;save it ;; @@472e 103
 ;; clc   ; return no error  ????why not  [910404] ;; @@472e 103
 ; bra exit_disk_op ; but if direct mode print DOS error  [910404] ;; @@472e 103

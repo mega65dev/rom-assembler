@@ -23,9 +23,9 @@ _local_1030_3    pla                                       ;; @@31c8 31
                  pla                                      ; restore .a and .y ;; @@31cf 31
                  cpy fretop+1                             ; compare highs ;; @@31d0 31
                  bcc _local_1030_4                         ;; @@31d2 31
-                 bne omerr                                ; higher is bad ;; @@31d4 31
+                 +lbne omerr                              ; higher is bad ;; @@31d4 31
                  cmp fretop                               ; compare the lows ;; @@31d7 31
-                 bcs omerr                                 ;; @@31d9 31
+                 +lbcs omerr                               ;; @@31d9 31
 _local_1030_4    rts                                       ;; @@31dc 31
  ;; @@31dd 31
 ; .page ;; @@31dd 31

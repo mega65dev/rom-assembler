@@ -1,6 +1,6 @@
 rmouse           lda #0                                   ; Init ;; @@7c8d 260
                  sta count                                ; variable count = 0 ;; @@7c8f 260
-                 dec a                                     ;; @@7c91 260
+                 dec                                       ;; @@7c91 260
                  ldx #6-1                                  ;; @@7c92 260
 _local_1259_10   sta grapnt,x                             ; positions/buttons = -1 ;; @@7c94 260
                  dex                                       ;; @@7c96 260
@@ -34,7 +34,7 @@ _local_1259_20   sta grapnt+1                              ;; @@7cb4 260
                  ldy #0                                   ; which port? ;; @@7ccc 260
                  plx                                      ; recall port assignments ;; @@7cce 260
 _local_1259_30   txa                                       ;; @@7ccf 260
-                 asl a                                    ; .c=1 if this one ;; @@7cd0 260
+                 asl                                      ; .c=1 if this one ;; @@7cd0 260
                  tax                                       ;; @@7cd1 260
                  bcc _local_1259_40                       ; not this one ;; @@7cd2 260
                  lda d1pra,y                              ; read it (logical port is opposite physical port) ;; @@7cd4 260
@@ -64,7 +64,7 @@ _local_1259_50   jsr chrgot                               ; Get a variable name 
                  sta forpnt                               ; set up so we can share LET code ;; @@7cfc 260
                  sty forpnt+1                              ;; @@7cfe 260
                  lda valtyp                               ; what kind of variable name did ptrget find? ;; @@7d00 260
-                 bne chkerr                               ; string- type mismatch error ;; @@7d02 260
+                 +lbne chkerr                             ; string- type mismatch error ;; @@7d02 260
  ;; @@7d05 260
 _local_1259_60   ldx count                                ; Make assignment ;; @@7d05 260
                  ldy grapnt,x                             ; low byte ;; @@7d07 260

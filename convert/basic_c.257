@@ -4,7 +4,7 @@ _local_1256_10   lda sound_time_hi,y                      ; active if msb clear 
                  bpl _local_1256_12                        ;; @@7afe 257
 _local_1256_11   dey                                       ;; @@7b00 257
                  bpl _local_1256_10                        ;; @@7b01 257
-                 bra basic_irq_end                         ;; @@7b03 257
+                 +lbra basic_irq_end                       ;; @@7b03 257
  ;; @@7b06 257
 _local_1256_12   clc                                      ; add step to frequency ;; @@7b06 257
                  lda sound_freq_lo,y                       ;; @@7b07 257
@@ -33,7 +33,7 @@ _local_1256_13   cpx #2                                   ; is 'cycle' bit set? 
                  bcc _local_1256_15                       ; no, keep direction 'down' ;; @@7b34 257
  ;; @@7b36 257
                  jsr negate_step                          ; make step 2's comp ;; @@7b36 257
-                 lda #%10                                 ; change direction to 'up' ;; @@7b39 257
+                 lda #2                                   ; change direction to 'up' ;; @@7b39 257
                  sta sound_direction,y                     ;; @@7b3b 257
                  bne _local_1256_35                       ; go reset for 'up' ;; @@7b3e 257
  ;; @@7b40 257
@@ -59,7 +59,7 @@ _local_1256_30   cpx #2                                   ; is this 'cycle'? ;; 
                  bcc _local_1256_35                       ; no, go reset for next 'up' ;; @@7b66 257
  ;; @@7b68 257
                  jsr negate_step                          ; make step 2's comp ;; @@7b68 257
-                 lda #%11                                 ; change direction to 'down' ;; @@7b6b 257
+                 lda #3                                   ; change direction to 'down' ;; @@7b6b 257
                  sta sound_direction,y                     ;; @@7b6d 257
                  bne _local_1256_15                       ; go reset for next 'down' ;; @@7b70 257
  ;; @@7b72 257
@@ -89,7 +89,7 @@ _local_1256_40                                             ;; @@7b7e 257
 _local_1256_50   dec sound_time_lo,x                       ;; @@7b97 257
  ;; @@7b9a 257
                  lda sound_time_hi,x                      ; underflow? ;; @@7b9a 257
-                 bpl _local_1256_11                       ; nope ;; @@7b9d 257
+                 +lbpl _local_1256_11                     ; nope ;; @@7b9d 257
  ;; @@7ba0 257
 ; Time to turn off this voice ;; @@7ba0 257
  ;; @@7ba0 257
@@ -98,6 +98,6 @@ _local_1256_50   dec sound_time_lo,x                       ;; @@7b97 257
                  ldx SID_offset,y                          ;; @@7ba2 257
                  sta sid1+4,x                              ;; @@7ba5 257
 ; jsr go_fast  ;      [910716] 4567R7A ;; @@7ba8 257
-                 bra _local_1256_11                        ;; @@7ba8 257
+                 +lbra _local_1256_11                      ;; @@7ba8 257
  ;; @@7bab 257
  ;; @@7bab 257

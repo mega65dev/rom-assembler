@@ -13,7 +13,7 @@ _local_1261_50   jsr chrgot                               ; Get a variable name 
                  sta forpnt                               ; set up so we can share LET code ;; @@7d99 262
                  sty forpnt+1                              ;; @@7d9b 262
                  lda valtyp                               ; what kind of variable name did ptrget find? ;; @@7d9d 262
-                 bne chkerr                               ; string- type mismatch error ;; @@7d9f 262
+                 +lbne chkerr                             ; string- type mismatch error ;; @@7d9f 262
  ;; @@7da2 262
 _local_1261_60   ldx count                                ; Make assignment ;; @@7da2 262
                  ldy column,x                             ; low byte ;; @@7da4 262

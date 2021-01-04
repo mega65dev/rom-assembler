@@ -33,7 +33,7 @@ doyes            lda #5                                   ; 'do' needs 5 bytes o
 exit             jsr popdgo                               ; pop do entry off stack ;; @@4542 96
                  jsr chrgot                                ;; @@4545 96
                  beq fnd010                                ;; @@4548 96
-snrjmp           bra snerr                                 ;; @@454a 96
+snrjmp           +lbra snerr                               ;; @@454a 96
  ;; @@454d 96
  ;; @@454d 96
  ;; @@454d 96
@@ -43,7 +43,7 @@ fndend           jsr chrget                                ;; @@454d 96
  ;; @@4550 96
 fnd010           beq _local_1095_20                       ; end of statement ;; @@4550 96
                  cmp #loop_token                           ;; @@4552 96
-                 beq data                                 ; a hit!  read to end of statement, rts ;; @@4554 96
+                 +lbeq data                               ; a hit!  read to end of statement, rts ;; @@4554 96
                  cmp #'"'                                 ; quote ;; @@4557 96
                  beq _local_1095_10                        ;; @@4559 96
                  cmp #do_token                             ;; @@455b 96

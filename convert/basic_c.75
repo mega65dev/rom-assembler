@@ -64,7 +64,7 @@ imbed_lines                                                ;; @@3f29 75
  ;; @@3f2c 75
 next_line                                                  ;; @@3f2c 75
                  jsr chargt_x2                            ; skip link (assumes txttab > 0) ;; @@3f2c 75
-                 beq n1_reset                             ; null link: put current line # in fac, reset txtptr, exit ;; @@3f2f 75
+                 +lbeq n1_reset                           ; null link: put current line # in fac, reset txtptr, exit ;; @@3f2f 75
                  jsr chargt                               ; line number ;; @@3f32 75
                  sta forpnt                               ; save in case there is an error ;; @@3f35 75
                  jsr chargt                                ;; @@3f37 75

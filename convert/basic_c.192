@@ -5,8 +5,8 @@ autoboot_filename                                           ;; @@6828 192
 ; .subttl  SAVE  LOAD  VERIFY  OPEN  CLOSE ;; @@6836 192
  ;; @@6836 192
 erexit           tax                                      ; set termination flags ;; @@6836 192
-                 bne error                                ; normal error ;; @@6837 192
-                 bra break_exit                           ; user break ;; @@683a 192
+                 +lbne error                              ; normal error ;; @@6837 192
+                 +lbra break_exit                         ; user break ;; @@683a 192
  ;; @@683d 192
  ;; @@683d 192
  ;; @@683d 192
@@ -39,7 +39,7 @@ coin                                                       ;; @@6852 192
 cgetl                                                      ;; @@685b 192
 ; jsr put_io_in_map ;; @@685b 192
                  jsr _getin                                ;; @@685b 192
-                 bcs break_exit                           ; 'stop' key was pressed ;; @@685e 192
+                 +lbcs break_exit                         ; 'stop' key was pressed ;; @@685e 192
                  rts                                       ;; @@6861 192
  ;; @@6862 192
 ; .page ;; @@6862 192

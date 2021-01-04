@@ -17,7 +17,7 @@ _local_1061_20   sty forpnt+1                              ;; @@3a8f 62
                  jsr search                               ; look for FOR entry in run-time stack ;; @@3a93 62
                  beq _local_1061_30                       ; branch if found ;; @@3a96 62
                  ldx #errnf                               ; otherwise 'error, not found' ;; @@3a98 62
-                 bra error                                 ;; @@3a9a 62
+                 +lbra error                               ;; @@3a9a 62
  ;; @@3a9d 62
  ;; @@3a9d 62
 ; Set up to move STEP value to FAC ;; @@3a9d 62

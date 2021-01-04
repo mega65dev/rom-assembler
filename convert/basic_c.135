@@ -17,17 +17,17 @@ TimeMultiply                                               ;; @@547c 135
                  sta facho                                 ;; @@5480 135
                  lda time,x                               ; 10x = 8x + 2x ;; @@5482 135
                  and #$f0                                  ;; @@5484 135
-                 lsr a                                    ; msd x 8 ;; @@5486 135
+                 lsr                                      ; msd x 8 ;; @@5486 135
                  sta time,x                                ;; @@5487 135
-                 lsr a                                     ;; @@5489 135
-                 lsr a                                    ; msd x 2 ;; @@548a 135
+                 lsr                                       ;; @@5489 135
+                 lsr                                      ; msd x 2 ;; @@548a 135
                  clc                                       ;; @@548b 135
                  adc facho                                ; lsd ;; @@548c 135
                  adc time,x                                ;; @@548e 135
                  sta time,x                               ; can't overflow ($99->153) ;; @@5490 135
  ;; @@5492 135
                  txa                                      ; make a word pointer from byte pointer ;; @@5492 135
-                 asl a                                     ;; @@5493 135
+                 asl                                       ;; @@5493 135
                  tay                                       ;; @@5494 135
                  lda TimeFactor-2,y                       ; multiplicand = TimeFactor,y  (2 bytes) ;; @@5495 135
                  sta multiplicand                         ; multiplier = Time,x x (1 byte) ;; @@5498 135
@@ -38,7 +38,7 @@ TimeMultiply                                               ;; @@547c 135
                  sta product+2                            ; hi ;; @@54a3 135
  ;; @@54a5 135
                  ldy #16                                  ; 16-bit multiplicand ;; @@54a5 135
-_local_1134_10   asl a                                     ;; @@54a7 135
+_local_1134_10   asl                                       ;; @@54a7 135
                  row product+1                             ;; @@54a8 135
                  row multiplicand                         ; multiplier * multiplicand -> product ;; @@54ab 135
                  bcc _local_1134_20                        ;; @@54ae 135

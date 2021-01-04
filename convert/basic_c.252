@@ -4,12 +4,12 @@ collision_irq                                              ;; @@797f 252
                  and #%00001110                           ; mask all but lp, s/s, and s/bgnd flags ;; @@7981 252
                  beq _local_1251_40                       ; exit if none set ;; @@7983 252
                  trb _vicIRQ                              ; else reset flags we're going to handle ;; @@7985 252
-                 lsr a                                    ; shift out raster interrupt bit (not used) ;; @@7987 252
+                 lsr                                      ; shift out raster interrupt bit (not used) ;; @@7987 252
  ;; @@7988 252
 ; Test for 3 types of collision interrupts : sprite/sprite, sprite/bgnd, & light pen ;; @@7988 252
  ;; @@7988 252
                  ldy #1                                   ; loop for sprite/bgnd and sprite/sprite collision check ;; @@7988 252
-_local_1251_10   lsr a                                     ;; @@798a 252
+_local_1251_10   lsr                                       ;; @@798a 252
                  bcc _local_1251_30                       ; bit not set ==> not source of interrupt ;; @@798b 252
  ;; @@798d 252
                  pha                                       ;; @@798d 252
@@ -20,8 +20,8 @@ _local_1251_10   lsr a                                     ;; @@798a 252
                  lda intval                               ; allowable interrupts ;; @@7997 252
                  cpy #0                                   ; examine selected bit ;; @@799a 252
                  beq _local_1251_20                        ;; @@799c 252
-                 lsr a                                     ;; @@799e 252
-_local_1251_20   lsr a                                     ;; @@799f 252
+                 lsr                                       ;; @@799e 252
+_local_1251_20   lsr                                       ;; @@799f 252
                  bcc _local_1251_25                       ; BASIC doesn't want this interrupt ;; @@79a0 252
                  lda #$ff                                  ;; @@79a2 252
                  sta int_trip_flag,y                      ; turn on trip flag ;; @@79a4 252
@@ -34,7 +34,7 @@ _local_1251_30   dey                                       ;; @@79a8 252
 ; .page ;; @@79ab 252
 ; Check light pen latch ;; @@79ab 252
  ;; @@79ab 252
-                 lsr a                                     ;; @@79ab 252
+                 lsr                                       ;; @@79ab 252
                  bcc _local_1251_40                       ; LightPen latch not valid ;; @@79ac 252
  ;; @@79ae 252
                  ldx vic+49                               ; 4567R7 bug- must read LP_latches in Slow mode???? ;; @@79ae 252

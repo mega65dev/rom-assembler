@@ -1,6 +1,6 @@
 putnew           ldx temppt                               ; pointer to first free temp ;; @@5ad0 158
                  cpx #tempst+strsiz+strsiz+strsiz          ;; @@5ad2 158
-                 beq sterr                                ; string temporary error ;; @@5ad4 158
+                 +lbeq sterr                              ; string temporary error ;; @@5ad4 158
  ;; @@5ad7 158
                  lda dsctmp                               ; length ;; @@5ad7 158
                  sta 0,x                                   ;; @@5ad9 158
@@ -43,7 +43,7 @@ cat              lda faclo                                ; push high order onto
                  jsr indfmo                                ;; @@5b0f 158
                  clc                                       ;; @@5b12 158
                  adc syntmp                                ;; @@5b13 158
-                 bcs errlen                               ; result >255, error "long string" ;; @@5b15 158
+                 +lbcs errlen                             ; result >255, error "long string" ;; @@5b15 158
  ;; @@5b18 158
                  jsr strini                               ; sizeok.  initialize string ;; @@5b18 158
                  jsr movins                               ; move it ;; @@5b1b 158
@@ -55,7 +55,7 @@ cat              lda faclo                                ; push high order onto
                  ldy strng1+1                              ;; @@5b2a 158
                  jsr fretmp                                ;; @@5b2c 158
                  jsr putnew                                ;; @@5b2f 158
-                 bra tstop                                ; "cat" reenters frmevl from tstop ;; @@5b32 158
+                 +lbra tstop                              ; "cat" reenters frmevl from tstop ;; @@5b32 158
  ;; @@5b35 158
 ; .page ;; @@5b35 158
 movins           ldy #0                                   ; get address of string ;; @@5b35 158

@@ -33,7 +33,7 @@ _local_1108_25   lda scalelp,x                            ; load from PAL tables
  ;; @@48f5 109
 _local_1108_30   dey                                       ;; @@48f5 109
                  bmi play_note_1                          ; go play note ;; @@48f6 109
-                 lsr a                                     ;; @@48f8 109
+                 lsr                                       ;; @@48f8 109
                  ror pitch                                 ;; @@48f9 109
                  bra _local_1108_30                        ;; @@48fc 109
  ;; @@48fe 109

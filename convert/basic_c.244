@@ -1,38 +1,38 @@
 rdrt0            dex                                      ; case cdd=sd ;; @@77d8 244
-rdrt1            bra sdp1                                 ; get next symbol ;; @@77d9 244
+rdrt1            +lbra sdp1                               ; get next symbol ;; @@77d9 244
  ;; @@77dc 244
 ; .page ;; @@77dc 244
 ; Syntax checker DOS write ;; @@77dc 244
  ;; @@77dc 244
 chk1             and #$e6                                 ; for HEADER, DLOAD, SCRATCH, TYPE, LIST ;; @@77dc 244
-                 bne snerr                                 ;; @@77de 244
+                 +lbne snerr                               ;; @@77de 244
  ;; @@77e1 244
 chk2             lda parsts                               ; for DSAVE ;; @@77e1 244
                  and #1                                    ;; @@77e3 244
                  cmp #1                                   ; check required parameters ;; @@77e5 244
-                 bne snerr                                ; error if 1 missing ;; @@77e7 244
+                 +lbne snerr                              ; error if 1 missing ;; @@77e7 244
                  lda parsts                               ; reload for return ;; @@77ea 244
                  rts                                       ;; @@77ec 244
  ;; @@77ed 244
  ;; @@77ed 244
 chk3             and #$e7                                 ; for COLLECT ;; @@77ed 244
-                 bne snerr                                ; check optional parameters ;; @@77ef 244
+                 +lbne snerr                              ; check optional parameters ;; @@77ef 244
                  rts                                       ;; @@77f2 244
  ;; @@77f3 244
  ;; @@77f3 244
 chk4             and #$c4                                 ; for COPY, CONCAT ;; @@77f3 244
-                 bne snerr                                ; check optional parameters ;; @@77f5 244
+                 +lbne snerr                              ; check optional parameters ;; @@77f5 244
                  lda parsts                                ;; @@77f8 244
 chk5             and #3                                   ; for RENAME ;; @@77fa 244
                  cmp #3                                   ; check required parameters ;; @@77fc 244
-                 bne snerr                                 ;; @@77fe 244
+                 +lbne snerr                               ;; @@77fe 244
                  lda parsts                               ; reload for return ;; @@7801 244
                  rts                                       ;; @@7803 244
  ;; @@7804 244
  ;; @@7804 244
 chk6             and #5                                   ; for APPEND, DOPEN ;; @@7804 244
                  cmp #5                                   ; check required parameters ;; @@7806 244
-                 bne snerr                                 ;; @@7808 244
+                 +lbne snerr                               ;; @@7808 244
                  lda parsts                               ; reload for rts ;; @@780b 244
                  rts                                       ;; @@780d 244
  ;; @@780e 244
@@ -108,7 +108,7 @@ _local_1243_40   pha                                      ; errbad. ;; @@7877 24
                  jsr _local_1243_30                        ;; @@7878 244
                  jsr Clear_DS                             ; flag 'no DS available' ;; @@787b 244
                  plx                                      ; get error ;; @@787e 244
-                 bra error                                 ;; @@787f 244
+                 +lbra error                               ;; @@787f 244
  ;; @@7882 244
 ; .page ;; @@7882 244
 ; Clear_DS subroutine - forget current DS$ message, if any ;; @@7882 244

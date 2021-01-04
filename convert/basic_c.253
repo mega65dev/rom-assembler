@@ -1,6 +1,6 @@
 movspr_irq                                                 ;; @@79d1 253
                  lda vic+21                               ; any sprites active?    [910212] ;; @@79d1 253
-                 beq music_irq                            ; no- skip ahead ;; @@79d4 253
+                 +lbeq music_irq                          ; no- skip ahead ;; @@79d4 253
  ;; @@79d7 253
                  ldy #7                                   ; check each of 8 sprites ;; @@79d7 253
 _local_1252_10   lda vic+21                               ; is this sprite is enabled? ;; @@79d9 253
@@ -16,10 +16,10 @@ _local_1252_10   lda vic+21                               ; is this sprite is en
  ;; @@79f0 253
 _local_1252_15   sta sprite_data+1,x                      ; set counter ;; @@79f0 253
 _local_1252_20   tya                                      ; convert sprite# to a VIC register pointer ;; @@79f3 253
-                 asl a                                     ;; @@79f4 253
+                 asl                                       ;; @@79f4 253
                  tay                                       ;; @@79f5 253
                  lda sprite_data+2,x                      ; get angle sign ;; @@79f6 253
-                 dec a                                    ; subtract 1 for cosine ;; @@79f9 253
+                 dec                                      ; subtract 1 for cosine ;; @@79f9 253
                  inx                                       ;; @@79fa 253
                  inx                                       ;; @@79fb 253
                  iny                                       ;; @@79fc 253
@@ -31,7 +31,7 @@ _local_1252_20   tya                                      ; convert sprite# to a
                  jsr sprsub                               ; update x position ;; @@7a06 253
                  php                                       ;; @@7a09 253
                  tya                                       ;; @@7a0a 253
-                 lsr a                                    ; restore index (.Y=sprite pointer) ;; @@7a0b 253
+                 lsr                                      ; restore index (.Y=sprite pointer) ;; @@7a0b 253
                  tay                                       ;; @@7a0c 253
                  plp                                       ;; @@7a0d 253
                  bcc _local_1252_30                       ; skip if no overflow ;; @@7a0e 253
@@ -43,5 +43,5 @@ _local_1252_30   dec sprite_data+1,x                       ;; @@7a19 253
  ;; @@7a1e 253
 _local_1252_40   dey                                      ; check next sprite ;; @@7a1e 253
                  bpl _local_1252_10                       ; loop until done moving all sprites ;; @@7a1f 253
-                 bra music_irq                            ; then continue with next IRQ task ;; @@7a21 253
+                 +lbra music_irq                          ; then continue with next IRQ task ;; @@7a21 253
 ; .page ;; @@7a24 253

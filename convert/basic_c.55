@@ -4,7 +4,7 @@ newchr           jsr chrgot                               ; reget last character
  ;; @@37c9 55
 print            beq crdo                                 ; terminator only, so print crlf ;; @@37c9 55
                  cmp #using_token                          ;; @@37cb 55
-                 beq using                                 ;; @@37cd 55
+                 +lbeq using                               ;; @@37cd 55
  ;; @@37d0 55
  ;; @@37d0 55
  ;; @@37d0 55
@@ -58,7 +58,7 @@ taber            php                                      ; remember if SPC(c=0)
                  sty trmpos                                ;; @@381a 55
                  jsr gtbytc                               ; get value into accx ;; @@381c 55
                  cmp #')'                                  ;; @@381f 55
-                 bne snerr                                 ;; @@3821 55
+                 +lbne snerr                               ;; @@3821 55
                  plp                                       ;; @@3824 55
                  bcc xspac                                 ;; @@3825 55
                  txa                                       ;; @@3827 55

@@ -30,7 +30,7 @@ aryvgo           sta index1                                ;; @@508c 123
                  iny                                      ; ok we have a string array ;; @@50b1 123
                  jsr indin1_ram1                          ; get number of dimensions ;; @@50b2 123
                  ldy #0                                    ;; @@50b5 123
-                 asl a                                    ; move index to ptr to 1st string (add 2*number of dims + 5) ;; @@50b7 123
+                 asl                                      ; move index to ptr to 1st string (add 2*number of dims + 5) ;; @@50b7 123
                  adc #5                                    ;; @@50b8 123
                  adc index1                                ;; @@50ba 123
                  sta index1                                ;; @@50bc 123

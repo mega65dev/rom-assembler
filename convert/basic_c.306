@@ -5,8 +5,8 @@ angmlt                                                     ;; @@bb11 306
  ;; @@bb17 306
 _local_1305_10   lda angsgn                                ;; @@bb17 306
                  adc #2                                   ; correct phase for cosine to look as sine ;; @@bb1a 306
-                 lsr a                                     ;; @@bb1c 306
-                 lsr a                                     ;; @@bb1d 306
+                 lsr                                       ;; @@bb1c 306
+                 lsr                                       ;; @@bb1d 306
                  php                                      ; save if carry - means negative angle value ;; @@bb1e 306
                  jsr settwo                               ; get angle fraction in y/a ;; @@bb1f 306
                  cpy #$ff                                 ; test if value should be 1 ;; @@bb22 306

@@ -9,7 +9,7 @@ dload            lda #0                                    ;; @@7169 223
                  sta verck                                ; set load flag (for verify check later) ;; @@716b 223
  ;; @@716d 223
                  bbr4 runmod,_local_1222_10               ; PROGRAM or EDIT mode?    [910620] ;; @@716d 223
-                 bra edit_load                            ; edit ;; @@7170 223
+                 +lbra edit_load                          ; edit ;; @@7170 223
  ;; @@7173 223
 _local_1222_10   lda #$e6                                 ; set error flags ;; @@7173 223
                  jsr dosprs                               ; parse the line ;; @@7175 223

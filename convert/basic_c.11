@@ -230,235 +230,235 @@ esc_function_list                                           ;; @@279a 11
 ; .page ;; @@27dc 11
 ; .subttl Jump Table For Dispatch Routine ;; @@27dc 11
 stmdsp                                                     ;; @@27dc 11
-                 !word  end-1                              ;; @@27dc 11
-                 !word  for-1                              ;; @@27de 11
-                 !word  next-1                             ;; @@27e0 11
-                 !word  data-1                             ;; @@27e2 11
-                 !word  inputn-1                           ;; @@27e4 11
-                 !word  input-1                            ;; @@27e6 11
-                 !word  dim-1                              ;; @@27e8 11
-                 !word  read-1                             ;; @@27ea 11
-                 !word  let-1                              ;; @@27ec 11
-                 !word  goto-1                             ;; @@27ee 11
-                 !word  run-1                              ;; @@27f0 11
-                 !word  if-1                               ;; @@27f2 11
-                 !word  restor-1                           ;; @@27f4 11
-                 !word  gosub-1                            ;; @@27f6 11
-                 !word  return-1                           ;; @@27f8 11
-                 !word  rem-1                              ;; @@27fa 11
-                 !word  stop-1                             ;; @@27fc 11
-                 !word  ongoto-1                           ;; @@27fe 11
-                 !word  wait-1                             ;; @@2800 11
-                 !word  load-1                             ;; @@2802 11
-                 !word  save-1                             ;; @@2804 11
-                 !word  verify-1                           ;; @@2806 11
-                 !word  def-1                              ;; @@2808 11
-                 !word  poke-1                             ;; @@280a 11
-                 !word  printn-1                           ;; @@280c 11
-                 !word  print-1                            ;; @@280e 11
-                 !word  cont-1                             ;; @@2810 11
-                 !word  list-1                             ;; @@2812 11
-                 !word  clear-1                            ;; @@2814 11
-                 !word  cmd-1                              ;; @@2816 11
-                 !word  sys-1                              ;; @@2818 11
-                 !word  open-1                             ;; @@281a 11
-                 !word  close-1                            ;; @@281c 11
-                 !word  get-1                              ;; @@281e 11
-                 !word  new-1                              ;; @@2820 11
+                 !word end-1                               ;; @@27dc 11
+                 !word for-1                               ;; @@27de 11
+                 !word next-1                              ;; @@27e0 11
+                 !word data-1                              ;; @@27e2 11
+                 !word inputn-1                            ;; @@27e4 11
+                 !word input-1                             ;; @@27e6 11
+                 !word dim-1                               ;; @@27e8 11
+                 !word read-1                              ;; @@27ea 11
+                 !word let-1                               ;; @@27ec 11
+                 !word goto-1                              ;; @@27ee 11
+                 !word run-1                               ;; @@27f0 11
+                 !word if-1                                ;; @@27f2 11
+                 !word restor-1                            ;; @@27f4 11
+                 !word gosub-1                             ;; @@27f6 11
+                 !word return-1                            ;; @@27f8 11
+                 !word rem-1                               ;; @@27fa 11
+                 !word stop-1                              ;; @@27fc 11
+                 !word ongoto-1                            ;; @@27fe 11
+                 !word wait-1                              ;; @@2800 11
+                 !word load-1                              ;; @@2802 11
+                 !word save-1                              ;; @@2804 11
+                 !word verify-1                            ;; @@2806 11
+                 !word def-1                               ;; @@2808 11
+                 !word poke-1                              ;; @@280a 11
+                 !word printn-1                            ;; @@280c 11
+                 !word print-1                             ;; @@280e 11
+                 !word cont-1                              ;; @@2810 11
+                 !word list-1                              ;; @@2812 11
+                 !word clear-1                             ;; @@2814 11
+                 !word cmd-1                               ;; @@2816 11
+                 !word sys-1                               ;; @@2818 11
+                 !word open-1                              ;; @@281a 11
+                 !word close-1                             ;; @@281c 11
+                 !word get-1                               ;; @@281e 11
+                 !word new-1                               ;; @@2820 11
  ;; @@2822 11
-                 !word  else-1                             ;; @@2822 11
-                 !word  resume-1                           ;; @@2824 11
-                 !word  trap-1                             ;; @@2826 11
-                 !word  tron-1                             ;; @@2828 11
-                 !word  troff-1                            ;; @@282a 11
-                 !word  sound-1                            ;; @@282c 11
-                 !word  volume-1                           ;; @@282e 11
-                 !word  auto-1                             ;; @@2830 11
-                 !word  puctrl-1                           ;; @@2832 11
-                 !word  graphic-1                          ;; @@2834 11
+                 !word else-1                              ;; @@2822 11
+                 !word resume-1                            ;; @@2824 11
+                 !word trap-1                              ;; @@2826 11
+                 !word tron-1                              ;; @@2828 11
+                 !word troff-1                             ;; @@282a 11
+                 !word sound-1                             ;; @@282c 11
+                 !word volume-1                            ;; @@282e 11
+                 !word auto-1                              ;; @@2830 11
+                 !word puctrl-1                            ;; @@2832 11
+                 !word graphic-1                           ;; @@2834 11
  ;; @@2836 11
-                 !word  C65__paint-1                       ;; @@2836 11
-                 !word  C65__char-1                        ;; @@2838 11
-                 !word  C65__box-1                         ;; @@283a 11
-                 !word  C65__circle-1                      ;; @@283c 11
-                 !word  C65__paste-1                      ; gshape ;; @@283e 11
-                 !word  C65__cut-1                        ; sshape ;; @@2840 11
-                 !word  C65__line-1                       ; draw ;; @@2842 11
+                 !word C65__paint-1                        ;; @@2836 11
+                 !word C65__char-1                         ;; @@2838 11
+                 !word C65__box-1                          ;; @@283a 11
+                 !word C65__circle-1                       ;; @@283c 11
+                 !word C65__paste-1                       ; gshape ;; @@283e 11
+                 !word C65__cut-1                         ; sshape ;; @@2840 11
+                 !word C65__line-1                        ; draw ;; @@2842 11
  ;; @@2844 11
-                 !word  bad_command-1                     ; escape - SYSTEM - unimplemented command ;; @@2844 11
+                 !word bad_command-1                      ; escape - SYSTEM - unimplemented command ;; @@2844 11
 ; .word  locate-1 ;; @@2846 11
  ;; @@2846 11
-                 !word  color-1        [910109]            ;; @@2846 11
-                 !word  scnclr-1                           ;; @@2848 11
+                 !word color-1                             ;; @@2846 11
+                 !word scnclr-1                            ;; @@2848 11
  ;; @@284a 11
-                 !word  bad_command-1                     ; escape - SYSTEM - unimplemented command ;; @@284a 11
+                 !word bad_command-1                      ; escape - SYSTEM - unimplemented command ;; @@284a 11
 ; .word  scale-1 ;; @@284c 11
  ;; @@284c 11
-                 !word  help-1                             ;; @@284c 11
-                 !word  do-1                               ;; @@284e 11
-                 !word  loop-1                             ;; @@2850 11
-                 !word  exit-1                             ;; @@2852 11
-                 !word  directory-1                        ;; @@2854 11
-                 !word  dsave-1                            ;; @@2856 11
-                 !word  dload-1                            ;; @@2858 11
-                 !word  header-1                           ;; @@285a 11
-                 !word  scratch-1                          ;; @@285c 11
-                 !word  collect-1                          ;; @@285e 11
-                 !word  dcopy-1                            ;; @@2860 11
-                 !word  rename-1                           ;; @@2862 11
-                 !word  backup-1                           ;; @@2864 11
-                 !word  delete-1                           ;; @@2866 11
-                 !word  renumber-1                         ;; @@2868 11
-                 !word  key-1                              ;; @@286a 11
-                 !word  _monitor-1                         ;; @@286c 11
-                 !word  bank-1                            ; escape ;; @@286e 11
-                 !word  filter-1                          ; escape ;; @@2870 11
-                 !word  play-1                            ; escape ;; @@2872 11
-                 !word  tempo-1                           ; escape ;; @@2874 11
+                 !word help-1                              ;; @@284c 11
+                 !word do-1                                ;; @@284e 11
+                 !word loop-1                              ;; @@2850 11
+                 !word exit-1                              ;; @@2852 11
+                 !word directory-1                         ;; @@2854 11
+                 !word dsave-1                             ;; @@2856 11
+                 !word dload-1                             ;; @@2858 11
+                 !word header-1                            ;; @@285a 11
+                 !word scratch-1                           ;; @@285c 11
+                 !word collect-1                           ;; @@285e 11
+                 !word dcopy-1                             ;; @@2860 11
+                 !word rename-1                            ;; @@2862 11
+                 !word backup-1                            ;; @@2864 11
+                 !word delete-1                            ;; @@2866 11
+                 !word renumber-1                          ;; @@2868 11
+                 !word key-1                               ;; @@286a 11
+                 !word _monitor-1                          ;; @@286c 11
+                 !word bank-1                             ; escape ;; @@286e 11
+                 !word filter-1                           ; escape ;; @@2870 11
+                 !word play-1                             ; escape ;; @@2872 11
+                 !word tempo-1                            ; escape ;; @@2874 11
  ;; @@2876 11
-                 !word  movspr-1                          ; escape ;; @@2876 11
-                 !word  sprite-1                          ; escape ;; @@2878 11
-                 !word  sprcolor-1                        ; escape ;; @@287a 11
+                 !word movspr-1                           ; escape ;; @@2876 11
+                 !word sprite-1                           ; escape ;; @@2878 11
+                 !word sprcolor-1                         ; escape ;; @@287a 11
  ;; @@287c 11
-                 !word  rreg-1                            ; escape ;; @@287c 11
-                 !word  envelope-1                        ; escape ;; @@287e 11
-                 !word  sleep-1                           ; escape ;; @@2880 11
-                 !word  directory-1                       ; escape ;; @@2882 11
-                 !word  dopen-1                           ; escape ;; @@2884 11
-                 !word  append-1                          ; escape ;; @@2886 11
-                 !word  dclose-1                          ; escape ;; @@2888 11
-                 !word  bsave-1                           ; escape ;; @@288a 11
-                 !word  bload-1                           ; escape ;; @@288c 11
-                 !word  record-1                          ; escape ;; @@288e 11
-                 !word  concat-1                          ; escape ;; @@2890 11
-                 !word  dverify-1                         ; escape ;; @@2892 11
-                 !word  dclear-1                          ; escape ;; @@2894 11
+                 !word rreg-1                             ; escape ;; @@287c 11
+                 !word envelope-1                         ; escape ;; @@287e 11
+                 !word sleep-1                            ; escape ;; @@2880 11
+                 !word directory-1                        ; escape ;; @@2882 11
+                 !word dopen-1                            ; escape ;; @@2884 11
+                 !word append-1                           ; escape ;; @@2886 11
+                 !word dclose-1                           ; escape ;; @@2888 11
+                 !word bsave-1                            ; escape ;; @@288a 11
+                 !word bload-1                            ; escape ;; @@288c 11
+                 !word record-1                           ; escape ;; @@288e 11
+                 !word concat-1                           ; escape ;; @@2890 11
+                 !word dverify-1                          ; escape ;; @@2892 11
+                 !word dclear-1                           ; escape ;; @@2894 11
  ;; @@2896 11
-                 !word  sprsav-1                          ; escape ;; @@2896 11
-                 !word  collision-1                       ; escape ;; @@2898 11
+                 !word sprsav-1                           ; escape ;; @@2896 11
+                 !word collision-1                        ; escape ;; @@2898 11
  ;; @@289a 11
-                 !word  data-1                            ; escape - BEGIN ;; @@289a 11
-                 !word  data-1                            ; escape - BEND ;; @@289c 11
-                 !word  window-1                          ; escape ;; @@289e 11
-                 !word  boot-1                            ; escape ;; @@28a0 11
+                 !word data-1                             ; escape - BEGIN ;; @@289a 11
+                 !word data-1                             ; escape - BEND ;; @@289c 11
+                 !word window-1                           ; escape ;; @@289e 11
+                 !word boot-1                             ; escape ;; @@28a0 11
  ;; @@28a2 11
-                 !word  bad_command-1                      ;; @@28a2 11
+                 !word bad_command-1                       ;; @@28a2 11
 ; .word  set_width-1 ;escape - WIDTH ;; @@28a4 11
  ;; @@28a4 11
-                 !word  bad_command-1                      ;; @@28a4 11
+                 !word bad_command-1                       ;; @@28a4 11
 ; .word  sprdef-1  ;escape - Sprite Definition mode ;; @@28a6 11
  ;; @@28a6 11
-                 !word  bad_command-1                     ; escape - QUIT - unimplemented command ;; @@28a6 11
-                 !word  dma-1                             ; escape ;; @@28a8 11
-                 !word  0                                 ; placeholder to skip over the space character ;; @@28aa 11
-                 !word  dma-1                             ; escape ;; @@28ac 11
-                 !word  0                                 ; placeholder to skip over the quote character ;; @@28ae 11
-                 !word  dma-1                             ; escape ;; @@28b0 11
-                 !word  bad_command-1                     ; escape - OFF - unimplemented command ;; @@28b2 11
-                 !word  fast-1                            ; escape ;; @@28b4 11
-                 !word  slow-1                            ; escape ;; @@28b6 11
-                 !word  type-1                            ; escape (C65: type SEQ file) ;; @@28b8 11
-                 !word  bverify-1                         ; escape (C65: verify BINary file) ;; @@28ba 11
-                 !word  snerr-1                           ; escape (C65: kludge- dirECTORY) ;; @@28bc 11
-                 !word  scratch-1                         ; escape (C65: erase alias for scratch) ;; @@28be 11
-                 !word  find-1                            ; escape (C65: find BASIC text) ;; @@28c0 11
-                 !word  change-1                          ; escape (C65: change BASIC text) ;; @@28c2 11
+                 !word bad_command-1                      ; escape - QUIT - unimplemented command ;; @@28a6 11
+                 !word dma-1                              ; escape ;; @@28a8 11
+                 !word 0                                  ; placeholder to skip over the space character ;; @@28aa 11
+                 !word dma-1                              ; escape ;; @@28ac 11
+                 !word 0                                  ; placeholder to skip over the quote character ;; @@28ae 11
+                 !word dma-1                              ; escape ;; @@28b0 11
+                 !word bad_command-1                      ; escape - OFF - unimplemented command ;; @@28b2 11
+                 !word fast-1                             ; escape ;; @@28b4 11
+                 !word slow-1                             ; escape ;; @@28b6 11
+                 !word type-1                             ; escape (C65: type SEQ file) ;; @@28b8 11
+                 !word bverify-1                          ; escape (C65: verify BINary file) ;; @@28ba 11
+                 !word snerr-1                            ; escape (C65: kludge- dirECTORY) ;; @@28bc 11
+                 !word scratch-1                          ; escape (C65: erase alias for scratch) ;; @@28be 11
+                 !word find-1                             ; escape (C65: find BASIC text) ;; @@28c0 11
+                 !word change-1                           ; escape (C65: change BASIC text) ;; @@28c2 11
  ;; @@28c4 11
-                 !word  C65__set-1                        ; escape (C65: multi-purpose command) ;; @@28c4 11
-                 !word  screen-1                          ; escape (C65: SCREEN) ;; @@28c6 11
-                 !word  C65__polygon-1                    ; escape (C65: POLYGON) ;; @@28c8 11
-                 !word  C65__ellipse-1                    ; escape (C65: ELLIPSE) ;; @@28ca 11
-                 !word  C65__viewport-1                   ; escape (C65: VIEWPORT) ;; @@28cc 11
-                 !word  C65__copy-1                       ; escape (C65: GCOPY) ;; @@28ce 11
-                 !word  C65__setpen-1                     ; escape (C65: PEN) ;; @@28d0 11
-                 !word  C65__setpalette-1                 ; escape (C65: PALETTE) ;; @@28d2 11
-                 !word  C65__setdmode-1                   ; escape (C65: DMODE) ;; @@28d4 11
-                 !word  C65__setdpat-1                    ; escape (C65: DPAT) ;; @@28d6 11
-                 !word  header-1                          ; format alias for header command [911017] ;; @@28d8 11
-                 !word  genlock-1                         ; [910108] ;; @@28da 11
+                 !word C65__set-1                         ; escape (C65: multi-purpose command) ;; @@28c4 11
+                 !word Screen-1                           ; escape (C65: SCREEN) ;; @@28c6 11
+                 !word C65__polygon-1                     ; escape (C65: POLYGON) ;; @@28c8 11
+                 !word C65__ellipse-1                     ; escape (C65: ELLIPSE) ;; @@28ca 11
+                 !word C65__Viewport-1                    ; escape (C65: VIEWPORT) ;; @@28cc 11
+                 !word C65__copy-1                        ; escape (C65: GCOPY) ;; @@28ce 11
+                 !word C65__setpen-1                      ; escape (C65: PEN) ;; @@28d0 11
+                 !word C65__setpalette-1                  ; escape (C65: PALETTE) ;; @@28d2 11
+                 !word C65__setdmode-1                    ; escape (C65: DMODE) ;; @@28d4 11
+                 !word C65__setdpat-1                     ; escape (C65: DPAT) ;; @@28d6 11
+                 !word header-1                           ; format alias for header command [911017] ;; @@28d8 11
+                 !word genlock-1                          ; [910108] ;; @@28da 11
  ;; @@28dc 11
 stmdsp2                                                    ;; @@28dc 11
-                 !word  foreground-1                      ; this is the 128th command!  [910109] ;; @@28dc 11
-                 !word  0                                 ; placeholder to skip over the colon character ;; @@28de 11
-                 !word  background-1                       ;; @@28e0 11
-                 !word  border-1                           ;; @@28e2 11
-                 !word  highlight-1                        ;; @@28e4 11
-                 !word  mouse-1                           ; [910122] ;; @@28e6 11
-                 !word  rmouse-1                          ; [910123] ;; @@28e8 11
-                 !word  disk-1                            ; [910123] ;; @@28ea 11
-                 !word  cursor-1                          ; [910228] ;; @@28ec 11
-                 !word  rcursor-1                         ; [910228] ;; @@28ee 11
-                 !word  loadiff-1                         ; [910402] ;; @@28f0 11
-                 !word  saveiff-1                         ; [910930] ;; @@28f2 11
-                 !word  edit-1                            ; [910620] ;; @@28f4 11
+                 !word foreground-1                       ; this is the 128th command!  [910109] ;; @@28dc 11
+                 !word 0                                  ; placeholder to skip over the colon character ;; @@28de 11
+                 !word background-1                        ;; @@28e0 11
+                 !word border-1                            ;; @@28e2 11
+                 !word highlight-1                         ;; @@28e4 11
+                 !word mouse-1                            ; [910122] ;; @@28e6 11
+                 !word rmouse-1                           ; [910123] ;; @@28e8 11
+                 !word disk-1                             ; [910123] ;; @@28ea 11
+                 !word cursor-1                           ; [910228] ;; @@28ec 11
+                 !word rcursor-1                          ; [910228] ;; @@28ee 11
+                 !word loadiff-1                          ; [910402] ;; @@28f0 11
+                 !word saveiff-1                          ; [910930] ;; @@28f2 11
+                 !word edit-1                             ; [910620] ;; @@28f4 11
  ;; @@28f6 11
 ; .page ;; @@28f6 11
 fundsp                                                     ;; @@28f6 11
-                 !word  sgn                                ;; @@28f6 11
-                 !word  int                                ;; @@28f8 11
-                 !word  abs                                ;; @@28fa 11
-                 !word  usrpok                             ;; @@28fc 11
-                 !word  fre                                ;; @@28fe 11
-                 !word  pos                                ;; @@2900 11
-                 !word  sqr                                ;; @@2902 11
-                 !word  rnd                                ;; @@2904 11
-                 !word  log                                ;; @@2906 11
-                 !word  exp                                ;; @@2908 11
-                 !word  cos                                ;; @@290a 11
-                 !word  sin                                ;; @@290c 11
-                 !word  tan                                ;; @@290e 11
-                 !word  atn                                ;; @@2910 11
-                 !word  peek                               ;; @@2912 11
-                 !word  len                                ;; @@2914 11
-                 !word  strd                               ;; @@2916 11
-                 !word  val                                ;; @@2918 11
-                 !word  asc                                ;; @@291a 11
-                 !word  chrd                               ;; @@291c 11
-                 !word  leftd                              ;; @@291e 11
-                 !word  rightd                             ;; @@2920 11
-                 !word  midd                               ;; @@2922 11
-                 !word  rgraphic                          ; [910701] ;; @@2924 11
-                 !word  rcolor                            ; [910701] ;; @@2926 11
-                 !word  0                                 ; placeholder for escape function token ;; @@2928 11
-                 !word  joy                                ;; @@292a 11
-                 !word  rpen                              ; was rdot     [910820] ;; @@292c 11
-                 !word  dcml                              ; dec ;; @@292e 11
-                 !word  hexd                               ;; @@2930 11
-                 !word  errd                               ;; @@2932 11
-                 !word  pot                               ; escape ;; @@2934 11
-                 !word  bump                              ; escape ;; @@2936 11
-                 !word  lpen                              ; escape ;; @@2938 11
-                 !word  rsppos                            ; escape ;; @@293a 11
-                 !word  rsprite                           ; escape ;; @@293c 11
-                 !word  rspcolor                          ; escape ;; @@293e 11
-                 !word  xor                               ; escape ;; @@2940 11
-                 !word  rwindow                           ; escape ;; @@2942 11
-                 !word  pointer                           ; escape ;; @@2944 11
-                 !word  mod                               ; escape c65     [910402] ;; @@2946 11
-                 !word  pixel                             ; escape c65     [910820] ;; @@2948 11
-                 !word  rpalette                          ; escape c65     [910820] ;; @@294a 11
+                 !word sgn                                 ;; @@28f6 11
+                 !word int                                 ;; @@28f8 11
+                 !word abs                                 ;; @@28fa 11
+                 !word usrpok                              ;; @@28fc 11
+                 !word fre                                 ;; @@28fe 11
+                 !word pos                                 ;; @@2900 11
+                 !word sqr                                 ;; @@2902 11
+                 !word rnd                                 ;; @@2904 11
+                 !word log                                 ;; @@2906 11
+                 !word exp                                 ;; @@2908 11
+                 !word cos                                 ;; @@290a 11
+                 !word sin                                 ;; @@290c 11
+                 !word tan                                 ;; @@290e 11
+                 !word atn                                 ;; @@2910 11
+                 !word peek                                ;; @@2912 11
+                 !word len                                 ;; @@2914 11
+                 !word strd                                ;; @@2916 11
+                 !word val                                 ;; @@2918 11
+                 !word asc                                 ;; @@291a 11
+                 !word chrd                                ;; @@291c 11
+                 !word leftd                               ;; @@291e 11
+                 !word rightd                              ;; @@2920 11
+                 !word midd                                ;; @@2922 11
+                 !word rgraphic                           ; [910701] ;; @@2924 11
+                 !word rcolor                             ; [910701] ;; @@2926 11
+                 !word 0                                  ; placeholder for escape function token ;; @@2928 11
+                 !word joy                                 ;; @@292a 11
+                 !word rpen                               ; was rdot     [910820] ;; @@292c 11
+                 !word dcml                               ; dec ;; @@292e 11
+                 !word hexd                                ;; @@2930 11
+                 !word errd                                ;; @@2932 11
+                 !word pot                                ; escape ;; @@2934 11
+                 !word bump                               ; escape ;; @@2936 11
+                 !word lpen                               ; escape ;; @@2938 11
+                 !word rsppos                             ; escape ;; @@293a 11
+                 !word rsprite                            ; escape ;; @@293c 11
+                 !word rspcolor                           ; escape ;; @@293e 11
+                 !word xor                                ; escape ;; @@2940 11
+                 !word rwindow                            ; escape ;; @@2942 11
+                 !word pointer                            ; escape ;; @@2944 11
+                 !word mod                                ; escape c65     [910402] ;; @@2946 11
+                 !word pixel                              ; escape c65     [910820] ;; @@2948 11
+                 !word rpalette                           ; escape c65     [910820] ;; @@294a 11
  ;; @@294c 11
 ; .page ;; @@294c 11
 optab            !text 121                                 ;; @@294c 11
-                 !word  faddt-1                            ;; @@294d 11
+                 !word faddt-1                             ;; @@294d 11
                  !text 121                                 ;; @@294f 11
-                 !word  fsubt-1                            ;; @@2950 11
+                 !word fsubt-1                             ;; @@2950 11
                  !text 123                                 ;; @@2952 11
-                 !word  fmultt-1                           ;; @@2953 11
+                 !word fmultt-1                            ;; @@2953 11
                  !text 123                                 ;; @@2955 11
-                 !word  fdivt-1                            ;; @@2956 11
+                 !word fdivt-1                             ;; @@2956 11
                  !text 127                                 ;; @@2958 11
-                 !word  fpwrt-1                            ;; @@2959 11
+                 !word fpwrt-1                             ;; @@2959 11
                  !text 80                                  ;; @@295b 11
-                 !word  andop-1                            ;; @@295c 11
+                 !word andop-1                             ;; @@295c 11
                  !text 70                                  ;; @@295e 11
-                 !word  orop-1                             ;; @@295f 11
+                 !word orop-1                              ;; @@295f 11
 negtab           !text 125                                 ;; @@2961 11
-                 !word  negop-1                            ;; @@2962 11
+                 !word negop-1                             ;; @@2962 11
                  !text 90                                  ;; @@2964 11
-                 !word  notop-1                            ;; @@2965 11
+                 !word notop-1                             ;; @@2965 11
 ptdorl           !text 100                                 ;; @@2967 11
-                 !word  dorel-1                            ;; @@2968 11
+                 !word dorel-1                             ;; @@2968 11
  ;; @@296a 11
 ;.end ;; @@296a 11
 ; .page ;; @@296a 11

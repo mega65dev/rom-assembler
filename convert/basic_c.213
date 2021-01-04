@@ -21,7 +21,7 @@ hyo              jsr ansub                                ; get next format char
                  inx                                       ;; @@6de7 213
                  cpx #2                                   ; more than 1 decimal? ;; @@6de8 213
                  bcc hyo                                  ; no... ;; @@6dea 213
-ero              bra snerr                                ; yes...syntax error ;; @@6dec 213
+ero              +lbra snerr                              ; yes...syntax error ;; @@6dec 213
  ;; @@6def 213
  ;; @@6def 213
 avf1             jsr com2                                 ; =, >, or # in field ;; @@6def 213

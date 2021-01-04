@@ -6,11 +6,11 @@ edit_load                                                 ; Called by DLOAD/DVER
                  lda #dsdesc+1                             ;; @@bd17 313
                  jsr lda_far_ram1                         ; lda (dsdesc+1),y peek at first character ;; @@bd19 313
                  cmp #'2'                                  ;; @@bd1c 313
-                 bcs _local_1312_30                       ; exit if error ;; @@bd1e 313
+                 +lbcs _local_1312_30                     ; exit if error ;; @@bd1e 313
                  jsr Clear_DS                             ; else zap 'ok' message so user gets fresh one ;; @@bd21 313
                  ldx dosla                                 ;; @@bd24 313
                  jsr _chkin                               ; get input channel ;; @@bd27 313
-                 bcs _local_1312_30                       ; error ;; @@bd2a 313
+                 +lbcs _local_1312_30                     ; error ;; @@bd2a 313
  ;; @@bd2d 313
                  bbs0 verck,_local_1312_1                  ;; @@bd2d 313
                  jsr _primm                                ;; @@bd30 313
@@ -73,7 +73,7 @@ _local_1312_21   bbr0 verck,_local_1312_22                 ;; @@bd9d 313
                  beq _local_1312_20                       ; ok ;; @@bda3 313
                  jsr list_exit                             ;; @@bda5 313
                  ldx #ervfy                               ; verify error ;; @@bda8 313
-                 bra error                                 ;; @@bdaa 313
+                 +lbra error                               ;; @@bdaa 313
  ;; @@bdad 313
 _local_1312_22   jsr sta_far_in1                          ; Load into memory ;; @@bdad 313
                  bra _local_1312_20                       ; loop until eol or error (kernel returns CR in case of error) ;; @@bdb0 313
@@ -93,11 +93,11 @@ _local_1312_27   lda index+1                               ;; @@bdc5 313
                  bcc _local_1312_10                       ; no, continue until eof ;; @@bdca 313
                  bsr edit_load_done                       ; yes, patch things up best we can ;; @@bdcc 313
                  jsr list_exit                            ; close disk ;; @@bdcf 313
-                 bra omerr                                ; report error & exit ;; @@bdd2 313
+                 +lbra omerr                              ; report error & exit ;; @@bdd2 313
  ;; @@bdd5 313
 _local_1312_28   bbs0 verck,_local_1312_30                 ;; @@bdd5 313
                  jsr edit_load_done                       ; EOF: terminate memory with a pair of nulls ;; @@bdd8 313
-_local_1312_30   bra list_exit                            ; release channel, close file, etc. ;; @@bddb 313
+_local_1312_30   +lbra list_exit                          ; release channel, close file, etc. ;; @@bddb 313
  ;; @@bdde 313
 ; bbr0 verck,40$ ;; @@bdde 313
 ; jsr verify_ok  ;if Verify, report 'ok' ;; @@bdde 313

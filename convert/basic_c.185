@@ -6,7 +6,7 @@ polyx            sta polypt                               ; retain polynomial po
                  jsr poly1                                ; compute p(x^2). ;; @@6666 185
                  lda #<tempf1                              ;; @@6669 185
                  ldy #>tempf1                              ;; @@666b 185
-                 bra fmult                                ; multiply by FAC again ;; @@666d 185
+                 +lbra fmult                              ; multiply by FAC again ;; @@666d 185
  ;; @@6670 185
  ;; @@6670 185
 ; Polynomial Evaluator ;; @@6670 185

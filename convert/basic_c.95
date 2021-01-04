@@ -9,7 +9,7 @@ error_clear                                                ;; @@44dc 95
  ;; @@44e8 95
  ;; @@44e8 95
 rescnt           ldx #errcr                                ;; @@44e8 95
-                 bra error                                 ;; @@44ea 95
+                 +lbra error                               ;; @@44ea 95
  ;; @@44ed 95
 ;.end ;; @@44ed 95
 ; .page ;; @@44ed 95

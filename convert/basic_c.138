@@ -3,7 +3,7 @@ fre              jsr conint                               ; get integer argument
                  beq _local_1137_20                       ; go do bank one ;; @@5518 138
                  cpx #2                                   ; go do expansion banks   [910107] ;; @@551a 138
                  beq _local_1137_30                       ; else it must be bank zero ;; @@551c 138
-                 bcs fcerr                                ; any other is unpleasant to talk about ;; @@551e 138
+                 +lbcs fcerr                              ; any other is unpleasant to talk about ;; @@551e 138
  ;; @@5521 138
                  sec                                      ; FRE(text_bank) ;; @@5521 138
                  lda max_mem_0                             ;; @@5522 138
@@ -26,7 +26,7 @@ _local_1137_20   jsr garba2                               ; FRE(var_bank) do gar
 _local_1137_30   ldy _expansion                           ; FRE(expansion banks)    [910107] ;; @@553e 138
                  lda #0                                    ;; @@5541 138
  ;; @@5543 138
-_local_1137_40   bra nosflt                               ; go float the number (y,a)=(lo,hi) ;; @@5543 138
+_local_1137_40   +lbra nosflt                             ; go float the number (y,a)=(lo,hi) ;; @@5543 138
  ;; @@5546 138
 ;.end ;; @@5546 138
 ; .page ;; @@5546 138

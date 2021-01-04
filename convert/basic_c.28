@@ -31,7 +31,7 @@ _local_1027_10   jsr inchr                                ; get a character ;; @
                  inx                                       ;; @@312c 28
                  cpx #buflen                              ; buffer full? ;; @@312d 28
                  bcc _local_1027_10                       ; no...continue ;; @@312f 28
-                 bra errlen                               ; yes...string too long error ;; @@3131 28
+                 +lbra errlen                             ; yes...string too long error ;; @@3131 28
  ;; @@3134 28
  ;; @@3134 28
 _local_1027_20   lda #0                                   ; fininl.  terminate input with a null ;; @@3134 28
@@ -39,7 +39,7 @@ _local_1027_20   lda #0                                   ; fininl.  terminate i
                  ldx #<buf_txtptr                         ; set up pointer to start of buffer-1 (for chrget) ;; @@3139 28
                  ldy #>buf_txtptr                          ;; @@313b 28
                  lda channl                               ; print 'return' only if terminal ;; @@313d 28
-                 beq crdo                                  ;; @@313f 28
+                 +lbeq crdo                                ;; @@313f 28
                  rts                                       ;; @@3142 28
  ;; @@3143 28
 ;.end ;; @@3143 28

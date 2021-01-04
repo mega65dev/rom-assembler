@@ -9,7 +9,7 @@ savs50           lda sprtmp_1                             ; restore basic text p
                  sta facmo                                ; save descriptor address of source ;; @@b8a0 296
                  lda #>savsiz                              ;; @@b8a2 296
                  sta facmo+1                               ;; @@b8a4 296
-                 bra inpcom                               ; move source to dest, do rts (snerr if not eol) ;; @@b8a6 296
+                 +lbra inpcom                             ; move source to dest, do rts (snerr if not eol) ;; @@b8a6 296
  ;; @@b8a9 296
 ; .page ;; @@b8a9 296
 savinp           jsr frmevl                               ; evaluate expression ;; @@b8a9 296
@@ -17,11 +17,11 @@ savinp           jsr frmevl                               ; evaluate expression 
                  jsr conint                               ; get one byte integer in .X ;; @@b8af 296
 ; dex    ;adjust sprite 1..8 to 0..7  [910220] ;; @@b8b2 296
                  cpx #8                                    ;; @@b8b2 296
-                 bcs fcerr                                ; bad value ;; @@b8b4 296
+                 +lbcs fcerr                              ; bad value ;; @@b8b4 296
                  txa                                      ; move sprite number to .A ;; @@b8b7 296
-                 lsr a                                     ;; @@b8b8 296
-                 ror a                                     ;; @@b8b9 296
-                 ror a                                    ; get sprite address ;; @@b8ba 296
+                 lsr                                       ;; @@b8b8 296
+                 ror                                       ;; @@b8b9 296
+                 ror                                      ; get sprite address ;; @@b8ba 296
                  ldy #>sprite_base                         ;; @@b8bb 296
                  bcc _local_1295_5                         ;; @@b8bd 296
                  iny                                       ;; @@b8bf 296

@@ -1,14 +1,14 @@
 set_voice                                                  ;; @@47ee 106
-                 dec a                                     ;; @@47ee 106
+                 dec                                       ;; @@47ee 106
                  cmp #6                                   ; stereo SIDs: 0-2=right, 3-5=left  [910612] ;; @@47ef 106
-                 bcs play_bad_value                        ;; @@47f1 106
+                 +lbcs play_bad_value                      ;; @@47f1 106
                  sta voice                                ; 0-5 ;; @@47f4 106
                  bra clear_flag                           ; always ;; @@47f7 106
  ;; @@47f9 106
  ;; @@47f9 106
 set_octave                                                 ;; @@47f9 106
                  cmp #7                                    ;; @@47f9 106
-                 bcs play_bad_value                       ; too big octave ;; @@47fb 106
+                 +lbcs play_bad_value                     ; too big octave ;; @@47fb 106
                  sta octave                               ; set octave ;; @@47fe 106
                  bra clear_flag                           ; always ;; @@4801 106
  ;; @@4803 106

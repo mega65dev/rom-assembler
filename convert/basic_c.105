@@ -1,8 +1,8 @@
 set_filter                                                 ;; @@47bc 105
                  jsr wait_for_all_quiet                   ; [910722] ;; @@47bc 105
                  cmp #2                                    ;; @@47bf 105
-                 bcs play_bad_value                       ; value too large ;; @@47c1 105
-                 lsr a                                    ; .c=on/off ;; @@47c4 105
+                 +lbcs play_bad_value                     ; value too large ;; @@47c1 105
+                 lsr                                      ; .c=on/off ;; @@47c4 105
                  ldy voice                                ; 0-5 ;; @@47c5 105
                  ldx filter_offset,y                      ; 0 0 0 4 4 4 ;; @@47c8 105
                  lda filters1+2,x                         ; get current filter data for this SID  [910612] ;; @@47cb 105

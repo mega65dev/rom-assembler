@@ -1,4 +1,4 @@
-nescpr           bcs p1l015                               ; no takers, print a funny graphic character ;; @@344e 41
+nescpr           +lbcs p1l015                             ; no takers, print a funny graphic character ;; @@344e 41
                  ldy #0                                    ;; @@3451 41
                  bra p1l070                                ;; @@3453 41
  ;; @@3455 41
@@ -12,7 +12,7 @@ nescpr           bcs p1l015                               ; no takers, print a f
  ;; @@3455 41
 new              beq init_text                            ; Erase program in memory ;; @@3455 41
                  cmp #restore_token                       ; Restore an erased program?    [910103] ;; @@3457 41
-                 bne snerr                                ; no- syntax error    [910410] ;; @@3459 41
+                 +lbne snerr                              ; no- syntax error    [910410] ;; @@3459 41
                  jsr chkeos                               ; yes- eat token, error if not eos  [910429] ;; @@345c 41
                  lda txttab                               ; "seed" first link to fool 'chead' ;; @@345f 41
                  ldx txttab+1                              ;; @@3461 41
@@ -23,9 +23,9 @@ new              beq init_text                            ; Erase program in mem
                  ldx #index                                ;; @@346b 41
                  jsr sta_far_ram0                         ; clear msb  (bleed-thru) ;; @@346d 41
                  dey                                       ;; @@3470 41
-                 inc a                                     ;; @@3471 41
+                 inc                                       ;; @@3471 41
                  jsr sta_far_ram0                         ; set lsb   (bleed-thru) ;; @@3472 41
-                 bra renumber                             ; make renumber check it for us (not 100%) & relink ;; @@3475 41
+                 +lbra renumber                           ; make renumber check it for us (not 100%) & relink ;; @@3475 41
  ;; @@3478 41
  ;; @@3478 41
 init_text                                                  ;; @@3478 41
@@ -74,7 +74,7 @@ clear            beq clearc                               ; branch if no args   
                  cmp #err_token                           ; CLR ERR$ ;; @@34a8 41
                  bne _local_1040_10                       ; no ;; @@34aa 41
                  jsr chkeos                               ; yes- eat token & error if not eos ;; @@34ac 41
-                 bra error_clear                          ; and go clear ERR$ ;; @@34af 41
+                 +lbra error_clear                        ; and go clear ERR$ ;; @@34af 41
  ;; @@34b2 41
 _local_1040_10   cmp #'D'                                 ; CLR DS$     [910717] ;; @@34b2 41
                  bne _local_1040_20                       ; no- error ;; @@34b4 41
@@ -83,9 +83,9 @@ _local_1040_10   cmp #'D'                                 ; CLR DS$     [910717]
                  bne _local_1040_20                        ;; @@34bb 41
                  jsr chrget                                ;; @@34bd 41
                  cmp #'$'                                  ;; @@34c0 41
-_local_1040_20   bne snerr                                ; no- error ;; @@34c2 41
+_local_1040_20   +lbne snerr                              ; no- error ;; @@34c2 41
                  jsr chkeos                                ;; @@34c5 41
-                 bra Clear_DS                             ; yes- clear current DS$ ;; @@34c8 41
+                 +lbra Clear_DS                           ; yes- clear current DS$ ;; @@34c8 41
  ;; @@34cb 41
 ; .page ;; @@34cb 41
 ; Clearc is a subroutine which initializes the variable and array space by ;; @@34cb 41

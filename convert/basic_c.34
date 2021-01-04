@@ -12,12 +12,12 @@ _local_1033_15   inc endchr                               ; indicate line # inpu
                  cmp #25                                  ; line number will be < 64000? ;; @@3242 34
                  bcc _local_1033_20                       ; yes, continue ;; @@3244 34
                  bbs1 helper,_local_1033_40               ; no, if called by AutoScroll it's okay ;; @@3246 34
-                 bra snerr                                ; else syntax error ;; @@3249 34
+                 +lbra snerr                              ; else syntax error ;; @@3249 34
  ;; @@324c 34
 _local_1033_20   lda linnum                                ;; @@324c 34
-                 asl a                                    ; multiply by 10 ;; @@324e 34
+                 asl                                      ; multiply by 10 ;; @@324e 34
                  rol index                                 ;; @@324f 34
-                 asl a                                     ;; @@3251 34
+                 asl                                       ;; @@3251 34
                  rol index                                 ;; @@3252 34
                  adc linnum                                ;; @@3254 34
                  sta linnum                                ;; @@3256 34
@@ -49,7 +49,7 @@ _local_1033_30                                             ;; @@326c 34
 _local_1033_40   rts                                      ; exit ;; @@3283 34
  ;; @@3284 34
 _local_1033_50   jsr chargt                               ; terminating character is a space, eat it just this once ;; @@3284 34
-                 bra chrtst                               ; return with flags set appropriately (esp. for 'range') ;; @@3287 34
+                 +lbra chrtst                             ; return with flags set appropriately (esp. for 'range') ;; @@3287 34
  ;; @@328a 34
 ;.end ;; @@328a 34
 ; .page ;; @@328a 34

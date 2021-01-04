@@ -5,7 +5,7 @@ oknorm                                                     ;; @@2d51 19
 fingo                                                      ;; @@2d55 19
                  sec                                      ; convert token to index into jump table ;; @@2d55 19
                  sbc #first_function_token                 ;; @@2d56 19
-                 asl a                                     ;; @@2d58 19
+                 asl                                       ;; @@2d58 19
                  tay                                       ;; @@2d59 19
                  lda fundsp+1,y                            ;; @@2d5a 19
                  sta jmper+2                               ;; @@2d5d 19
@@ -13,14 +13,14 @@ fingo                                                      ;; @@2d55 19
                  sta jmper+1                               ;; @@2d62 19
                  jsr jmper                                ; dispatch ;; @@2d64 19
 ;string functions remove this ret addr ;; @@2d67 19
-                 bra chknum                               ; check for "numeric-ness" and return ;; @@2d67 19
+                 +lbra chknum                             ; check for "numeric-ness" and return ;; @@2d67 19
  ;; @@2d6a 19
 ; .page ;; @@2d6a 19
 ; Escape Function handler ;; @@2d6a 19
  ;; @@2d6a 19
 do_esc_fn                                                  ;; @@2d6a 19
                  jsr chrget                               ; get second token ;; @@2d6a 19
-                 beq snerr                                ; error if no second token ;; @@2d6d 19
+                 +lbeq snerr                              ; error if no second token ;; @@2d6d 19
                  cmp #pointer_token                        ;; @@2d70 19
                  beq _local_1018_10                       ; skip pre-parse if 'POINTER()' ;; @@2d72 19
                  pha                                       ;; @@2d74 19

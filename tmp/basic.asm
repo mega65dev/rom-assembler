@@ -927,6 +927,67 @@ _plot            = $fff0
 ; .page
 ; .subttl C65 BASIC 10.0 Initilaization
 
+; ***************************************************************************************************************
+; ***************************************************************************************************************
+;
+;      Name:       patch.asm
+;      Purpose:    Fixes
+;      Created:    4th January 2020
+;      Author:     Paul Robson (paul@robsons.org.uk)
+;
+; ***************************************************************************************************************
+; ***************************************************************************************************************
+
+; ***************************************************************************************************************
+;
+;				At present ACME does not support BRA opcode $83. BRL replaces this.
+;
+; ***************************************************************************************************************
+
+!macro lbra addr {
+	!byte $83
+	!word (addr-*-2) & $FFFF
+}
+
+!macro lbcc addr {
+	!byte $93
+	!word (addr-*-2) & $FFFF
+}
+
+!macro lbcs addr {
+	!byte $B3
+	!word (addr-*-2) & $FFFF
+}
+
+!macro lbne addr {
+	!byte $D3
+	!word (addr-*-2) & $FFFF
+}
+
+!macro lbeq addr {
+	!byte $F3
+	!word (addr-*-2) & $FFFF
+}
+
+!macro lbpl addr {
+	!byte $13
+	!word (addr-*-2) & $FFFF
+}
+
+!macro lbmi addr {
+	!byte $33
+	!word (addr-*-2) & $FFFF
+}
+
+!macro lbvs addr {
+	!byte $73
+	!word (addr-*-2) & $FFFF
+}
+
+!macro lbvc addr {
+	!byte $53
+	!word (addr-*-2) & $FFFF
+}
                  * = $2000                                 ;; @@0000 1
  ;; @@2000 1
 basic                                                      ;; @@2000 1
@@ -972,7 +1033,7 @@ hard_reset                                                 ;; @@2025 1
  ;; @@2053 1
 go_ready                                                   ;; @@2053 1
                  cli                                      ; enable IRQ ;; @@2053 1
-                 bra ready                                 ;; @@2054 1
+                 +lbra ready                               ;; @@2054 1
  ;; @@2057 1
 ; .page ;; @@2057 1
 init_storage                                               ;; @@2057 1
@@ -1076,7 +1137,7 @@ init_storage                                               ;; @@2057 1
  ;; @@20da 1
                  lda #0                                   ; init text input buffer  (these are for autoboot) ;; @@20da 1
                  sta buf                                   ;; @@20dc 1
-                 dec a                                     ;; @@20df 1
+                 dec                                       ;; @@20df 1
                  sta curlin+1                             ; init line pointer ;; @@20e0 1
                  ldx #<buf_txtptr                         ; init txtptr ;; @@20e2 1
                  ldy #>buf_txtptr                          ;; @@20e4 1
@@ -1091,7 +1152,7 @@ _local_1000_10   bbr7 _mode,_local_1000_20                 ;; @@20ee 1
                  sta sprite_ptrs_40,y                     ; 40 col screen ;; @@20f1 1
                  bra _local_1000_30                        ;; @@20f4 1
 _local_1000_20   sta sprite_ptrs_80,y                     ; 80 col screen ;; @@20f6 1
-_local_1000_30   dec a                                     ;; @@20f9 1
+_local_1000_30   dec                                       ;; @@20f9 1
                  dey                                       ;; @@20fa 1
                  bpl _local_1000_10                        ;; @@20fb 1
  ;; @@20fd 1
@@ -1110,7 +1171,7 @@ _local_1000_40   sta sprite_data,x                         ;; @@2101 1
 ; lda #$d8 ;; @@210a 1
 ; sta upper_lower ;; @@210a 1
  ;; @@210a 1
-                 bra init_text                            ; go to 'new' ;; @@210a 1
+                 +lbra init_text                          ; go to 'new' ;; @@210a 1
  ;; @@210d 1
 ; .page ;; @@210d 1
 init_sound_sprites                                          ; [910523] ;; @@210d 2
@@ -1235,11 +1296,11 @@ _local_1003_1    lda _local_1003_2,x                       ;; @@2261 4
                  rts                                       ;; @@226a 4
  ;; @@226b 4
  ;; @@226b 4
-_local_1003_2    !word  AutoScroll                        ; autoscroll vector ;; @@226b 4
-                 !word  n_esc_fn_vec                      ; escape function vector ;; @@226d 4
-                 !word  graphic_kernel                    ; graphic extension vector ;; @@226f 4
-                 !word  nerror,nmain,ncrnch,nqplop,ngone,neval ; traditional vectors ;; @@2271 4
-                 !word  nesclk,nescpr,nescex              ; escape command vectors ;; @@227d 4
+_local_1003_2    !word AutoScroll                         ; autoscroll vector ;; @@226b 4
+                 !word n_esc_fn_vec                       ; escape function vector ;; @@226d 4
+                 !word graphic_kernel                     ; graphic extension vector ;; @@226f 4
+                 !word nerror,nmain,ncrnch,nqplop,ngone,neval ; traditional vectors ;; @@2271 4
+                 !word nesclk,nescpr,nescex               ; escape command vectors ;; @@227d 4
 _local_1003_3                                              ;; @@2283 4
  ;; @@2283 4
 ; .page ;; @@2283 4
@@ -1498,7 +1559,7 @@ crun20           bcc crun10                               ; don't crunch numbers
                  jmp (iesclk)                             ; give others a chance at this.  (carry is set) ;; @@232f 8
  ;; @@2332 8
 nesclk                                                     ;; @@2332 8
-                 bcc _local_1007_130                      ; carry clear if someone wanted it ;; @@2332 8
+                 +lbcc _local_1007_130                    ; carry clear if someone wanted it ;; @@2332 8
                  cmp #0                                   ; end of line? ;; @@2335 8
                  beq _local_1007_110                      ; yes ;; @@2337 8
                  cmp #':'                                 ; multi-stmt char? ;; @@2339 8
@@ -1563,7 +1624,7 @@ _local_1007_90   ldy #0                                    ;; @@2395 8
                  bne crun10                                ;; @@23a0 8
                  jsr chrget                                ;; @@23a2 8
                  jsr data                                  ;; @@23a5 8
-                 bra crun05                                ;; @@23a8 8
+                 +lbra crun05                              ;; @@23a8 8
  ;; @@23ab 8
 _local_1007_100  jsr chrget                                ;; @@23ab 8
                  jsr rem                                   ;; @@23ae 8
@@ -1604,7 +1665,7 @@ _local_1007_140  ldy #0                                    ;; @@23ce 8
                  pla                                       ;; @@23d4 8
                  jsr sta_far_txt                          ; ..and second token  (bleed-thru) ;; @@23d5 8
                  jsr chrget                               ; skip over token, ;; @@23d8 8
-                 bra crun10                               ; ..and continue with line. ;; @@23db 8
+                 +lbra crun10                             ; ..and continue with line. ;; @@23db 8
  ;; @@23de 8
 ; .page ;; @@23de 8
 ;      KLOOP ;; @@23de 8
@@ -1929,235 +1990,235 @@ esc_function_list                                           ;; @@279a 11
 ; .page ;; @@27dc 11
 ; .subttl Jump Table For Dispatch Routine ;; @@27dc 11
 stmdsp                                                     ;; @@27dc 11
-                 !word  end-1                              ;; @@27dc 11
-                 !word  for-1                              ;; @@27de 11
-                 !word  next-1                             ;; @@27e0 11
-                 !word  data-1                             ;; @@27e2 11
-                 !word  inputn-1                           ;; @@27e4 11
-                 !word  input-1                            ;; @@27e6 11
-                 !word  dim-1                              ;; @@27e8 11
-                 !word  read-1                             ;; @@27ea 11
-                 !word  let-1                              ;; @@27ec 11
-                 !word  goto-1                             ;; @@27ee 11
-                 !word  run-1                              ;; @@27f0 11
-                 !word  if-1                               ;; @@27f2 11
-                 !word  restor-1                           ;; @@27f4 11
-                 !word  gosub-1                            ;; @@27f6 11
-                 !word  return-1                           ;; @@27f8 11
-                 !word  rem-1                              ;; @@27fa 11
-                 !word  stop-1                             ;; @@27fc 11
-                 !word  ongoto-1                           ;; @@27fe 11
-                 !word  wait-1                             ;; @@2800 11
-                 !word  load-1                             ;; @@2802 11
-                 !word  save-1                             ;; @@2804 11
-                 !word  verify-1                           ;; @@2806 11
-                 !word  def-1                              ;; @@2808 11
-                 !word  poke-1                             ;; @@280a 11
-                 !word  printn-1                           ;; @@280c 11
-                 !word  print-1                            ;; @@280e 11
-                 !word  cont-1                             ;; @@2810 11
-                 !word  list-1                             ;; @@2812 11
-                 !word  clear-1                            ;; @@2814 11
-                 !word  cmd-1                              ;; @@2816 11
-                 !word  sys-1                              ;; @@2818 11
-                 !word  open-1                             ;; @@281a 11
-                 !word  close-1                            ;; @@281c 11
-                 !word  get-1                              ;; @@281e 11
-                 !word  new-1                              ;; @@2820 11
+                 !word end-1                               ;; @@27dc 11
+                 !word for-1                               ;; @@27de 11
+                 !word next-1                              ;; @@27e0 11
+                 !word data-1                              ;; @@27e2 11
+                 !word inputn-1                            ;; @@27e4 11
+                 !word input-1                             ;; @@27e6 11
+                 !word dim-1                               ;; @@27e8 11
+                 !word read-1                              ;; @@27ea 11
+                 !word let-1                               ;; @@27ec 11
+                 !word goto-1                              ;; @@27ee 11
+                 !word run-1                               ;; @@27f0 11
+                 !word if-1                                ;; @@27f2 11
+                 !word restor-1                            ;; @@27f4 11
+                 !word gosub-1                             ;; @@27f6 11
+                 !word return-1                            ;; @@27f8 11
+                 !word rem-1                               ;; @@27fa 11
+                 !word stop-1                              ;; @@27fc 11
+                 !word ongoto-1                            ;; @@27fe 11
+                 !word wait-1                              ;; @@2800 11
+                 !word load-1                              ;; @@2802 11
+                 !word save-1                              ;; @@2804 11
+                 !word verify-1                            ;; @@2806 11
+                 !word def-1                               ;; @@2808 11
+                 !word poke-1                              ;; @@280a 11
+                 !word printn-1                            ;; @@280c 11
+                 !word print-1                             ;; @@280e 11
+                 !word cont-1                              ;; @@2810 11
+                 !word list-1                              ;; @@2812 11
+                 !word clear-1                             ;; @@2814 11
+                 !word cmd-1                               ;; @@2816 11
+                 !word sys-1                               ;; @@2818 11
+                 !word open-1                              ;; @@281a 11
+                 !word close-1                             ;; @@281c 11
+                 !word get-1                               ;; @@281e 11
+                 !word new-1                               ;; @@2820 11
  ;; @@2822 11
-                 !word  else-1                             ;; @@2822 11
-                 !word  resume-1                           ;; @@2824 11
-                 !word  trap-1                             ;; @@2826 11
-                 !word  tron-1                             ;; @@2828 11
-                 !word  troff-1                            ;; @@282a 11
-                 !word  sound-1                            ;; @@282c 11
-                 !word  volume-1                           ;; @@282e 11
-                 !word  auto-1                             ;; @@2830 11
-                 !word  puctrl-1                           ;; @@2832 11
-                 !word  graphic-1                          ;; @@2834 11
+                 !word else-1                              ;; @@2822 11
+                 !word resume-1                            ;; @@2824 11
+                 !word trap-1                              ;; @@2826 11
+                 !word tron-1                              ;; @@2828 11
+                 !word troff-1                             ;; @@282a 11
+                 !word sound-1                             ;; @@282c 11
+                 !word volume-1                            ;; @@282e 11
+                 !word auto-1                              ;; @@2830 11
+                 !word puctrl-1                            ;; @@2832 11
+                 !word graphic-1                           ;; @@2834 11
  ;; @@2836 11
-                 !word  C65__paint-1                       ;; @@2836 11
-                 !word  C65__char-1                        ;; @@2838 11
-                 !word  C65__box-1                         ;; @@283a 11
-                 !word  C65__circle-1                      ;; @@283c 11
-                 !word  C65__paste-1                      ; gshape ;; @@283e 11
-                 !word  C65__cut-1                        ; sshape ;; @@2840 11
-                 !word  C65__line-1                       ; draw ;; @@2842 11
+                 !word C65__paint-1                        ;; @@2836 11
+                 !word C65__char-1                         ;; @@2838 11
+                 !word C65__box-1                          ;; @@283a 11
+                 !word C65__circle-1                       ;; @@283c 11
+                 !word C65__paste-1                       ; gshape ;; @@283e 11
+                 !word C65__cut-1                         ; sshape ;; @@2840 11
+                 !word C65__line-1                        ; draw ;; @@2842 11
  ;; @@2844 11
-                 !word  bad_command-1                     ; escape - SYSTEM - unimplemented command ;; @@2844 11
+                 !word bad_command-1                      ; escape - SYSTEM - unimplemented command ;; @@2844 11
 ; .word  locate-1 ;; @@2846 11
  ;; @@2846 11
-                 !word  color-1        [910109]            ;; @@2846 11
-                 !word  scnclr-1                           ;; @@2848 11
+                 !word color-1                             ;; @@2846 11
+                 !word scnclr-1                            ;; @@2848 11
  ;; @@284a 11
-                 !word  bad_command-1                     ; escape - SYSTEM - unimplemented command ;; @@284a 11
+                 !word bad_command-1                      ; escape - SYSTEM - unimplemented command ;; @@284a 11
 ; .word  scale-1 ;; @@284c 11
  ;; @@284c 11
-                 !word  help-1                             ;; @@284c 11
-                 !word  do-1                               ;; @@284e 11
-                 !word  loop-1                             ;; @@2850 11
-                 !word  exit-1                             ;; @@2852 11
-                 !word  directory-1                        ;; @@2854 11
-                 !word  dsave-1                            ;; @@2856 11
-                 !word  dload-1                            ;; @@2858 11
-                 !word  header-1                           ;; @@285a 11
-                 !word  scratch-1                          ;; @@285c 11
-                 !word  collect-1                          ;; @@285e 11
-                 !word  dcopy-1                            ;; @@2860 11
-                 !word  rename-1                           ;; @@2862 11
-                 !word  backup-1                           ;; @@2864 11
-                 !word  delete-1                           ;; @@2866 11
-                 !word  renumber-1                         ;; @@2868 11
-                 !word  key-1                              ;; @@286a 11
-                 !word  _monitor-1                         ;; @@286c 11
-                 !word  bank-1                            ; escape ;; @@286e 11
-                 !word  filter-1                          ; escape ;; @@2870 11
-                 !word  play-1                            ; escape ;; @@2872 11
-                 !word  tempo-1                           ; escape ;; @@2874 11
+                 !word help-1                              ;; @@284c 11
+                 !word do-1                                ;; @@284e 11
+                 !word loop-1                              ;; @@2850 11
+                 !word exit-1                              ;; @@2852 11
+                 !word directory-1                         ;; @@2854 11
+                 !word dsave-1                             ;; @@2856 11
+                 !word dload-1                             ;; @@2858 11
+                 !word header-1                            ;; @@285a 11
+                 !word scratch-1                           ;; @@285c 11
+                 !word collect-1                           ;; @@285e 11
+                 !word dcopy-1                             ;; @@2860 11
+                 !word rename-1                            ;; @@2862 11
+                 !word backup-1                            ;; @@2864 11
+                 !word delete-1                            ;; @@2866 11
+                 !word renumber-1                          ;; @@2868 11
+                 !word key-1                               ;; @@286a 11
+                 !word _monitor-1                          ;; @@286c 11
+                 !word bank-1                             ; escape ;; @@286e 11
+                 !word filter-1                           ; escape ;; @@2870 11
+                 !word play-1                             ; escape ;; @@2872 11
+                 !word tempo-1                            ; escape ;; @@2874 11
  ;; @@2876 11
-                 !word  movspr-1                          ; escape ;; @@2876 11
-                 !word  sprite-1                          ; escape ;; @@2878 11
-                 !word  sprcolor-1                        ; escape ;; @@287a 11
+                 !word movspr-1                           ; escape ;; @@2876 11
+                 !word sprite-1                           ; escape ;; @@2878 11
+                 !word sprcolor-1                         ; escape ;; @@287a 11
  ;; @@287c 11
-                 !word  rreg-1                            ; escape ;; @@287c 11
-                 !word  envelope-1                        ; escape ;; @@287e 11
-                 !word  sleep-1                           ; escape ;; @@2880 11
-                 !word  directory-1                       ; escape ;; @@2882 11
-                 !word  dopen-1                           ; escape ;; @@2884 11
-                 !word  append-1                          ; escape ;; @@2886 11
-                 !word  dclose-1                          ; escape ;; @@2888 11
-                 !word  bsave-1                           ; escape ;; @@288a 11
-                 !word  bload-1                           ; escape ;; @@288c 11
-                 !word  record-1                          ; escape ;; @@288e 11
-                 !word  concat-1                          ; escape ;; @@2890 11
-                 !word  dverify-1                         ; escape ;; @@2892 11
-                 !word  dclear-1                          ; escape ;; @@2894 11
+                 !word rreg-1                             ; escape ;; @@287c 11
+                 !word envelope-1                         ; escape ;; @@287e 11
+                 !word sleep-1                            ; escape ;; @@2880 11
+                 !word directory-1                        ; escape ;; @@2882 11
+                 !word dopen-1                            ; escape ;; @@2884 11
+                 !word append-1                           ; escape ;; @@2886 11
+                 !word dclose-1                           ; escape ;; @@2888 11
+                 !word bsave-1                            ; escape ;; @@288a 11
+                 !word bload-1                            ; escape ;; @@288c 11
+                 !word record-1                           ; escape ;; @@288e 11
+                 !word concat-1                           ; escape ;; @@2890 11
+                 !word dverify-1                          ; escape ;; @@2892 11
+                 !word dclear-1                           ; escape ;; @@2894 11
  ;; @@2896 11
-                 !word  sprsav-1                          ; escape ;; @@2896 11
-                 !word  collision-1                       ; escape ;; @@2898 11
+                 !word sprsav-1                           ; escape ;; @@2896 11
+                 !word collision-1                        ; escape ;; @@2898 11
  ;; @@289a 11
-                 !word  data-1                            ; escape - BEGIN ;; @@289a 11
-                 !word  data-1                            ; escape - BEND ;; @@289c 11
-                 !word  window-1                          ; escape ;; @@289e 11
-                 !word  boot-1                            ; escape ;; @@28a0 11
+                 !word data-1                             ; escape - BEGIN ;; @@289a 11
+                 !word data-1                             ; escape - BEND ;; @@289c 11
+                 !word window-1                           ; escape ;; @@289e 11
+                 !word boot-1                             ; escape ;; @@28a0 11
  ;; @@28a2 11
-                 !word  bad_command-1                      ;; @@28a2 11
+                 !word bad_command-1                       ;; @@28a2 11
 ; .word  set_width-1 ;escape - WIDTH ;; @@28a4 11
  ;; @@28a4 11
-                 !word  bad_command-1                      ;; @@28a4 11
+                 !word bad_command-1                       ;; @@28a4 11
 ; .word  sprdef-1  ;escape - Sprite Definition mode ;; @@28a6 11
  ;; @@28a6 11
-                 !word  bad_command-1                     ; escape - QUIT - unimplemented command ;; @@28a6 11
-                 !word  dma-1                             ; escape ;; @@28a8 11
-                 !word  0                                 ; placeholder to skip over the space character ;; @@28aa 11
-                 !word  dma-1                             ; escape ;; @@28ac 11
-                 !word  0                                 ; placeholder to skip over the quote character ;; @@28ae 11
-                 !word  dma-1                             ; escape ;; @@28b0 11
-                 !word  bad_command-1                     ; escape - OFF - unimplemented command ;; @@28b2 11
-                 !word  fast-1                            ; escape ;; @@28b4 11
-                 !word  slow-1                            ; escape ;; @@28b6 11
-                 !word  type-1                            ; escape (C65: type SEQ file) ;; @@28b8 11
-                 !word  bverify-1                         ; escape (C65: verify BINary file) ;; @@28ba 11
-                 !word  snerr-1                           ; escape (C65: kludge- dirECTORY) ;; @@28bc 11
-                 !word  scratch-1                         ; escape (C65: erase alias for scratch) ;; @@28be 11
-                 !word  find-1                            ; escape (C65: find BASIC text) ;; @@28c0 11
-                 !word  change-1                          ; escape (C65: change BASIC text) ;; @@28c2 11
+                 !word bad_command-1                      ; escape - QUIT - unimplemented command ;; @@28a6 11
+                 !word dma-1                              ; escape ;; @@28a8 11
+                 !word 0                                  ; placeholder to skip over the space character ;; @@28aa 11
+                 !word dma-1                              ; escape ;; @@28ac 11
+                 !word 0                                  ; placeholder to skip over the quote character ;; @@28ae 11
+                 !word dma-1                              ; escape ;; @@28b0 11
+                 !word bad_command-1                      ; escape - OFF - unimplemented command ;; @@28b2 11
+                 !word fast-1                             ; escape ;; @@28b4 11
+                 !word slow-1                             ; escape ;; @@28b6 11
+                 !word type-1                             ; escape (C65: type SEQ file) ;; @@28b8 11
+                 !word bverify-1                          ; escape (C65: verify BINary file) ;; @@28ba 11
+                 !word snerr-1                            ; escape (C65: kludge- dirECTORY) ;; @@28bc 11
+                 !word scratch-1                          ; escape (C65: erase alias for scratch) ;; @@28be 11
+                 !word find-1                             ; escape (C65: find BASIC text) ;; @@28c0 11
+                 !word change-1                           ; escape (C65: change BASIC text) ;; @@28c2 11
  ;; @@28c4 11
-                 !word  C65__set-1                        ; escape (C65: multi-purpose command) ;; @@28c4 11
-                 !word  screen-1                          ; escape (C65: SCREEN) ;; @@28c6 11
-                 !word  C65__polygon-1                    ; escape (C65: POLYGON) ;; @@28c8 11
-                 !word  C65__ellipse-1                    ; escape (C65: ELLIPSE) ;; @@28ca 11
-                 !word  C65__viewport-1                   ; escape (C65: VIEWPORT) ;; @@28cc 11
-                 !word  C65__copy-1                       ; escape (C65: GCOPY) ;; @@28ce 11
-                 !word  C65__setpen-1                     ; escape (C65: PEN) ;; @@28d0 11
-                 !word  C65__setpalette-1                 ; escape (C65: PALETTE) ;; @@28d2 11
-                 !word  C65__setdmode-1                   ; escape (C65: DMODE) ;; @@28d4 11
-                 !word  C65__setdpat-1                    ; escape (C65: DPAT) ;; @@28d6 11
-                 !word  header-1                          ; format alias for header command [911017] ;; @@28d8 11
-                 !word  genlock-1                         ; [910108] ;; @@28da 11
+                 !word C65__set-1                         ; escape (C65: multi-purpose command) ;; @@28c4 11
+                 !word Screen-1                           ; escape (C65: SCREEN) ;; @@28c6 11
+                 !word C65__polygon-1                     ; escape (C65: POLYGON) ;; @@28c8 11
+                 !word C65__ellipse-1                     ; escape (C65: ELLIPSE) ;; @@28ca 11
+                 !word C65__Viewport-1                    ; escape (C65: VIEWPORT) ;; @@28cc 11
+                 !word C65__copy-1                        ; escape (C65: GCOPY) ;; @@28ce 11
+                 !word C65__setpen-1                      ; escape (C65: PEN) ;; @@28d0 11
+                 !word C65__setpalette-1                  ; escape (C65: PALETTE) ;; @@28d2 11
+                 !word C65__setdmode-1                    ; escape (C65: DMODE) ;; @@28d4 11
+                 !word C65__setdpat-1                     ; escape (C65: DPAT) ;; @@28d6 11
+                 !word header-1                           ; format alias for header command [911017] ;; @@28d8 11
+                 !word genlock-1                          ; [910108] ;; @@28da 11
  ;; @@28dc 11
 stmdsp2                                                    ;; @@28dc 11
-                 !word  foreground-1                      ; this is the 128th command!  [910109] ;; @@28dc 11
-                 !word  0                                 ; placeholder to skip over the colon character ;; @@28de 11
-                 !word  background-1                       ;; @@28e0 11
-                 !word  border-1                           ;; @@28e2 11
-                 !word  highlight-1                        ;; @@28e4 11
-                 !word  mouse-1                           ; [910122] ;; @@28e6 11
-                 !word  rmouse-1                          ; [910123] ;; @@28e8 11
-                 !word  disk-1                            ; [910123] ;; @@28ea 11
-                 !word  cursor-1                          ; [910228] ;; @@28ec 11
-                 !word  rcursor-1                         ; [910228] ;; @@28ee 11
-                 !word  loadiff-1                         ; [910402] ;; @@28f0 11
-                 !word  saveiff-1                         ; [910930] ;; @@28f2 11
-                 !word  edit-1                            ; [910620] ;; @@28f4 11
+                 !word foreground-1                       ; this is the 128th command!  [910109] ;; @@28dc 11
+                 !word 0                                  ; placeholder to skip over the colon character ;; @@28de 11
+                 !word background-1                        ;; @@28e0 11
+                 !word border-1                            ;; @@28e2 11
+                 !word highlight-1                         ;; @@28e4 11
+                 !word mouse-1                            ; [910122] ;; @@28e6 11
+                 !word rmouse-1                           ; [910123] ;; @@28e8 11
+                 !word disk-1                             ; [910123] ;; @@28ea 11
+                 !word cursor-1                           ; [910228] ;; @@28ec 11
+                 !word rcursor-1                          ; [910228] ;; @@28ee 11
+                 !word loadiff-1                          ; [910402] ;; @@28f0 11
+                 !word saveiff-1                          ; [910930] ;; @@28f2 11
+                 !word edit-1                             ; [910620] ;; @@28f4 11
  ;; @@28f6 11
 ; .page ;; @@28f6 11
 fundsp                                                     ;; @@28f6 11
-                 !word  sgn                                ;; @@28f6 11
-                 !word  int                                ;; @@28f8 11
-                 !word  abs                                ;; @@28fa 11
-                 !word  usrpok                             ;; @@28fc 11
-                 !word  fre                                ;; @@28fe 11
-                 !word  pos                                ;; @@2900 11
-                 !word  sqr                                ;; @@2902 11
-                 !word  rnd                                ;; @@2904 11
-                 !word  log                                ;; @@2906 11
-                 !word  exp                                ;; @@2908 11
-                 !word  cos                                ;; @@290a 11
-                 !word  sin                                ;; @@290c 11
-                 !word  tan                                ;; @@290e 11
-                 !word  atn                                ;; @@2910 11
-                 !word  peek                               ;; @@2912 11
-                 !word  len                                ;; @@2914 11
-                 !word  strd                               ;; @@2916 11
-                 !word  val                                ;; @@2918 11
-                 !word  asc                                ;; @@291a 11
-                 !word  chrd                               ;; @@291c 11
-                 !word  leftd                              ;; @@291e 11
-                 !word  rightd                             ;; @@2920 11
-                 !word  midd                               ;; @@2922 11
-                 !word  rgraphic                          ; [910701] ;; @@2924 11
-                 !word  rcolor                            ; [910701] ;; @@2926 11
-                 !word  0                                 ; placeholder for escape function token ;; @@2928 11
-                 !word  joy                                ;; @@292a 11
-                 !word  rpen                              ; was rdot     [910820] ;; @@292c 11
-                 !word  dcml                              ; dec ;; @@292e 11
-                 !word  hexd                               ;; @@2930 11
-                 !word  errd                               ;; @@2932 11
-                 !word  pot                               ; escape ;; @@2934 11
-                 !word  bump                              ; escape ;; @@2936 11
-                 !word  lpen                              ; escape ;; @@2938 11
-                 !word  rsppos                            ; escape ;; @@293a 11
-                 !word  rsprite                           ; escape ;; @@293c 11
-                 !word  rspcolor                          ; escape ;; @@293e 11
-                 !word  xor                               ; escape ;; @@2940 11
-                 !word  rwindow                           ; escape ;; @@2942 11
-                 !word  pointer                           ; escape ;; @@2944 11
-                 !word  mod                               ; escape c65     [910402] ;; @@2946 11
-                 !word  pixel                             ; escape c65     [910820] ;; @@2948 11
-                 !word  rpalette                          ; escape c65     [910820] ;; @@294a 11
+                 !word sgn                                 ;; @@28f6 11
+                 !word int                                 ;; @@28f8 11
+                 !word abs                                 ;; @@28fa 11
+                 !word usrpok                              ;; @@28fc 11
+                 !word fre                                 ;; @@28fe 11
+                 !word pos                                 ;; @@2900 11
+                 !word sqr                                 ;; @@2902 11
+                 !word rnd                                 ;; @@2904 11
+                 !word log                                 ;; @@2906 11
+                 !word exp                                 ;; @@2908 11
+                 !word cos                                 ;; @@290a 11
+                 !word sin                                 ;; @@290c 11
+                 !word tan                                 ;; @@290e 11
+                 !word atn                                 ;; @@2910 11
+                 !word peek                                ;; @@2912 11
+                 !word len                                 ;; @@2914 11
+                 !word strd                                ;; @@2916 11
+                 !word val                                 ;; @@2918 11
+                 !word asc                                 ;; @@291a 11
+                 !word chrd                                ;; @@291c 11
+                 !word leftd                               ;; @@291e 11
+                 !word rightd                              ;; @@2920 11
+                 !word midd                                ;; @@2922 11
+                 !word rgraphic                           ; [910701] ;; @@2924 11
+                 !word rcolor                             ; [910701] ;; @@2926 11
+                 !word 0                                  ; placeholder for escape function token ;; @@2928 11
+                 !word joy                                 ;; @@292a 11
+                 !word rpen                               ; was rdot     [910820] ;; @@292c 11
+                 !word dcml                               ; dec ;; @@292e 11
+                 !word hexd                                ;; @@2930 11
+                 !word errd                                ;; @@2932 11
+                 !word pot                                ; escape ;; @@2934 11
+                 !word bump                               ; escape ;; @@2936 11
+                 !word lpen                               ; escape ;; @@2938 11
+                 !word rsppos                             ; escape ;; @@293a 11
+                 !word rsprite                            ; escape ;; @@293c 11
+                 !word rspcolor                           ; escape ;; @@293e 11
+                 !word xor                                ; escape ;; @@2940 11
+                 !word rwindow                            ; escape ;; @@2942 11
+                 !word pointer                            ; escape ;; @@2944 11
+                 !word mod                                ; escape c65     [910402] ;; @@2946 11
+                 !word pixel                              ; escape c65     [910820] ;; @@2948 11
+                 !word rpalette                           ; escape c65     [910820] ;; @@294a 11
  ;; @@294c 11
 ; .page ;; @@294c 11
 optab            !text 121                                 ;; @@294c 11
-                 !word  faddt-1                            ;; @@294d 11
+                 !word faddt-1                             ;; @@294d 11
                  !text 121                                 ;; @@294f 11
-                 !word  fsubt-1                            ;; @@2950 11
+                 !word fsubt-1                             ;; @@2950 11
                  !text 123                                 ;; @@2952 11
-                 !word  fmultt-1                           ;; @@2953 11
+                 !word fmultt-1                            ;; @@2953 11
                  !text 123                                 ;; @@2955 11
-                 !word  fdivt-1                            ;; @@2956 11
+                 !word fdivt-1                             ;; @@2956 11
                  !text 127                                 ;; @@2958 11
-                 !word  fpwrt-1                            ;; @@2959 11
+                 !word fpwrt-1                             ;; @@2959 11
                  !text 80                                  ;; @@295b 11
-                 !word  andop-1                            ;; @@295c 11
+                 !word andop-1                             ;; @@295c 11
                  !text 70                                  ;; @@295e 11
-                 !word  orop-1                             ;; @@295f 11
+                 !word orop-1                              ;; @@295f 11
 negtab           !text 125                                 ;; @@2961 11
-                 !word  negop-1                            ;; @@2962 11
+                 !word negop-1                             ;; @@2962 11
                  !text 90                                  ;; @@2964 11
-                 !word  notop-1                            ;; @@2965 11
+                 !word notop-1                             ;; @@2965 11
 ptdorl           !text 100                                 ;; @@2967 11
-                 !word  dorel-1                            ;; @@2968 11
+                 !word dorel-1                             ;; @@2968 11
  ;; @@296a 11
 ;.end ;; @@296a 11
 ; .page ;; @@296a 11
@@ -2414,13 +2475,13 @@ newstt           jsr is_stop_key_down                      ;; @@2c0d 13
  ;; @@2c19 13
 _local_1012_10   ldy #0                                    ;; @@2c19 13
                  jsr indtxt                               ; end of the line? ;; @@2c1b 13
-                 bne morsts                               ; no...out of statement ;; @@2c1e 13
+                 +lbne morsts                             ; no...out of statement ;; @@2c1e 13
  ;; @@2c21 13
 _local_1012_20   bit runmod                               ; in direct mode? ;; @@2c21 13
-                 bpl ready                                ; yes, go to ready ;; @@2c23 13
+                 +lbpl ready                              ; yes, go to ready ;; @@2c23 13
                  ldy #2                                    ;; @@2c26 13
                  jsr indtxt                               ; end of text? ;; @@2c28 13
-                 beq ready                                ; yes...finished ;; @@2c2b 13
+                 +lbeq ready                              ; yes...finished ;; @@2c2b 13
                  iny                                      ; y=3 ;; @@2c2e 13
                  jsr indtxt                               ; extract line# lo byte ;; @@2c2f 13
                  sta curlin                                ;; @@2c32 13
@@ -2433,7 +2494,7 @@ _local_1012_20   bit runmod                               ; in direct mode? ;; @
                  sta txtptr                                ;; @@2c3e 13
                  bcc _local_1012_30                        ;; @@2c40 13
                  inc txtptr+1                              ;; @@2c42 13
-_local_1012_30   bra xeqcm                                ; execute new line ;; @@2c44 13
+_local_1012_30   +lbra xeqcm                              ; execute new line ;; @@2c44 13
  ;; @@2c47 13
  ;; @@2c47 13
  ;; @@2c47 13
@@ -2463,7 +2524,7 @@ xeqcm3           beq xeqrts                               ; nothing here...null 
 xeqcm2           cmp #esc_command_token                   ; special case: escape token ;; @@2c69 14
                  beq xeqesc                                ;; @@2c6b 14
                  cmp #go_token                            ; special case: go to ;; @@2c6d 14
-                 beq go_without_to                         ;; @@2c6f 14
+                 +lbeq go_without_to                       ;; @@2c6f 14
                  cmp #mid_token                           ; special case: mid$()= ;; @@2c72 14
                  beq xeqmid                                ;; @@2c74 14
  ;; @@2c76 14
@@ -2481,9 +2542,9 @@ xeqcm2           cmp #esc_command_token                   ; special case: escape
  ;; @@2c84 14
 xeqcm4           sec                                      ; convert adjusted token into an index into a jump table. ;; @@2c84 14
                  sbc #end_token                            ;; @@2c85 14
-                 bcc let                                  ; it wasn't a token after all!  assume an assignment ;; @@2c87 14
+                 +lbcc let                                ; it wasn't a token after all!  assume an assignment ;; @@2c87 14
  ;; @@2c8a 14
-xeqcm5           asl a                                    ; *2 to convert into word pointer ;; @@2c8a 14
+xeqcm5           asl                                      ; *2 to convert into word pointer ;; @@2c8a 14
                  tay                                       ;; @@2c8b 14
                  bcs _local_1013_10                       ; dispatch table 1 or 2?     [901212] ;; @@2c8c 14
                  lda stmdsp+1,y                           ; one ;; @@2c8e 14
@@ -2529,10 +2590,10 @@ _local_1014_1    sec                                      ; set up flag for a tr
  ;; @@2cc0 15
 nescex           bcc xeqchr                               ; jmp chrget ;; @@2cc0 16
  ;; @@2cc2 16
-snerr1           bra snerr                                 ;; @@2cc2 16
+snerr1           +lbra snerr                               ;; @@2cc2 16
  ;; @@2cc5 16
 morsts           cmp #':'                                  ;; @@2cc5 16
-                 beq xeqcm                                ; if ':', continue statement ;; @@2cc7 16
+                 +lbeq xeqcm                              ; if ':', continue statement ;; @@2cc7 16
                  bra snerr1                                ;; @@2cca 16
  ;; @@2ccc 16
 ; .page ;; @@2ccc 16
@@ -2552,14 +2613,14 @@ break_exit                                                ; STOP KEY:     [91010
 _local_1015_10   jsr _stop                                ; wait for the user to release the key ;; @@2cd1 16
                  beq _local_1015_10                        ;; @@2cd4 16
                  ldx #erbrk                               ; take the vector thru error to ready ;; @@2cd6 16
-                 bra error                                 ;; @@2cd8 16
+                 +lbra error                               ;; @@2cd8 16
  ;; @@2cdb 16
  ;; @@2cdb 16
  ;; @@2cdb 16
 stop             bcs stopc                                ; STOP: .c=1 ;; @@2cdb 17
  ;; @@2cdd 17
 end              clc                                      ; END: .c=0 ;; @@2cdd 17
-stopc            bne snerr                                ; error if args present   [910410] ;; @@2cde 17
+stopc            +lbne snerr                              ; error if args present   [910410] ;; @@2cde 17
  ;; @@2ce1 17
 stop_1           bbr7 runmod,_local_1016_10               ; branch if direct mode ;; @@2ce1 17
                  jsr tto                                  ; transfer txtptr to oldtxt ;; @@2ce4 17
@@ -2569,7 +2630,7 @@ stop_1           bbr7 runmod,_local_1016_10               ; branch if direct mod
                  sty oldlin+1                              ;; @@2cee 17
 _local_1016_10   pla                                      ; .diris ;; @@2cf1 17
                  pla                                       ;; @@2cf2 17
-                 bcc ready                                ; say 'ready' if END, say 'break' if STOP ;; @@2cf3 17
+                 +lbcc ready                              ; say 'ready' if END, say 'break' if STOP ;; @@2cf3 17
  ;; @@2cf6 17
  ;; @@2cf6 17
 break            jsr release_channels                     ; make sure we're in text mode????  [910909] ;; @@2cf6 18
@@ -2577,7 +2638,7 @@ break            jsr release_channels                     ; make sure we're in t
                  jsr highlight_text                       ; ????      [910624] ;; @@2cfc 18
                  jsr _primm                                ;; @@2cff 18
                  !text cr,"BREAK",0                        ;; @@2d02 18
-                 bra errfin                               ; exit via 'in line #' ;; @@2d09 18
+                 +lbra errfin                             ; exit via 'in line #' ;; @@2d09 18
  ;; @@2d0c 18
 do_rts           rts                                       ;; @@2d0c 18
  ;; @@2d0d 18
@@ -2606,7 +2667,7 @@ _local_1017_1    pha                                      ; save token ;; @@2d1b
                  cpx #instr_token-1                       ; look for (adjusted) instr token ;; @@2d20 18
                  beq _local_1017_2                        ; yes ;; @@2d22 18
                  cpx #rgraphic_token-1                    ; look for rgraphic which now takes 2 args [910801] ;; @@2d24 18
-                 beq rgraphic                             ; yes ;; @@2d26 18
+                 +lbeq rgraphic                           ; yes ;; @@2d26 18
  ;; @@2d29 18
                  cpx #mid_token+1                          ;; @@2d29 18
                  bcs oknorm                               ; LEFT$,RIGHT$,MID$ require multiple args ;; @@2d2b 18
@@ -2633,7 +2694,7 @@ _local_1017_2    jsr chkopn                               ; check for an open pa
  ;; @@2d3d 18
                  pla                                      ; check token ;; @@2d3d 18
                  cmp #instr_token-1                       ; special case: INSTR() bails out here ;; @@2d3e 18
-                 beq instr                                 ;; @@2d40 18
+                 +lbeq instr                               ;; @@2d40 18
                  ldx facmo+1                              ; push address of string arg1 ;; @@2d43 18
                  phx                                       ;; @@2d45 18
                  ldx facmo                                 ;; @@2d46 18
@@ -2653,7 +2714,7 @@ oknorm                                                     ;; @@2d51 19
 fingo                                                      ;; @@2d55 19
                  sec                                      ; convert token to index into jump table ;; @@2d55 19
                  sbc #first_function_token                 ;; @@2d56 19
-                 asl a                                     ;; @@2d58 19
+                 asl                                       ;; @@2d58 19
                  tay                                       ;; @@2d59 19
                  lda fundsp+1,y                            ;; @@2d5a 19
                  sta jmper+2                               ;; @@2d5d 19
@@ -2661,14 +2722,14 @@ fingo                                                      ;; @@2d55 19
                  sta jmper+1                               ;; @@2d62 19
                  jsr jmper                                ; dispatch ;; @@2d64 19
 ;string functions remove this ret addr ;; @@2d67 19
-                 bra chknum                               ; check for "numeric-ness" and return ;; @@2d67 19
+                 +lbra chknum                             ; check for "numeric-ness" and return ;; @@2d67 19
  ;; @@2d6a 19
 ; .page ;; @@2d6a 19
 ; Escape Function handler ;; @@2d6a 19
  ;; @@2d6a 19
 do_esc_fn                                                  ;; @@2d6a 19
                  jsr chrget                               ; get second token ;; @@2d6a 19
-                 beq snerr                                ; error if no second token ;; @@2d6d 19
+                 +lbeq snerr                              ; error if no second token ;; @@2d6d 19
                  cmp #pointer_token                        ;; @@2d70 19
                  beq _local_1018_10                       ; skip pre-parse if 'POINTER()' ;; @@2d72 19
                  pha                                       ;; @@2d74 19
@@ -2691,8 +2752,8 @@ foreign_esc_fn                                             ;; @@2d8b 20
                  sec                                      ; flag 'up for grabs' ;; @@2d8b 20
                  jsr go_foreign_esc_fn                     ;; @@2d8c 20
 n_esc_fn_vec                                               ;; @@2d8f 20
-                 bcs snerr                                ; it's unwanted. off to the refuse pile ;; @@2d8f 20
-                 bra chknum                                ;; @@2d92 20
+                 +lbcs snerr                              ; it's unwanted. off to the refuse pile ;; @@2d8f 20
+                 +lbra chknum                              ;; @@2d92 20
  ;; @@2d95 20
 go_foreign_esc_fn                                           ;; @@2d95 20
                  jmp (esc_fn_vec)                          ;; @@2d95 20
@@ -2721,7 +2782,7 @@ andop            ldy #0                                    ;; @@2d9b 20
                  eor count                                 ;; @@2dbf 20
                  and integr                                ;; @@2dc1 20
                  eor count                                 ;; @@2dc3 20
-                 bra givayf                               ; float (a,y) and return to user ;; @@2dc5 20
+                 +lbra givayf                             ; float (a,y) and return to user ;; @@2dc5 20
  ;; @@2dc8 20
  ;; @@2dc8 20
  ;; @@2dc8 20
@@ -2794,11 +2855,11 @@ getcmp           lda #argmo                                ;; @@2e17 20
 docmp                                                      ;; @@2e2f 20
                  inx                                      ; -1 to 1, 0 to 2, 1 to 4 ;; @@2e2f 20
                  txa                                       ;; @@2e30 20
-                 rol a                                     ;; @@2e31 20
+                 rol                                       ;; @@2e31 20
                  and domask                                ;; @@2e32 20
                  beq _local_1019_10                        ;; @@2e34 20
                  lda #$ff                                 ; map 0 to 0, map all others to -1 ;; @@2e36 20
-_local_1019_10   bra float                                ; float the one-byte result into FAC ;; @@2e38 20
+_local_1019_10   +lbra float                              ; float the one-byte result into FAC ;; @@2e38 20
  ;; @@2e3b 20
  ;; @@2e3b 20
 ;.end ;; @@2e3b 20
@@ -2829,7 +2890,7 @@ ready            ldx #$80                                 ; no error ;; @@2e4d 2
 error            jmp (ierror)                              ;; @@2e4f 21
  ;; @@2e52 21
 nerror           txa                                       ;; @@2e52 21
-                 bmi ready_1                              ; ...branch if no error (from 'ready') ;; @@2e53 21
+                 +lbmi ready_1                            ; ...branch if no error (from 'ready') ;; @@2e53 21
                  stx errnum                               ; save error # for 'er' ;; @@2e56 21
                  bbr7 runmod,errisd                       ; branch if direct mode- always display error ;; @@2e59 21
  ;; @@2e5c 21
@@ -2859,7 +2920,7 @@ _local_1020_20   ldy trapno+1                             ; is trap set? ;; @@2e
                  ldx oldstk                                ;; @@2e8f 21
                  txs                                       ;; @@2e91 21
                  jsr luk4it                                ;; @@2e92 21
-                 bra newstt                                ;; @@2e95 21
+                 +lbra newstt                              ;; @@2e95 21
  ;; @@2e98 21
 ; .page ;; @@2e98 21
 errisd           dex                                       ;; @@2e98 22
@@ -2930,7 +2991,7 @@ execute_a_line                                            ; EXECUTE PLAIN TEXT I
                  bcc _local_1024_10                       ; got line number ;; @@2f1b 25
                  jsr crunch                               ; got text- tokenize buffer, ;; @@2f1d 25
                  jsr chrgot                               ; get first command (token), ;; @@2f20 25
-                 bra xeqdir                               ; and execute it ;; @@2f23 25
+                 +lbra xeqdir                             ; and execute it ;; @@2f23 25
  ;; @@2f26 25
 ;ADD or DELETE NEW LINE ;; @@2f26 25
 _local_1024_10   jsr linget                               ; evaluate line number, put into into linnum ;; @@2f26 25
@@ -2941,7 +3002,7 @@ _local_1024_10   jsr linget                               ; evaluate line number
 _local_1024_20   jsr crunch                               ; tokenize rest of input if not edit mode ;; @@2f31 25
 _local_1024_30   sty count                                ; save length ;; @@2f34 25
                  jsr FindLine                             ; locate line in program ;; @@2f36 25
-                 bcc nodel                                ; not found, go insert line into program ;; @@2f39 25
+                 +lbcc nodel                              ; not found, go insert line into program ;; @@2f39 25
 ; else delete current line and insert this one ;; @@2f3c 25
 ; .page ;; @@2f3c 25
 ; Test: IF new line is longer than the line it replaces, ;; @@2f3c 25
@@ -2963,7 +3024,7 @@ _local_1024_30   sty count                                ; save length ;; @@2f3
                  sbc #4                                   ; allow for link & line number ;; @@2f45 25
                  sbc count                                ; compare with new length ;; @@2f47 25
                  bcs _local_1024_2                        ; new line is shorter, no problem ;; @@2f49 25
-                 neg a                                    ; convert to positive delta ;; @@2f4b 25
+                 neg                                      ; convert to positive delta ;; @@2f4b 25
  ;; @@2f4c 25
                  ldy text_top+1                           ; get msb of end of text (.c=0) ;; @@2f4c 25
                  adc text_top                             ; add our calculated delta to end of text ;; @@2f4e 25
@@ -2971,9 +3032,9 @@ _local_1024_30   sty count                                ; save length ;; @@2f3
                  iny                                       ;; @@2f52 25
 _local_1024_1    cpy max_mem_0+1                           ;; @@2f53 25
                  bcc _local_1024_2                        ; result is less than top-of-memory: ok ;; @@2f56 25
-                 bne omerr                                ; msb >  top, overflow ;; @@2f58 25
+                 +lbne omerr                              ; msb >  top, overflow ;; @@2f58 25
                  cmp max_mem_0                            ; msb's the same, test lsb's ;; @@2f5b 25
-                 bcs omerr                                ; lsb >= top, overflow ;; @@2f5e 25
+                 +lbcs omerr                              ; lsb >= top, overflow ;; @@2f5e 25
  ;; @@2f61 25
 ; Using DMA device to move text downwards (to delete or replace a line)... ;; @@2f61 25
 ; ;; @@2f61 25
@@ -3037,7 +3098,7 @@ nodel            jsr init_stack                           ; 'clearc' removed sin
  ;; @@2fc7 26
                  ldy #0                                    ;; @@2fc7 26
                  lda (txtptr),y                           ; delete line? ("common") ;; @@2fc9 26
-                 beq main                                 ; yes ;; @@2fcb 26
+                 +lbeq main                               ; yes ;; @@2fcb 26
  ;; @@2fce 26
 _local_1025_5    clc                                      ; no...something to insert ;; @@2fce 26
                  ldy text_top+1                            ;; @@2fcf 26
@@ -3056,9 +3117,9 @@ _local_1025_2    sta highds                               ; destination of top ;
                  sty highds+1                              ;; @@2fe4 26
                  cpy max_mem_0+1                          ; make sure new top doesn't crash into top of available ram ;; @@2fe6 26
                  bcc _local_1025_4                        ; ok ;; @@2fe9 26
-                 bne omerr                                ; out of memory, don't insert ;; @@2feb 26
+                 +lbne omerr                              ; out of memory, don't insert ;; @@2feb 26
                  cmp max_mem_0                             ;; @@2fee 26
-                 bcs omerr                                ; out of memory, don't insert ;; @@2ff1 26
+                 +lbcs omerr                              ; out of memory, don't insert ;; @@2ff1 26
  ;; @@2ff4 26
 _local_1025_4    sta text_top                             ; set new top of text ;; @@2ff4 26
                  sty text_top+1                            ;; @@2ff6 26
@@ -3216,7 +3277,7 @@ _local_1025_110  lda #29                                  ; cursor right ;; @@30
                  stx _ndx                                  ;; @@30b3 26
                  cli                                      ; [910710] ;; @@30b5 26
  ;; @@30b6 26
-_local_1025_120  bra main                                  ;; @@30b6 26
+_local_1025_120  +lbra main                                ;; @@30b6 26
  ;; @@30b9 26
  ;; @@30b9 26
 ; .page ;; @@30b9 26
@@ -3290,7 +3351,7 @@ _local_1027_10   jsr inchr                                ; get a character ;; @
                  inx                                       ;; @@312c 28
                  cpx #buflen                              ; buffer full? ;; @@312d 28
                  bcc _local_1027_10                       ; no...continue ;; @@312f 28
-                 bra errlen                               ; yes...string too long error ;; @@3131 28
+                 +lbra errlen                             ; yes...string too long error ;; @@3131 28
  ;; @@3134 28
  ;; @@3134 28
 _local_1027_20   lda #0                                   ; fininl.  terminate input with a null ;; @@3134 28
@@ -3298,7 +3359,7 @@ _local_1027_20   lda #0                                   ; fininl.  terminate i
                  ldx #<buf_txtptr                         ; set up pointer to start of buffer-1 (for chrget) ;; @@3139 28
                  ldy #>buf_txtptr                          ;; @@313b 28
                  lda channl                               ; print 'return' only if terminal ;; @@313d 28
-                 beq crdo                                  ;; @@313f 28
+                 +lbeq crdo                                ;; @@313f 28
                  rts                                       ;; @@3142 28
  ;; @@3143 28
 ;.end ;; @@3143 28
@@ -3401,10 +3462,10 @@ getstk           eor #$ff                                 ; make value 2's comp.
                  dey                                       ;; @@319f 30
 _local_1029_10   sty tos+1                                 ;; @@31a0 30
                  cpy #>stktop                              ;; @@31a2 30
-                 bcc omerr                                 ;; @@31a4 30
+                 +lbcc omerr                               ;; @@31a4 30
                  bne _local_1029_20                        ;; @@31a7 30
                  cmp tos                                   ;; @@31a9 30
-                 bcc omerr                                 ;; @@31ab 30
+                 +lbcc omerr                               ;; @@31ab 30
 _local_1029_20   rts                                       ;; @@31ae 30
  ;; @@31af 30
 ; .page ;; @@31af 30
@@ -3435,9 +3496,9 @@ _local_1030_3    pla                                       ;; @@31c8 31
                  pla                                      ; restore .a and .y ;; @@31cf 31
                  cpy fretop+1                             ; compare highs ;; @@31d0 31
                  bcc _local_1030_4                         ;; @@31d2 31
-                 bne omerr                                ; higher is bad ;; @@31d4 31
+                 +lbne omerr                              ; higher is bad ;; @@31d4 31
                  cmp fretop                               ; compare the lows ;; @@31d7 31
-                 bcs omerr                                 ;; @@31d9 31
+                 +lbcs omerr                               ;; @@31d9 31
 _local_1030_4    rts                                       ;; @@31dc 31
  ;; @@31dd 31
 ; .page ;; @@31dd 31
@@ -3562,12 +3623,12 @@ _local_1033_15   inc endchr                               ; indicate line # inpu
                  cmp #25                                  ; line number will be < 64000? ;; @@3242 34
                  bcc _local_1033_20                       ; yes, continue ;; @@3244 34
                  bbs1 helper,_local_1033_40               ; no, if called by AutoScroll it's okay ;; @@3246 34
-                 bra snerr                                ; else syntax error ;; @@3249 34
+                 +lbra snerr                              ; else syntax error ;; @@3249 34
  ;; @@324c 34
 _local_1033_20   lda linnum                                ;; @@324c 34
-                 asl a                                    ; multiply by 10 ;; @@324e 34
+                 asl                                      ; multiply by 10 ;; @@324e 34
                  rol index                                 ;; @@324f 34
-                 asl a                                     ;; @@3251 34
+                 asl                                       ;; @@3251 34
                  rol index                                 ;; @@3252 34
                  adc linnum                                ;; @@3254 34
                  sta linnum                                ;; @@3256 34
@@ -3599,7 +3660,7 @@ _local_1033_30                                             ;; @@326c 34
 _local_1033_40   rts                                      ; exit ;; @@3283 34
  ;; @@3284 34
 _local_1033_50   jsr chargt                               ; terminating character is a space, eat it just this once ;; @@3284 34
-                 bra chrtst                               ; return with flags set appropriately (esp. for 'range') ;; @@3287 34
+                 +lbra chrtst                             ; return with flags set appropriately (esp. for 'range') ;; @@3287 34
  ;; @@328a 34
 ;.end ;; @@328a 34
 ; .page ;; @@328a 34
@@ -3609,10 +3670,10 @@ list             rmb7 helper                              ; clear 'help' flag fo
  ;; @@328c 35
 ; Determine which form of LIST we have... ;; @@328c 35
  ;; @@328c 35
-                 beq list_memory                          ; branch if terminator (no parameter) ;; @@328c 35
-                 bcc list_memory                          ; branch if a number (assume range parameter) ;; @@328f 35
+                 +lbeq list_memory                        ; branch if terminator (no parameter) ;; @@328c 35
+                 +lbcc list_memory                        ; branch if a number (assume range parameter) ;; @@328f 35
                  cmp #minus_token                          ;; @@3292 35
-                 beq list_memory                          ; branch if a dash (assume range parameter) ;; @@3294 35
+                 +lbeq list_memory                        ; branch if a dash (assume range parameter) ;; @@3294 35
  ;; @@3297 35
  ;; @@3297 35
 ; LIST command is of the form  LIST filename [,U#] [,D#] ;; @@3297 35
@@ -3657,7 +3718,7 @@ _local_1034_10   jsr _basin                               ; get link bytes ;; @@
                  sta dosstr,x                              ;; @@32e8 35
                  inx                                       ;; @@32eb 35
 _local_1034_20   cpx #255                                 ; check buffer (buflen????) ;; @@32ec 35
-                 bcs errlen                               ; 'too long' error ;; @@32ee 35
+                 +lbcs errlen                             ; 'too long' error ;; @@32ee 35
                  jsr _basin                                ;; @@32f1 35
                  sta dosstr,x                              ;; @@32f4 35
                  inx                                       ;; @@32f7 35
@@ -3693,7 +3754,7 @@ list_err                                                   ;; @@3327 36
                  jsr _close                                ;; @@3330 36
                  pla                                      ; pop error status, if any ;; @@3333 36
                  plp                                       ;; @@3334 36
-                 bra exit_disk_op                          ;; @@3335 36
+                 +lbra exit_disk_op                        ;; @@3335 36
  ;; @@3338 36
 ; .page ;; @@3338 36
 ; LIST command is of the form  LIST [range] ;; @@3338 36
@@ -3706,7 +3767,7 @@ _local_1035_10   ldy #1                                    ;; @@333b 36
                  bne _local_1035_20                       ; ok if not zero, but.. ;; @@3340 36
                  dey                                       ;; @@3342 36
                  jsr indlow                                ;; @@3343 36
-                 beq crdo                                 ; ..if ls byte is also zero, we're done ;; @@3346 36
+                 +lbeq crdo                               ; ..if ls byte is also zero, we're done ;; @@3346 36
  ;; @@3349 36
 _local_1035_20   jsr is_stop_key_down                      ;; @@3349 36
                  jsr crdo                                 ; new line ;; @@334c 36
@@ -3720,7 +3781,7 @@ _local_1035_20   jsr is_stop_key_down                      ;; @@3349 36
                  bne _local_1035_30                        ;; @@335b 36
                  cpx linnum                                ;; @@335d 36
                  beq _local_1035_40                        ;; @@335f 36
-_local_1035_30   bcs crdo                                 ; next line is > last line requested, exit ;; @@3361 36
+_local_1035_30   +lbcs crdo                               ; next line is > last line requested, exit ;; @@3361 36
 _local_1035_40   jsr p1line                               ; print line #, space, and the line of code ;; @@3364 36
                  ldy #0                                   ; move 'pointer to next line' into (lowtr) ;; @@3367 36
                  jsr indlow                                ;; @@3369 36
@@ -3745,7 +3806,7 @@ _local_1035_40   jsr p1line                               ; print line #, space,
 ;****************************************************** ;; @@3377 36
  ;; @@3377 36
 p1line           bbr4 runmod,_local_1036_10               ; [910620] ;; @@3377 37
-                 bra edit_p1line                          ; handle things differently for plain text ;; @@337a 37
+                 +lbra edit_p1line                        ; handle things differently for plain text ;; @@337a 37
  ;; @@337d 37
 _local_1036_10   ldy #3                                    ;; @@337d 37
                  sty lstpnt                                ;; @@337f 37
@@ -3777,7 +3838,7 @@ _local_1037_10   iny                                      ; point to next charac
 _local_1037_15   jsr helpsb                                ;; @@33b2 38
  ;; @@33b5 38
 _local_1037_20   jsr indlow                                ;; @@33b5 38
-                 beq highlight_done                       ; finished when trailing null is found ;; @@33b8 38
+                 +lbeq highlight_done                     ; finished when trailing null is found ;; @@33b8 38
                  jmp (iqplop)                             ; usually points to nqplop ;; @@33bb 38
  ;; @@33be 38
 ; .page ;; @@33be 38
@@ -3840,7 +3901,7 @@ print_esc_cmd                                              ;; @@340b 40
                  tax                                      ; save type (cmd) in case it is a foreign esc token ;; @@340b 40
                  iny                                       ;; @@340c 40
                  jsr indlow                               ; look at second token ;; @@340d 40
-                 beq p1l015                               ; none?  print funny character ;; @@3410 40
+                 +lbeq p1l015                             ; none?  print funny character ;; @@3410 40
                  sty lstpnt                                ;; @@3413 40
                  cmp #first_esc_command_token             ; is this one of ours? ;; @@3415 40
                  bcc print_foreign_esc                    ; nope ;; @@3417 40
@@ -3860,7 +3921,7 @@ print_esc_fn                                               ;; @@3426 40
                  tax                                      ; save type (function) in case it's a foreign esc token ;; @@3426 40
                  iny                                       ;; @@3427 40
                  jsr indlow                               ; look at second token ;; @@3428 40
-                 beq p1l015                               ; none?  print funny character ;; @@342b 40
+                 +lbeq p1l015                             ; none?  print funny character ;; @@342b 40
                  sty lstpnt                                ;; @@342e 40
                  cmp #first_esc_function_token            ; is this one of ours? ;; @@3430 40
                  bcc print_foreign_esc                    ; nope ;; @@3432 40
@@ -3897,7 +3958,7 @@ _local_1039_1    ldx #$ff                                  ;; @@3448 40
                  sec                                       ;; @@344a 40
                  jmp (iescpr)                              ;; @@344b 40
  ;; @@344e 40
-nescpr           bcs p1l015                               ; no takers, print a funny graphic character ;; @@344e 41
+nescpr           +lbcs p1l015                             ; no takers, print a funny graphic character ;; @@344e 41
                  ldy #0                                    ;; @@3451 41
                  bra p1l070                                ;; @@3453 41
  ;; @@3455 41
@@ -3911,7 +3972,7 @@ nescpr           bcs p1l015                               ; no takers, print a f
  ;; @@3455 41
 new              beq init_text                            ; Erase program in memory ;; @@3455 41
                  cmp #restore_token                       ; Restore an erased program?    [910103] ;; @@3457 41
-                 bne snerr                                ; no- syntax error    [910410] ;; @@3459 41
+                 +lbne snerr                              ; no- syntax error    [910410] ;; @@3459 41
                  jsr chkeos                               ; yes- eat token, error if not eos  [910429] ;; @@345c 41
                  lda txttab                               ; "seed" first link to fool 'chead' ;; @@345f 41
                  ldx txttab+1                              ;; @@3461 41
@@ -3922,9 +3983,9 @@ new              beq init_text                            ; Erase program in mem
                  ldx #index                                ;; @@346b 41
                  jsr sta_far_ram0                         ; clear msb  (bleed-thru) ;; @@346d 41
                  dey                                       ;; @@3470 41
-                 inc a                                     ;; @@3471 41
+                 inc                                       ;; @@3471 41
                  jsr sta_far_ram0                         ; set lsb   (bleed-thru) ;; @@3472 41
-                 bra renumber                             ; make renumber check it for us (not 100%) & relink ;; @@3475 41
+                 +lbra renumber                           ; make renumber check it for us (not 100%) & relink ;; @@3475 41
  ;; @@3478 41
  ;; @@3478 41
 init_text                                                  ;; @@3478 41
@@ -3973,7 +4034,7 @@ clear            beq clearc                               ; branch if no args   
                  cmp #err_token                           ; CLR ERR$ ;; @@34a8 41
                  bne _local_1040_10                       ; no ;; @@34aa 41
                  jsr chkeos                               ; yes- eat token & error if not eos ;; @@34ac 41
-                 bra error_clear                          ; and go clear ERR$ ;; @@34af 41
+                 +lbra error_clear                        ; and go clear ERR$ ;; @@34af 41
  ;; @@34b2 41
 _local_1040_10   cmp #'D'                                 ; CLR DS$     [910717] ;; @@34b2 41
                  bne _local_1040_20                       ; no- error ;; @@34b4 41
@@ -3982,9 +4043,9 @@ _local_1040_10   cmp #'D'                                 ; CLR DS$     [910717]
                  bne _local_1040_20                        ;; @@34bb 41
                  jsr chrget                                ;; @@34bd 41
                  cmp #'$'                                  ;; @@34c0 41
-_local_1040_20   bne snerr                                ; no- error ;; @@34c2 41
+_local_1040_20   +lbne snerr                              ; no- error ;; @@34c2 41
                  jsr chkeos                                ;; @@34c5 41
-                 bra Clear_DS                             ; yes- clear current DS$ ;; @@34c8 41
+                 +lbra Clear_DS                           ; yes- clear current DS$ ;; @@34c8 41
  ;; @@34cb 41
 ; .page ;; @@34cb 41
 ; Clearc is a subroutine which initializes the variable and array space by ;; @@34cb 41
@@ -4023,7 +4084,7 @@ _local_1041_1    lda pudefs,x                              ;; @@34fd 42
                  dex                                       ;; @@3503 42
                  bpl _local_1041_1                         ;; @@3504 42
  ;; @@3506 42
-fload            jsr restore$1                            ; reset pointer for DATA statements ;; @@3506 43
+fload            jsr restore__1                           ; reset pointer for DATA statements ;; @@3506 43
  ;; @@3509 43
 ; .page ;; @@3509 43
 ; INIT_STACK Routine (formerly STKINI) ;; @@3509 43
@@ -4086,7 +4147,7 @@ return                                                     ;; @@352d 43
                  jsr search                               ; look for GOSUB on runtime stack ;; @@3531 43
                  beq ret010                               ; found ;; @@3534 43
                  ldx #errrg                               ; else error ;; @@3536 43
-                 bra error                                 ;; @@3538 43
+                 +lbra error                               ;; @@3538 43
  ;; @@353b 43
 ret010           jsr movfnd                               ; (fndpnt) => (tos) ;; @@353b 43
                  ldy #lengos                               ;; @@353e 43
@@ -4194,7 +4255,7 @@ _local_1044_20   jsr data                                 ; may be 'else' clause
 if_true          jsr chrgot                                ;; @@35b7 46
                  beq _local_1045_20                       ; branch if end of statement ;; @@35ba 46
                  bcs _local_1045_10                       ; branch if not a number ;; @@35bc 46
-                 bra goto                                 ; here if of the form 'THEN line#' ;; @@35be 46
+                 +lbra goto                               ; here if of the form 'THEN line#' ;; @@35be 46
  ;; @@35c1 46
 _local_1045_10   cmp #esc_command_token                   ; is this the beginning of a b-block? ;; @@35c1 46
                  bne _local_1045_20                       ; no, must be an escape command ;; @@35c3 46
@@ -4206,7 +4267,7 @@ _local_1045_10   cmp #esc_command_token                   ; is this the beginnin
                  jsr chrget                               ; ..and the second token, as well. ;; @@35d0 46
  ;; @@35d3 46
 _local_1045_20   jsr chrgot                               ; get back original character, & set up flags ;; @@35d3 46
-                 bra xeqcm3                               ; ..and go execute whatever it is ;; @@35d6 46
+                 +lbra xeqcm3                             ; ..and go execute whatever it is ;; @@35d6 46
  ;; @@35d9 46
 ; .page ;; @@35d9 46
 find_bend                                                 ; ... subroutine to find end of current b-block ;; @@35d9 47
@@ -4265,7 +4326,7 @@ _local_1046_35   cmp #esc_command_token                   ; is this a BEND? ;; @
 _local_1046_40   rts                                       ;; @@362c 47
  ;; @@362d 47
 _local_1046_99   ldx #err_no_bend                          ;; @@362d 47
-                 bra error                                 ;; @@362f 47
+                 +lbra error                               ;; @@362f 47
  ;; @@3632 47
 un_quote                                                  ; txtptr points to a '"'. look for closing '"', or EOL ;; @@3632 48
                  ldy #0                                    ;; @@3632 48
@@ -4287,7 +4348,7 @@ else             cmp #esc_command_token                   ; is this of the form 
                  cmp #begin_token                          ;; @@364b 49
                  bne _local_1048_10                       ; no, justa plain-old "ELSE statement" ;; @@364d 49
                  jsr find_bend                            ; yes, it is a b-block. skip over the b-block. ;; @@364f 49
-_local_1048_10   bra rem                                   ;; @@3652 49
+_local_1048_10   +lbra rem                                 ;; @@3652 49
  ;; @@3655 49
  ;; @@3655 49
 ;.end ;; @@3655 49
@@ -4303,12 +4364,12 @@ ongoto                                                     ;; @@3655 50
                  cmp #goto_token                          ; GOTO? ;; @@3659 50
                  beq _local_1049_1                        ; yes ;; @@365b 50
                  cmp #gosub_token                         ; GOSUB? ;; @@365d 50
-                 bne snerr                                ; no, syntax error ;; @@365f 50
+                 +lbne snerr                              ; no, syntax error ;; @@365f 50
  ;; @@3662 50
 _local_1049_1    dec faclo                                 ;; @@3662 50
                  bne _local_1049_2                        ; skip another line number ;; @@3664 50
                  pla                                      ; get dispatch character ;; @@3666 50
-                 bra xeqcm2                                ;; @@3667 50
+                 +lbra xeqcm2                              ;; @@3667 50
  ;; @@366a 50
 _local_1049_2    jsr chrget                               ; advance and set codes ;; @@366a 50
                  jsr linget                               ; read next line ;; @@366d 50
@@ -4340,7 +4401,7 @@ let              jsr ptrget                               ; get pntr to variable
  ;; @@3688 51
                  jsr frmevl                               ; get value of formula into FAC ;; @@3688 51
                  pla                                       ;; @@368b 51
-                 rol a                                    ; carry set for string, off for numeric ;; @@368c 51
+                 rol                                      ; carry set for string, off for numeric ;; @@368c 51
                  jsr chkval                               ; make sure VALTYP matches carry ;; @@368d 51
 ;and set zero flag for numeric ;; @@3690 51
                  bne copstr                               ; if numeric, copy it ;; @@3690 51
@@ -4364,7 +4425,7 @@ qintgr           bpl copflt                               ; store a floating poi
  ;; @@36ad 51
 copflt           ldx forpnt                                ;; @@36ad 51
                  ldy forpnt+1                              ;; @@36af 51
-                 bra movmf_ram1                           ; put number @forpnt in var bank ;; @@36b1 51
+                 +lbra movmf_ram1                         ; put number @forpnt in var bank ;; @@36b1 51
  ;; @@36b4 51
  ;; @@36b4 51
  ;; @@36b4 51
@@ -4372,7 +4433,7 @@ copstr           pla                                      ; if string, no INTFLG
  ;; @@36b5 51
 inpcom           ldy forpnt+1                             ; TI$? ;; @@36b5 51
                  cpy #>zero                               ; (only TI$ can be this on assign) ;; @@36b7 51
-                 beq Set_TI_String                        ; yes ;; @@36b9 51
+                 +lbeq Set_TI_String                      ; yes ;; @@36b9 51
                  bra getspt                               ; no ;; @@36bc 51
  ;; @@36be 51
 ; .page ;; @@36be 51
@@ -4540,7 +4601,7 @@ _local_1052_50   pla                                      ; clean up stack ;; @@
 ;********************************************************** ;; @@37a8 53
  ;; @@37a8 53
 printn           jsr cmd                                  ; docmd ;; @@37a8 54
-                 bra release_channels                     ; restore terminal ;; @@37ab 54
+                 +lbra release_channels                   ; restore terminal ;; @@37ab 54
  ;; @@37ae 54
  ;; @@37ae 54
 cmd              jsr getbyt                                ;; @@37ae 54
@@ -4563,7 +4624,7 @@ newchr           jsr chrgot                               ; reget last character
  ;; @@37c9 55
 print            beq crdo                                 ; terminator only, so print crlf ;; @@37c9 55
                  cmp #using_token                          ;; @@37cb 55
-                 beq using                                 ;; @@37cd 55
+                 +lbeq using                               ;; @@37cd 55
  ;; @@37d0 55
  ;; @@37d0 55
  ;; @@37d0 55
@@ -4617,7 +4678,7 @@ taber            php                                      ; remember if SPC(c=0)
                  sty trmpos                                ;; @@381a 55
                  jsr gtbytc                               ; get value into accx ;; @@381c 55
                  cmp #')'                                  ;; @@381f 55
-                 bne snerr                                 ;; @@3821 55
+                 +lbne snerr                               ;; @@3821 55
                  plp                                       ;; @@3824 55
                  bcc xspac                                 ;; @@3825 55
                  txa                                       ;; @@3827 55
@@ -4764,14 +4825,14 @@ getagn1          lda channl                                ;; @@38f4 56
                  and #%10000111                           ; serial: err if dnp, r/w timeout errors ;; @@38fb 56
                  beq _local_1055_10                       ; a-ok rs232: err if brk, ovr, frm, par errors ;; @@38fd 56
                  jsr release_channels                     ; bad, close channel ;; @@38ff 56
-                 bra data                                 ; skip rest of input ;; @@3902 56
+                 +lbra data                               ; skip rest of input ;; @@3902 56
  ;; @@3905 56
 _local_1055_10   lda buf                                  ; bufful. get anything? ;; @@3905 56
                  bne inpcon                               ; yes- process input ;; @@3908 56
 ; lda channl  ;didn't get anything.  is this keyboard? [901212] ;; @@390a 56
 ; bne getagn  ; no- keep looking for data ???? ;; @@390a 56
                  jsr datan                                ; skip to end of statement ;; @@390a 56
-                 bra addon                                 ;; @@390d 56
+                 +lbra addon                               ;; @@390d 56
  ;; @@3910 56
 ; .page ;; @@3910 56
 read             rmb7 op                                  ; flag READ vs. LREAD    [910102] ;; @@3910 57
@@ -4824,7 +4885,7 @@ _local_1056_4    sta buf                                   ;; @@394f 57
                  bra datbk                                 ;; @@3956 57
  ;; @@3958 57
 ; .page ;; @@3958 57
-qdata            bmi datlop                               ; branch if READ ;; @@3958 58
+qdata            +lbmi datlop                             ; branch if READ ;; @@3958 58
                  lda channl                               ; else it's INPUT ;; @@395b 58
                  bne _local_1057_10                        ;; @@395d 58
                  jsr outqst                               ; console input, so display '? ' prompt ;; @@395f 58
@@ -4891,7 +4952,7 @@ _local_1058_100  ldx #errtm                               ; tmerr. 'get from kbd
 _local_1058_110  lda channl                                ;; @@39d0 59
                  beq _local_1058_200                      ; do again if keybd input ;; @@39d2 59
 _local_1058_120  ldx #errbd                               ; input saw bad file data ;; @@39d4 59
-_local_1058_130  bra error                                 ;; @@39d6 59
+_local_1058_130  +lbra error                               ;; @@39d6 59
  ;; @@39d9 59
  ;; @@39d9 59
 _local_1058_200  jsr highlight_text                       ; [911119] ;; @@39d9 59
@@ -4918,7 +4979,7 @@ _local_1059_1    lda txtptr,x                              ;; @@3a01 60
                  jsr chrgot                               ; look at last vartab character ;; @@3a0c 60
                  beq _local_1059_2                        ; that's the end of the list ;; @@3a0f 60
                  jsr chkcom                               ; not end. check for comma ;; @@3a11 60
-                 bra inloop                                ;; @@3a14 60
+                 +lbra inloop                              ;; @@3a14 60
  ;; @@3a17 60
 _local_1059_2    lda inpptr                               ; put away a new data pntr name ;; @@3a17 60
                  ldy inpptr+1                              ;; @@3a19 60
@@ -4956,7 +5017,7 @@ datlop           jsr datan                                ; skip some text ;; @@
                  ldx #errod                               ; yes, "no data" error ;; @@3a51 61
                  iny                                       ;; @@3a53 61
                  jsr indtxt                                ;; @@3a54 61
-                 beq error                                 ;; @@3a57 61
+                 +lbeq error                               ;; @@3a57 61
  ;; @@3a5a 61
                  iny                                       ;; @@3a5a 61
                  jsr indtxt                               ; get high byte of line number ;; @@3a5b 61
@@ -4971,7 +5032,7 @@ _local_1060_10   jsr addon                                ; nowlin.  txtptr+.y ;
                  tax                                      ; used later ;; @@3a6d 61
                  cpx #data_token                          ; is it a DATA statement? ;; @@3a6e 61
                  bne datlop                               ; not quite right, keep looking ;; @@3a70 61
-                 bra datbk1                               ; this is the one ;; @@3a72 61
+                 +lbra datbk1                             ; this is the one ;; @@3a72 61
  ;; @@3a75 61
  ;; @@3a75 61
 ;.end ;; @@3a75 61
@@ -5013,7 +5074,7 @@ _local_1061_20   sty forpnt+1                              ;; @@3a8f 62
                  jsr search                               ; look for FOR entry in run-time stack ;; @@3a93 62
                  beq _local_1061_30                       ; branch if found ;; @@3a96 62
                  ldx #errnf                               ; otherwise 'error, not found' ;; @@3a98 62
-                 bra error                                 ;; @@3a9a 62
+                 +lbra error                               ;; @@3a9a 62
  ;; @@3a9d 62
  ;; @@3a9d 62
 ; Set up to move STEP value to FAC ;; @@3a9d 62
@@ -5153,7 +5214,7 @@ dma                                                       ; params are not longe
 _local_1063_1    bcc _local_1063_10                        ;; @@3b37 64
                  txa                                      ; [910102] ;; @@3b39 64
                  and #%00000100                           ;  ;; @@3b3a 64
-                 bne fcerr                                ; (disallow chained DMA lists) ;; @@3b3c 64
+                 +lbne fcerr                              ; (disallow chained DMA lists) ;; @@3b3c 64
                  stx dma2_cmd                              ;; @@3b3f 64
  ;; @@3b42 64
 _local_1063_10   jsr comwrd                               ; get length ;; @@3b42 64
@@ -5238,7 +5299,7 @@ _local_1064_10   jsr chrgot                                ;; @@3ba4 65
                  sta forpnt                               ; a little bit of set up so we can share LET code ;; @@3bb0 65
                  sty forpnt+1                              ;; @@3bb2 65
                  lda valtyp                               ; what kind of variable name did ptrget find? ;; @@3bb4 65
-                 bne chkerr                               ; type mismatch error if string ;; @@3bb6 65
+                 +lbne chkerr                             ; type mismatch error if string ;; @@3bb6 65
  ;; @@3bb9 65
                  ldy count                                ; which register's value are we looking for? ;; @@3bb9 65
                  lda _a_reg,y                             ; .A, .X, .Y, & .Z are contiguious ;; @@3bbb 65
@@ -5324,10 +5385,10 @@ _local_1065_40   tax                                       ;; @@3c35 66
                  beq _local_1065_80                       ; done if length=0 ;; @@3c36 66
                  clc                                       ;; @@3c38 66
                  adc hulp                                 ; add length to starting posn. ;; @@3c39 66
-                 bcs fcerr                                ; illegal quantity error if > 256 ;; @@3c3b 66
+                 +lbcs fcerr                              ; illegal quantity error if > 256 ;; @@3c3b 66
                  cmp str1                                  ;; @@3c3e 66
                  bcc _local_1065_60                        ;; @@3c40 66
-                 bne fcerr                                ; ...or if > target length ;; @@3c42 66
+                 +lbne fcerr                              ; ...or if > target length ;; @@3c42 66
  ;; @@3c45 66
 _local_1065_60   ldy hulp                                 ; get adjusted starting address ;; @@3c45 66
 _local_1065_70   phx                                       ;; @@3c47 66
@@ -5340,7 +5401,7 @@ _local_1065_70   phx                                       ;; @@3c47 66
                  dex                                       ;; @@3c54 66
                  bne _local_1065_70                       ; keep going for specified length ;; @@3c55 66
  ;; @@3c57 66
-_local_1065_80   bra frefac                               ; free up temp. string, rts ;; @@3c57 66
+_local_1065_80   +lbra frefac                             ; free up temp. string, rts ;; @@3c57 66
  ;; @@3c5a 66
 ;.end ;; @@3c5a 66
  ;; @@3c5a 66
@@ -5382,7 +5443,7 @@ help             ldx errnum                               ; check for error stat
                  jsr p1line                               ; display line & highlight error ;; @@3c8c 67
                  stz helper                                ;; @@3c8f 67
 _local_1066_1    rmb7 helper                              ; reset 'help' flag ;; @@3c91 67
-                 bra crdo                                 ; and return to caller ;; @@3c93 67
+                 +lbra crdo                               ; and return to caller ;; @@3c93 67
  ;; @@3c96 67
  ;; @@3c96 67
  ;; @@3c96 67
@@ -5462,13 +5523,13 @@ gosub            bbs4 runmod,edit_err                     ; [910620] ;; @@3cec 7
                  jsr gosub_sub                             ;; @@3cef 71
                  jsr chrgot                               ; get character and set carry for linget ;; @@3cf2 71
                  jsr goto                                  ;; @@3cf5 71
-                 bra newstt                                ;; @@3cf8 71
+                 +lbra newstt                              ;; @@3cf8 71
  ;; @@3cfb 71
 ; .page ;; @@3cfb 71
 goto             bbs4 runmod,edit_err                     ; [910620] ;; @@3cfb 71
                  jsr linget                               ; pick up the line number in LINNUM ;; @@3cfe 71
                  lda endchr                               ; test if linget found any number ;; @@3d01 71
-                 beq snerr                                ; no number error ;; @@3d03 71
+                 +lbeq snerr                              ; no number error ;; @@3d03 71
  ;; @@3d06 71
 goto_1           jsr remn                                 ; jump to end of line (entry for interrupt code) ;; @@3d06 71
                  sec                                       ;; @@3d09 71
@@ -5490,7 +5551,7 @@ luk4it           lda txttab                                ;; @@3d1f 71
                  ldx txttab+1                              ;; @@3d21 71
  ;; @@3d23 71
 lukall           jsr FindLink                             ; (a,x) are all set up ;; @@3d23 71
-                 bcc userr                                ; undefined statement error ;; @@3d26 71
+                 +lbcc userr                              ; undefined statement error ;; @@3d26 71
                  lda lowtr                                 ;; @@3d29 71
                  sbc #1                                    ;; @@3d2b 71
                  sta txtptr                                ;; @@3d2d 71
@@ -5525,7 +5586,7 @@ gosub_sub                                                  ;; @@3d39 71
  ;; @@3d59 71
 edit_err                                                   ;; @@3d59 71
                  ldx #edit_mode_error                     ; [910620] ;; @@3d59 71
-                 bra error                                 ;; @@3d5b 71
+                 +lbra error                               ;; @@3d5b 71
  ;; @@3d5e 71
 ;.end ;; @@3d5e 71
 ; .page ;; @@3d5e 71
@@ -5540,7 +5601,7 @@ go_without_to                                              ;; @@3d5e 71
  ;; @@3d6a 71
 _local_1070_1    jsr getbyt                               ; is it GO 64? ;; @@3d6a 71
                  cpx #64                                   ;; @@3d6d 71
-                 bne snerr                                ; ...no, error ;; @@3d6f 71
+                 +lbne snerr                              ; ...no, error ;; @@3d6f 71
  ;; @@3d72 71
 ; The user wants to go to C64 mode. ;; @@3d72 71
  ;; @@3d72 71
@@ -5565,7 +5626,7 @@ cont             bne cont_rts                             ; make sure there is a
  ;; @@3d82 72
                  ldx #errcn                               ; continue error. ;; @@3d82 72
                  ldy oldtxt+1                             ; a stored txtptr of zero set up by INIT_STACK ;; @@3d84 72
-                 beq error                                ; indicates there is nothing to continue ;; @@3d87 72
+                 +lbeq error                              ; indicates there is nothing to continue ;; @@3d87 72
  ;; @@3d8a 72
                  lda oldtxt                               ; STOP, END, typing crlf to INPUT, and STOP key ;; @@3d8a 72
                  sta txtptr                                ;; @@3d8d 72
@@ -5616,20 +5677,20 @@ run              bbs4 runmod,edit_err                     ; [910620] ;; @@3db4 7
  ;; @@3dbb 73
                  smb6 runmod                              ; set flag for load not to go to ready ;; @@3dbb 73
                  jsr dload                                ; use DLOAD's parser, and load the program ;; @@3dbd 73
-                 bcs erexit                               ; if problem loading   [900801] ;; @@3dc0 73
+                 +lbcs erexit                             ; if problem loading   [900801] ;; @@3dc0 73
  ;; @@3dc3 73
 run_a_program                                              ;; @@3dc3 73
                  jsr crdo                                 ; [911010] ;; @@3dc3 73
                  jsr fix_links                            ; re-link the program ;; @@3dc6 73
                  jsr setexc                               ; set various run modes ;; @@3dc9 73
                  jsr runc                                  ;; @@3dcc 73
-                 bra newstt                               ; start executing ;; @@3dcf 73
+                 +lbra newstt                             ; start executing ;; @@3dcf 73
  ;; @@3dd2 73
  ;; @@3dd2 73
 ; Here if of the form "RUN" ;; @@3dd2 73
  ;; @@3dd2 73
 run__10          jsr setexc                               ; set various run codes ;; @@3dd2 73
-                 bra runc                                 ; ..and start executing ;; @@3dd5 73
+                 +lbra runc                               ; ..and start executing ;; @@3dd5 73
  ;; @@3dd8 73
  ;; @@3dd8 73
 ; Here if of the form "RUN line_number" ;; @@3dd8 73
@@ -5638,7 +5699,7 @@ run__20          jsr clearc                               ; first trash all vari
                  jsr chrgot                                ;; @@3ddb 73
                  jsr goto                                 ; set up to execute from new line number ;; @@3dde 73
                  jsr setexc                               ; ..and do a little housekeeping, ;; @@3de1 73
-                 bra newstt                               ; ..otherwise it's business as usual ;; @@3de4 73
+                 +lbra newstt                             ; ..otherwise it's business as usual ;; @@3de4 73
  ;; @@3de7 73
 ;.end ;; @@3de7 73
 ; .page ;; @@3de7 73
@@ -5659,7 +5720,7 @@ restor                                                     ;; @@3de7 73
                  sty linnum                                ;; @@3dec 73
                  sta linnum+1                              ;; @@3dee 73
                  jsr FindLine                             ; get pointer to specified line ;; @@3df0 73
-                 bcc userr                                ; error if not found ;; @@3df3 73
+                 +lbcc userr                              ; error if not found ;; @@3df3 73
  ;; @@3df6 73
                  lda lowtr                                ; decrement 2 byte pointer, and save it ;; @@3df6 73
                  ldy lowtr+1                               ;; @@3df8 73
@@ -5768,7 +5829,7 @@ renum_10                                                   ;; @@3e40 74
                  sty renum_tmp_2                           ;; @@3e45 74
                  sta renum_tmp_2+1                         ;; @@3e48 74
                  ora renum_tmp_2                          ; increment must be >0 ;; @@3e4b 74
-                 beq fcerr                                ; illegal quantity error ;; @@3e4e 74
+                 +lbeq fcerr                              ; illegal quantity error ;; @@3e4e 74
  ;; @@3e51 74
 ; Check for starting line number ;; @@3e51 74
  ;; @@3e51 74
@@ -5795,7 +5856,7 @@ renum_30                                                   ;; @@3e51 74
                  sbc highds                                ;; @@3e79 74
                  lda lowtr+1                               ;; @@3e7b 74
                  sbc highds+1                              ;; @@3e7d 74
-                 bcc fcerr                                ; bad... ;; @@3e7f 74
+                 +lbcc fcerr                              ; bad... ;; @@3e7f 74
  ;; @@3e82 74
 ; .page ;; @@3e82 74
 ;*********************************************************************** ;; @@3e82 74
@@ -5836,7 +5897,7 @@ r_pass1_20                                                 ;; @@3ea7 74
  ;; @@3eb5 74
 r_pass1_30                                                ; renumbering will generate an illegal line # ;; @@3eb5 74
                  ldx #err_too_large                       ; 'line number too large' error ;; @@3eb5 74
-                 bra error                                 ;; @@3eb7 74
+                 +lbra error                               ;; @@3eb7 74
  ;; @@3eba 74
 set_next                                                   ;; @@3eba 74
                  ldy #0                                   ; set for next BASIC line ;; @@3eba 74
@@ -5945,7 +6006,7 @@ imbed_lines                                                ;; @@3f29 75
  ;; @@3f2c 75
 next_line                                                  ;; @@3f2c 75
                  jsr chargt_x2                            ; skip link (assumes txttab > 0) ;; @@3f2c 75
-                 beq n1_reset                             ; null link: put current line # in fac, reset txtptr, exit ;; @@3f2f 75
+                 +lbeq n1_reset                           ; null link: put current line # in fac, reset txtptr, exit ;; @@3f2f 75
                  jsr chargt                               ; line number ;; @@3f32 75
                  sta forpnt                               ; save in case there is an error ;; @@3f35 75
                  jsr chargt                                ;; @@3f37 75
@@ -6040,7 +6101,7 @@ _local_1077_10   inw fndpnt                                ;; @@3fc3 78
                  sbc max_mem_0                             ;; @@3fc8 78
                  lda fndpnt+1                              ;; @@3fcb 78
                  sbc max_mem_0+1                           ;; @@3fcd 78
-                 bcs omerr                                ; yes- out of memory error ;; @@3fd0 78
+                 +lbcs omerr                              ; yes- out of memory error ;; @@3fd0 78
                  inx                                      ; no - next... ;; @@3fd3 78
                  lda fbuffr+1,x                            ;; @@3fd4 78
                  bne _local_1077_10                        ;; @@3fd7 78
@@ -6109,7 +6170,7 @@ find_it                                                    ;; @@4026 80
                  sta curlin                               ; fake error routine into saying 'in line xxxxx' ;; @@402f 80
                  lda forpnt+1                              ;; @@4031 80
                  sta curlin+1                              ;; @@4033 80
-                 bra error                                 ;; @@4035 80
+                 +lbra error                               ;; @@4035 80
  ;; @@4038 80
 _local_1079_70   jsr chargt                               ; get line number low ;; @@4038 80
                  sta highds                               ; highds = current line# in loop ;; @@403b 80
@@ -6135,7 +6196,7 @@ _local_1079_80   lda linnum                               ; use same line# ;; @@
 _local_1079_90   ldx #$90                                 ; make replacement string ;; @@405f 80
                  sec                                       ;; @@4061 80
                  jsr floatc                                ;; @@4062 80
-                 bra fout                                  ;; @@4065 80
+                 +lbra fout                                ;; @@4065 80
  ;; @@4068 80
  ;; @@4068 80
 _local_1079_100  jsr chargt                                ;; @@4068 80
@@ -6154,7 +6215,7 @@ n1_reset                                                   ;; @@4072 81
                  sta facho+1                               ;; @@4075 81
                  lda renum_tmp_1+1                         ;; @@4077 81
                  sta facho                                 ;; @@407a 81
-                 bra reset_txtptr                          ;; @@407c 81
+                 +lbra reset_txtptr                        ;; @@407c 81
  ;; @@407f 81
  ;; @@407f 81
 ;*************************** LINE_ADD ********************************** ;; @@407f 81
@@ -6206,7 +6267,7 @@ chargt_x2                                                  ;; @@40a3 81
 chargt                                                     ;; @@40a5 81
                  ldy #0                                   ; increment txtptr ;; @@40a5 81
                  inw txtptr                                ;; @@40a7 81
-                 bra indtxt                                ;; @@40a9 81
+                 +lbra indtxt                              ;; @@40a9 81
  ;; @@40ac 81
 ; .page ;; @@40ac 81
 ;*********************************************************************** ;; @@40ac 81
@@ -6230,7 +6291,7 @@ move_init                                                  ;; @@40ac 81
  ;; @@40bc 81
                  lda #1                                   ; move 1 character ;; @@40bc 81
                  sta count                                ; lo ;; @@40be 81
-                 dec a                                     ;; @@40c0 81
+                 dec                                       ;; @@40c0 81
                  sta argmo                                ; hi ;; @@40c1 81
  ;; @@40c3 81
                  rts                                       ;; @@40c3 81
@@ -6469,12 +6530,12 @@ _local_1081_40   sta (tos),y                              ; (common area) ;; @@4
 delete           bcc delete_line                          ; branch if a number (assume range parameter) ;; @@41e8 83
                  cmp #minus_token                          ;; @@41ea 83
                  beq delete_line                          ; branch if a dash (assume range parameter) ;; @@41ec 83
-                 bra scratch                              ; branch if string (assume filename or U#) ;; @@41ee 83
+                 +lbra scratch                            ; branch if string (assume filename or U#) ;; @@41ee 83
  ;; @@41f1 83
 delete_line                                                ;; @@41f1 83
                  jsr errind                               ; direct mode only command ;; @@41f1 83
                  jsr chrgot                               ; requires line# or range, no default ;; @@41f4 83
-                 beq snerr                                ; error, none given ;; @@41f7 83
+                 +lbeq snerr                              ; error, none given ;; @@41f7 83
  ;; @@41fa 83
                  jsr range                                ; parse range, find starting line, ptr to ending line ;; @@41fa 83
                  lda lowtr                                 ;; @@41fd 83
@@ -6505,7 +6566,7 @@ _local_1082_20   lda lowtr                                ; check that start <= 
                  sta argmo                                ; but it does no harm) ;; @@422a 83
                  ora count                                 ;; @@422c 83
                  beq fix_links                            ; all done- nothing to move!? ;; @@422e 83
-                 bcc snerr                                ; error- bad range (start > end) ;; @@4230 83
+                 +lbcc snerr                              ; error- bad range (start > end) ;; @@4230 83
  ;; @@4233 83
                  lda text_top                             ; setup for common DMA move routine: [900530] ;; @@4233 83
                  ldx text_top+1                            ;; @@4235 83
@@ -6566,7 +6627,7 @@ _local_1084_20   lda endchr                               ; was a # input? ;; @@
 _local_1084_30   rts                                       ;; @@4285 85
  ;; @@4286 85
  ;; @@4286 85
-_local_1084_40   bra snerr                                ; syntax error ;; @@4286 85
+_local_1084_40   +lbra snerr                              ; syntax error ;; @@4286 85
  ;; @@4289 85
 ;.end ;; @@4289 85
 ; .page ;; @@4289 85
@@ -6594,13 +6655,13 @@ change                                                     ;; @@428c 86
                  ldx #0                                   ; evaluate string args ;; @@4296 86
                  jsr delimit_string                       ; string1 ;; @@4298 86
                  lda fstr1+2                               ;; @@429b 86
-                 beq fcerr                                ; error if string1 null ;; @@429d 86
+                 +lbeq fcerr                              ; error if string1 null ;; @@429d 86
                  bbr7 op,_local_1085_10                   ; branch if no string2 ;; @@42a0 86
                  jsr chrget                               ; pick up required 'to' token ;; @@42a3 86
                  cmp #to_token                             ;; @@42a6 86
-                 bne snerr                                ; error if missing ;; @@42a8 86
+                 +lbne snerr                              ; error if missing ;; @@42a8 86
                  jsr chrget                                ;; @@42ab 86
-                 beq snerr                                ; error if eol ;; @@42ae 86
+                 +lbeq snerr                              ; error if eol ;; @@42ae 86
                  ldx #3                                    ;; @@42b1 86
                  jsr delimit_string                       ; string2 ;; @@42b3 86
  ;; @@42b6 86
@@ -6632,7 +6693,7 @@ find_loop_1                                                ;; @@42dd 87
                  bne _local_1086_10                       ; not null- continue ;; @@42e2 87
                  dey                                       ;; @@42e4 87
                  jsr indlow                                ;; @@42e5 87
-                 beq find_exit                            ; null- exit ;; @@42e8 87
+                 +lbeq find_exit                          ; null- exit ;; @@42e8 87
  ;; @@42eb 87
 _local_1086_10   ldy #2                                    ;; @@42eb 87
                  jsr indlow                               ; check line number ;; @@42ed 87
@@ -6643,7 +6704,7 @@ _local_1086_10   ldy #2                                    ;; @@42eb 87
                  bne _local_1086_20                        ;; @@42f7 87
                  cpx linnum                                ;; @@42f9 87
                  beq _local_1086_30                       ; line is <= last line requested, continue ;; @@42fb 87
-_local_1086_20   bcs find_exit                            ; line is >  last line requested, exit ;; @@42fd 87
+_local_1086_20   +lbcs find_exit                          ; line is >  last line requested, exit ;; @@42fd 87
  ;; @@4300 87
 _local_1086_30   ldx #3                                   ; set initial position - 1 (past link & line#) ;; @@4300 87
                  stx fndpnt                                ;; @@4302 87
@@ -6651,7 +6712,7 @@ _local_1086_30   ldx #3                                   ; set initial position
 ; .page ;; @@4304 87
 find_loop_2                                                ;; @@4304 88
                  jsr _stop                                ; check stop key ;; @@4304 88
-                 beq find_break                           ; exit if down ;; @@4307 88
+                 +lbeq find_break                         ; exit if down ;; @@4307 88
  ;; @@430a 88
                  ldx fndpnt                               ; duh, where are we? ;; @@430a 88
                  clc                                       ;; @@430c 88
@@ -6708,7 +6769,7 @@ change_line                                                ;; @@434e 89
                  cmp #'Y'                                  ;; @@4362 89
                  beq _local_1088_100                      ; yes, change it ;; @@4364 89
                  cmp #cr                                   ;; @@4366 89
-                 beq find_exit                            ; cr only, abort entire operation ;; @@4368 89
+                 +lbeq find_exit                          ; cr only, abort entire operation ;; @@4368 89
                  cmp #'*'                                  ;; @@436b 89
                  bne find_loop_2                          ; *, change all.  else don't change ;; @@436d 89
                  smb6 op                                   ;; @@436f 89
@@ -6738,7 +6799,7 @@ _local_1088_100  lda text_top                             ; setup upper address 
                  bpl _local_1088_10                       ; branch if string1 > string2 (delete) ;; @@438f 89
 ; else      string1 < string2 (insert) ;; @@4391 89
  ;; @@4391 89
-                 neg a                                    ; Move memory up to make room for larger string2 ;; @@4391 89
+                 neg                                      ; Move memory up to make room for larger string2 ;; @@4391 89
                  sta count                                 ;; @@4392 89
                  ldy #0                                   ; first check for line too long ;; @@4394 89
                  jsr indlow                                ;; @@4396 89
@@ -6753,7 +6814,7 @@ _local_1088_100  lda text_top                             ; setup upper address 
                  sbc lowtr                                 ;; @@43a5 89
                  tya                                       ;; @@43a7 89
                  sbc lowtr+1                               ;; @@43a8 89
-                 bne errlen                               ; error, line > 255 characters ;; @@43aa 89
+                 +lbne errlen                             ; error, line > 255 characters ;; @@43aa 89
  ;; @@43ad 89
                  clc                                      ; now check for sufficient memory ;; @@43ad 89
                  ldy text_top+1                            ;; @@43ae 89
@@ -6763,9 +6824,9 @@ _local_1088_100  lda text_top                             ; setup upper address 
                  iny                                       ;; @@43b6 89
 _local_1088_1    cpy max_mem_0+1                           ;; @@43b7 89
                  bcc _local_1088_2                        ; result is less than top-of-memory: ok ;; @@43ba 89
-                 bne omerr                                ; msb >  top, overflow ;; @@43bc 89
+                 +lbne omerr                              ; msb >  top, overflow ;; @@43bc 89
                  cmp max_mem_0                            ; msb's the same, test lsb's ;; @@43bf 89
-                 bcs omerr                                ; lsb >= top, overflow ;; @@43c2 89
+                 +lbcs omerr                              ; lsb >= top, overflow ;; @@43c2 89
 _local_1088_2    sta text_top                              ;; @@43c5 89
                  sty text_top+1                           ; set new top of text pointer ;; @@43c7 89
                  jsr moveup                               ; make room ;; @@43c9 89
@@ -6799,9 +6860,9 @@ _local_1088_40   jsr link_program                         ; relink program ;; @@
                  clc                                       ;; @@43fd 89
                  lda fndpnt                               ; place find position after new text ;; @@43fe 89
                  adc fstr2+2                               ;; @@4400 89
-                 dec a                                     ;; @@4402 89
+                 dec                                       ;; @@4402 89
                  sta fndpnt                                ;; @@4403 89
-                 bra find_loop_2                          ; and resume searching ;; @@4405 89
+                 +lbra find_loop_2                        ; and resume searching ;; @@4405 89
  ;; @@4408 89
 ; .page ;; @@4408 89
 find_exit                                                  ;; @@4408 90
@@ -6809,7 +6870,7 @@ find_exit                                                  ;; @@4408 90
                  pla                                       ;; @@440b 90
                  sta helper                               ; restore token highlight status ;; @@440c 90
                  rmb5 helper                              ; remove 'find' flag ;; @@440e 90
-                 bra direct_mode_exit                     ; done ;; @@4410 90
+                 +lbra direct_mode_exit                   ; done ;; @@4410 90
  ;; @@4413 90
  ;; @@4413 90
  ;; @@4413 90
@@ -6825,14 +6886,14 @@ find_break                                                ; stop key break ;; @@
                  pla                                       ;; @@441b 90
                  sta helper                               ; restore token highlight status ;; @@441c 90
                  rmb5 helper                              ; remove 'find' flag ;; @@441e 90
-                 bcc break_exit                           ; [910925] ;; @@4420 90
-                 bra error                                 ;; @@4423 90
+                 +lbcc break_exit                         ; [910925] ;; @@4420 90
+                 +lbra error                               ;; @@4423 90
  ;; @@4426 90
  ;; @@4426 90
 delimit_string                                            ; command is in buffer, .x = ptr to strptr ;; @@4426 90
                  sta match                                ; delimiter character ;; @@4426 90
                  lda txtptr                               ; point to first character in string ;; @@4428 90
-                 inc a                                    ; (never wraps- string in input buffer) ;; @@442a 90
+                 inc                                      ; (never wraps- string in input buffer) ;; @@442a 90
                  sta fstr1,x                              ; set pointer to string data ;; @@442b 90
                  lda txtptr+1                              ;; @@442d 90
                  sta fstr1+1,x                             ;; @@442f 90
@@ -6841,7 +6902,7 @@ delimit_string                                            ; command is in buffer
  ;; @@4435 90
 _local_1089_10   inc fstr1+2,x                             ;; @@4435 90
                  jsr chargt                               ; build string ;; @@4437 90
-                 beq snerr                                ; error if eol encountered inside string ;; @@443a 90
+                 +lbeq snerr                              ; error if eol encountered inside string ;; @@443a 90
                  cmp match                                 ;; @@443d 90
                  bne _local_1089_10                       ; continue until matching delimiter found ;; @@443f 90
                  rts                                       ;; @@4441 90
@@ -6854,7 +6915,7 @@ puctrl           jsr frmstr                               ; do frmevl,frestr. re
                  tay                                       ;; @@4445 91
                  dey                                       ;; @@4446 91
                  cpy #4                                    ;; @@4447 91
-                 bcs fcerr                                ; len > 4 is illegal value error ;; @@4449 91
+                 +lbcs fcerr                              ; len > 4 is illegal value error ;; @@4449 91
  ;; @@444c 91
 _local_1090_1    jsr indin1_ram1                          ; lda (index),y ;; @@444c 91
                  sta puchrs,y                              ;; @@444f 91
@@ -6906,7 +6967,7 @@ resume           jsr errdir                               ; no direct mode ;; @@
                  beq resswp                               ; no arg's...restart err'd line ;; @@4474 93
                  bcc _local_1092_3                        ; numeric argument ;; @@4476 93
                  cmp #next_token                          ; only other choice is 'next' ;; @@4478 93
-                 bne snerr                                ; if not, syntax error ;; @@447a 93
+                 +lbne snerr                              ; if not, syntax error ;; @@447a 93
  ;; @@447d 93
                  jsr resswp                               ; resume execution with next stm't ;; @@447d 93
                  ldy #0                                    ;; @@4480 93
@@ -6917,7 +6978,7 @@ resume           jsr errdir                               ; no direct mode ;; @@
                  bne _local_1092_1                         ;; @@448b 93
                  iny                                       ;; @@448d 93
                  jsr indtxt                                ;; @@448e 93
-                 beq ready                                ; 2 nulls, eot. bye! ;; @@4491 93
+                 +lbeq ready                              ; 2 nulls, eot. bye! ;; @@4491 93
  ;; @@4494 93
 _local_1092_1    ldy #3                                   ; new line, update pointers ;; @@4494 93
                  jsr indtxt                                ;; @@4496 93
@@ -6932,13 +6993,13 @@ _local_1092_1    ldy #3                                   ; new line, update poi
                  bcc _local_1092_2                         ;; @@44a7 93
                  inc txtptr+1                              ;; @@44a9 93
 _local_1092_2    jsr chrget                               ; skip over this character, into body of statement ;; @@44ab 93
-                 bra data                                 ; advance until null or ':', then rts ;; @@44ae 93
+                 +lbra data                               ; advance until null or ':', then rts ;; @@44ae 93
  ;; @@44b1 93
  ;; @@44b1 93
 _local_1092_3    jsr getwrd                               ; resnum. numeric argument ;; @@44b1 93
                  sta linnum+1                              ;; @@44b4 93
                  jsr resend                                ;; @@44b6 93
-                 bra luk4it                                ;; @@44b9 93
+                 +lbra luk4it                              ;; @@44b9 93
  ;; @@44bc 93
  ;; @@44bc 93
 resswp           lda errtxt                               ; backup one so chrget will work ;; @@44bc 94
@@ -6966,7 +7027,7 @@ error_clear                                                ;; @@44dc 95
  ;; @@44e8 95
  ;; @@44e8 95
 rescnt           ldx #errcr                                ;; @@44e8 95
-                 bra error                                 ;; @@44ea 95
+                 +lbra error                               ;; @@44ea 95
  ;; @@44ed 95
 ;.end ;; @@44ed 95
 ; .page ;; @@44ed 95
@@ -7029,7 +7090,7 @@ doyes            lda #5                                   ; 'do' needs 5 bytes o
 exit             jsr popdgo                               ; pop do entry off stack ;; @@4542 96
                  jsr chrgot                                ;; @@4545 96
                  beq fnd010                                ;; @@4548 96
-snrjmp           bra snerr                                 ;; @@454a 96
+snrjmp           +lbra snerr                               ;; @@454a 96
  ;; @@454d 96
  ;; @@454d 96
  ;; @@454d 96
@@ -7039,7 +7100,7 @@ fndend           jsr chrget                                ;; @@454d 96
  ;; @@4550 96
 fnd010           beq _local_1095_20                       ; end of statement ;; @@4550 96
                  cmp #loop_token                           ;; @@4552 96
-                 beq data                                 ; a hit!  read to end of statement, rts ;; @@4554 96
+                 +lbeq data                               ; a hit!  read to end of statement, rts ;; @@4554 96
                  cmp #'"'                                 ; quote ;; @@4557 96
                  beq _local_1095_10                        ;; @@4559 96
                  cmp #do_token                             ;; @@455b 96
@@ -7089,7 +7150,7 @@ popdgo           lda #do_token                            ; pop, but don't go ;;
                  bne poperr                               ; branch if not found ;; @@45a5 97
                  jsr movfnd                                ;; @@45a7 97
                  ldy #5                                    ;; @@45aa 97
-                 bra rlsstk                                ;; @@45ac 97
+                 +lbra rlsstk                              ;; @@45ac 97
  ;; @@45af 97
  ;; @@45af 97
 fnderr                                                     ;; @@45af 97
@@ -7102,7 +7163,7 @@ fnderr                                                     ;; @@45af 97
                  !text $2c                                 ;; @@45bb 97
 poperr                                                     ;; @@45bc 97
                  ldx #errlwd                              ; loop without do ;; @@45bc 97
-                 bra error                                 ;; @@45be 97
+                 +lbra error                               ;; @@45be 97
  ;; @@45c1 97
  ;; @@45c1 97
  ;; @@45c1 97
@@ -7124,11 +7185,11 @@ popngo                                                     ;; @@45c6 97
                  jsr retpat                               ; (** 01/18/84 fixes 'loop' to a direct mode 'do') ;; @@45c9 97
 ; lda (fndpnt),y ;; @@45cc 97
 ; sta curlin ;; @@45cc 97
-                 bra do                                    ;; @@45cc 97
+                 +lbra do                                  ;; @@45cc 97
  ;; @@45cf 97
 frmjmp                                                     ;; @@45cf 97
                  jsr chrget                                ;; @@45cf 97
-                 bra frmevl                                ;; @@45d2 97
+                 +lbra frmevl                              ;; @@45d2 97
  ;; @@45d5 97
 ;.end ;; @@45d5 97
 ; .page ;; @@45d5 97
@@ -7151,10 +7212,10 @@ _local_1096_1    ldx _kyndx                               ; is function key buff
                  bra _local_1096_30                       ; exit ;; @@45e1 97
  ;; @@45e3 97
 _local_1096_10   cmp #load_token                          ; KEY LOAD <filename>[,D#,U#] ;; @@45e3 97
-                 beq Key_load                              ;; @@45e5 97
+                 +lbeq Key_load                            ;; @@45e5 97
  ;; @@45e8 97
                  cmp #save_token                          ; KEY SAVE <filename>[,D#,U#] ;; @@45e8 97
-                 beq Key_Save                              ;; @@45ea 97
+                 +lbeq Key_Save                            ;; @@45ea 97
  ;; @@45ed 97
                  cmp #restore_token                       ; KEY RESTORE ?      [910925] ;; @@45ed 97
                  bne _local_1096_20                       ; no ;; @@45ef 97
@@ -7163,12 +7224,12 @@ _local_1096_10   cmp #load_token                          ; KEY LOAD <filename>[
                  bra _local_1096_30                       ; exit ;; @@45f6 97
  ;; @@45f8 97
 _local_1096_20   cmp #esc_command_token                   ; KEY OFF ? ;; @@45f8 97
-                 bne Key_Change                           ; no- must be new key definition ;; @@45fa 97
+                 +lbne Key_Change                         ; no- must be new key definition ;; @@45fa 97
                  jsr chrget                                ;; @@45fd 97
                  cmp #off_token                            ;; @@4600 97
-                 bne snerr                                ; no- bad syntax ;; @@4602 97
+                 +lbne snerr                              ; no- bad syntax ;; @@4602 97
                  smb5 _locks                              ; yes- set Editor's lock bit ;; @@4605 97
-_local_1096_30   bra chrget                               ; exit ;; @@4607 97
+_local_1096_30   +lbra chrget                             ; exit ;; @@4607 97
  ;; @@460a 97
 ; .page ;; @@460a 97
 ;************************************************************** ;; @@460a 97
@@ -7257,7 +7318,7 @@ _local_1100_10   lda keydat-3,x                           ; display something li
  ;; @@468c 101
 preamb           !text " YEK"                             ; key preamble ;; @@468c 102
  ;; @@4690 102
-keydat           !text "($RHC+""                          ; chr$( string ;; @@4690 102
+keydat           !text "($RHC+",$22                       ; chr$( string ;; @@4690 102
  ;; @@4697 102
 keychr           !text cr,$8d,$22,esc                     ; special KEY chars- return, sft-return, quote, esc ;; @@4697 102
  ;; @@469b 102
@@ -7273,7 +7334,7 @@ Key_Change                                                 ;; @@469b 102
                  stx z_p_temp_1                           ; save key number     [910925] ;; @@469e 102
                  dex                                       ;; @@46a0 102
                  cpx #number_fkeys                         ;; @@46a1 102
-                 bcs fcerr                                ; exit - key number invalid ;; @@46a3 102
+                 +lbcs fcerr                              ; exit - key number invalid ;; @@46a3 102
  ;; @@46a6 102
 ; stx z_p_temp_1 ;save key number ;; @@46a6 102
                  jsr chkcom                               ; look for comma ;; @@46a6 102
@@ -7287,7 +7348,7 @@ Key_Change                                                 ;; @@469b 102
 key_restore                                                ;; @@46b5 102
 ; jsr put_io_in_map ;; @@46b5 102
                  jsr _doakey                              ; re-define the key ;; @@46b5 102
-                 bcs omerr                                ; bad return (.c=1) ;; @@46b8 102
+                 +lbcs omerr                              ; bad return (.c=1) ;; @@46b8 102
                  rts                                      ; ok return  (.c=0) ;; @@46bb 102
  ;; @@46bc 102
 ; .page ;; @@46bc 102
@@ -7295,12 +7356,12 @@ key_restore                                                ;; @@46b5 102
 ;   Key_Load  Load function key definitions (from disk)   [900725] ;; @@46bc 102
 ;************************************************************************ ;; @@46bc 102
  ;; @@46bc 102
-Key_Load                                                   ;; @@46bc 102
+Key_load                                                   ;; @@46bc 102
                  jsr GetLoadChannel                       ; get a channel      [911001] ;; @@46bc 102
                  ldy #>_pky_lengths                        ;; @@46bf 102
                  lda #<_pky_lengths                        ;; @@46c1 102
                  jsr LoadBlock                            ; load it ;; @@46c3 102
-                 bra list_err                             ; release channel, close file, return to main ;; @@46c6 102
+                 +lbra list_err                           ; release channel, close file, return to main ;; @@46c6 102
  ;; @@46c9 102
  ;; @@46c9 102
 GetLoadChannel                                            ; Used by KeyLoad and SpriteLoad    [911001] ;; @@46c9 102
@@ -7350,7 +7411,7 @@ LoadERR                                                    ;; @@4714 103
  ;; @@4718 103
 LoadEOF                                                    ;; @@4718 103
                  clc                                       ;; @@4718 103
-                 bra list_err                             ; release channel, close file, return to main ;; @@4719 103
+                 +lbra list_err                           ; release channel, close file, return to main ;; @@4719 103
  ;; @@471c 103
 ; .page ;; @@471c 103
 ;************************************************************************ ;; @@471c 103
@@ -7366,7 +7427,7 @@ Key_Save                                                   ;; @@471c 103
                  stx highds                                ;; @@4727 103
                  iny                                      ; end address = start address + 256 + 1 ;; @@4729 103
                  inx                                       ;; @@472a 103
-                 bra savenb                               ; [910925] ;; @@472b 103
+                 +lbra savenb                             ; [910925] ;; @@472b 103
 ; jsr _savesp  ;save it ;; @@472e 103
 ;; clc   ; return no error  ????why not  [910404] ;; @@472e 103
 ; bra exit_disk_op ; but if direct mode print DOS error  [910404] ;; @@472e 103
@@ -7461,29 +7522,29 @@ play_one_character                                           ;; @@4769 104
 _local_1103_5    cmp #'A'                                 ; note name a-g? ;; @@476d 104
                  bcc _local_1103_10                        ;; @@476f 104
                  cmp #'H'                                  ;; @@4771 104
-                 bcc play_note                            ; yes...play it ;; @@4773 104
+                 +lbcc play_note                          ; yes...play it ;; @@4773 104
  ;; @@4776 104
 _local_1103_10   ldx #4                                   ; test for notes,'w,h,q,i,s' ;; @@4776 104
 _local_1103_20   cmp notes,x                               ;; @@4778 104
-                 beq set_note_length                       ;; @@477b 104
+                 +lbeq set_note_length                     ;; @@477b 104
                  dex                                       ;; @@477e 104
                  bpl _local_1103_20                        ;; @@477f 104
  ;; @@4781 104
                  cmp #'R'                                 ; rest? ;; @@4781 104
-                 beq play_rest                             ;; @@4783 104
+                 +lbeq play_rest                           ;; @@4783 104
                  cmp #'.'                                 ; dotted note? ;; @@4786 104
-                 beq play_dot                              ;; @@4788 104
+                 +lbeq play_dot                            ;; @@4788 104
  ;; @@478b 104
                  ldx #5                                   ; test for v,o,t,x,u,m commands ;; @@478b 104
 _local_1103_30   cmp mutabl,x                              ;; @@478d 104
-                 beq play_command                          ;; @@4790 104
+                 +lbeq play_command                        ;; @@4790 104
                  dex                                       ;; @@4793 104
                  bpl _local_1103_30                       ; test all 5 characters in table ;; @@4794 104
  ;; @@4796 104
                  cmp #'#'                                 ; sharp? ;; @@4796 104
-                 beq play_sharp                            ;; @@4798 104
+                 +lbeq play_sharp                          ;; @@4798 104
                  cmp #'$'                                 ; flat? ;; @@479b 104
-                 beq play_flat                             ;; @@479d 104
+                 +lbeq play_flat                           ;; @@479d 104
  ;; @@47a0 104
 ; .page ;; @@47a0 104
 ; Must be a digit here for Octave, Voice, envelope (T), filter (X), or volume (U) ;; @@47a0 104
@@ -7491,7 +7552,7 @@ _local_1103_30   cmp mutabl,x                              ;; @@478d 104
                  sec                                       ;; @@47a0 104
                  sbc #'0'                                 ; mask nybble ;; @@47a1 104
                  cmp #10                                  ; must be in range 0..9 ;; @@47a3 104
-                 bcs play_bad_value                        ;; @@47a5 104
+                 +lbcs play_bad_value                      ;; @@47a5 104
  ;; @@47a8 104
                  asl flag                                 ; octave, voice, envelope, filter, or volume? ;; @@47a8 104
                  bcs set_voice                             ;; @@47ab 104
@@ -7505,8 +7566,8 @@ _local_1103_30   cmp mutabl,x                              ;; @@478d 104
 set_filter                                                 ;; @@47bc 105
                  jsr wait_for_all_quiet                   ; [910722] ;; @@47bc 105
                  cmp #2                                    ;; @@47bf 105
-                 bcs play_bad_value                       ; value too large ;; @@47c1 105
-                 lsr a                                    ; .c=on/off ;; @@47c4 105
+                 +lbcs play_bad_value                     ; value too large ;; @@47c1 105
+                 lsr                                      ; .c=on/off ;; @@47c4 105
                  ldy voice                                ; 0-5 ;; @@47c5 105
                  ldx filter_offset,y                      ; 0 0 0 4 4 4 ;; @@47c8 105
                  lda filters1+2,x                         ; get current filter data for this SID  [910612] ;; @@47cb 105
@@ -7535,16 +7596,16 @@ _local_1104_30   lda filters1,x                           ; update the hardware 
  ;; @@47ee 105
 ; .page ;; @@47ee 105
 set_voice                                                  ;; @@47ee 106
-                 dec a                                     ;; @@47ee 106
+                 dec                                       ;; @@47ee 106
                  cmp #6                                   ; stereo SIDs: 0-2=right, 3-5=left  [910612] ;; @@47ef 106
-                 bcs play_bad_value                        ;; @@47f1 106
+                 +lbcs play_bad_value                      ;; @@47f1 106
                  sta voice                                ; 0-5 ;; @@47f4 106
                  bra clear_flag                           ; always ;; @@47f7 106
  ;; @@47f9 106
  ;; @@47f9 106
 set_octave                                                 ;; @@47f9 106
                  cmp #7                                    ;; @@47f9 106
-                 bcs play_bad_value                       ; too big octave ;; @@47fb 106
+                 +lbcs play_bad_value                     ; too big octave ;; @@47fb 106
                  sta octave                               ; set octave ;; @@47fe 106
                  bra clear_flag                           ; always ;; @@4801 106
  ;; @@4803 106
@@ -7643,7 +7704,7 @@ _local_1106_30   bit voices+1,x                           ; wait for voice to be
 ; .page ;; @@4890 107
 play_bad_value                                             ;; @@4890 108
                  jsr clear_flag                            ;; @@4890 108
-                 bra fcerr                                ; illegal quantity ;; @@4893 108
+                 +lbra fcerr                              ; illegal quantity ;; @@4893 108
  ;; @@4896 108
 play_dot                                                   ;; @@4896 108
                  sta dnote                                 ;; @@4896 108
@@ -7711,7 +7772,7 @@ _local_1108_25   lda scalelp,x                            ; load from PAL tables
  ;; @@48f5 109
 _local_1108_30   dey                                       ;; @@48f5 109
                  bmi play_note_1                          ; go play note ;; @@48f6 109
-                 lsr a                                     ;; @@48f8 109
+                 lsr                                       ;; @@48f8 109
                  ror pitch                                 ;; @@48f9 109
                  bra _local_1108_30                        ;; @@48fc 109
  ;; @@48fe 109
@@ -7773,10 +7834,10 @@ _local_1110_10   lda voices+1,y                           ; test if there is a n
                  lda dnote                                ; test if this is a dotted note ;; @@4941 111
                  beq _local_1110_20                       ; no ;; @@4944 111
                  lda ntime+1                               ;; @@4946 111
-                 lsr a                                    ; duration is 1.5 x current length ;; @@4949 111
+                 lsr                                      ; duration is 1.5 x current length ;; @@4949 111
                  pha                                       ;; @@494a 111
                  lda ntime                                 ;; @@494b 111
-                 ror a                                     ;; @@494e 111
+                 ror                                       ;; @@494e 111
                  clc                                       ;; @@494f 111
                  adc voices,y                              ;; @@4950 111
                  sta voices,y                              ;; @@4953 111
@@ -7812,7 +7873,7 @@ clear_play_flags                                           ;; @@497b 112
  ;; @@4985 112
 tempo            jsr getbyt                               ; duration of whole note 4/4 time = 24/rate ;; @@4985 112
                  txa                                       ;; @@4988 112
-                 beq fcerr                                ; can't be zero- illegal quantity error ;; @@4989 112
+                 +lbeq fcerr                              ; can't be zero- illegal quantity error ;; @@4989 112
                  stx tempo_rate                            ;; @@498c 112
                  rts                                       ;; @@498f 112
  ;; @@4990 112
@@ -7889,7 +7950,7 @@ voltab           !text 0,1,3,5,7,8,10,12,14,15             ;; @@4a0c 112
 filter           jsr getbyt                               ; get left/right SID    [910612] ;; @@4a16 112
                  dex                                       ;; @@4a19 112
                  cpx #2                                    ;; @@4a1a 112
-                 bcs fcerr                                 ;; @@4a1c 112
+                 +lbcs fcerr                               ;; @@4a1c 112
                  lda filter_offset+2,x                    ; get filter offset for specified SID ;; @@4a1f 112
                  sta z_p_temp_1                            ;; @@4a22 112
                  tax                                       ;; @@4a24 112
@@ -7905,17 +7966,17 @@ _local_1111_10   lda filters1,x                           ; save current voice's
                  jsr optwrd                               ; get filter frequency ;; @@4a33 112
                  bcc _local_1111_20                       ; skip if no value given ;; @@4a36 112
                  cmp #8                                   ; test m.s. byte ;; @@4a38 112
-                 bcs fcerr                                ; error if > 2047 ;; @@4a3a 112
+                 +lbcs fcerr                              ; error if > 2047 ;; @@4a3a 112
                  sty fltsav                               ; save lower byte ;; @@4a3d 112
  ;; @@4a40 112
 ; Idea: shift lower 3 bits of upper byte into lower byte, forming bits 10-3 ;; @@4a40 112
  ;; @@4a40 112
                  sty fltsav+1                              ;; @@4a40 112
-                 lsr a                                     ;; @@4a43 112
+                 lsr                                       ;; @@4a43 112
                  ror fltsav+1                              ;; @@4a44 112
-                 lsr a                                     ;; @@4a47 112
+                 lsr                                       ;; @@4a47 112
                  ror fltsav+1                             ; save upper 7 bits (10-3) ;; @@4a48 112
-                 lsr a                                     ;; @@4a4b 112
+                 lsr                                       ;; @@4a4b 112
                  ror fltsav+1                              ;; @@4a4c 112
  ;; @@4a4f 112
 _local_1111_20   lda #$10                                 ; start at type=LP ;; @@4a4f 112
@@ -7927,7 +7988,7 @@ _local_1111_30   jsr optbyt                               ; get filter types (LP
                  cpx #1                                   ; (set .c: 0=0, 1=1) ;; @@4a5c 112
                  bcc _local_1111_35                        ;; @@4a5e 112
                  beq _local_1111_35                        ;; @@4a60 112
-                 bra fcerr                                ; error if >1 ;; @@4a62 112
+                 +lbra fcerr                              ; error if >1 ;; @@4a62 112
  ;; @@4a65 112
 _local_1111_35   lda fltsav+3                             ; get filter flags byte ;; @@4a65 112
                  ora fltflg                               ; set filter on ;; @@4a68 112
@@ -7944,10 +8005,10 @@ _local_1111_50   asl fltflg                               ; shift for next filte
 ; bcs fcerr  ;error if >15 ;; @@4a7d 112
                  jsr chknyb                               ; [910930] ;; @@4a7d 112
                  txa                                       ;; @@4a80 112
-                 asl a                                    ; shift to upper nibble ;; @@4a81 112
-                 asl a                                     ;; @@4a82 112
-                 asl a                                     ;; @@4a83 112
-                 asl a                                     ;; @@4a84 112
+                 asl                                      ; shift to upper nibble ;; @@4a81 112
+                 asl                                       ;; @@4a82 112
+                 asl                                       ;; @@4a83 112
+                 asl                                       ;; @@4a84 112
                  sta nibble                                ;; @@4a85 112
                  lda fltsav+2                             ; get current value ;; @@4a88 112
                  and #$0f                                 ; mask it out ;; @@4a8b 112
@@ -7985,7 +8046,7 @@ _local_1111_80   lda fltsav,y                             ; copy new filter para
 envelope                                                   ;; @@4aa4 113
                  jsr getbyt                               ; get envelope number ;; @@4aa4 113
                  cpx #10                                   ;; @@4aa7 113
-                 bcs fcerr                                ; exit - invalid tone number ;; @@4aa9 113
+                 +lbcs fcerr                              ; exit - invalid tone number ;; @@4aa9 113
                  stx tonnum                               ; save number ;; @@4aac 113
                  lda atktab,x                             ; get attack/decay rates ;; @@4aaf 113
                  sta tonval                                ;; @@4ab2 113
@@ -7999,10 +8060,10 @@ _local_1112_20   stx parcnt                                ;; @@4ac3 113
                  jsr optbyt                               ; get parameter - attack or sustain ;; @@4ac6 113
                  bcc _local_1112_30                       ; skip if no input ;; @@4ac9 113
                  txa                                       ;; @@4acb 113
-                 asl a                                     ;; @@4acc 113
-                 asl a                                    ; shift to upper nibble ;; @@4acd 113
-                 asl a                                     ;; @@4ace 113
-                 asl a                                     ;; @@4acf 113
+                 asl                                       ;; @@4acc 113
+                 asl                                      ; shift to upper nibble ;; @@4acd 113
+                 asl                                       ;; @@4ace 113
+                 asl                                       ;; @@4acf 113
                  sta nibble                               ; save it ;; @@4ad0 113
                  ldx parcnt                                ;; @@4ad3 113
                  lda tonval,x                             ; get current value ;; @@4ad6 113
@@ -8030,7 +8091,7 @@ _local_1112_40   ldx parcnt                                ;; @@4afa 113
                  lda #$15                                 ; assume ring modulation ;; @@4b07 113
                  cpx #4                                    ;; @@4b09 113
                  beq _local_1112_80                       ; skip if correct ;; @@4b0b 113
-                 bcs fcerr                                ; error if >4 ;; @@4b0d 113
+                 +lbcs fcerr                              ; error if >4 ;; @@4b0d 113
                  lda sbits+4,x                            ; get waveform bit ;; @@4b10 113
                  ora #1                                   ; set gate bit ;; @@4b13 113
  ;; @@4b15 113
@@ -8073,7 +8134,7 @@ volrts                                                     ;; @@4b45 114
 ;* ;; @@4b46 114
 ;*************************************************************** ;; @@4b46 114
  ;; @@4b46 114
-volume           beq snerr                                ; stereo parameters    [910612] ;; @@4b46 114
+volume           +lbeq snerr                              ; stereo parameters    [910612] ;; @@4b46 114
                  cmp #','                                  ;; @@4b49 114
                  beq _local_1113_10                       ; left volume only ;; @@4b4b 114
 ; jsr getbyt  ;right volume in .x ;; @@4b4d 114
@@ -8104,7 +8165,7 @@ volume           beq snerr                                ; stereo parameters   
                  beq volrts                                ;; @@4b62 114
  ;; @@4b64 114
 _local_1113_10   jsr optbyt                               ; get optional left parameter   [910612] ;; @@4b64 114
-                 bcc snerr                                ; comma but no value not given?? ;; @@4b67 114
+                 +lbcc snerr                              ; comma but no value not given?? ;; @@4b67 114
                  jsr chknyb                               ; [910930] ;; @@4b6a 114
 ; cpx #16 ;; @@4b6d 114
 ; bcs fcerr  ;too large ;; @@4b6d 114
@@ -8148,12 +8209,12 @@ _local_1113_10   jsr optbyt                               ; get optional left pa
 ;***************************************************************************** ;; @@4b7d 114
  ;; @@4b7d 114
 sound            cmp #clr_token                           ; SOUND CLR: init sound/music environment [910717] ;; @@4b7d 115
-                 beq Sound_CLR                            ; yes ;; @@4b7f 115
+                 +lbeq Sound_CLR                          ; yes ;; @@4b7f 115
  ;; @@4b82 115
                  jsr getbyt                               ; get voice number in .X ;; @@4b82 115
                  dex                                      ; adjust 1..3 to 0..2 ;; @@4b85 115
                  cpx #6                                   ; [910612] ;; @@4b86 115
-_local_1114_98   bcs fcerr                                ; illegal value ;; @@4b88 115
+_local_1114_98   +lbcs fcerr                              ; illegal value ;; @@4b88 115
  ;; @@4b8b 115
 _local_1114_10   stx sound_voice                           ;; @@4b8b 115
  ;; @@4b8e 115
@@ -8238,7 +8299,7 @@ _local_1114_80   cmp #16                                   ;; @@4bf5 115
  ;; @@4c07 115
                  ldx sound_voice                          ; first test 'PLAY' ;; @@4c07 115
                  txa                                      ; make an index into PLAY's tables ;; @@4c0a 115
-                 asl a                                     ;; @@4c0b 115
+                 asl                                       ;; @@4c0b 115
                  tay                                       ;; @@4c0c 115
 _local_1114_60   lda voices+1,y                            ;; @@4c0d 115
                  bpl _local_1114_60                        ;; @@4c10 115
@@ -8366,7 +8427,7 @@ _local_1115_20   bcs _local_1115_98                        ;; @@4c83 116
 _local_1115_30   txa                                       ;; @@4cbf 116
                  jmp _bsout                                ;; @@4cc0 116
  ;; @@4cc3 116
-_local_1115_98   bra fcerr                                ; illegal value error ;; @@4cc3 116
+_local_1115_98   +lbra fcerr                              ; illegal value error ;; @@4cc3 116
  ;; @@4cc6 116
 ;.end ;; @@4cc6 116
 ; .page ;; @@4cc6 116
@@ -8379,7 +8440,7 @@ _local_1115_98   bra fcerr                                ; illegal value error 
 ;*********************************************************************** ;; @@4cc6 116
  ;; @@4cc6 116
 fast                                                       ;; @@4cc6 117
-                 bne snerr                                ; no args      [910410] ;; @@4cc6 117
+                 +lbne snerr                              ; no args      [910410] ;; @@4cc6 117
 ; jsr put_io_in_map ;; @@4cc9 117
                  lda #%01000000                            ;; @@4cc9 117
                  tsb vic+49                               ; set FAST (4MHz?) mode ;; @@4ccb 117
@@ -8394,7 +8455,7 @@ fast                                                       ;; @@4cc6 117
 ;*********************************************************************** ;; @@4ccf 117
  ;; @@4ccf 117
 slow                                                       ;; @@4ccf 117
-                 bne snerr                                ; no args      [910410] ;; @@4ccf 117
+                 +lbne snerr                              ; no args      [910410] ;; @@4ccf 117
 ; jsr put_io_in_map ;; @@4cd2 117
                  lda #%01000000                            ;; @@4cd2 117
                  trb vic+49                                ;; @@4cd4 117
@@ -8428,7 +8489,7 @@ chkerr           ldx #errtm                                ;; @@4ce7 117
                  !text $2c                                 ;; @@4ce9 117
  ;; @@4cea 117
 sterr            ldx #errst                                ;; @@4cea 117
-                 bra error                                 ;; @@4cec 117
+                 +lbra error                               ;; @@4cec 117
  ;; @@4cef 117
 ;.end ;; @@4cef 117
 ; .page ;; @@4cef 117
@@ -8469,11 +8530,11 @@ loprel           sec                                      ; prepare to subtract 
                  cmp #less_token-greater_token+1           ;; @@4d0a 117
                  bcs endrel                               ; really relational?  no, just big ;; @@4d0c 117
                  cmp #1                                   ; reset carry for zero only ;; @@4d0e 117
-                 rol a                                    ; 0 to 1, 1 to 2, 2 to 4 ;; @@4d10 117
+                 rol                                      ; 0 to 1, 1 to 2, 2 to 4 ;; @@4d10 117
                  eor #1                                    ;; @@4d11 117
                  eor opmask                               ; bring in the old bits ;; @@4d13 117
                  cmp opmask                               ; make sure that the new mask is bigger ;; @@4d15 117
-                 bcc snerr                                ; syntax error, because two of the same ;; @@4d17 117
+                 +lbcc snerr                              ; syntax error, because two of the same ;; @@4d17 117
                  sta opmask                               ; save mask ;; @@4d1a 117
                  jsr chrget                                ;; @@4d1c 117
                  bra loprel                               ; get the next candidate ;; @@4d1f 117
@@ -8481,15 +8542,15 @@ loprel           sec                                      ; prepare to subtract 
 ; .page ;; @@4d21 117
 endrel           ldx opmask                               ; were there any? ;; @@4d21 117
                  bne finrel                               ; yes, handle as special op ;; @@4d23 117
-                 bcs qop                                  ; not an operator ;; @@4d25 117
+                 +lbcs qop                                ; not an operator ;; @@4d25 117
                  adc #greater_token-plus_token             ;; @@4d28 117
-                 bcc qop                                  ; not an operator ;; @@4d2a 117
+                 +lbcc qop                                ; not an operator ;; @@4d2a 117
                  adc valtyp                               ; (c)=1 ;; @@4d2d 117
-                 beq cat                                  ; only if (a)=0 and VALTYP=$FF (a string) ;; @@4d2f 117
+                 +lbeq cat                                ; only if (a)=0 and VALTYP=$FF (a string) ;; @@4d2f 117
  ;; @@4d32 117
                  adc #$ff                                 ; get back original (a) ;; @@4d32 117
                  sta index1                                ;; @@4d34 117
-                 asl a                                    ; multiply by two ;; @@4d36 117
+                 asl                                      ; multiply by two ;; @@4d36 117
                  adc index1                               ; by three ;; @@4d37 117
                  tay                                      ; set up for later ;; @@4d39 117
  ;; @@4d3a 117
@@ -8511,7 +8572,7 @@ negprc           jsr dopre1                               ; save a return for op
 ; .page ;; @@4d51 117
 finrel           lsr valtyp                               ; get value type into (c) ;; @@4d51 117
                  txa                                       ;; @@4d53 117
-                 rol a                                    ; put VALTYP into low order bit of mask ;; @@4d54 117
+                 rol                                      ; put VALTYP into low order bit of mask ;; @@4d54 117
                  dew txtptr                               ; decrement text pointer ;; @@4d55 117
                  ldy #ptdorl-optab                        ; make (y) point at operator entry ;; @@4d57 117
                  sta opmask                               ; save the operation mask ;; @@4d59 117
@@ -8591,7 +8652,7 @@ qchnum           cmp #100                                 ; relational operator?
  ;; @@4dc3 117
 unpstk           sty opptr                                ; save operator's pointer for next time ;; @@4dc3 117
 pulstk           pla                                      ; get mask for rel op if it is one ;; @@4dc5 117
-                 lsr a                                    ; setup .c for dorel's chkval ;; @@4dc6 117
+                 lsr                                      ; setup .c for dorel's chkval ;; @@4dc6 117
                  sta domask                               ; save for "docmp" ;; @@4dc7 117
                  pla                                      ; unpack stack into arg ;; @@4dc9 117
                  sta argexp                                ;; @@4dca 117
@@ -8619,7 +8680,7 @@ neval            lda #0                                   ; assume numeric ;; @@
 eval0            jsr chrget                               ; get a character ;; @@4de9 117
                  bcs eval2                                 ;; @@4dec 117
 eval1            ldx #0                                   ; flag 'bank 0' (text bank) ;; @@4dee 117
-                 bra fin                                  ; it is a number ;; @@4df0 117
+                 +lbra fin                                ; it is a number ;; @@4df0 117
  ;; @@4df3 117
 eval2            jsr isletc                               ; variable name? ;; @@4df3 117
                  bcs is_variable                          ; yes. ;; @@4df6 117
@@ -8668,13 +8729,13 @@ notop            jsr ayint                                ; integerize ;; @@4e33
                  eor #$ff                                  ;; @@4e3d 117
  ;; @@4e3f 117
 givayf           jsr stoint                               ; integer to float routine ;; @@4e3f 117
-                 bra floats                                ;; @@4e42 117
+                 +lbra floats                              ;; @@4e42 117
  ;; @@4e45 117
  ;; @@4e45 117
 eval4            cmp #fn_token                            ; user defined function? ;; @@4e45 117
-                 beq fndoer                               ; yes ;; @@4e47 117
+                 +lbeq fndoer                             ; yes ;; @@4e47 117
                  cmp #first_function_token                ; function name? ;; @@4e4a 117
-                 bcs isfun                                ; yes ;; @@4e4c 117
+                 +lbcs isfun                              ; yes ;; @@4e4c 117
 ; (functions are the highest numbered ;; @@4e4f 117
 ; tokens so no need to check further) ;; @@4e4f 117
 ; .page ;; @@4e4f 117
@@ -8701,7 +8762,7 @@ synchr           ldy #0                                    ;; @@4e5d 117
                  sta syntmp                                ;; @@4e5f 117
                  jsr indtxt                                ;; @@4e61 117
                  cmp syntmp                                ;; @@4e64 117
-                 bne snerr                                 ;; @@4e66 117
+                 +lbne snerr                               ;; @@4e66 117
                  jmp chrget                               ; ok ;; @@4e69 117
  ;; @@4e6c 117
  ;; @@4e6c 117
@@ -8712,7 +8773,7 @@ _local_1116_10   =negtab-optab                            ; negoff ;; @@4e6c 117
  ;; @@4e6e 117
 gonprc           pla                                      ; get rid of rts addr. ;; @@4e6e 118
                  pla                                       ;; @@4e6f 118
-                 bra negprc                               ; do negation ;; @@4e70 118
+                 +lbra negprc                             ; do negation ;; @@4e70 118
  ;; @@4e73 118
 ;.end ;; @@4e73 118
 ; .page ;; @@4e73 118
@@ -8747,7 +8808,7 @@ isvret           sta facmo                                ; save pointer to vari
                  lda facmo                                 ;; @@4e94 118
                  cmp #<zero                                ;; @@4e96 118
                  bne ds_rts                                ;; @@4e98 118
-                 bra Get_TI_String                        ; the one and only TI$ ;; @@4e9a 118
+                 +lbra Get_TI_String                      ; the one and only TI$ ;; @@4e9a 118
  ;; @@4e9d 118
 ; .page ;; @@4e9d 118
 isvds            cpx #'D'                                 ; is this DS$? ;; @@4e9d 118
@@ -8781,7 +8842,7 @@ _local_1117_20   lda #dsdesc+1                            ; copy DS$ into temp ;
                  lda dsdesc                               ; a=length     [901014] FAB ;; @@4ec9 118
                  jsr mvdone                               ; ???? (does nothing on C128 - bug or oversight?) ;; @@4ecb 118
  ;; @@4ece 118
-_local_1117_30   bra putnew                                ;; @@4ece 118
+_local_1117_30   +lbra putnew                              ;; @@4ece 118
  ;; @@4ed1 118
 ds_rts           rts                                       ;; @@4ed1 119
  ;; @@4ed2 119
@@ -8795,7 +8856,7 @@ is_numeric                                                 ;; @@4ed2 119
                  jsr indfmo                               ; fetch low ;; @@4edc 119
                  tay                                      ; put low in y ;; @@4edf 119
                  txa                                      ; get high in a ;; @@4ee0 119
-                 bra givayf                               ; float and return ;; @@4ee1 119
+                 +lbra givayf                             ; float and return ;; @@4ee1 119
  ;; @@4ee4 119
  ;; @@4ee4 119
 ; Screen out TI, ST, ER, and EL, and assign values to them.  First test ;; @@4ee4 119
@@ -8817,7 +8878,7 @@ is_floating                                                ;; @@4ee4 119
                  bne qstatv                               ; no ;; @@4ef2 119
                  cpy #'I'                                  ;; @@4ef4 119
                  bne gomovf                               ; no, and it can't be ST either ;; @@4ef6 119
-                 beq Get_TI                                ;; @@4ef8 119
+                 +lbeq Get_TI                              ;; @@4ef8 119
  ;; @@4efb 119
  ;; @@4efb 119
 qstatv           cpx #'S'                                 ; ST? ;; @@4efb 119
@@ -8825,7 +8886,7 @@ qstatv           cpx #'S'                                 ; ST? ;; @@4efb 119
                  cpy #'T'                                  ;; @@4eff 119
                  bne gomovf                                ;; @@4f01 119
                  jsr _readst                              ; (???? system bank for rs232 st) ;; @@4f03 119
-                 bra float                                 ;; @@4f06 119
+                 +lbra float                               ;; @@4f06 119
  ;; @@4f09 119
  ;; @@4f09 119
 qdsav            cpx #'D'                                 ; DS? ;; @@4f09 119
@@ -8840,10 +8901,10 @@ qdsav            cpx #'D'                                 ; DS? ;; @@4f09 119
                  lda #dsdesc+1                             ;; @@4f16 119
                  jsr lda_far_ram1                         ; lda (dsdesc+1),y ;; @@4f18 119
                  and #$0f                                  ;; @@4f1b 119
-                 asl a                                     ;; @@4f1d 119
+                 asl                                       ;; @@4f1d 119
                  sta garbfl                                ;; @@4f1e 119
-                 asl a                                     ;; @@4f20 119
-                 asl a                                     ;; @@4f21 119
+                 asl                                       ;; @@4f20 119
+                 asl                                       ;; @@4f21 119
                  adc garbfl                                ;; @@4f22 119
                  sta garbfl                                ;; @@4f24 119
                  iny                                       ;; @@4f26 119
@@ -8851,7 +8912,7 @@ qdsav            cpx #'D'                                 ; DS? ;; @@4f09 119
                  jsr lda_far_ram1                         ; lda (dsdesc+1),y ;; @@4f29 119
                  and #$0f                                  ;; @@4f2c 119
                  adc garbfl                                ;; @@4f2e 119
-                 bra float                                 ;; @@4f30 119
+                 +lbra float                               ;; @@4f30 119
  ;; @@4f33 119
  ;; @@4f33 119
 qerlin           cpx #'E'                                 ; ER or EL? ;; @@4f33 119
@@ -8863,10 +8924,10 @@ qerlin           cpx #'E'                                 ; ER or EL? ;; @@4f33 
  ;; @@4f3f 119
                  lda errlin+1                             ; want EL (last error line #) ;; @@4f3f 119
                  ldy errlin                                ;; @@4f42 119
-                 bra nosflt                                ;; @@4f45 119
+                 +lbra nosflt                              ;; @@4f45 119
  ;; @@4f48 119
 qnumer           lda errnum                               ; want ER (number of last error) ;; @@4f48 119
-                 bra float                                 ;; @@4f4b 119
+                 +lbra float                               ;; @@4f4b 119
  ;; @@4f4e 119
 ; .page ;; @@4f4e 119
 gomovf           lda facmo                                 ;; @@4f4e 119
@@ -8914,7 +8975,7 @@ ptrgt1           stx dimflg                               ; store flag away ;; @
 ptrgt2           sta varnam                                ;; @@4f83 119
                  jsr chrgot                               ; get current character ;; @@4f85 119
                  jsr isletc                               ; check for a letter ;; @@4f88 119
-                 bcc snerr                                ; not a letter ;; @@4f8b 119
+                 +lbcc snerr                              ; not a letter ;; @@4f8b 119
  ;; @@4f8e 119
                  ldx #0                                   ; assume no second character ;; @@4f8e 119
                  stx valtyp                               ; default is numeric ;; @@4f90 119
@@ -8940,7 +9001,7 @@ _local_1118_40   cmp #'%'                                 ; notstr. isn't string
                  bne _local_1118_60                       ; branch if not ;; @@4fb5 119
                  lda subflg                                ;; @@4fb7 119
 ; bne snerr ; syntax error if integers disabled ;; @@4fb9 119
-                 bne chkerr                               ; integers disallowed- type mismatch error  [910114] ;; @@4fb9 119
+                 +lbne chkerr                             ; integers disallowed- type mismatch error  [910114] ;; @@4fb9 119
                  lda #$80                                 ; flag integer by turning on both high bits ;; @@4fbc 119
                  sta intflg                                ;; @@4fbe 119
                  tsb varnam                                ;; @@4fc0 119
@@ -8954,7 +9015,7 @@ _local_1118_60   stx varnam+1                             ; strnam. store away s
                  sec                                       ;; @@4fcb 119
                  ora subflg                               ; add flag whether to allow arrays ;; @@4fcc 119
                  sbc #'('                                  ;; @@4fce 119
-                 beq is_array                             ; note: won't match if SUBFLG set ;; @@4fd0 119
+                 +lbeq is_array                           ; note: won't match if SUBFLG set ;; @@4fd0 119
  ;; @@4fd3 119
                  ldy #0                                    ;; @@4fd3 119
                  sty subflg                               ; allow subscripts again ;; @@4fd5 119
@@ -8974,7 +9035,7 @@ _local_1118_90   jsr indlow_ram1                          ; lda (lowtr),y ;; @@4
                  iny                                       ;; @@4fee 119
                  jsr indlow_ram1                           ;; @@4fef 119
                  cmp varnam+1                             ; and the low part? ;; @@4ff2 119
-                 beq finptr                               ; !!that's it!! ;; @@4ff4 119
+                 +lbeq finptr                             ; !!that's it!! ;; @@4ff4 119
  ;; @@4ff7 119
                  dey                                       ;; @@4ff7 119
 _local_1118_100  clc                                       ;; @@4ff8 119
@@ -9037,7 +9098,7 @@ qst003           cpy #'R'                                 ; check for ER ;; @@50
                  bne varok                                 ;; @@503d 122
  ;; @@503f 122
  ;; @@503f 122
-gobadv           bra snerr                                 ;; @@503f 122
+gobadv           +lbra snerr                               ;; @@503f 122
  ;; @@5042 122
  ;; @@5042 122
  ;; @@5042 122
@@ -9115,7 +9176,7 @@ aryvgo           sta index1                                ;; @@508c 123
                  iny                                      ; ok we have a string array ;; @@50b1 123
                  jsr indin1_ram1                          ; get number of dimensions ;; @@50b2 123
                  ldy #0                                    ;; @@50b5 123
-                 asl a                                    ; move index to ptr to 1st string (add 2*number of dims + 5) ;; @@50b7 123
+                 asl                                      ; move index to ptr to 1st string (add 2*number of dims + 5) ;; @@50b7 123
                  adc #5                                    ;; @@50b8 123
                  adc index1                                ;; @@50ba 123
                  sta index1                                ;; @@50bc 123
@@ -9336,13 +9397,13 @@ bserr            ldx #errbs                               ; get bad sub error nu
                  !text $2c                                 ;; @@51fd 128
  ;; @@51fe 128
 fcerr            ldx #errfc                               ; too big. Illegal Quantity error ;; @@51fe 128
-                 bra error                                 ;; @@5200 128
+                 +lbra error                               ;; @@5200 128
  ;; @@5203 128
  ;; @@5203 128
  ;; @@5203 128
 gotary           ldx #errdd                               ; perhaps a "re-dimension" error ;; @@5203 128
                  lda dimflg                               ; test the DIMFLG ;; @@5205 128
-                 bne error                                 ;; @@5207 128
+                 +lbne error                               ;; @@5207 128
                  jsr fmaptr                                ;; @@520a 128
                  ldy #4                                    ;; @@520d 128
                  jsr indlow_ram1                           ;; @@520f 128
@@ -9350,7 +9411,7 @@ gotary           ldx #errdd                               ; perhaps a "re-dimens
                  lda count                                ; get number of dims input. ;; @@5214 128
                  cmp syntmp                               ; # of dims the same? ;; @@5216 128
                  bne bserr                                ; same so get definition. ;; @@5218 128
-                 bra getdef                                ;; @@521a 128
+                 +lbra getdef                              ;; @@521a 128
  ;; @@521d 128
 ; .page ;; @@521d 128
 ; Come here when variable is not found in the array table to build an entry. ;; @@521d 128
@@ -9438,14 +9499,14 @@ _local_1127_40   iny                                      ; notdim. ;; @@5262 12
                  dec count                                ; any more indices left? ;; @@527c 128
                  bne _local_1127_30                       ; yes ;; @@527e 128
                  adc arypnt+1                              ;; @@5280 128
-                 bcs omerr                                ; overflow ;; @@5282 128
+                 +lbcs omerr                              ; overflow ;; @@5282 128
                  sta arypnt+1                             ; compute where to zero ;; @@5285 128
                  tay                                       ;; @@5287 128
                  txa                                       ;; @@5288 128
                  adc arypnt                                ;; @@5289 128
                  bcc _local_1127_50                        ;; @@528b 128
                  iny                                       ;; @@528d 128
-                 beq omerr                                 ;; @@528e 128
+                 +lbeq omerr                               ;; @@528e 128
  ;; @@5291 128
 _local_1127_50   jsr reason                               ; grease.  get room ;; @@5291 128
                  sta strend                                ;; @@5294 128
@@ -9520,7 +9581,7 @@ inlpnm           sta curtol+1                              ;; @@52d8 129
                  cpx syntmp                                ;; @@52f2 129
                  bcc inlpn1                                ;; @@52f4 129
  ;; @@52f6 129
-bserr7           bra bserr                                 ;; @@52f6 129
+bserr7           +lbra bserr                               ;; @@52f6 129
  ;; @@52f9 129
  ;; @@52f9 129
 inlpn2           iny                                       ;; @@52f9 129
@@ -9582,12 +9643,12 @@ umultd           sta addend+1                              ;; @@5342 130
                  ldy #0                                   ; result initially zero ;; @@534a 130
  ;; @@534c 130
 umultc           txa                                       ;; @@534c 130
-                 asl a                                    ; multiply by two ;; @@534d 130
+                 asl                                      ; multiply by two ;; @@534d 130
                  tax                                       ;; @@534e 130
                  tya                                       ;; @@534f 130
-                 rol a                                     ;; @@5350 130
+                 rol                                       ;; @@5350 130
                  tay                                       ;; @@5351 130
-                 bcs omerr                                ; to much! ;; @@5352 130
+                 +lbcs omerr                              ; to much! ;; @@5352 130
                  asl curtol                                ;; @@5355 130
                  rol curtol+1                              ;; @@5357 130
                  bcc umlcnt                               ; nothing in this position to multiply ;; @@5359 130
@@ -9598,7 +9659,7 @@ umultc           txa                                       ;; @@534c 130
                  tya                                       ;; @@5360 130
                  adc addend+1                              ;; @@5361 130
                  tay                                       ;; @@5363 130
-                 bcs omerr                                ; man, just too much! ;; @@5364 130
+                 +lbcs omerr                              ; man, just too much! ;; @@5364 130
  ;; @@5367 130
 umlcnt           dec deccnt                               ; done? ;; @@5367 130
                  bne umultc                               ; keep it up ;; @@5369 130
@@ -9606,7 +9667,7 @@ umlcnt           dec deccnt                               ; done? ;; @@5367 130
  ;; @@536c 130
  ;; @@536c 130
 fmaptr           lda count                                 ;; @@536c 130
-                 asl a                                     ;; @@536e 130
+                 asl                                       ;; @@536e 130
                  adc #5                                   ; point to entries. ((c) cleared by asl) ;; @@536f 130
                  adc lowtr                                 ;; @@5371 130
                  ldy lowtr+1                               ;; @@5373 130
@@ -9652,7 +9713,7 @@ _local_1130_10   jsr GetTimeDigit                         ; get first digit, con
  ;; @@53a6 131
 _local_1130_20   lda time,x                                ;; @@53a6 131
                  cmp MaxTimeValues,x                      ; check for parameter too big ;; @@53a8 131
-                 bcs fcerr                                ; hr>23, min>59, sec>59, tenths>9 ;; @@53ab 131
+                 +lbcs fcerr                              ; hr>23, min>59, sec>59, tenths>9 ;; @@53ab 131
  ;; @@53ae 131
                  dex                                      ; check if done ;; @@53ae 131
                  bmi _local_1130_30                       ; yes- all parameters accounted for ;; @@53af 131
@@ -9670,7 +9731,7 @@ _local_1130_25   iny                                      ; it's there- skip ove
  ;; @@53c3 131
  ;; @@53c3 131
 _local_1130_30   cpy count                                ; done ;; @@53c3 131
-                 bcc errlen                               ; error if string too long ;; @@53c5 131
+                 +lbcc errlen                             ; error if string too long ;; @@53c5 131
  ;; @@53c8 131
 _local_1130_40   ldz time                                 ; tenths  0-9 ;; @@53c8 131
                  lda time+1                               ; seconds 0-59 ;; @@53cb 131
@@ -9695,10 +9756,10 @@ GetTimeDigit                                               ;; @@53d4 132
                  cmp #'.'                                 ; [910103] ;; @@53de 132
                  beq _local_1131_10                       ; terminator (period) (carry set) ;; @@53e0 132
                  cmp #'0'                                 ; check character, only 0-9 allowed ;; @@53e2 132
-                 bcc fcerr                                ; too small ;; @@53e4 132
+                 +lbcc fcerr                              ; too small ;; @@53e4 132
                  cmp #':'                                  ;; @@53e7 132
                  bcc _local_1131_10                       ; just right  (carry clear) ;; @@53e9 132
-                 bne fcerr                                ; too big ;; @@53eb 132
+                 +lbne fcerr                              ; too big ;; @@53eb 132
 ; falls through if colon (carry set) ;; @@53ee 132
  ;; @@53ee 132
 _local_1131_10   and #$0f                                 ; make BCD ;; @@53ee 132
@@ -9747,10 +9808,10 @@ _local_1132_20   lda time,x                                ;; @@541d 133
                  jsr sta_far_ram1                         ; put lsd ;; @@5427 133
                  dey                                       ;; @@542a 133
                  tza                                      ; then do msd ;; @@542b 133
-                 lsr a                                     ;; @@542c 133
-                 lsr a                                     ;; @@542d 133
-                 lsr a                                     ;; @@542e 133
-                 lsr a                                     ;; @@542f 133
+                 lsr                                       ;; @@542c 133
+                 lsr                                       ;; @@542d 133
+                 lsr                                       ;; @@542e 133
+                 lsr                                       ;; @@542f 133
                  ora #'0'                                  ;; @@5430 133
                  jsr sta_far_ram1                         ; put msd ;; @@5432 133
                  plx                                       ;; @@5435 133
@@ -9760,7 +9821,7 @@ _local_1132_20   lda time,x                                ;; @@541d 133
  ;; @@543a 133
                  lda #10                                  ; length ;; @@543a 133
                  jsr mvdone                               ; update frespc ???? ;; @@543c 133
-                 bra putnew                               ; make descriptor in dsctmp real ;; @@543f 133
+                 +lbra putnew                             ; make descriptor in dsctmp real ;; @@543f 133
  ;; @@5442 133
 ; .page ;; @@5442 133
 ; TI. Convert 24-hour TOD into tenths of seconds.  901010 F.Bowen ;; @@5442 133
@@ -9790,7 +9851,7 @@ _local_1133_10   jsr TimeMultiply                          ;; @@544f 134
                  sta facho                                ; zero msb, facov, facsgn ;; @@5468 134
                  ldx #160                                 ; set facov for time ;; @@546a 134
                  sec                                      ; normal fac ;; @@546c 134
-                 bra floatb                               ; do it ;; @@546d 134
+                 +lbra floatb                             ; do it ;; @@546d 134
  ;; @@5470 134
  ;; @@5470 134
  ;; @@5470 134
@@ -9813,17 +9874,17 @@ TimeMultiply                                               ;; @@547c 135
                  sta facho                                 ;; @@5480 135
                  lda time,x                               ; 10x = 8x + 2x ;; @@5482 135
                  and #$f0                                  ;; @@5484 135
-                 lsr a                                    ; msd x 8 ;; @@5486 135
+                 lsr                                      ; msd x 8 ;; @@5486 135
                  sta time,x                                ;; @@5487 135
-                 lsr a                                     ;; @@5489 135
-                 lsr a                                    ; msd x 2 ;; @@548a 135
+                 lsr                                       ;; @@5489 135
+                 lsr                                      ; msd x 2 ;; @@548a 135
                  clc                                       ;; @@548b 135
                  adc facho                                ; lsd ;; @@548c 135
                  adc time,x                                ;; @@548e 135
                  sta time,x                               ; can't overflow ($99->153) ;; @@5490 135
  ;; @@5492 135
                  txa                                      ; make a word pointer from byte pointer ;; @@5492 135
-                 asl a                                     ;; @@5493 135
+                 asl                                       ;; @@5493 135
                  tay                                       ;; @@5494 135
                  lda TimeFactor-2,y                       ; multiplicand = TimeFactor,y  (2 bytes) ;; @@5495 135
                  sta multiplicand                         ; multiplier = Time,x x (1 byte) ;; @@5498 135
@@ -9834,7 +9895,7 @@ TimeMultiply                                               ;; @@547c 135
                  sta product+2                            ; hi ;; @@54a3 135
  ;; @@54a5 135
                  ldy #16                                  ; 16-bit multiplicand ;; @@54a5 135
-_local_1134_10   asl a                                     ;; @@54a7 135
+_local_1134_10   asl                                       ;; @@54a7 135
                  row product+1                             ;; @@54a8 135
                  row multiplicand                         ; multiplier * multiplicand -> product ;; @@54ab 135
                  bcc _local_1134_20                        ;; @@54ae 135
@@ -10003,7 +10064,7 @@ fre              jsr conint                               ; get integer argument
                  beq _local_1137_20                       ; go do bank one ;; @@5518 138
                  cpx #2                                   ; go do expansion banks   [910107] ;; @@551a 138
                  beq _local_1137_30                       ; else it must be bank zero ;; @@551c 138
-                 bcs fcerr                                ; any other is unpleasant to talk about ;; @@551e 138
+                 +lbcs fcerr                              ; any other is unpleasant to talk about ;; @@551e 138
  ;; @@5521 138
                  sec                                      ; FRE(text_bank) ;; @@5521 138
                  lda max_mem_0                             ;; @@5522 138
@@ -10026,7 +10087,7 @@ _local_1137_20   jsr garba2                               ; FRE(var_bank) do gar
 _local_1137_30   ldy _expansion                           ; FRE(expansion banks)    [910107] ;; @@553e 138
                  lda #0                                    ;; @@5541 138
  ;; @@5543 138
-_local_1137_40   bra nosflt                               ; go float the number (y,a)=(lo,hi) ;; @@5543 138
+_local_1137_40   +lbra nosflt                             ; go float the number (y,a)=(lo,hi) ;; @@5543 138
  ;; @@5546 138
 ;.end ;; @@5546 138
 ; .page ;; @@5546 138
@@ -10038,7 +10099,7 @@ _local_1137_40   bra nosflt                               ; go float the number 
 ; to floating point input (FIN). ;; @@5546 138
  ;; @@5546 138
 val              jsr len1                                 ; get length ;; @@5546 139
-                 beq zerofc                               ; return 0 if len=0 ;; @@5549 139
+                 +lbeq zerofc                             ; return 0 if len=0 ;; @@5549 139
  ;; @@554c 139
 ; Use text to fp number code by faking a new text poiner ;; @@554c 139
  ;; @@554c 139
@@ -10102,13 +10163,13 @@ _local_1138_10   cpy index2                               ; evaluated all charac
  ;; @@55a9 139
                  sbc #7                                   ; adjust if A-F  (.c is clr) ;; @@55a9 139
 _local_1138_30   sbc #$2f                                 ; adjust to $00..$0f (.c is set) ;; @@55ab 139
-                 asl a                                    ; shift low nibble to high ;; @@55ad 139
-                 asl a                                     ;; @@55ae 139
-                 asl a                                     ;; @@55af 139
-                 asl a                                     ;; @@55b0 139
+                 asl                                      ; shift low nibble to high ;; @@55ad 139
+                 asl                                       ;; @@55ae 139
+                 asl                                       ;; @@55af 139
+                 asl                                       ;; @@55b0 139
  ;; @@55b1 139
                  ldx #4                                   ; mult. old val. by 16, add new ;; @@55b1 139
-_local_1138_40   asl a                                     ;; @@55b3 139
+_local_1138_40   asl                                       ;; @@55b3 139
                  rol strng2                                ;; @@55b4 139
                  rol strng2+1                              ;; @@55b6 139
                  dex                                       ;; @@55b8 139
@@ -10117,11 +10178,11 @@ _local_1138_40   asl a                                     ;; @@55b3 139
  ;; @@55bd 139
 _local_1138_50   ldy strng2                               ; get lsb of value, ;; @@55bd 139
                  lda strng2+1                             ; & msb, ;; @@55bf 139
-                 bra nosflt                               ; go float 2 byte unsigned integer ;; @@55c1 139
+                 +lbra nosflt                             ; go float 2 byte unsigned integer ;; @@55c1 139
  ;; @@55c4 139
  ;; @@55c4 139
 decbad                                                     ;; @@55c4 140
-                 bra fcerr                                ; illegal qty error ;; @@55c4 140
+                 +lbra fcerr                              ; illegal qty error ;; @@55c4 140
  ;; @@55c7 140
 ;.end ;; @@55c7 140
 ; .page ;; @@55c7 140
@@ -10148,7 +10209,7 @@ _local_1139_10   lda (poker),y                             ;; @@55e2 140
                  sta poker+1                              ; restore linnum ;; @@55e6 140
                  pla                                       ;; @@55e8 140
                  sta poker                                 ;; @@55e9 140
-                 bra sngflt                               ; float it ;; @@55eb 140
+                 +lbra sngflt                             ; float it ;; @@55eb 140
  ;; @@55ee 140
 ; .page ;; @@55ee 140
 poke             jsr getnum                                ;; @@55ee 141
@@ -10172,7 +10233,7 @@ _local_1140_20   jsr chrgot                               ; eol? ;; @@5607 141
                  inw poker                                ; no- increment address ;; @@560c 141
 ; lda poker  ; check for segment wrap (FFFF->0000) [910911] ;; @@560e 141
 ; ora poker+1 ;; @@560e 141
-                 beq omerr                                ; [910916] ;; @@560e 141
+                 +lbeq omerr                              ; [910916] ;; @@560e 141
                  jsr optbyt                               ; & get next [,byte] ;; @@5611 141
                  bcs _local_1140_1                         ;; @@5614 141
  ;; @@5616 141
@@ -10239,7 +10300,7 @@ _local_1141_40   iny                                      ; copy message into me
                  pla                                      ; test if msb was set ;; @@5669 142
                  bpl _local_1141_40                        ;; @@566a 142
  ;; @@566c 142
-_local_1141_50   bra chrd1                                ; pla,pla,jmp putnew ;; @@566c 142
+_local_1141_50   +lbra chrd1                              ; pla,pla,jmp putnew ;; @@566c 142
  ;; @@566f 142
  ;; @@566f 142
 ;.end ;; @@566f 142
@@ -10260,13 +10321,13 @@ hexd             jsr chknum                                ;; @@566f 143
                  sta poker+1                               ;; @@568a 143
                  pla                                       ;; @@568c 143
                  sta poker                                 ;; @@568d 143
-                 bra chrd1                                ; pla,pla,jmp putnew ;; @@568f 143
+                 +lbra chrd1                              ; pla,pla,jmp putnew ;; @@568f 143
  ;; @@5692 143
 hexit            pha                                       ;; @@5692 143
-                 lsr a                                     ;; @@5693 143
-                 lsr a                                     ;; @@5694 143
-                 lsr a                                     ;; @@5695 143
-                 lsr a                                     ;; @@5696 143
+                 lsr                                       ;; @@5693 143
+                 lsr                                       ;; @@5694 143
+                 lsr                                       ;; @@5695 143
+                 lsr                                       ;; @@5696 143
                  jsr dohex                                 ;; @@5697 143
                  pla                                       ;; @@569a 143
  ;; @@569b 143
@@ -10308,7 +10369,7 @@ _local_1142_1    adc #'0'                                  ;; @@56a3 143
 joy              jsr conint                               ; get 1 byte arg in x ;; @@56ae 144
                  dex                                       ;; @@56b1 144
                  cpx #2                                   ; make sure arg. is valid ;; @@56b2 144
-                 bcs fcerr                                ; >1, error ;; @@56b4 144
+                 +lbcs fcerr                              ; >1, error ;; @@56b4 144
  ;; @@56b7 144
                  txa                                       ;; @@56b7 144
                  eor #1                                   ; invert to match legends on case ;; @@56b8 144
@@ -10341,7 +10402,7 @@ _local_1143_10   lda d1pra,x                              ; read joystick values
                  tya                                       ;; @@56e1 144
                  ora #$80                                 ; show trigger depressed ;; @@56e2 144
                  tay                                       ;; @@56e4 144
-_local_1143_20   bra sngflt                               ; float 1 byte arg in y. ;; @@56e5 144
+_local_1143_20   +lbra sngflt                             ; float 1 byte arg in y. ;; @@56e5 144
  ;; @@56e8 144
 joytab           !text 4,2,3,0,6,8,7,0,5,1,0               ;; @@56e8 145
  ;; @@56f3 145
@@ -10364,16 +10425,16 @@ pot              jsr chkcls                               ; look for closing par
                  jsr conint                               ; get 1-byte arg in .x ;; @@56f6 145
                  dex                                       ;; @@56f9 145
                  cpx #4                                    ;; @@56fa 145
-                 bcs fcerr                                ; value error ;; @@56fc 145
+                 +lbcs fcerr                              ; value error ;; @@56fc 145
  ;; @@56ff 145
 ; jsr put_io_in_map ;; @@56ff 145
                  txa                                      ; convert arg (0-3) into paddle enables ;; @@56ff 145
-                 lsr a                                    ; .c= X/Y   .a= port 1/2 ;; @@5700 145
+                 lsr                                      ; .c= X/Y   .a= port 1/2 ;; @@5700 145
                  tax                                       ;; @@5701 145
                  lda sbits+6,x                             ;; @@5702 145
                  tax                                      ; (CIA paddle port, $40/$80) ;; @@5705 145
                  lda #0                                    ;; @@5706 145
-                 rol a                                     ;; @@5708 145
+                 rol                                       ;; @@5708 145
                  tay                                      ; (SID x/y offset,  $00/$01) ;; @@5709 145
  ;; @@570a 145
                  stx pot_temp_1                           ; save which port ;; @@570a 145
@@ -10401,7 +10462,7 @@ _local_1144_40   lda sid1+25,y                            ; read pot ;; @@571e 1
 _local_1144_50   lda #04                                  ; use joy line-2 ;; @@5734 145
                  dey                                      ; test if pot-x or pot-y ;; @@5736 145
                  bmi _local_1144_60                       ; skip if pot-x ;; @@5737 145
-                 asl a                                    ; use joy line-3 ;; @@5739 145
+                 asl                                      ; use joy line-3 ;; @@5739 145
 _local_1144_60   ldy #$ff                                  ;; @@573a 145
                  sty d1pra                                ; disable keybd inputs ;; @@573c 145
                  iny                                      ; set to zero for no trigger ;; @@573f 145
@@ -10413,7 +10474,7 @@ _local_1144_70   pla                                       ;; @@5746 145
                  tya                                       ;; @@574a 145
                  ldy pot_temp_2                           ; restore pot value ;; @@574b 145
                  plp                                      ; restore status ;; @@574e 145
-                 bra nosflt                               ; output 2-byte result ;; @@574f 145
+                 +lbra nosflt                             ; output 2-byte result ;; @@574f 145
  ;; @@5752 145
 ; .page ;; @@5752 145
 ;************************************************************* ;; @@5752 145
@@ -10427,7 +10488,7 @@ lpen             jsr chkcls                               ; look for closing par
                  jsr conint                               ; get 1 byte arg in .X ;; @@5755 146
 ; dex   ;convert [1-2] to [0-1] ;; @@5758 146
                  cpx #2                                    ;; @@5758 146
-                 bcs fcerr                                ; bad value ;; @@575a 146
+                 +lbcs fcerr                              ; bad value ;; @@575a 146
  ;; @@575d 146
                  lda #0                                    ;; @@575d 146
                  sei                                       ;; @@575f 146
@@ -10437,11 +10498,11 @@ lpen             jsr chkcls                               ; look for closing par
                  cpx #0                                    ;; @@5767 146
                  bne _local_1145_10                       ; done if y position ;; @@5769 146
                  tya                                       ;; @@576b 146
-                 asl a                                    ; else multiply *2 to get correct x position ;; @@576c 146
+                 asl                                      ; else multiply *2 to get correct x position ;; @@576c 146
                  tay                                      ; lsb ;; @@576d 146
                  lda #0                                    ;; @@576e 146
-                 rol a                                    ; msb ;; @@5770 146
-_local_1145_10   bra nosflt                               ; float it (y,a) ;; @@5771 146
+                 rol                                      ; msb ;; @@5770 146
+_local_1145_10   +lbra nosflt                             ; float it (y,a) ;; @@5771 146
  ;; @@5774 146
  ;; @@5774 146
 ;.end ;; @@5774 146
@@ -10457,7 +10518,7 @@ _local_1145_10   bra nosflt                               ; float it (y,a) ;; @@
 pointer          jsr chrget                               ; skip over escape token ;; @@5774 147
                  jsr chkopn                               ; test for open paren ;; @@5777 147
                  jsr isletc                               ; test if character follows parens ;; @@577a 147
-                 bcc snerr                                ; ...syntax error if not. ;; @@577d 147
+                 +lbcc snerr                              ; ...syntax error if not. ;; @@577d 147
                  jsr ptrget                               ; look for this varname in table ;; @@5780 147
  ;; @@5783 147
 pointer_ret      =*-1                                      ;; @@5783 147
@@ -10471,7 +10532,7 @@ pointer_ret      =*-1                                      ;; @@5783 147
                  bne _local_1146_10                        ;; @@578d 147
                  lda #0                                   ; if so, return 0 ;; @@578f 147
                  tay                                       ;; @@5791 147
-_local_1146_10   bra nosflt                                ;; @@5792 147
+_local_1146_10   +lbra nosflt                              ;; @@5792 147
  ;; @@5795 147
 ;.end ;; @@5795 147
 ; .page ;; @@5795 147
@@ -10547,7 +10608,7 @@ _local_1147_10   lda facexp,x                              ;; @@57d1 148
                  jsr negop                                ; -range*INT(number/range) ;; @@57ee 148
                  jsr movaf                                ; move to FAC2 ;; @@57f1 148
                  jsr pullf1                               ; retrieve arg1 (number) ;; @@57f4 148
-                 bra faddt_c65                            ; number-range*INT(number/range) ;; @@57f7 148
+                 +lbra faddt_c65                          ; number-range*INT(number/range) ;; @@57f7 148
  ;; @@57fa 148
  ;; @@57fa 148
 ;.end ;; @@57fa 148
@@ -10571,7 +10632,7 @@ rwindow          jsr chkcls                                ;; @@57fa 149
                  jsr conint                                ;; @@57fd 149
                  cpx #2                                    ;; @@5800 149
                  beq _local_1148_50                       ; return current console ;; @@5802 149
-                 bcs fcerr                                 ;; @@5804 149
+                 +lbcs fcerr                               ;; @@5804 149
  ;; @@5807 149
                  cpx #0                                    ;; @@5807 149
                  bne _local_1148_10                        ;; @@5809 149
@@ -10589,9 +10650,9 @@ _local_1148_10   lda _screen_right                         ;; @@5812 149
  ;; @@5819 149
 _local_1148_50   lda #80                                  ; assume 80 col ;; @@5819 149
                  bbr7 _mode,_local_1148_60                 ;; @@581b 149
-                 lsr a                                     ;; @@581e 149
+                 lsr                                       ;; @@581e 149
 _local_1148_60   tay                                       ;; @@581f 149
-                 bra sngflt                               ; float 1 byte arg in .Y ;; @@5820 149
+                 +lbra sngflt                             ; float 1 byte arg in .Y ;; @@5820 149
  ;; @@5823 149
 ;.end ;; @@5823 149
 ; .page ;; @@5823 149
@@ -10614,10 +10675,10 @@ rnd_0            bmi _local_1149_20                       ; /// entry from jump 
  ;; @@582a 150
                  jsr go_slow                              ; Use CIA#1 timer B & SID#2 pot X & Y for seeds  [910314] ;; @@582a 150
                  lda sid2+25                              ; go slow to read POT-X ;; @@582d 150
-                 asl a                                     ;; @@5830 150
-                 asl a                                     ;; @@5831 150
-                 asl a                                     ;; @@5832 150
-                 asl a                                     ;; @@5833 150
+                 asl                                       ;; @@5830 150
+                 asl                                       ;; @@5831 150
+                 asl                                       ;; @@5832 150
+                 asl                                       ;; @@5833 150
                  ora sid2+26                              ; and POT-Y ;; @@5834 150
                  eor vic+18                               ; ???? should be okay- we're in Slow mode ;; @@5837 150
                  sta facmoh                                ;; @@583a 150
@@ -10662,10 +10723,10 @@ _local_1149_30   lda #0                                   ; strnex.  make number
                  jsr normal                               ; normalize ;; @@5886 150
                  ldx #<rndx                                ;; @@5889 150
                  ldy #>rndx                                ;; @@588b 150
-                 bra movmf                                ; put new one into memory ;; @@588d 150
+                 +lbra movmf                              ; put new one into memory ;; @@588d 150
  ;; @@5890 150
-rmulc            !text @230,@65,@104,@172,0                ;; @@5890 151
-raddc            !text @150,@50,@261,@106,0                ;; @@5895 151
+rmulc            !text 152,53,68,122,0                     ;; @@5890 151
+raddc            !text 104,40,177,70,0                     ;; @@5895 151
  ;; @@589a 151
 ;.end ;; @@589a 151
 ; .page ;; @@589a 151
@@ -10696,8 +10757,8 @@ ayint            lda facexp                                ;; @@58b4 151
                  ldy #>n32768                              ;; @@58bc 151
                  jsr fcomp                                ; see if FAC=((x)) ;; @@58be 151
  ;; @@58c1 151
-nonono           bne fcerr                                ; no, FAC is too big ;; @@58c1 151
-qintgo           bra qint                                 ; go shove it ;; @@58c4 151
+nonono           +lbne fcerr                              ; no, FAC is too big ;; @@58c1 151
+qintgo           +lbra qint                               ; go shove it ;; @@58c4 151
 ; .page ;; @@58c7 151
  ;; @@58c7 151
 ; Float an unsigned double byte integer ;; @@58c7 151
@@ -10705,7 +10766,7 @@ qintgo           bra qint                                 ; go shove it ;; @@58c
  ;; @@58c7 151
 nosflt           jsr stoint                                ;; @@58c7 151
                  sec                                      ; sign is positive ;; @@58ca 151
-                 bra floatc                                ;; @@58cb 151
+                 +lbra floatc                              ;; @@58cb 151
  ;; @@58ce 151
  ;; @@58ce 151
  ;; @@58ce 151
@@ -10713,7 +10774,7 @@ pos              sec                                       ;; @@58ce 151
                  jsr _plot                                ; get tab pos in .y ;; @@58cf 151
  ;; @@58d2 151
 sngflt           lda #0                                    ;; @@58d2 151
-                 bra givayf                               ; float it ;; @@58d4 151
+                 +lbra givayf                             ; float it ;; @@58d4 151
  ;; @@58d7 151
  ;; @@58d7 151
  ;; @@58d7 151
@@ -10734,12 +10795,12 @@ errdir           bbs7 runmod,storts                       ; goto error if not in
                  !text $2c                                 ;; @@58e7 151
  ;; @@58e8 151
 errguf           ldx #erruf                                ;; @@58e8 151
-                 bra error                                 ;; @@58ea 151
+                 +lbra error                               ;; @@58ea 151
  ;; @@58ed 151
  ;; @@58ed 151
 errind           bbr7 runmod,storts                       ; goto error if not in direct mode ;; @@58ed 151
                  ldx #erroid                               ;; @@58f0 151
-                 bra error                                 ;; @@58f2 151
+                 +lbra error                               ;; @@58f2 151
  ;; @@58f5 151
 ;.end ;; @@58f5 151
 ; .page ;; @@58f5 151
@@ -10792,7 +10853,7 @@ getfnm           lda #fn_token                            ; must start with fn ;
                  jsr ptrgt2                               ; get pointer to function or create anew ;; @@592b 151
                  sta defpnt                                ;; @@592e 151
                  sty defpnt+1                              ;; @@5930 151
-                 bra chknum                               ; make sure it's not a string, and return ;; @@5932 151
+                 +lbra chknum                             ; make sure it's not a string, and return ;; @@5932 151
  ;; @@5935 151
  ;; @@5935 151
 fndoer           jsr getfnm                               ; get the function's name ;; @@5935 151
@@ -10844,7 +10905,7 @@ defstf           lda #varpnt                               ;; @@595b 151
                  pla                                       ;; @@5986 151
                  sta defpnt+1                              ;; @@5987 151
                  jsr chrgot                                ;; @@5989 151
-                 bne snerr                                ; it didn't terminate, syntax error ;; @@598c 151
+                 +lbne snerr                              ; it didn't terminate, syntax error ;; @@598c 151
  ;; @@598f 151
                  pla                                      ; restore text pointer ;; @@598f 151
                  sta txtptr                                ;; @@5990 151
@@ -10877,7 +10938,7 @@ strd             jsr chknum                               ; arg has to be numeri
  ;; @@59af 152
 timstr           lda #<lofbuf                              ;; @@59af 152
                  ldy #>lofbuf                              ;; @@59b1 152
-                 bra strlit                                ;; @@59b3 152
+                 +lbra strlit                              ;; @@59b3 152
  ;; @@59b6 152
  ;; @@59b6 152
 ; CHR$() creates a string which contains as its only character the PETSCII ;; @@59b6 152
@@ -10896,7 +10957,7 @@ chrd             jsr conint                               ; get integer in range
  ;; @@59c7 152
 chrd1            pla                                      ; get rid of "chknum" return address ;; @@59c7 152
                  pla                                       ;; @@59c8 152
-                 bra putnew                               ; setup FAC to point to desc ;; @@59c9 152
+                 +lbra putnew                             ; setup FAC to point to desc ;; @@59c9 152
 ; .page ;; @@59cc 152
  ;; @@59cc 152
 ; The following is the LEFT$($,#) function.  It takes the leftmost # characters ;; @@59cc 152
@@ -10930,7 +10991,7 @@ rleft3           pha                                      ; save length ;; @@59e
                  inc index+1                               ;; @@59f6 153
 _local_1152_1    tya                                       ;; @@59f8 153
                  jsr movdo                                ; go move it ;; @@59f9 153
-                 bra putnew                                ;; @@59fc 153
+                 +lbra putnew                              ;; @@59fc 153
  ;; @@59ff 153
  ;; @@59ff 153
  ;; @@59ff 153
@@ -10960,7 +11021,7 @@ midd             lda #255                                 ; default ;; @@5a10 15
                  jsr combyt                               ; [910820] ;; @@5a1b 154
  ;; @@5a1e 154
 _local_1153_1    jsr pream                                ; check it out ;; @@5a1e 154
-                 beq fcerr                                ; illegal qty error ;; @@5a21 154
+                 +lbeq fcerr                              ; illegal qty error ;; @@5a21 154
                  dex                                      ; compute offset ;; @@5a24 154
                  phx                                       ;; @@5a25 154
                  phx                                      ; preserve a while (2 copies) ;; @@5a26 154
@@ -11005,7 +11066,7 @@ pream            jsr chkcls                               ; param list should en
 ; The function LEN$() returns the length of the string passed as an argument. ;; @@5a56 155
  ;; @@5a56 155
 len              bsr len1                                  ;; @@5a56 155
-                 bra sngflt                                ;; @@5a59 155
+                 +lbra sngflt                              ;; @@5a59 155
  ;; @@5a5c 155
 len1             jsr frestr                               ; free up string ;; @@5a5c 155
                  ldx #0                                    ;; @@5a5f 155
@@ -11025,7 +11086,7 @@ asc              jsr len1                                  ;; @@5a65 155
                  ldy #0                                    ;; @@5a6a 155
                  jsr indin1_ram1                          ; get 1st character ;; @@5a6c 155
                  tay                                       ;; @@5a6f 155
-_local_1154_1    bra sngflt                                ;; @@5a70 155
+_local_1154_1    +lbra sngflt                              ;; @@5a70 155
  ;; @@5a73 155
 ;.end ;; @@5a73 155
 ; .page ;; @@5a73 155
@@ -11115,7 +11176,7 @@ _local_1156_10   dey                                       ;; @@5ac1 157
  ;; @@5ad0 157
 putnew           ldx temppt                               ; pointer to first free temp ;; @@5ad0 158
                  cpx #tempst+strsiz+strsiz+strsiz          ;; @@5ad2 158
-                 beq sterr                                ; string temporary error ;; @@5ad4 158
+                 +lbeq sterr                              ; string temporary error ;; @@5ad4 158
  ;; @@5ad7 158
                  lda dsctmp                               ; length ;; @@5ad7 158
                  sta 0,x                                   ;; @@5ad9 158
@@ -11158,7 +11219,7 @@ cat              lda faclo                                ; push high order onto
                  jsr indfmo                                ;; @@5b0f 158
                  clc                                       ;; @@5b12 158
                  adc syntmp                                ;; @@5b13 158
-                 bcs errlen                               ; result >255, error "long string" ;; @@5b15 158
+                 +lbcs errlen                             ; result >255, error "long string" ;; @@5b15 158
  ;; @@5b18 158
                  jsr strini                               ; sizeok.  initialize string ;; @@5b18 158
                  jsr movins                               ; move it ;; @@5b1b 158
@@ -11170,7 +11231,7 @@ cat              lda faclo                                ; push high order onto
                  ldy strng1+1                              ;; @@5b2a 158
                  jsr fretmp                                ;; @@5b2c 158
                  jsr putnew                                ;; @@5b2f 158
-                 bra tstop                                ; "cat" reenters frmevl from tstop ;; @@5b32 158
+                 +lbra tstop                              ; "cat" reenters frmevl from tstop ;; @@5b32 158
  ;; @@5b35 158
 ; .page ;; @@5b35 158
 movins           ldy #0                                   ; get address of string ;; @@5b35 158
@@ -11356,7 +11417,7 @@ getrts           rts                                       ;; @@5c24 162
  ;; @@5c25 162
  ;; @@5c25 162
 garbag           lda garbfl                                ;; @@5c25 162
-                 bmi omerr                                ; if out of memory ;; @@5c27 162
+                 +lbmi omerr                              ; if out of memory ;; @@5c27 162
                  jsr garba2                                ;; @@5c2a 162
                  sec                                       ;; @@5c2d 162
                  ror garbfl                                ;; @@5c2e 162
@@ -11588,7 +11649,7 @@ getbyt           jsr frmnum                               ; read formula into FA
  ;; @@5d6f 168
 conint           jsr posint                               ; convert the FAC to a single byte int ;; @@5d6f 168
                  ldx facmo                                 ;; @@5d72 168
-                 bne fcerr                                ; result must be <= 255 ;; @@5d74 168
+                 +lbne fcerr                              ; result must be <= 255 ;; @@5d74 168
                  ldx faclo                                 ;; @@5d77 168
                  jmp chrgot                               ; set condition codes on terminator ;; @@5d79 168
  ;; @@5d7c 168
@@ -11607,12 +11668,12 @@ comwrd           jsr chkcom                                ;; @@5d87 168
 getwrd           jsr frmnum                               ; get an unsigned 2-byte value in y,a ;; @@5d8a 168
  ;; @@5d8d 168
 getadr           lda facsgn                               ; for this entry, value can't be < 0 ;; @@5d8d 168
-                 bmi fcerr                                ; function call error ;; @@5d8f 168
+                 +lbmi fcerr                              ; function call error ;; @@5d8f 168
  ;; @@5d92 168
 getsad                                                    ; get a signed 2-byte value in (y,a), ///entry from sprcor ;; @@5d92 168
                  lda facexp                               ; examine exponent ;; @@5d92 168
                  cmp #145                                  ;; @@5d94 168
-                 bcs fcerr                                ; function call error ;; @@5d96 168
+                 +lbcs fcerr                              ; function call error ;; @@5d96 168
                  jsr qint                                 ; integerize it ;; @@5d99 168
                  lda facmo                                 ;; @@5d9c 168
                  ldy facmo+1                               ;; @@5d9e 168
@@ -11686,14 +11747,14 @@ fadd5            jsr shiftr                               ; do a long shift ;; @
                  bcc fadd4                                ; continue with addition ;; @@5db9 168
  ;; @@5dbb 168
 fadd             jsr conupk                                ;; @@5dbb 168
-faddt            beq movfa                                ; if fac=0, result is in arg ;; @@5dbe 168
+faddt            +lbeq movfa                              ; if fac=0, result is in arg ;; @@5dbe 168
                  ldx facov                                 ;; @@5dc1 168
                  stx oldov                                 ;; @@5dc3 168
                  ldx #argexp                              ; default is shift argument ;; @@5dc5 168
                  lda argexp                               ; if arg=0, fac is result ;; @@5dc7 168
  ;; @@5dc9 168
 faddc            tay                                      ; also copy (a) into (y) ;; @@5dc9 168
-                 beq zerrts                               ; return ;; @@5dca 168
+                 +lbeq zerrts                             ; return ;; @@5dca 168
                  sec                                       ;; @@5dcd 168
                  sbc facexp                                ;; @@5dce 168
                  beq fadd4                                ; no shifting ;; @@5dd0 168
@@ -11804,7 +11865,7 @@ norm1            bpl norm2                                ; if msb=0 shift again
  ;; @@5e87 170
 squeez           bcc rndrts                               ; bits to shift? ;; @@5e87 170
 rndshf           inc facexp                                ;; @@5e89 170
-                 beq overr                                 ;; @@5e8b 170
+                 +lbeq overr                               ;; @@5e8b 170
                  ror facho                                 ;; @@5e8e 170
                  ror facmoh                                ;; @@5e90 170
                  ror facmo                                 ;; @@5e92 170
@@ -11877,7 +11938,7 @@ _local_1169_10   ror 1,x                                   ;; @@5efa 170
 rolshf           ror 2,x                                   ;; @@5efe 171
                  ror 3,x                                   ;; @@5f00 171
                  ror 4,x                                  ; one more time ;; @@5f02 171
-                 ror a                                     ;; @@5f04 171
+                 ror                                       ;; @@5f04 171
                  iny                                       ;; @@5f05 171
                  bne shftr3                               ; $$$ (most expensive!!!) ;; @@5f06 171
  ;; @@5f08 171
@@ -11890,28 +11951,28 @@ shftrt           clc                                      ; clear output of FACO
  ;; @@5f0a 171
 ; Constants used by LOG, EXP, TRIG, and others. ;; @@5f0a 171
  ;; @@5f0a 171
-fr4              !text @177,@000,@000,@000,@000           ; 1/4 ;; @@5f0a 171
-neghlf           !text @200,@200,@000,@000,@000           ; -0.5 ;; @@5f0f 171
-fhalf            !text @200,@000,@000,@000,@000           ; 0.5 ;; @@5f14 171
-tenc             !text @204,@040,@000,@000,@000           ; 10.0 ;; @@5f19 171
-pival            !text @202,@111,@017,@332,@241           ; pi ;; @@5f1e 171
-pi2              !text @201,@111,@017,@332,@242           ; pi/2 ;; @@5f23 171
-twopi            !text @203,@111,@017,@332,@242           ; pi*2 ;; @@5f28 171
+fr4              !text 127,0,0,0,0                        ; 1/4 ;; @@5f0a 171
+neghlf           !text 128,128,0,0,0                      ; -0.5 ;; @@5f0f 171
+fhalf            !text 128,0,0,0,0                        ; 0.5 ;; @@5f14 171
+tenc             !text 132,32,0,0,0                       ; 10.0 ;; @@5f19 171
+pival            !text 130,73,15,218,161                  ; pi ;; @@5f1e 171
+pi2              !text 129,73,15,218,162                  ; pi/2 ;; @@5f23 171
+twopi            !text 131,73,15,218,162                  ; pi*2 ;; @@5f28 171
  ;; @@5f2d 171
 n0999            !text $9b,$3e,$bc,$1f,$fd                 ;; @@5f2d 171
 n9999            !text $9e,$6e,$6b,$27,$fd                 ;; @@5f32 171
 nmil             !text $9e,$6e,$6b,$28,$00                 ;; @@5f37 171
  ;; @@5f3c 171
 foutbl                                                    ; powers of 10 ;; @@5f3c 171
-                 !text @372,@012,@037,@000                ; -100,000,000 ;; @@5f3c 171
-                 !text @000,@230,@226,@200                ; 10,000,000 ;; @@5f40 171
-                 !text @377,@360,@275,@300                ; -1,000,000 ;; @@5f44 171
-                 !text @000,@001,@206,@240                ; 100,000 ;; @@5f48 171
-                 !text @377,@377,@330,@360                ; -10,000 ;; @@5f4c 171
-                 !text @000,@000,@003,@350                ; 1,000 ;; @@5f50 171
-                 !text @377,@377,@377,@234                ; -100 ;; @@5f54 171
-                 !text @000,@000,@000,@012                ; 10 ;; @@5f58 171
-                 !text @377,@377,@377,@377                ; -1 ;; @@5f5c 171
+                 !text 250,10,31,0                        ; -100,000,000 ;; @@5f3c 171
+                 !text 0,152,150,128                      ; 10,000,000 ;; @@5f40 171
+                 !text 255,240,189,192                    ; -1,000,000 ;; @@5f44 171
+                 !text 0,1,134,160                        ; 100,000 ;; @@5f48 171
+                 !text 255,255,216,240                    ; -10,000 ;; @@5f4c 171
+                 !text 0,0,3,232                          ; 1,000 ;; @@5f50 171
+                 !text 255,255,255,156                    ; -100 ;; @@5f54 171
+                 !text 0,0,0,10                           ; 10 ;; @@5f58 171
+                 !text 255,255,255,255                    ; -1 ;; @@5f5c 171
 fdcend                                                     ;; @@5f60 171
  ;; @@5f60 171
 ; .byte @377,@337,@012,@200 ;-2,160,000 for time converter removed [901014] ;; @@5f60 171
@@ -11923,48 +11984,48 @@ fdcend                                                     ;; @@5f60 171
 ;timend ;; @@5f60 171
  ;; @@5f60 171
 logcn2           !text 3                                  ; degree-1 ;; @@5f60 171
-                 !text @177,@136,@126,@313,@171           ; 0.43425594188 ;; @@5f61 171
-                 !text @200,@023,@233,@013,@144           ; 0.57658454134 ;; @@5f66 171
-                 !text @200,@166,@070,@223,@026           ; 0.96180075921 ;; @@5f6b 171
-                 !text @202,@070,@252,@073,@040           ; 2.8853900728 ;; @@5f70 171
+                 !text 127,94,86,203,121                  ; 0.43425594188 ;; @@5f61 171
+                 !text 128,19,155,11,100                  ; 0.57658454134 ;; @@5f66 171
+                 !text 128,118,56,147,22                  ; 0.96180075921 ;; @@5f6b 171
+                 !text 130,56,170,59,32                   ; 2.8853900728 ;; @@5f70 171
  ;; @@5f75 171
 expcon           !text 7                                  ; degree-1 ;; @@5f75 171
-                 !text @161,@064,@130,@076,@126           ; 0.000021498763697 ;; @@5f76 171
-                 !text @164,@026,@176,@263,@033           ; 0.00014352314036 ;; @@5f7b 171
-                 !text @167,@057,@356,@343,@205           ; 0.0013422634824 ;; @@5f80 171
-                 !text @172,@035,@204,@034,@052           ; 0.0096140170199 ;; @@5f85 171
-                 !text @174,@143,@131,@130,@012           ; 0.055505126860 ;; @@5f8a 171
-                 !text @176,@165,@375,@347,@306           ; 0.24022638462 ;; @@5f8f 171
-                 !text @200,@061,@162,@030,@020           ; 0.69314718600 ;; @@5f94 171
-fone             !text @201,@000,@000,@000,@000           ; 1.0 ;; @@5f99 171
+                 !text 113,52,88,62,86                    ; 0.000021498763697 ;; @@5f76 171
+                 !text 116,22,126,179,27                  ; 0.00014352314036 ;; @@5f7b 171
+                 !text 119,47,238,227,133                 ; 0.0013422634824 ;; @@5f80 171
+                 !text 122,29,132,28,42                   ; 0.0096140170199 ;; @@5f85 171
+                 !text 124,99,89,88,10                    ; 0.055505126860 ;; @@5f8a 171
+                 !text 126,117,253,231,198                ; 0.24022638462 ;; @@5f8f 171
+                 !text 128,49,114,24,16                   ; 0.69314718600 ;; @@5f94 171
+fone             !text 129,0,0,0,0                        ; 1.0 ;; @@5f99 171
  ;; @@5f9e 171
-logeb2           !text @201,@070,@252,@073,@051           ; log(e) base 2 ;; @@5f9e 171
-sqr05            !text @200,@065,@004,@363,@064           ; 0.707106781 sqr(0.5) ;; @@5fa3 171
-sqr20            !text @201,@065,@004,@363,@064           ; 1.41421356 sqr(2.0) ;; @@5fa8 171
-log2             !text @200,@061,@162,@027,@370           ; 0.693147181 ln(2) ;; @@5fad 171
+logeb2           !text 129,56,170,59,41                   ; log(e) base 2 ;; @@5f9e 171
+sqr05            !text 128,53,4,243,52                    ; 0.707106781 sqr(0.5) ;; @@5fa3 171
+sqr20            !text 129,53,4,243,52                    ; 1.41421356 sqr(2.0) ;; @@5fa8 171
+log2             !text 128,49,114,23,248                  ; 0.693147181 ln(2) ;; @@5fad 171
  ;; @@5fb2 171
  ;; @@5fb2 171
 sincon           !text 5                                  ; degree-1 trig ;; @@5fb2 171
-                 !text @204,@346,@032,@055,@033            ;; @@5fb3 171
-                 !text @206,@050,@007,@373,@370            ;; @@5fb8 171
-                 !text @207,@231,@150,@211,@001            ;; @@5fbd 171
-                 !text @207,@043,@065,@337,@341            ;; @@5fc2 171
-                 !text @206,@245,@135,@347,@050            ;; @@5fc7 171
-                 !text @203,@111,@017,@332,@242            ;; @@5fcc 171
+                 !text 132,230,26,45,27                    ;; @@5fb3 171
+                 !text 134,40,7,251,248                    ;; @@5fb8 171
+                 !text 135,153,104,137,1                   ;; @@5fbd 171
+                 !text 135,35,53,223,225                   ;; @@5fc2 171
+                 !text 134,165,93,231,40                   ;; @@5fc7 171
+                 !text 131,73,15,218,162                   ;; @@5fcc 171
  ;; @@5fd1 171
 atncon           !text 11                                 ; degree-1 ;; @@5fd1 171
-                 !text @166,@263,@203,@275,@323            ;; @@5fd2 171
-                 !text @171,@036,@364,@246,@365            ;; @@5fd7 171
-                 !text @173,@203,@374,@260,@020            ;; @@5fdc 171
-                 !text @174,@014,@037,@147,@312            ;; @@5fe1 171
-                 !text @174,@336,@123,@313,@301            ;; @@5fe6 171
-                 !text @175,@024,@144,@160,@114            ;; @@5feb 171
-                 !text @175,@267,@352,@121,@172            ;; @@5ff0 171
-                 !text @175,@143,@060,@210,@176            ;; @@5ff5 171
-                 !text @176,@222,@104,@231,@072            ;; @@5ffa 171
-                 !text @176,@114,@314,@221,@307            ;; @@5fff 171
-                 !text @177,@252,@252,@252,@023            ;; @@6004 171
-                 !text @201,@000,@000,@000,@000            ;; @@6009 171
+                 !text 118,179,131,189,211                 ;; @@5fd2 171
+                 !text 121,30,244,166,245                  ;; @@5fd7 171
+                 !text 123,131,252,176,16                  ;; @@5fdc 171
+                 !text 124,12,31,103,202                   ;; @@5fe1 171
+                 !text 124,222,83,203,193                  ;; @@5fe6 171
+                 !text 125,20,100,112,76                   ;; @@5feb 171
+                 !text 125,183,234,81,122                  ;; @@5ff0 171
+                 !text 125,99,48,136,126                   ;; @@5ff5 171
+                 !text 126,146,68,153,58                   ;; @@5ffa 171
+                 !text 126,76,204,145,199                  ;; @@5fff 171
+                 !text 127,170,170,170,19                  ;; @@6004 171
+                 !text 129,0,0,0,0                         ;; @@6009 171
  ;; @@600e 171
 ; .page ;; @@600e 171
 ; Natural Log Function ;; @@600e 171
@@ -11974,7 +12035,7 @@ atncon           !text 11                                 ; degree-1 ;; @@5fd1 1
  ;; @@600e 171
  ;; @@600e 171
 log              jsr sign                                 ; is it positive? ;; @@600e 171
-                 beq fcerr                                ; can't tolerate neg or zero ;; @@6011 171
+                 +lbeq fcerr                              ; can't tolerate neg or zero ;; @@6011 171
  ;; @@6014 171
                  lda facexp                               ; get exponent into (a) ;; @@6014 171
                  sbc #$7f                                 ; remove bias (carry is off) ;; @@6016 171
@@ -12010,15 +12071,15 @@ faddh            lda #<fhalf                               ;; @@604d 171
                  ldy #>fhalf                               ;; @@604f 171
  ;; @@6051 171
 romadd           jsr romupk                                ;; @@6051 171
-                 bra faddt                                 ;; @@6054 171
+                 +lbra faddt                               ;; @@6054 171
  ;; @@6057 171
  ;; @@6057 171
 romsub           jsr romupk                                ;; @@6057 171
-                 bra fsubt                                 ;; @@605a 171
+                 +lbra fsubt                               ;; @@605a 171
  ;; @@605d 171
  ;; @@605d 171
 romdiv           jsr romupk                                ;; @@605d 171
-                 bra fdivt                                 ;; @@6060 171
+                 +lbra fdivt                               ;; @@6060 171
  ;; @@6063 171
 ; .page ;; @@6063 171
 ; Multiplication        FAC = ARG*FAC ;; @@6063 171
@@ -12049,11 +12110,11 @@ fmultt           beq multrt                               ; if FAC=0, return.  F
                  jsr mltpl1                               ; *** THIS fixes the DBL-0 bug without causing other grief!  C128-04 FAB ;; @@6090 171
                  lda facho                                ; multiply arg by facho ;; @@6093 171
                  jsr mltpl1                                ;; @@6095 171
-                 bra movfr                                ; move result into FAC ;; @@6098 171
+                 +lbra movfr                              ; move result into FAC ;; @@6098 171
  ;; @@609b 171
 ; .page ;; @@609b 171
-mltply           beq mulshf                               ; normalize result and return. shift result right 1 byte.  exits with .c=0 ;; @@609b 171
-mltpl1           lsr a                                     ;; @@609e 171
+mltply           +lbeq mulshf                             ; normalize result and return. shift result right 1 byte.  exits with .c=0 ;; @@609b 171
+mltpl1           lsr                                       ;; @@609e 171
                  ora #$80                                 ; will flag end of shifting ;; @@609f 171
  ;; @@60a1 171
 _local_1170_10   tay                                       ;; @@60a1 171
@@ -12078,7 +12139,7 @@ _local_1170_20   ror resho                                 ;; @@60bd 171
                  ror reslo                                 ;; @@60c3 171
                  ror facov                                ; save for rounding ;; @@60c5 171
                  tya                                       ;; @@60c7 171
-                 lsr a                                    ; clear msb so we get a closer to 0 ;; @@60c8 171
+                 lsr                                      ; clear msb so we get a closer to 0 ;; @@60c8 171
                  bne _local_1170_10                       ; slow as a turtle ;; @@60c9 171
  ;; @@60cb 171
 multrt           rts                                       ;; @@60cb 172
@@ -12156,14 +12217,14 @@ mldexp           beq zeremv                               ; so we get zero expon
                  clc                                       ;; @@612b 172
                  adc facexp                               ; result is in (a) ;; @@612c 172
                  bcc _local_1171_10                       ; find (c) xor (n) ;; @@612e 172
-                 bmi overr                                ; overflow if bits match ;; @@6130 172
+                 +lbmi overr                              ; overflow if bits match ;; @@6130 172
                  clc                                       ;; @@6133 172
                  !text $2c                                 ;; @@6134 172
  ;; @@6135 172
 _local_1171_10   bpl zeremv                               ; underflow ;; @@6135 172
                  adc #$80                                 ; add bias ;; @@6137 172
                  sta facexp                                ;; @@6139 172
-                 beq zeroml                               ; zero the rest of it ;; @@613b 172
+                 +lbeq zeroml                             ; zero the rest of it ;; @@613b 172
                  lda arisgn                                ;; @@613e 172
                  sta facsgn                               ; arisgn is result's sign ;; @@6140 172
                  rts                                      ; done ;; @@6142 172
@@ -12171,11 +12232,11 @@ _local_1171_10   bpl zeremv                               ; underflow ;; @@6135 
  ;; @@6143 172
 mldvex           lda facsgn                               ; get sign ;; @@6143 173
                  eor #$ff                                 ; complement it ;; @@6145 173
-                 bmi overr                                 ;; @@6147 173
+                 +lbmi overr                               ;; @@6147 173
  ;; @@614a 173
 zeremv           pla                                      ; get addr off stack ;; @@614a 173
                  pla                                       ;; @@614b 173
-                 bra zerofc                               ; underflow ;; @@614c 173
+                 +lbra zerofc                             ; underflow ;; @@614c 173
  ;; @@614f 173
 ; .page ;; @@614f 173
 ; Multiply FAC by 10 ;; @@614f 173
@@ -12185,13 +12246,13 @@ mul10            jsr movaf                                ; copy FAC into ARG ;;
                  beq mul10r                               ; if (FAC)=0, got answer ;; @@6153 173
                  clc                                       ;; @@6155 173
                  adc #2                                   ; augment exp by 2 ;; @@6156 173
-                 bcs overr                                ; overflow ;; @@6158 173
+                 +lbcs overr                              ; overflow ;; @@6158 173
  ;; @@615b 173
 finml6           ldx #0                                    ;; @@615b 173
                  stx arisgn                               ; signs are same ;; @@615d 173
                  jsr faddc                                ; add together ;; @@615f 173
                  inc facexp                               ; multiply by two ;; @@6162 173
-                 beq overr                                ; overflow ;; @@6164 173
+                 +lbeq overr                              ; overflow ;; @@6164 173
  ;; @@6167 173
 mul10r           rts                                       ;; @@6167 173
  ;; @@6168 173
@@ -12213,7 +12274,7 @@ fdivt_c65                                                 ; [910402] ;; @@6178 1
                  bra fdivt                                ; go divide ;; @@6180 173
  ;; @@6182 173
 fdiv             jsr conupk                               ; unpack constant ;; @@6182 173
-fdivt            beq doverr                               ; can't divide by zero ;; @@6185 173
+fdivt            +lbeq doverr                             ; can't divide by zero ;; @@6185 173
                  jsr round                                ; take FACOV into account in FAC ;; @@6188 173
                  lda #0                                   ; negate facexp ;; @@618b 173
                  sec                                       ;; @@618d 173
@@ -12221,7 +12282,7 @@ fdivt            beq doverr                               ; can't divide by zero
                  sta facexp                                ;; @@6190 173
                  jsr muldiv                               ; fix up exponents ;; @@6192 173
                  inc facexp                               ; scale it right ;; @@6195 173
-                 beq overr                                ; overflow ;; @@6197 173
+                 +lbeq overr                              ; overflow ;; @@6197 173
                  ldx #$fc                                 ; set up procedure ;; @@619a 173
                  lda #1                                    ;; @@619c 173
  ;; @@619e 173
@@ -12240,7 +12301,7 @@ divide                                                    ; this is the best cod
                  cpy faclo                                 ;; @@61b2 173
  ;; @@61b4 173
 savquo           php                                       ;; @@61b4 173
-                 rol a                                    ; save result ;; @@61b5 173
+                 rol                                      ; save result ;; @@61b5 173
                  bcc qshft                                ; if not done, continue ;; @@61b6 173
                  inx                                       ;; @@61b8 173
                  sta reslo,x                               ;; @@61b9 173
@@ -12283,12 +12344,12 @@ ld100            lda #$40                                 ; only want two more b
  ;; @@61f2 173
  ;; @@61f2 173
  ;; @@61f2 173
-divnrm           asl a                                    ; get last two bits into MSB and B6 ;; @@61f2 173
-                 asl a                                     ;; @@61f3 173
-                 asl a                                     ;; @@61f4 173
-                 asl a                                     ;; @@61f5 173
-                 asl a                                     ;; @@61f6 173
-                 asl a                                     ;; @@61f7 173
+divnrm           asl                                      ; get last two bits into MSB and B6 ;; @@61f2 173
+                 asl                                       ;; @@61f3 173
+                 asl                                       ;; @@61f4 173
+                 asl                                       ;; @@61f5 173
+                 asl                                       ;; @@61f6 173
+                 asl                                       ;; @@61f7 173
                  sta facov                                 ;; @@61f8 173
                  plp                                       ;; @@61fa 173
  ;; @@61fb 173
@@ -12302,7 +12363,7 @@ movfr            lda resho                                ; move result to FAC ;
                  sta facmo                                 ;; @@6205 173
                  lda reslo                                ; move lo and sign ;; @@6207 173
                  sta faclo                                 ;; @@6209 173
-                 bra normal                               ; all done ;; @@620b 173
+                 +lbra normal                             ; all done ;; @@620b 173
  ;; @@620e 173
  ;; @@620e 173
  ;; @@620e 173
@@ -12421,7 +12482,7 @@ round            lda facexp                               ; zero? ;; @@62b2 175
  ;; @@62ba 175
 incrnd           jsr incfac                               ; yes, add one to lsb(FAC) /// entry from EXP ;; @@62ba 175
 ;note .c=1 since incfac doesn't touch .c ;; @@62bd 175
-                 beq rndshf                               ; carry:   squeeze msb in and rts ;; @@62bd 175
+                 +lbeq rndshf                             ; carry:   squeeze msb in and rts ;; @@62bd 175
                  rts                                      ; no carry: rts now ;; @@62c0 175
  ;; @@62c1 175
  ;; @@62c1 175
@@ -12432,7 +12493,7 @@ sign             lda facexp                                ;; @@62c1 175
                  beq signrt                               ; if number is zero, so is result ;; @@62c3 175
  ;; @@62c5 175
 fcsign           lda facsgn                                ;; @@62c5 175
-fcomps           rol a                                     ;; @@62c7 175
+fcomps           rol                                       ;; @@62c7 175
                  lda #$ff                                 ; assume negative ;; @@62c8 175
                  bcs signrt                                ;; @@62ca 175
                  lda #1                                   ; get +1 ;; @@62cc 175
@@ -12454,7 +12515,7 @@ float            sta facho                                ; put (accb) in high o
  ;; @@62da 175
 floats           lda facho                                 ;; @@62da 175
                  eor #$ff                                  ;; @@62dc 175
-                 rol a                                    ; get comp of sign in carry ;; @@62de 175
+                 rol                                      ; get comp of sign in carry ;; @@62de 175
 floatc           lda #0                                   ; zero (a) but not carry ;; @@62df 175
                  sta faclo                                 ;; @@62e1 175
                  sta facmo                                 ;; @@62e3 175
@@ -12462,7 +12523,7 @@ floatc           lda #0                                   ; zero (a) but not car
 floatb           stx facexp                                ;; @@62e5 175
                  sta facov                                 ;; @@62e7 175
                  sta facsgn                                ;; @@62e9 175
-                 bra fadflt                                ;; @@62eb 175
+                 +lbra fadflt                              ;; @@62eb 175
  ;; @@62ee 175
  ;; @@62ee 175
  ;; @@62ee 175
@@ -12570,12 +12631,12 @@ int              lda facexp                                ;; @@6363 177
                  lda facsgn                                ;; @@6371 177
                  sty facsgn                               ; make FAC look positive ;; @@6373 177
                  eor #$80                                 ; get complement of sign in carry ;; @@6375 177
-                 rol a                                     ;; @@6377 177
+                 rol                                       ;; @@6377 177
                  lda #$a0                                 ; @230+8 ;; @@6378 177
                  sta facexp                                ;; @@637a 177
                  lda faclo                                 ;; @@637c 177
                  sta integr                                ;; @@637e 177
-                 bra fadflt                                ;; @@6380 177
+                 +lbra fadflt                              ;; @@6380 177
  ;; @@6383 177
  ;; @@6383 177
 clrfac           sta facho                                ; make it really zero ;; @@6383 177
@@ -12666,7 +12727,7 @@ finmul           jsr mul10                                 ;; @@63f5 178
                  dec tenexp                               ; done? ;; @@63f8 178
                  bne finmul                               ; no ;; @@63fa 178
 finqng           lda sgnflg                                ;; @@63fc 178
-                 bmi negop                                ; if negative, negate and return ;; @@63fe 178
+                 +lbmi negop                              ; if negative, negate and return ;; @@63fe 178
                  rts                                      ; if positive, return ;; @@6401 178
  ;; @@6402 178
  ;; @@6402 178
@@ -12693,7 +12754,7 @@ faddt_c65                                                 ; [910402] ;; @@641c 1
                  eor facsgn                                ;; @@641e 179
                  sta arisgn                               ; resultant sign ;; @@6420 179
                  ldx facexp                               ; set signs on thing to add ;; @@6422 179
-                 bra faddt                                ; add together and return ;; @@6424 179
+                 +lbra faddt                              ; add together and return ;; @@6424 179
  ;; @@6427 179
 ; .page ;; @@6427 179
 ; Pack in the next digit of the exponent. ;; @@6427 179
@@ -12705,13 +12766,13 @@ finedg           lda tenexp                               ; get exp so far ;; @@
                  bcc _local_1178_5                         ;; @@642b 179
                  lda #100                                  ;; @@642d 179
                  bbs7 expsgn,_local_1178_30               ; if neg exp, no chk for overr ;; @@642f 179
-                 bra overr                                 ;; @@6432 179
+                 +lbra overr                               ;; @@6432 179
  ;; @@6435 179
-_local_1178_5    asl a                                    ; max is 120 ;; @@6435 179
-                 asl a                                    ; mult by 2 twice ;; @@6436 179
+_local_1178_5    asl                                      ; max is 120 ;; @@6435 179
+                 asl                                      ; mult by 2 twice ;; @@6436 179
                  clc                                      ; possible shift out of high ;; @@6437 179
                  adc tenexp                               ; like multiplying by five ;; @@6438 179
-                 asl a                                    ; and now by ten ;; @@643a 179
+                 asl                                      ; and now by ten ;; @@643a 179
                  clc                                       ;; @@643b 179
                  ldy #0                                    ;; @@643c 179
                  sta syntmp                                ;; @@643e 179
@@ -12726,7 +12787,7 @@ _local_1178_20   adc syntmp                                ;; @@644d 179
                  sec                                       ;; @@644f 179
                  sbc #'0'                                  ;; @@6450 179
 _local_1178_30   sta tenexp                               ; save result ;; @@6452 179
-                 bra finec                                 ;; @@6454 179
+                 +lbra finec                               ;; @@6454 179
  ;; @@6457 179
 ; .page ;; @@6457 179
 ; Get a character from either text or string area, and set the flags ;; @@6457 179
@@ -12734,7 +12795,7 @@ _local_1178_30   sta tenexp                               ; save result ;; @@645
  ;; @@6457 179
 fin_chrget                                                 ;; @@6457 180
                  lda fin_bank                             ; text or string bank? ;; @@6457 180
-                 beq chrget                               ; get byte from text bank via normal CHRGET mechanism ;; @@645a 180
+                 +lbeq chrget                             ; get byte from text bank via normal CHRGET mechanism ;; @@645a 180
  ;; @@645d 180
 fin_chrget_1                                              ; get byte from string bank via modified CHRGET mechanism ;; @@645d 180
                  inw index1                                ;; @@645d 180
@@ -12767,7 +12828,7 @@ linprt           sta facho                                 ;; @@647f 181
                  sec                                      ; number is positive ;; @@6485 181
                  jsr floatc                                ;; @@6486 181
                  jsr foutc                                 ;; @@6489 181
-                 bra strout                               ; print and return ;; @@648c 181
+                 +lbra strout                             ; print and return ;; @@648c 181
  ;; @@648f 181
  ;; @@648f 181
 fout             ldy #1                                    ;; @@648f 181
@@ -12780,7 +12841,7 @@ _local_1180_10   sta fbuffr-1,y                           ; store the character 
                  iny                                       ;; @@649f 181
                  lda #'0'                                 ; get zero to type if FAC=0 ;; @@64a0 181
                  ldx facexp                                ;; @@64a2 181
-                 beq fout19                                ;; @@64a4 181
+                 +lbeq fout19                              ;; @@64a4 181
  ;; @@64a7 181
                  lda #0                                    ;; @@64a7 181
                  cpx #$80                                 ; is number < 1? ;; @@64a9 181
@@ -12978,7 +13039,7 @@ fpwr             jsr movfm                                ; put memory into FAC 
  ;; @@65c6 183
 fpwrt            beq exp                                  ; if FAC=0, just exponentiate that  ARG^FAC ;; @@65c6 183
                  lda argexp                               ; is x=0? ;; @@65c8 183
-                 beq zerof1                               ; zero FAC ;; @@65ca 183
+                 +lbeq zerof1                             ; zero FAC ;; @@65ca 183
  ;; @@65cd 183
                  ldx #<tempf3                             ; save it for later in a temp ;; @@65cd 183
                  ldy #>tempf3                              ;; @@65cf 183
@@ -13003,7 +13064,7 @@ _local_1182_10   jsr movfa1                               ; alternate entry poin
                  jsr fmult                                 ;; @@65f2 183
                  jsr exp                                  ; exponentiate the FAC ;; @@65f5 183
                  pla                                       ;; @@65f8 183
-                 lsr a                                    ; is it even? ;; @@65f9 183
+                 lsr                                      ; is it even? ;; @@65f9 183
                  bcc negrts                               ; yes. or x>0 ;; @@65fa 183
 ;negate the number in FAC ;; @@65fc 183
  ;; @@65fc 183
@@ -13104,7 +13165,7 @@ polyx            sta polypt                               ; retain polynomial po
                  jsr poly1                                ; compute p(x^2). ;; @@6666 185
                  lda #<tempf1                              ;; @@6669 185
                  ldy #>tempf1                              ;; @@666b 185
-                 bra fmult                                ; multiply by FAC again ;; @@666d 185
+                 +lbra fmult                              ; multiply by FAC again ;; @@666d 185
  ;; @@6670 185
  ;; @@6670 185
 ; Polynomial Evaluator ;; @@6670 185
@@ -13200,7 +13261,7 @@ sin2             lda #<fr4                                ; pointer to 1/4 ;; @@
  ;; @@66e7 186
 _local_1185_10   lda #<sincon                              ;; @@66e7 186
                  ldy #>sincon                              ;; @@66e9 186
-                 bra polyx                                ; do approximation polyomial ;; @@66eb 186
+                 +lbra polyx                              ; do approximation polyomial ;; @@66eb 186
  ;; @@66ee 186
  ;; @@66ee 186
  ;; @@66ee 186
@@ -13225,8 +13286,8 @@ tan              jsr mov1f                                ; move FAC into tempor
                  ldy #>tempf3                             ; address of sine value ;; @@6711 187
 ; bra fdiv ;divide sine by cosine and return ;; @@6713 187
                  jsr conupk                               ; unpack constant    [910226] FAB ;; @@6713 187
-                 beq overr                                ; overflow error     " ;; @@6716 187
-                 bra fdivt                                ; " ;; @@6719 187
+                 +lbeq overr                              ; overflow error     " ;; @@6716 187
+                 +lbra fdivt                              ; " ;; @@6719 187
  ;; @@671c 187
 _local_1186_10   pha                                      ; cosc. ;; @@671c 187
                  bra sin1                                  ;; @@671d 187
@@ -13263,7 +13324,7 @@ _local_1187_20   lda #<atncon                             ; pointer to arctan co
  ;; @@6748 188
 _local_1187_30   pla                                      ; was original aurgument positive? ;; @@6748 188
                  bpl _local_1187_40                       ; yes ;; @@6749 188
-                 bra negop                                ; if negative, negate result ;; @@674b 188
+                 +lbra negop                              ; if negative, negate result ;; @@674b 188
  ;; @@674e 188
 _local_1187_40   rts                                      ; all done ;; @@674e 188
  ;; @@674f 188
@@ -13292,10 +13353,10 @@ boot             cmp #sys_token                           ; BOOTSYS?      [91011
                  jsr _bootsys                             ; attempt to boot a new OS ;; @@6756 189
                  bcc _local_1188_15                       ; returned to us after successful install ;; @@6759 189
                  ldx #errbdk                              ; bootsys failed, report 'bad disk'???? ;; @@675b 189
-                 bra error                                 ;; @@675d 189
+                 +lbra error                               ;; @@675d 189
  ;; @@6760 189
 _local_1188_1    bbr4 runmod,_local_1188_2                ; Error if in Edit mode     [910620] ;; @@6760 189
-                 bra edit_err                              ;; @@6763 189
+                 +lbra edit_err                            ;; @@6763 189
  ;; @@6766 189
 _local_1188_2    lda #0                                   ; BOOT "filename"     [910417] ;; @@6766 189
                  sta verck                                ; want 'load', not 'verify' ;; @@6768 189
@@ -13304,7 +13365,7 @@ _local_1188_2    lda #0                                   ; BOOT "filename"     
                  jsr dosprx                               ; parse the command ;; @@676e 189
                  bbr0 parsts,_local_1188_20               ; was there a filename?  branch if not ;; @@6771 189
                  jsr bload_boot                           ; yes- bload it ;; @@6774 189
-                 bcs erexit                               ; load error ;; @@6777 189
+                 +lbcs erexit                             ; load error ;; @@6777 189
  ;; @@677a 189
 ; ldx current_bank ;assume no B(ank) arg was given    [910114] ;; @@677a 189
 ; bbr0 parstx,_local_1188_10  ; correct, use current setup ;; @@677a 189
@@ -13326,8 +13387,8 @@ _local_1188_30   iny                                      ; Copy default filenam
                  sty dosf1l                               ; length not counting terminator ;; @@6796 189
                  smb6 runmod                              ; set flag for load not to go to ready ;; @@6799 189
                  jsr dload_boot                           ; Load it ;; @@679b 189
-                 bcs erexit                               ; error if problems ;; @@679e 189
-                 bra run_a_program                        ; else go run it ;; @@67a1 189
+                 +lbcs erexit                             ; error if problems ;; @@679e 189
+                 +lbra run_a_program                      ; else go run it ;; @@67a1 189
  ;; @@67a4 189
 ; .page ;; @@67a4 189
 ; AUTOBOOT_CSG Runs a system diagnostic if PB0 is low after initialization. ;; @@67a4 189
@@ -13335,7 +13396,7 @@ _local_1188_30   iny                                      ; Copy default filenam
  ;; @@67a4 189
 autobootCSG                                               ; Run ROMed diagnostic if PB0 low   [911105] ;; @@67a4 190
                  lda $dd01                                 ;; @@67a4 190
-                 lsr a                                     ;; @@67a7 190
+                 lsr                                       ;; @@67a7 190
                  bcs autoboot                             ; no, try to boot from disk ;; @@67a8 190
  ;; @@67aa 190
                  sei                                      ; prevent IRQ from wacking code DL'd to $1xxx  [911106] ;; @@67aa 190
@@ -13411,7 +13472,7 @@ _local_1190_20   iny                                      ; Copy filename from R
                  stx text_top                             ; success- set end address & run it ;; @@681f 191
                  sty text_top+1                            ;; @@6821 191
                  cli                                       ;; @@6823 191
-                 bra run_a_program                         ;; @@6824 191
+                 +lbra run_a_program                       ;; @@6824 191
  ;; @@6827 191
 _local_1190_30   rts                                      ; failure- go_ready ;; @@6827 191
  ;; @@6828 191
@@ -13423,8 +13484,8 @@ autoboot_filename                                           ;; @@6828 192
 ; .subttl  SAVE  LOAD  VERIFY  OPEN  CLOSE ;; @@6836 192
  ;; @@6836 192
 erexit           tax                                      ; set termination flags ;; @@6836 192
-                 bne error                                ; normal error ;; @@6837 192
-                 bra break_exit                           ; user break ;; @@683a 192
+                 +lbne error                              ; normal error ;; @@6837 192
+                 +lbra break_exit                         ; user break ;; @@683a 192
  ;; @@683d 192
  ;; @@683d 192
  ;; @@683d 192
@@ -13457,7 +13518,7 @@ coin                                                       ;; @@6852 192
 cgetl                                                      ;; @@685b 192
 ; jsr put_io_in_map ;; @@685b 192
                  jsr _getin                                ;; @@685b 192
-                 bcs break_exit                           ; 'stop' key was pressed ;; @@685e 192
+                 +lbcs break_exit                         ; 'stop' key was pressed ;; @@685e 192
                  rts                                       ;; @@6861 192
  ;; @@6862 192
 ; .page ;; @@6862 192
@@ -13502,7 +13563,7 @@ verify           lda #1                                   ; verify flag ;; @@688
 load             lda #0                                   ; load flag ;; @@688a 193
                  sta verck                                 ;; @@688c 193
 _local_1192_1    bbr4 runmod,_local_1192_2                ; Error if in Edit mode     [910620] ;; @@688e 193
-                 bra edit_err                              ;; @@6891 193
+                 +lbra edit_err                            ;; @@6891 193
 _local_1192_2    jsr plsv                                 ; parse parameters, dschk ;; @@6894 193
  ;; @@6897 193
 cld10                                                     ; <<<<<<<<<<<<<<<<<<<<<<<<<<<<<< entry from dload ;; @@6897 194
@@ -13534,7 +13595,7 @@ load_file                                                  ;; @@689d 194
                  sta errnum                               ; yes- save error # for 'er' ;; @@68ba 194
                  ora #$80                                 ; but no errdis ;; @@68bd 194
 _local_1193_10   sec                                       ;; @@68bf 194
-_local_1193_20   bcs erexit                               ; exit if kernel problem ;; @@68c0 194
+_local_1193_20   +lbcs erexit                             ; exit if kernel problem ;; @@68c0 194
 _local_1193_30   ply                                      ; restore end address ;; @@68c3 194
                  plx                                       ;; @@68c4 194
                  lda verck                                 ;; @@68c5 194
@@ -13564,7 +13625,7 @@ cld50                                                      ;; @@68da 195
  ;; @@68e0 195
 load_error                                                 ;; @@68e0 195
                  ldx #erload                               ;; @@68e0 195
-cld55            bra error                                 ;; @@68e2 195
+cld55            +lbra error                               ;; @@68e2 195
  ;; @@68e5 195
  ;; @@68e5 195
 cld60            stx text_top                              ;; @@68e5 195
@@ -13575,14 +13636,14 @@ cld60            stx text_top                              ;; @@68e5 195
  ;; @@68ef 195
                  jsr link_program                         ; relink ;; @@68ef 195
                  jsr runc                                 ; clear vars ;; @@68f2 195
-                 bra ready_2                              ; print 'ready' & return to main ;; @@68f5 195
+                 +lbra ready_2                            ; print 'ready' & return to main ;; @@68f5 195
  ;; @@68f8 195
  ;; @@68f8 195
 ; Program load ;; @@68f8 195
  ;; @@68f8 195
 cld70            jsr reset_txtptr                          ;; @@68f8 195
                  jsr link_program                          ;; @@68fb 195
-                 bra fload                                 ;; @@68fe 195
+                 +lbra fload                               ;; @@68fe 195
  ;; @@6901 195
 ; .page ;; @@6901 195
 open             jsr paoc                                 ; parse statement ;; @@6901 195
@@ -13608,11 +13669,11 @@ close_out_1                                                ;; @@6912 195
                  bcc _local_1194_10                        ;; @@6918 195
                  pla                                       ;; @@691a 195
                  plp                                       ;; @@691b 195
-                 bra exit_disk_operation                  ; disk ;; @@691c 195
+                 +lbra exit_disk_operation                ; disk ;; @@691c 195
  ;; @@691f 195
 _local_1194_10   pla                                      ; something else ;; @@691f 195
                  plp                                       ;; @@6920 195
-                 bcs erexit                                ;; @@6921 195
+                 +lbcs erexit                              ;; @@6921 195
                  rts                                       ;; @@6924 195
  ;; @@6925 195
 ; .page ;; @@6925 195
@@ -13648,7 +13709,7 @@ plsv                                                       ;; @@6925 196
 ; Look for comma followed by byte ;; @@695b 196
  ;; @@695b 196
 plsv7            jsr paoc30                                ;; @@695b 196
-                 bra getbyt                                ;; @@695e 196
+                 +lbra getbyt                              ;; @@695e 196
  ;; @@6961 196
  ;; @@6961 196
  ;; @@6961 196
@@ -13668,7 +13729,7 @@ paoc30           jsr chkcom                               ; check comma ;; @@696
  ;; @@696c 196
 paoc32           jsr chrgot                               ; get current character ;; @@696c 196
                  bne paocx                                ; is okay ;; @@696f 196
-                 bra snerr                                ; bad...end of line ;; @@6971 196
+                 +lbra snerr                              ; bad...end of line ;; @@6971 196
  ;; @@6974 196
  ;; @@6974 196
 ; Parse OPEN/CLOSE ;; @@6974 196
@@ -13832,10 +13893,10 @@ _local_1197_20   dey                                       ;; @@6a07 198
                  beq _local_1197_30                       ; yes... ;; @@6a0d 198
                  tya                                      ; no...end of format ;; @@6a0f 198
                  bne _local_1197_20                       ; no... ;; @@6a10 198
-_local_1197_99   bra snerr                                ; yes...syntax error ;; @@6a12 198
+_local_1197_99   +lbra snerr                              ; yes...syntax error ;; @@6a12 198
  ;; @@6a15 198
  ;; @@6a15 198
-_local_1197_30   lda #'                                   ; ' ;; @@6a15 198
+_local_1197_30   lda #';'                                 ; ' ;; @@6a15 198
 eex2             jsr synchr                               ; check character ;; @@6a17 199
                  sty z_p_temp_1                           ; clear flag for anaf ;; @@6a1a 199
                  sty bnr                                  ; set pointer to begin of no ;; @@6a1c 199
@@ -13854,7 +13915,7 @@ eex2             jsr synchr                               ; check character ;; @
                  ldx #'='                                  ;; @@6a3a 199
                  cpx chsn                                 ; = in field ;; @@6a3c 199
                  bne _local_1198_50                       ; branch if not ;; @@6a3f 199
-                 lsr a                                    ; .a=.a/2 ;; @@6a41 199
+                 lsr                                      ; .a=.a/2 ;; @@6a41 199
                  adc #0                                   ; add 1 if odd ;; @@6a42 199
  ;; @@6a44 199
 _local_1198_50   tax                                      ; store no of blanks in x ;; @@6a44 199
@@ -13912,7 +13973,7 @@ reay             jsr chrgot                               ; get old character ;;
                  jsr fretmp                                ;; @@6a96 201
                  jsr chrgot                                ;; @@6a99 201
                  cmp #';'                                 ; semi-colon? ;; @@6a9c 201
-                 bne crdo                                 ; end of print using ;; @@6a9e 201
+                 +lbne crdo                               ; end of print using ;; @@6a9e 201
                  jmp chrget                               ; branch if yes ;; @@6aa1 201
  ;; @@6aa4 201
 ; .page ;; @@6aa4 201
@@ -13996,7 +14057,7 @@ sswe             jsr shpn                                 ; shift decimal point 
                  jsr uround                               ; round number ;; @@6b34 203
                  jsr shpn                                 ; shift again if necessary ;; @@6b37 203
  ;; @@6b3a 203
-hup              bra chout                                ; output number ;; @@6b3a 203
+hup              +lbra chout                              ; output number ;; @@6b3a 203
  ;; @@6b3d 203
  ;; @@6b3d 203
  ;; @@6b3d 203
@@ -14081,13 +14142,13 @@ pntl             eor #$ff                                  ;; @@6bc6 204
                  sta hulp                                 ; =vn-vf ;; @@6bca 204
  ;; @@6bcc 204
 decy             cpy bnr                                  ; begin of no? ;; @@6bcc 204
-                 beq inz                                  ; yes... ;; @@6bcf 204
+                 beq inz1                                 ; yes... ;; @@6bcf 204
                  dey                                       ;; @@6bd1 204
                  dec vn                                    ;; @@6bd2 204
                  bra inz2                                  ;; @@6bd5 204
  ;; @@6bd7 204
  ;; @@6bd7 204
-inz              inc z_p_temp_1                           ; add leading zeros ;; @@6bd7 204
+inz1             inc z_p_temp_1                           ; add leading zeros ;; @@6bd7 204
 inz2             lda #$80                                  ;; @@6bd9 204
 nos3             jsr eadj                                 ; adjust exponent ;; @@6bdb 204
                  dec hulp                                 ; ready? ;; @@6bde 204
@@ -14118,7 +14179,7 @@ eadj             ldx uexp                                  ;; @@6bf3 204
 _local_1203_10   jsr tag3                                 ; inc exp, overflow? ;; @@6c01 204
                  jsr sexp                                 ; digit 0 if yes ;; @@6c04 204
                  bcs _local_1203_10                       ; try second digit ;; @@6c07 204
-                 bra overr                                ; exp>99 ;; @@6c09 204
+                 +lbra overr                              ; exp>99 ;; @@6c09 204
  ;; @@6c0c 204
 _local_1203_20   lda fbuffr,x                              ;; @@6c0c 204
                  dec fbuffr,x                             ; decrement exp ;; @@6c0f 204
@@ -14325,7 +14386,7 @@ zout             lda #'0'                                 ; output zero ;; @@6d4
 outs             lsr flag                                 ; clear comma flag ;; @@6d51 210
  ;; @@6d54 210
 out              jsr cdout                                ; output character ;; @@6d54 210
-                 beq rrts                                  ;; @@6d57 210
+                 +lbeq rrts                                ;; @@6d57 210
                  bra afrm                                 ; not ready... ;; @@6d5a 210
  ;; @@6d5c 210
  ;; @@6d5c 210
@@ -14352,7 +14413,7 @@ pndd             lda swe                                  ; # of blanks ;; @@6d7
                  beq zerot                                 ;; @@6d7d 211
                  dec swe                                  ; count ! ;; @@6d7f 211
  ;; @@6d82 211
-_local_1210_5    bne bout                                 ; out blank or * ;; @@6d82 211
+_local_1210_5    +lbne bout                               ; out blank or * ;; @@6d82 211
                  lda posp                                 ; + or - in field? ;; @@6d85 211
                  bmi _local_1210_5                        ; yes...out blank or * ;; @@6d88 211
  ;; @@6d8a 211
@@ -14411,7 +14472,7 @@ hyo              jsr ansub                                ; get next format char
                  inx                                       ;; @@6de7 213
                  cpx #2                                   ; more than 1 decimal? ;; @@6de8 213
                  bcc hyo                                  ; no... ;; @@6dea 213
-ero              bra snerr                                ; yes...syntax error ;; @@6dec 213
+ero              +lbra snerr                              ; yes...syntax error ;; @@6dec 213
  ;; @@6def 213
  ;; @@6def 213
 avf1             jsr com2                                 ; =, >, or # in field ;; @@6def 213
@@ -14515,7 +14576,7 @@ instr            lda facmo                                ; save pointer to temp
  ;; @@6e95 214
 _local_1213_1    jsr chkcls                               ; look for ) ;; @@6e95 214
                  ldx faclo                                 ;; @@6e98 214
-                 beq fcerr                                ; starting position can't be 0 ;; @@6e9a 214
+                 +lbeq fcerr                              ; starting position can't be 0 ;; @@6e9a 214
                  dex                                       ;; @@6e9d 214
                  stx positn                                ;; @@6e9e 214
  ;; @@6ea0 214
@@ -14585,7 +14646,7 @@ _local_1213_50   lda #0                                   ; not found ;; @@6efe 
                  ldy tmpdes+1                              ;; @@6f0d 214
                  jsr fretmp                                ;; @@6f10 214
                  ply                                       ;; @@6f13 214
-                 bra sngflt                               ; float 1 byte in .y ;; @@6f14 214
+                 +lbra sngflt                             ; float 1 byte in .y ;; @@6f14 214
  ;; @@6f17 214
 ;.end ;; @@6f17 214
 ; .page ;; @@6f17 214
@@ -14606,7 +14667,7 @@ open_SEQ_file                                              ;; @@6f19 215
                  ldy #fopnseq                              ;; @@6f28 215
                  ldx #6                                    ;; @@6f2a 215
                  jsr open_file                            ; open the file ;; @@6f2c 215
-                 bcs list_err                             ; exit if error ;; @@6f2f 215
+                 +lbcs list_err                           ; exit if error ;; @@6f2f 215
                  plz                                      ; [910620] ;; @@6f32 215
                  beq _local_1214_20                        ;; @@6f33 215
                  rts                                      ; or exit if called by EDIT load routine ;; @@6f35 215
@@ -14644,7 +14705,7 @@ _local_1214_28   jsr _clrch                                ;; @@6f71 215
                  plp                                      ; check input status ;; @@6f74 215
                  beq _local_1214_20                       ; loop until eof or bad status ;; @@6f75 215
  ;; @@6f77 215
-_local_1214_30   bra list_exit                            ; release channel, close file, return to main ;; @@6f77 215
+_local_1214_30   +lbra list_exit                          ; release channel, close file, return to main ;; @@6f77 215
  ;; @@6f7a 215
 ;99$ jsr _clrch  ;non-I/O trouble   removed [910620] ;; @@6f7a 215
 ; lda dosla  ; shut down disk & report BASIC error ;; @@6f7a 215
@@ -14675,7 +14736,7 @@ disk                                                       ;; @@6f7a 216
                  jsr _close                               ; close it ;; @@6f98 216
                  pla                                      ; [910404] ;; @@6f9b 216
                  plp                                       ;; @@6f9c 216
-                 bra exit_disk_op                         ; common error check & exit path ???? ;; @@6f9d 216
+                 +lbra exit_disk_op                       ; common error check & exit path ???? ;; @@6f9d 216
  ;; @@6fa0 216
  ;; @@6fa0 216
 ;.end ;; @@6fa0 216
@@ -14700,13 +14761,13 @@ directory                                                 ; display disk directo
                  bne _local_1215_1                         ;; @@6fa5 216
                  jsr chrget                               ; (esc token + another) ;; @@6fa7 216
                  cmp #ectory_token                         ;; @@6faa 216
-                 bne snerr                                 ;; @@6fac 216
+                 +lbne snerr                               ;; @@6fac 216
                  jsr chrget                               ; yes- get next good char ;; @@6faf 216
  ;; @@6fb2 216
 _local_1215_1    jsr dospar                               ; parse the line ;; @@6fb2 216
                  lda parsts                               ; check options ;; @@6fb5 216
                  and #$e6                                  ;; @@6fb7 216
-                 bne snerr                                 ;; @@6fb9 216
+                 +lbne snerr                               ;; @@6fb9 216
  ;; @@6fbc 216
                  ldy #fdir                                ; table offset for directory ;; @@6fbc 216
                  bit dosflags                             ; want recoverable files? [901024] ;; @@6fbe 216
@@ -14716,7 +14777,7 @@ _local_1215_2    ldx #1                                   ; just $ ;; @@6fc5 216
                  lda parsts                               ; check for default ;; @@6fc7 216
                  and #$11                                 ; no drive? ;; @@6fc9 216
                  beq _local_1215_20                        ;; @@6fcb 216
-                 lsr a                                     ;; @@6fcd 216
+                 lsr                                       ;; @@6fcd 216
                  bcc _local_1215_10                       ; just drive ;; @@6fce 216
                  inx                                      ; drive and filename ;; @@6fd0 216
                  inx                                       ;; @@6fd1 216
@@ -14738,7 +14799,7 @@ _local_1215_20   txa                                      ; a now has length ;; 
                  jsr dcat11                               ; ...error, shut down and report ;; @@6fed 216
                  plx                                       ;; @@6ff0 216
                  sec                                       ;; @@6ff1 216
-                 bra error                                 ;; @@6ff2 216
+                 +lbra error                               ;; @@6ff2 216
  ;; @@6ff5 216
 _local_1215_30   lda channl                               ; determine DIR vs LDIR ;; @@6ff5 216
                  bne ldir                                 ; if output channel not default (screen) ;; @@6ff7 216
@@ -14799,7 +14860,7 @@ dcat5            jsr crdo                                 ; output new line ;; @
 dcat10           jsr crdo                                 ; flush current line ;; @@704c 218
 dcat11           jsr release_channels                     ; release cmd channel, restore terminal ;; @@704f 218
                  lda #doslfn                               ;; @@7052 218
-                 bra close_out                            ; [900725] ;; @@7054 218
+                 +lbra close_out                          ; [900725] ;; @@7054 218
  ;; @@7057 218
 ; .page ;; @@7057 218
 ; LDIR  same as DIR, except it buffers each line to reduce ;; @@7057 218
@@ -14911,7 +14972,7 @@ append           lda #$e2                                 ; set error flags ;; @
                  ldx #5                                   ; length ;; @@70f5 220
 open_it                                                    ;; @@70f7 220
                  jsr open_file                            ; open it ;; @@70f7 220
-                 bra exit_disk_op                         ; report any DOS errors, & return to main [910404] ;; @@70fa 220
+                 +lbra exit_disk_op                       ; report any DOS errors, & return to main [910404] ;; @@70fa 220
  ;; @@70fd 220
  ;; @@70fd 220
  ;; @@70fd 220
@@ -14945,7 +15006,7 @@ _local_1219_10   iny                                       ;; @@710f 220
 find_la                                                    ;; @@711d 221
                  lda #0                                   ; 1-127 possible ;; @@711d 221
  ;; @@711f 221
-_local_1220_10   inc a                                     ;; @@711f 221
+_local_1220_10   inc                                       ;; @@711f 221
                  bmi too_many_files                       ; if none available error ;; @@7120 221
                  jsr _lkupla                              ; kernel will lookup this la in its tables ;; @@7122 221
                  bcc _local_1220_10                       ; if used keep looking ;; @@7125 221
@@ -14957,7 +15018,7 @@ _local_1220_10   inc a                                     ;; @@711f 221
  ;; @@712b 221
 too_many_files                                             ;; @@712b 222
                  ldx #errtmf                              ; too many files open ;; @@712b 222
-                 bra error                                 ;; @@712d 222
+                 +lbra error                               ;; @@712d 222
  ;; @@7130 222
 ; .page ;; @@7130 222
 ; Close disk file ;; @@7130 222
@@ -14967,7 +15028,7 @@ dclose           lda #$f3                                 ; set error flags ;; @
                  jsr Clear_DS                              ;; @@7135 222
                  bbr2 parsts,dclall                       ; any la given?  branch if not ;; @@7138 222
                  lda dosla                                 ;; @@713b 222
-                 bra close_out                             ;; @@713e 222
+                 +lbra close_out                           ;; @@713e 222
  ;; @@7141 222
 dclall           lda dosfa                                ; get disk # ;; @@7141 222
 ; jsr put_io_in_map ;; @@7144 222
@@ -14978,7 +15039,7 @@ dclall           lda dosfa                                ; get disk # ;; @@7141
 ; DSAVE dfn ;; @@7147 222
  ;; @@7147 222
 dsave            bbr4 runmod,_local_1221_10               ; PROGRAM or EDIT mode?    [910620] ;; @@7147 222
-                 bra edit_save                            ; edit ;; @@714a 222
+                 +lbra edit_save                          ; edit ;; @@714a 222
  ;; @@714d 222
 _local_1221_10   lda #$66                                 ; set error flags ;; @@714d 222
                  jsr dosprs                               ; parse the line ;; @@714f 222
@@ -14990,7 +15051,7 @@ _local_1221_10   lda #$66                                 ; set error flags ;; @
                  lda text_bank                            ; default to text bank set up banks???? [910620] ;; @@715c 222
                  ldx #sys_bank                            ; fname is in system space, bank0 ;; @@715e 222
                  jsr _setbank                              ;; @@7160 222
-                 bra savenp                                ;; @@7163 222
+                 +lbra savenp                              ;; @@7163 222
  ;; @@7166 222
 ; .page ;; @@7166 222
 ; DVERIFY ;; @@7166 222
@@ -15006,7 +15067,7 @@ dload            lda #0                                    ;; @@7169 223
                  sta verck                                ; set load flag (for verify check later) ;; @@716b 223
  ;; @@716d 223
                  bbr4 runmod,_local_1222_10               ; PROGRAM or EDIT mode?    [910620] ;; @@716d 223
-                 bra edit_load                            ; edit ;; @@7170 223
+                 +lbra edit_load                          ; edit ;; @@7170 223
  ;; @@7173 223
 _local_1222_10   lda #$e6                                 ; set error flags ;; @@7173 223
                  jsr dosprs                               ; parse the line ;; @@7175 223
@@ -15024,7 +15085,7 @@ dload_boot                                                ; <<<<<<<<<<<<<<<<<< e
                  ldx #sys_bank                            ; fname is in system space, bank0 ;; @@7189 224
                  jsr _setbank                              ;; @@718b 224
  ;; @@718e 224
-                 bra cld10                                ; finish load, using 'LOAD' code. ;; @@718e 224
+                 +lbra cld10                              ; finish load, using 'LOAD' code. ;; @@718e 224
  ;; @@7191 224
 ; .page ;; @@7191 224
 ; BSAVE ;; @@7191 224
@@ -15037,16 +15098,16 @@ bsave            lda #$66                                 ; std error flag ;; @@
                  lda parstx                               ; check for starting & ending addresses ;; @@719b 224
                  and #6                                    ;; @@719d 224
                  cmp #6                                    ;; @@719f 224
-                 bne snerr                                ; ..if not present, syntax error ;; @@71a1 224
+                 +lbne snerr                              ; ..if not present, syntax error ;; @@71a1 224
  ;; @@71a4 224
                  lda dosofh+1                             ; check that ea>sa ;; @@71a4 224
                  cmp dosofl+1                              ;; @@71a7 224
-                 bcc fcerr                                ; ...error ;; @@71aa 224
+                 +lbcc fcerr                              ; ...error ;; @@71aa 224
                  bne _local_1223_20                        ;; @@71ad 224
                  lda dosofh                                ;; @@71af 224
                  cmp dosofl                                ;; @@71b2 224
-                 bcc fcerr                                ; ...error ;; @@71b5 224
-                 beq fcerr                                 ;; @@71b8 224
+                 +lbcc fcerr                              ; ...error ;; @@71b5 224
+                 +lbeq fcerr                               ;; @@71b8 224
  ;; @@71bb 224
 _local_1223_20   ldy #fopn                                ; table offset ;; @@71bb 224
                  lda #4                                   ; ..length ;; @@71bd 224
@@ -15063,7 +15124,7 @@ _local_1223_20   ldy #fopn                                ; table offset ;; @@71
                  sty highds+1                              ;; @@71d4 224
                  ldx dosofh                               ; end addr ;; @@71d6 224
                  ldy dosofh+1                              ;; @@71d9 224
-                 bra savenb                                ;; @@71dc 224
+                 +lbra savenb                              ;; @@71dc 224
  ;; @@71df 224
  ;; @@71df 224
 ; .page ;; @@71df 224
@@ -15125,15 +15186,15 @@ _local_1224_5    sta dossa                                 ;; @@7202 225
                  sta errnum                               ; yes- save error # for 'er' ;; @@7234 225
                  ora #$80                                 ; but no errdis ;; @@7237 225
 _local_1224_10   sec                                       ;; @@7239 225
-_local_1224_20   bcs erexit                               ; exit if kernel problem (rts) ;; @@723a 225
+_local_1224_20   +lbcs erexit                             ; exit if kernel problem (rts) ;; @@723a 225
  ;; @@723d 225
 _local_1224_30   lda verck                                ; load or verify operation? ;; @@723d 225
-                 bne verify_check                         ; verify ;; @@723f 225
+                 +lbne verify_check                       ; verify ;; @@723f 225
  ;; @@7242 225
 ; jsr _readst  ;  read status ;; @@7242 225
                  lda parsts                               ; load ;; @@7242 225
                  and #%10111111                           ; EOI is okay, so mask it ;; @@7244 225
-                 bne load_error                           ; load error ;; @@7246 225
+                 +lbne load_error                         ; load error ;; @@7246 225
                  clc                                       ;; @@7249 225
                  rts                                       ;; @@724a 225
  ;; @@724b 225
@@ -15144,7 +15205,7 @@ header           jsr dospar                               ; parse the line ;; @@
                  jsr chk1                                 ; check parameter errors ;; @@724e 226
                  and #$01                                  ;; @@7251 226
                  cmp #$01                                  ;; @@7253 226
-                 bne snerr                                ; if required parameters not present ;; @@7255 226
+                 +lbne snerr                              ; if required parameters not present ;; @@7255 226
  ;; @@7258 226
                  jsr _clall                               ; close all files ;; @@7258 226
                  jsr are_you_sure                         ; confirm if in direct mode ;; @@725b 226
@@ -15209,7 +15270,7 @@ _local_1226_20   jsr outch                                 ;; @@72c3 227
  ;; @@72c9 227
 _local_1226_30   jsr highlight_done                       ; [910624] ;; @@72c9 227
                  jsr crdo                                  ;; @@72cc 227
-                 bra ready                                ; we're in direct mode, error msg has been printed, abort ;; @@72cf 227
+                 +lbra ready                              ; we're in direct mode, error msg has been printed, abort ;; @@72cf 227
  ;; @@72d2 227
 header_rts                                                 ;; @@72d2 228
                  clc                                       ;; @@72d2 228
@@ -15255,7 +15316,7 @@ record           lda #'#'                                  ;; @@730b 229
  ;; @@7310 229
                  jsr getbyt                               ; get lfn in x ;; @@7310 229
                  cpx #0                                    ;; @@7313 229
-                 beq fcerr                                ; cannot be zero ;; @@7315 229
+                 +lbeq fcerr                              ; cannot be zero ;; @@7315 229
                  stx dosla                                ; save logical address ;; @@7318 229
  ;; @@731b 229
                  jsr comwrd                               ; check for comma, get record number in 'poker' ;; @@731b 229
@@ -15264,9 +15325,9 @@ record           lda #'#'                                  ;; @@730b 229
                  jsr optbyt                                ;; @@7320 229
                  stx dosrcl                               ; save byte position (pos)    [911024] ;; @@7323 229
                  txa                                      ; cpx #0 ;; @@7326 229
-                 beq fcerr                                ; if out of range ;; @@7327 229
+                 +lbeq fcerr                              ; if out of range ;; @@7327 229
                  inx                                      ; cpx #$ff ;; @@732a 229
-                 beq fcerr                                ; if out of range ;; @@732b 229
+                 +lbeq fcerr                              ; if out of range ;; @@732b 229
  ;; @@732e 229
                  lda dosla                                ; get logical address ;; @@732e 229
 ; jsr put_io_in_map ;; @@7331 229
@@ -15283,10 +15344,10 @@ record           lda #'#'                                  ;; @@730b 229
                  ldy #frec                                ; set pointer ;; @@7346 229
                  lda #4                                   ; process five bytes ;; @@7348 229
                  jsr trans                                ; send command ;; @@734a 229
-                 bra print_dos_error                      ; if any ;; @@734d 229
+                 +lbra print_dos_error                    ; if any ;; @@734d 229
  ;; @@7350 229
 _local_1228_20   ldx #errfno                              ; file not found err (file not open)   [910404] ;; @@7350 229
-                 bra error                                 ;; @@7352 229
+                 +lbra error                               ;; @@7352 229
  ;; @@7355 229
 ; .page ;; @@7355 229
 ; DCLEAR - reinitilaize the drive ;; @@7355 229
@@ -15296,7 +15357,7 @@ dclear           jsr dospar                               ; parse the line ;; @@
                  lda #2                                    ;; @@735a 230
                  jsr trans                                ; send command ;; @@735c 230
                  jsr print_dos_error                      ; if any ;; @@735f 230
-                 bra dclall                                ;; @@7362 230
+                 +lbra dclall                              ;; @@7362 230
  ;; @@7365 230
  ;; @@7365 230
  ;; @@7365 230
@@ -15309,9 +15370,9 @@ collect          jsr dospar                               ; parse the line ;; @@
                  ldy #fcoll                               ; tabld offset ;; @@736e 230
                  lda #1                                   ; length ;; @@7370 230
                  bbr4 parsts,_local_1229_10                ;; @@7372 230
-                 inc a                                    ; include drive ;; @@7375 230
+                 inc                                      ; include drive ;; @@7375 230
 _local_1229_10   jsr trans                                ; send command ;; @@7376 230
-                 bra print_dos_error                      ; if any ;; @@7379 230
+                 +lbra print_dos_error                    ; if any ;; @@7379 230
  ;; @@737c 230
  ;; @@737c 230
 ; .page ;; @@737c 230
@@ -15343,7 +15404,7 @@ _local_1230_10   lda parsts                                ;; @@73a9 231
 _local_1230_20   ldy #fcopy                               ; tabld offset ;; @@73ae 231
                  lda #8                                   ; length ;; @@73b0 231
                  jsr trans                                ; send command ;; @@73b2 231
-                 bra print_dos_error                      ; if any ;; @@73b5 231
+                 +lbra print_dos_error                    ; if any ;; @@73b5 231
  ;; @@73b8 231
  ;; @@73b8 231
  ;; @@73b8 231
@@ -15354,7 +15415,7 @@ concat           jsr dospar                               ; parse the line ;; @@
                  ldy #fconc                               ; offset ;; @@73be 232
                  lda #12                                  ; length ;; @@73c0 232
                  jsr trans                                ; send command ;; @@73c2 232
-                 bra print_dos_error                      ; if any ;; @@73c5 232
+                 +lbra print_dos_error                    ; if any ;; @@73c5 232
  ;; @@73c8 232
  ;; @@73c8 232
  ;; @@73c8 232
@@ -15367,7 +15428,7 @@ rename           lda #$e4                                 ; set error flags ;; @
                  ldy #fren                                ; offset ;; @@73d0 232
                  lda #8                                   ; length ;; @@73d2 232
                  jsr trans                                ; send command ;; @@73d4 232
-                 bra print_dos_error                      ; if any ;; @@73d7 232
+                 +lbra print_dos_error                    ; if any ;; @@73d7 232
  ;; @@73da 232
  ;; @@73da 232
 ; .page ;; @@73da 232
@@ -15379,7 +15440,7 @@ backup           lda #$c7                                 ; set error flags ;; @
                  jsr dosprs                               ; parse the line ;; @@73dc 232
                  and #$30                                 ; required parameters ;; @@73df 232
                  cmp #$30                                  ;; @@73e1 232
-                 bne snerr                                 ;; @@73e3 232
+                 +lbne snerr                               ;; @@73e3 232
                  jsr are_you_sure                          ;; @@73e6 232
                  beq _local_1231_10                       ; if run mode or not 'yes' ;; @@73e9 232
                  rts                                       ;; @@73eb 232
@@ -15388,7 +15449,7 @@ _local_1231_10   jsr dclall                               ; close disk ;; @@73ec
                  ldy #fbak                                 ;; @@73ef 232
                  lda #4                                   ; length ;; @@73f1 232
                  jsr trans                                ; send command ;; @@73f3 232
-                 bra print_dos_error                      ; if any ;; @@73f6 232
+                 +lbra print_dos_error                    ; if any ;; @@73f6 232
  ;; @@73f9 232
  ;; @@73f9 232
 ; .page ;; @@73f9 232
@@ -15407,7 +15468,7 @@ trans            jsr sendp                                ; build string to outp
                  jsr _close                               ; special close... ;; @@740e 233
                  pla                                      ; pop error ;; @@7411 233
                  plp                                      ; pop error status ;; @@7412 233
-                 bcs erexit                               ; ...branch if there was an error opening ;; @@7413 233
+                 +lbcs erexit                             ; ...branch if there was an error opening ;; @@7413 233
                  rts                                       ;; @@7416 233
  ;; @@7417 233
 ;.end ;; @@7417 233
@@ -15546,7 +15607,7 @@ _local_1232_20   lda dostbl,x                              ;; @@7434 233
  ;; @@744e 233
 done             pla                                      ; get aux error flag ;; @@744e 234
                  and parstx                               ; repeated or illegal params? ;; @@744f 234
-                 bne snerr                                ; yes- report syntax error ;; @@7451 234
+                 +lbne snerr                              ; yes- report syntax error ;; @@7451 234
                  pla                                      ; get error flags ;; @@7454 234
                  jsr prmrpt                                ;; @@7455 234
                  lda parsts                                ;; @@7458 234
@@ -15557,9 +15618,9 @@ done             pla                                      ; get aux error flag ;
 ; Parse given parameters.  what it is  example ;; @@745d 234
 ;     -------------------- --------- ;; @@745d 234
 parse1           cmp #'"'                                  ;; @@745d 234
-                 beq name1                                ; explicit filename "file" ;; @@745f 234
+                 +lbeq name1                              ; explicit filename "file" ;; @@745f 234
                  cmp #'('                                  ;; @@7462 234
-                 beq name1                                ; evaluate filename (f$) ;; @@7464 234
+                 +lbeq name1                              ; evaluate filename (f$) ;; @@7464 234
                  cmp #'#'                                  ;; @@7467 234
                  beq logadr                               ; logical file number #1 ;; @@7469 234
                  cmp #'U'                                  ;; @@746b 234
@@ -15567,7 +15628,7 @@ parse1           cmp #'"'                                  ;; @@745d 234
                  cmp #'D'                                  ;; @@746f 234
                  beq drv1                                 ; drive number  D0 ;; @@7471 234
                  cmp #'P'                                  ;; @@7473 234
-                 beq doffl                                ; load/save address P1234 ;; @@7475 234
+                 +lbeq doffl                              ; load/save address P1234 ;; @@7475 234
                  cmp #'B'                                  ;; @@7478 234
                  beq dbank1                               ; load/save bank   B0 ;; @@747a 234
                  cmp #'W'                                  ;; @@747c 234
@@ -15575,35 +15636,35 @@ parse1           cmp #'"'                                  ;; @@745d 234
                  cmp #'L'                                  ;; @@7480 234
                  beq reclen                               ; record length  L80 ;; @@7482 234
                  cmp #'R'                                  ;; @@7484 234
-                 beq recover                              ; recover mode  R ;; @@7486 234
+                 +lbeq recover                            ; recover mode  R ;; @@7486 234
                  cmp #'I'                                  ;; @@7489 234
                  beq ident                                ; ID   Ixx ;; @@748b 234
                  cmp #on_token                             ;; @@748d 234
 ; beq on1   ; ON token  ON ;; @@748f 234
  ;; @@748f 234
-                 bne snerr                                ; none of these, syntax error ;; @@748f 234
+                 +lbne snerr                              ; none of these, syntax error ;; @@748f 234
  ;; @@7492 234
 ; .page ;; @@7492 234
 on1              jsr on                                    ;; @@7492 234
-                 bra del1                                  ;; @@7495 234
+                 +lbra del1                                ;; @@7495 234
  ;; @@7498 234
  ;; @@7498 234
 unit1            jsr unit                                 ; do unit# parsing ;; @@7498 234
-                 bra del1                                 ; always ;; @@749b 234
+                 +lbra del1                               ; always ;; @@749b 234
  ;; @@749e 234
  ;; @@749e 234
 dbank1           jsr dbank                                 ;; @@749e 234
-                 bra del1                                 ; always ;; @@74a1 234
+                 +lbra del1                               ; always ;; @@74a1 234
  ;; @@74a4 234
  ;; @@74a4 234
 logadr           lda #4                                    ;; @@74a4 234
                  jsr prmrpt                               ; check for repeated parameter ;; @@74a6 234
                  jsr gtbytc                               ; getval ;; @@74a9 234
                  txa                                      ; cpx #0 ;; @@74ac 234
-                 beq fcerr                                ; if illegal value ;; @@74ad 234
+                 +lbeq fcerr                              ; if illegal value ;; @@74ad 234
                  stx dosla                                 ;; @@74b0 234
                  lda #4                                   ; set logical address flag ;; @@74b3 234
-                 bra del1                                 ; get next parameter ;; @@74b5 234
+                 +lbra del1                               ; get next parameter ;; @@74b5 234
  ;; @@74b8 234
  ;; @@74b8 234
 reclen           tax                                      ; save char ;; @@74b8 234
@@ -15622,32 +15683,32 @@ _local_1233_12   stx dosrcl                               ; store parcel ;; @@74
                  txa                                      ; cpx #0 ;; @@74d4 234
                  beq _local_1233_15                       ; zero illegal dosrcl ;; @@74d5 234
                  inx                                      ; cpx #255 ;; @@74d7 234
-_local_1233_15   beq fcerr                                ; illegal dosrcl ;; @@74d8 234
+_local_1233_15   +lbeq fcerr                              ; illegal dosrcl ;; @@74d8 234
  ;; @@74db 234
 _local_1233_20   lda #$40                                 ; set dosrcl flag & ;; @@74db 234
-                 bra del1                                  ;; @@74dd 234
+                 +lbra del1                                ;; @@74dd 234
  ;; @@74e0 234
  ;; @@74e0 234
 drv1             lda #$10                                  ;; @@74e0 235
                  jsr prmrpt                               ; check for repeated parameter ;; @@74e2 235
                  jsr gtbytc                               ; getval ;; @@74e5 235
                  cpx #10                                   ;; @@74e8 235
-                 bcs fcerr                                ; illegal drv# if >9 [allow 0: to 9: ?????] ;; @@74ea 235
+                 +lbcs fcerr                              ; illegal drv# if >9 [allow 0: to 9: ?????] ;; @@74ea 235
                  stx dosds1                                ;; @@74ed 235
                  stx dosds2                                ;; @@74f0 235
                  lda #$10                                  ;; @@74f3 235
-                 bra del1                                  ;; @@74f5 235
+                 +lbra del1                                ;; @@74f5 235
  ;; @@74f8 235
  ;; @@74f8 235
 ident            lda #$80                                 ; set ID flag ;; @@74f8 235
                  tsb dosflags                              ;; @@74fa 235
-                 bne snerr                                ; repeated parameter ;; @@74fd 235
+                 +lbne snerr                              ; repeated parameter ;; @@74fd 235
                  jsr chrget                               ; get next character ;; @@7500 235
                  cmp #'('                                 ; c65: allow I(ID$) syntax  [900710] ;; @@7503 235
                  bne _local_1234_10                        ;; @@7505 235
                  jsr frmstr                               ; get ID from var ;; @@7507 235
                  cmp #2                                    ;; @@750a 235
-                 bcc err_mfn                              ; if length < 2, error ;; @@750c 235
+                 +lbcc err_mfn                            ; if length < 2, error ;; @@750c 235
                  ldy #0                                    ;; @@750f 235
                  jsr indin1_ram1                          ; else grab first two characters ;; @@7511 235
                  sta dosdid                                ;; @@7514 235
@@ -15685,7 +15746,7 @@ doffh            lda #$04                                  ;; @@7544 236
  ;; @@7556 236
 recover          lda #$40                                  ;; @@7556 236
                  tsb dosflags                             ; set 'recover' bit ;; @@7558 236
-                 bne snerr                                ; if repeated parameter ;; @@755b 236
+                 +lbne snerr                              ; if repeated parameter ;; @@755b 236
                  jsr chrget                               ; continue ;; @@755e 236
                  bra delim2                                ;; @@7561 236
  ;; @@7563 236
@@ -15707,13 +15768,13 @@ del1             tsb parsts                                ;; @@757b 237
  ;; @@757d 237
 delim1           jsr chrgot                                ;; @@757d 237
 delim2           bne nxxx                                  ;; @@7580 237
-                 bra done                                 ; <cr>/<> => done ;; @@7582 237
+                 +lbra done                               ; <cr>/<> => done ;; @@7582 237
  ;; @@7585 237
  ;; @@7585 237
 next6            cmp #on_token                             ;; @@7585 237
-                 beq on1                                   ;; @@7587 237
+                 +lbeq on1                                 ;; @@7587 237
                  cmp #to_token                            ; "to" token ;; @@758a 237
-                 bne snerr                                ; syntax error ;; @@758c 237
+                 +lbne snerr                              ; syntax error ;; @@758c 237
  ;; @@758f 237
 ;  If "to" is not followed by an offset param, then do file2 params. ;; @@758f 237
 ;  Otherwise, do high offset and continue with file0 options. ;; @@758f 237
@@ -15727,7 +15788,7 @@ next6            cmp #on_token                             ;; @@7585 237
 nxxx             cmp #','                                  ;; @@7598 237
                  bne next6                                 ;; @@759a 237
                  jsr chrget                                ;; @@759c 237
-                 bra parse1                                ;; @@759f 237
+                 +lbra parse1                              ;; @@759f 237
  ;; @@75a2 237
  ;; @@75a2 237
 parse2           jsr chrget                                ;; @@75a2 237
@@ -15746,7 +15807,7 @@ _local_1236_10   lda #$20                                  ;; @@75b9 237
                  jsr prmrpt                               ; check for repeated parameter ;; @@75bb 237
                  jsr gtbytc                               ; getval ;; @@75be 237
                  cpx #10                                   ;; @@75c1 237
-                 bcs fcerr                                ; illegal drive #  [allow 0: to 9: ????] ;; @@75c3 237
+                 +lbcs fcerr                              ; illegal drive #  [allow 0: to 9: ????] ;; @@75c3 237
                  stx dosds2                                ;; @@75c6 237
                  lda #$20                                  ;; @@75c9 237
                  bra del2                                  ;; @@75cb 237
@@ -15767,21 +15828,21 @@ name2            lda #2                                   ; name2 allowed only o
                  lda #2                                   ; set filename2 flag & ;; @@75e5 238
 del2             tsb parsts                               ; set flag in status ;; @@75e7 238
                  jsr chrgot                                ;; @@75e9 238
-                 beq done                                 ; done on <cr>/<> ;; @@75ec 238
+                 +lbeq done                               ; done on <cr>/<> ;; @@75ec 238
                  cmp #','                                  ;; @@75ef 238
                  beq parse2                                ;; @@75f1 238
                  cmp #on_token                            ; "on" token ;; @@75f3 238
                  beq on2                                   ;; @@75f5 238
                  cmp #'U'                                  ;; @@75f7 238
                  beq unit2                                 ;; @@75f9 238
-                 bra snerr                                 ;; @@75fb 238
+                 +lbra snerr                               ;; @@75fb 238
  ;; @@75fe 238
  ;; @@75fe 238
 on               jsr chrget                                ;; @@75fe 238
                  cmp #'B'                                  ;; @@7601 238
                  beq dbank                                 ;; @@7603 238
                  cmp #'U'                                  ;; @@7605 238
-                 bne snerr                                 ;; @@7607 238
+                 +lbne snerr                               ;; @@7607 238
  ;; @@760a 238
  ;; @@760a 238
 unit             jsr gtbytc                               ; getval ;; @@760a 238
@@ -15853,7 +15914,7 @@ err_ild          ldx #err_illegal_device                   ;; @@766d 240
                  !text $2c                                 ;; @@766f 240
  ;; @@7670 240
 errlen           ldx #errls                               ; string or filename too long ;; @@7670 240
-                 bra error                                 ;; @@7672 240
+                 +lbra error                               ;; @@7672 240
  ;; @@7675 240
  ;; @@7675 240
  ;; @@7675 240
@@ -15873,8 +15934,8 @@ errlen           ldx #errls                               ; string or filename t
 ; Get next 2-byte expression.  Exit: .a,.y (high,low) value ;; @@7675 240
  ;; @@7675 240
 getoff           jsr chrget                               ; get nxt chr ;; @@7675 240
-                 beq snerr                                ; if end of statement ;; @@7678 240
-                 bcc getwrd                               ; can be num. const, go evaluate it ;; @@767b 240
+                 +lbeq snerr                              ; if end of statement ;; @@7678 240
+                 +lbcc getwrd                             ; can be num. const, go evaluate it ;; @@767b 240
                  jsr chkopn                               ; or a "(" ;; @@767e 240
                  jsr getwrd                               ; expr ;; @@7681 240
                  jsr chkcls                               ; need closing ")" ;; @@7684 240
@@ -15890,7 +15951,7 @@ getoff           jsr chrget                               ; get nxt chr ;; @@767
  ;; @@768c 240
  ;; @@768c 240
 prmrpt           and parsts                               ; compare mask with status ;; @@768c 240
-                 bne snerr                                ; error if bit previously set ;; @@768e 240
+                 +lbne snerr                              ; error if bit previously set ;; @@768e 240
                  rts                                       ;; @@7691 240
  ;; @@7692 240
  ;; @@7692 240
@@ -15901,7 +15962,7 @@ prmrpt           and parsts                               ; compare mask with st
  ;; @@7692 240
  ;; @@7692 240
 prxrpt           and parstx                               ; and with parstx ;; @@7692 240
-                 bne snerr                                ; if bit previously set ;; @@7694 240
+                 +lbne snerr                              ; if bit previously set ;; @@7694 240
                  rts                                       ;; @@7697 240
  ;; @@7698 240
 ;.end ;; @@7698 240
@@ -16002,21 +16063,21 @@ sdp1             pla                                       ;; @@76fb 240
                  cmp #xid                                  ;; @@770d 240
                  beq rid                                  ; if disk id ;; @@770f 240
                  cmp #xrcl                                 ;; @@7711 240
-                 beq rdcn                                 ; if record number ;; @@7713 240
+                 +lbeq rdcn                               ; if record number ;; @@7713 240
                  cmp #xwrt                                 ;; @@7716 240
                  beq rwrt                                 ; if W or L ;; @@7718 240
                  cmp #xfat                                 ;; @@771a 240
                  beq rfat                                 ; if "@" symbol request ;; @@771c 240
                  cmp #xfn1                                 ;; @@771e 240
-                 beq rsfn                                 ; if filename 1 ;; @@7720 240
+                 +lbeq rsfn                               ; if filename 1 ;; @@7720 240
                  cmp #xfn2                                 ;; @@7723 240
-                 beq rdfn                                 ; if filename 2 ;; @@7725 240
+                 +lbeq rdfn                               ; if filename 2 ;; @@7725 240
                  cmp #xrec                                 ;; @@7728 240
                  bne sdp2                                 ; if not record type ;; @@772a 240
                  lda dosrcl                               ; get rec # ;; @@772c 240
                  cmp #1                                   ; kludge to allow DOPEN#lf,"relfile",L  [911024] ;; @@772f 240
                  bne sdp5                                 ; (note RECORD byte 0 = byte 1 anyhow) ;; @@7731 240
-                 dec a                                     ;; @@7733 240
+                 dec                                       ;; @@7733 240
                  bra sdp5                                 ; always branch ;; @@7734 240
  ;; @@7736 240
 sdp2             cmp #xd1                                  ;; @@7736 240
@@ -16060,7 +16121,7 @@ rfat             bbr7 parsts,_local_1239_10               ; if "@" not encounter
                  bra sdp5                                 ; always ;; @@776f 240
  ;; @@7771 240
 _local_1239_10   lda dosflags                              ;; @@7771 240
-                 lsr a                                     ;; @@7774 240
+                 lsr                                       ;; @@7774 240
                  bcc sdp1                                 ; if "/" not encountered ;; @@7775 240
                  lda #'/'                                  ;; @@7777 240
                  bra sdp5                                  ;; @@7779 240
@@ -16128,40 +16189,40 @@ _local_1242_10   jsr indin1_ram1                           ;; @@77ca 243
                  !text $89                                ; hop ;; @@77d7 243
  ;; @@77d8 243
 rdrt0            dex                                      ; case cdd=sd ;; @@77d8 244
-rdrt1            bra sdp1                                 ; get next symbol ;; @@77d9 244
+rdrt1            +lbra sdp1                               ; get next symbol ;; @@77d9 244
  ;; @@77dc 244
 ; .page ;; @@77dc 244
 ; Syntax checker DOS write ;; @@77dc 244
  ;; @@77dc 244
 chk1             and #$e6                                 ; for HEADER, DLOAD, SCRATCH, TYPE, LIST ;; @@77dc 244
-                 bne snerr                                 ;; @@77de 244
+                 +lbne snerr                               ;; @@77de 244
  ;; @@77e1 244
 chk2             lda parsts                               ; for DSAVE ;; @@77e1 244
                  and #1                                    ;; @@77e3 244
                  cmp #1                                   ; check required parameters ;; @@77e5 244
-                 bne snerr                                ; error if 1 missing ;; @@77e7 244
+                 +lbne snerr                              ; error if 1 missing ;; @@77e7 244
                  lda parsts                               ; reload for return ;; @@77ea 244
                  rts                                       ;; @@77ec 244
  ;; @@77ed 244
  ;; @@77ed 244
 chk3             and #$e7                                 ; for COLLECT ;; @@77ed 244
-                 bne snerr                                ; check optional parameters ;; @@77ef 244
+                 +lbne snerr                              ; check optional parameters ;; @@77ef 244
                  rts                                       ;; @@77f2 244
  ;; @@77f3 244
  ;; @@77f3 244
 chk4             and #$c4                                 ; for COPY, CONCAT ;; @@77f3 244
-                 bne snerr                                ; check optional parameters ;; @@77f5 244
+                 +lbne snerr                              ; check optional parameters ;; @@77f5 244
                  lda parsts                                ;; @@77f8 244
 chk5             and #3                                   ; for RENAME ;; @@77fa 244
                  cmp #3                                   ; check required parameters ;; @@77fc 244
-                 bne snerr                                 ;; @@77fe 244
+                 +lbne snerr                               ;; @@77fe 244
                  lda parsts                               ; reload for return ;; @@7801 244
                  rts                                       ;; @@7803 244
  ;; @@7804 244
  ;; @@7804 244
 chk6             and #5                                   ; for APPEND, DOPEN ;; @@7804 244
                  cmp #5                                   ; check required parameters ;; @@7806 244
-                 bne snerr                                 ;; @@7808 244
+                 +lbne snerr                               ;; @@7808 244
                  lda parsts                               ; reload for rts ;; @@780b 244
                  rts                                       ;; @@780d 244
  ;; @@780e 244
@@ -16237,7 +16298,7 @@ _local_1243_40   pha                                      ; errbad. ;; @@7877 24
                  jsr _local_1243_30                        ;; @@7878 244
                  jsr Clear_DS                             ; flag 'no DS available' ;; @@787b 244
                  plx                                      ; get error ;; @@787e 244
-                 bra error                                 ;; @@787f 244
+                 +lbra error                               ;; @@787f 244
  ;; @@7882 244
 ; .page ;; @@7882 244
 ; Clear_DS subroutine - forget current DS$ message, if any ;; @@7882 244
@@ -16256,7 +16317,7 @@ Clear_DS                                                  ; oldclr. ;; @@7882 24
                  iny                                       ;; @@788e 245
                  lda #$ff                                  ;; @@788f 245
                  jsr sta_far_ram1                         ; sta (dsdesc+1),y garbage flagged ;; @@7891 245
-                 inc a                                     ;; @@7894 245
+                 inc                                       ;; @@7894 245
                  sta dsdesc                               ; (0)    kill DS$ ;; @@7895 245
                  plx                                       ;; @@7897 245
                  ply                                       ;; @@7898 245
@@ -16351,7 +16412,7 @@ optw99           clc                                       ;; @@7906 249
  ;; @@7908 249
 ; .page ;; @@7908 249
 comsad           jsr chkcom                               ; get a comma & signed 2-byte arg in y,a   [910307] ;; @@7908 249
-                 bra sadwrd                                ;; @@790b 249
+                 +lbra sadwrd                              ;; @@790b 249
  ;; @@790e 249
  ;; @@790e 249
  ;; @@790e 249
@@ -16460,12 +16521,12 @@ collision_irq                                              ;; @@797f 252
                  and #%00001110                           ; mask all but lp, s/s, and s/bgnd flags ;; @@7981 252
                  beq _local_1251_40                       ; exit if none set ;; @@7983 252
                  trb _vicIRQ                              ; else reset flags we're going to handle ;; @@7985 252
-                 lsr a                                    ; shift out raster interrupt bit (not used) ;; @@7987 252
+                 lsr                                      ; shift out raster interrupt bit (not used) ;; @@7987 252
  ;; @@7988 252
 ; Test for 3 types of collision interrupts : sprite/sprite, sprite/bgnd, & light pen ;; @@7988 252
  ;; @@7988 252
                  ldy #1                                   ; loop for sprite/bgnd and sprite/sprite collision check ;; @@7988 252
-_local_1251_10   lsr a                                     ;; @@798a 252
+_local_1251_10   lsr                                       ;; @@798a 252
                  bcc _local_1251_30                       ; bit not set ==> not source of interrupt ;; @@798b 252
  ;; @@798d 252
                  pha                                       ;; @@798d 252
@@ -16476,8 +16537,8 @@ _local_1251_10   lsr a                                     ;; @@798a 252
                  lda intval                               ; allowable interrupts ;; @@7997 252
                  cpy #0                                   ; examine selected bit ;; @@799a 252
                  beq _local_1251_20                        ;; @@799c 252
-                 lsr a                                     ;; @@799e 252
-_local_1251_20   lsr a                                     ;; @@799f 252
+                 lsr                                       ;; @@799e 252
+_local_1251_20   lsr                                       ;; @@799f 252
                  bcc _local_1251_25                       ; BASIC doesn't want this interrupt ;; @@79a0 252
                  lda #$ff                                  ;; @@79a2 252
                  sta int_trip_flag,y                      ; turn on trip flag ;; @@79a4 252
@@ -16490,7 +16551,7 @@ _local_1251_30   dey                                       ;; @@79a8 252
 ; .page ;; @@79ab 252
 ; Check light pen latch ;; @@79ab 252
  ;; @@79ab 252
-                 lsr a                                     ;; @@79ab 252
+                 lsr                                       ;; @@79ab 252
                  bcc _local_1251_40                       ; LightPen latch not valid ;; @@79ac 252
  ;; @@79ae 252
                  ldx vic+49                               ; 4567R7 bug- must read LP_latches in Slow mode???? ;; @@79ae 252
@@ -16514,7 +16575,7 @@ _local_1251_40                                             ;; @@79d1 252
  ;; @@79d1 252
 movspr_irq                                                 ;; @@79d1 253
                  lda vic+21                               ; any sprites active?    [910212] ;; @@79d1 253
-                 beq music_irq                            ; no- skip ahead ;; @@79d4 253
+                 +lbeq music_irq                          ; no- skip ahead ;; @@79d4 253
  ;; @@79d7 253
                  ldy #7                                   ; check each of 8 sprites ;; @@79d7 253
 _local_1252_10   lda vic+21                               ; is this sprite is enabled? ;; @@79d9 253
@@ -16530,10 +16591,10 @@ _local_1252_10   lda vic+21                               ; is this sprite is en
  ;; @@79f0 253
 _local_1252_15   sta sprite_data+1,x                      ; set counter ;; @@79f0 253
 _local_1252_20   tya                                      ; convert sprite# to a VIC register pointer ;; @@79f3 253
-                 asl a                                     ;; @@79f4 253
+                 asl                                       ;; @@79f4 253
                  tay                                       ;; @@79f5 253
                  lda sprite_data+2,x                      ; get angle sign ;; @@79f6 253
-                 dec a                                    ; subtract 1 for cosine ;; @@79f9 253
+                 dec                                      ; subtract 1 for cosine ;; @@79f9 253
                  inx                                       ;; @@79fa 253
                  inx                                       ;; @@79fb 253
                  iny                                       ;; @@79fc 253
@@ -16545,7 +16606,7 @@ _local_1252_20   tya                                      ; convert sprite# to a
                  jsr sprsub                               ; update x position ;; @@7a06 253
                  php                                       ;; @@7a09 253
                  tya                                       ;; @@7a0a 253
-                 lsr a                                    ; restore index (.Y=sprite pointer) ;; @@7a0b 253
+                 lsr                                      ; restore index (.Y=sprite pointer) ;; @@7a0b 253
                  tay                                       ;; @@7a0c 253
                  plp                                       ;; @@7a0d 253
                  bcc _local_1252_30                       ; skip if no overflow ;; @@7a0e 253
@@ -16557,14 +16618,14 @@ _local_1252_30   dec sprite_data+1,x                       ;; @@7a19 253
  ;; @@7a1e 253
 _local_1252_40   dey                                      ; check next sprite ;; @@7a1e 253
                  bpl _local_1252_10                       ; loop until done moving all sprites ;; @@7a1f 253
-                 bra music_irq                            ; then continue with next IRQ task ;; @@7a21 253
+                 +lbra music_irq                          ; then continue with next IRQ task ;; @@7a21 253
 ; .page ;; @@7a24 253
 movspr_to_irq                                             ; [910809] ;; @@7a24 254
                  phy                                      ; sprite # ;; @@7a24 254
                  and #$3f                                 ; speed factor ;; @@7a25 254
                  taz                                       ;; @@7a27 254
                  tya                                      ; vic sprite index ;; @@7a28 254
-                 asl a                                     ;; @@7a29 254
+                 asl                                       ;; @@7a29 254
                  tay                                       ;; @@7a2a 254
  ;; @@7a2b 254
 _local_1253_10   sec                                      ; for i = 1 to abs(greatr) ;; @@7a2b 254
@@ -16588,7 +16649,7 @@ _local_1253_20   lda sprite_data+3,x                      ; ptr(lesser) ;; @@7a4
                  jsr drwinc                               ; pos(lesser) = pos(lesser) + sgn(lesser) ;; @@7a52 254
  ;; @@7a55 254
                  lda sprite_data+4,x                      ; ptr(greater) ;; @@7a55 254
-_local_1253_30   lsr a                                    ; which f? ;; @@7a58 254
+_local_1253_30   lsr                                      ; which f? ;; @@7a58 254
                  bcs _local_1253_40                        ;; @@7a59 254
                  lda sprite_data+9,x                      ; e = e + f1 ;; @@7a5b 254
                  adc sprite_data+5,x                       ;; @@7a5e 254
@@ -16625,12 +16686,12 @@ _local_1254_5    plp                                       ;; @@7a96 255
                  bvc _local_1254_30                        ;; @@7a99 255
  ;; @@7a9b 255
                  lda vic,y                                ; positive direction ;; @@7a9b 255
-                 inc a                                     ;; @@7a9e 255
+                 inc                                       ;; @@7a9e 255
                  sta vic,y                                 ;; @@7a9f 255
                  bra _local_1254_20                        ;; @@7aa2 255
  ;; @@7aa4 255
 _local_1254_10   lda vic,y                                ; negative direction ;; @@7aa4 255
-                 dec a                                     ;; @@7aa7 255
+                 dec                                       ;; @@7aa7 255
                  sta vic,y                                 ;; @@7aa8 255
                  cmp #$ff                                  ;; @@7aab 255
  ;; @@7aad 255
@@ -16638,13 +16699,13 @@ _local_1254_20   bne _local_1254_30                       ; no wrap ;; @@7aad 25
                  tya                                       ;; @@7aaf 255
                  bit #1                                    ;; @@7ab0 255
                  bne _local_1254_30                       ; wrap in y okay ;; @@7ab2 255
-                 lsr a                                     ;; @@7ab4 255
+                 lsr                                       ;; @@7ab4 255
                  tay                                       ;; @@7ab5 255
                  lda sbits,y                              ; wrap in x- toggle msb ;; @@7ab6 255
                  eor vic+16                                ;; @@7ab9 255
                  sta vic+16                                ;; @@7abc 255
                  tya                                       ;; @@7abf 255
-                 asl a                                     ;; @@7ac0 255
+                 asl                                       ;; @@7ac0 255
                  tay                                       ;; @@7ac1 255
  ;; @@7ac2 255
 _local_1254_30   tya                                      ; restore y to sprite offset ;; @@7ac2 255
@@ -16671,7 +16732,7 @@ _local_1255_100  ldy voices+1,x                            ;; @@7ac9 256
                  bcs _local_1255_110                      ; ok, no underflow ;; @@7ae0 256
  ;; @@7ae2 256
                  txa                                       ;; @@7ae2 256
-                 lsr a                                    ; get offset to waveform ;; @@7ae3 256
+                 lsr                                      ; get offset to waveform ;; @@7ae3 256
                  tay                                       ;; @@7ae4 256
                  lda waveform,y                           ; get waveform ;; @@7ae5 256
                  and #$fe                                 ; mask out gate bit ;; @@7ae8 256
@@ -16697,7 +16758,7 @@ _local_1256_10   lda sound_time_hi,y                      ; active if msb clear 
                  bpl _local_1256_12                        ;; @@7afe 257
 _local_1256_11   dey                                       ;; @@7b00 257
                  bpl _local_1256_10                        ;; @@7b01 257
-                 bra basic_irq_end                         ;; @@7b03 257
+                 +lbra basic_irq_end                       ;; @@7b03 257
  ;; @@7b06 257
 _local_1256_12   clc                                      ; add step to frequency ;; @@7b06 257
                  lda sound_freq_lo,y                       ;; @@7b07 257
@@ -16726,7 +16787,7 @@ _local_1256_13   cpx #2                                   ; is 'cycle' bit set? 
                  bcc _local_1256_15                       ; no, keep direction 'down' ;; @@7b34 257
  ;; @@7b36 257
                  jsr negate_step                          ; make step 2's comp ;; @@7b36 257
-                 lda #%10                                 ; change direction to 'up' ;; @@7b39 257
+                 lda #2                                   ; change direction to 'up' ;; @@7b39 257
                  sta sound_direction,y                     ;; @@7b3b 257
                  bne _local_1256_35                       ; go reset for 'up' ;; @@7b3e 257
  ;; @@7b40 257
@@ -16752,7 +16813,7 @@ _local_1256_30   cpx #2                                   ; is this 'cycle'? ;; 
                  bcc _local_1256_35                       ; no, go reset for next 'up' ;; @@7b66 257
  ;; @@7b68 257
                  jsr negate_step                          ; make step 2's comp ;; @@7b68 257
-                 lda #%11                                 ; change direction to 'down' ;; @@7b6b 257
+                 lda #3                                   ; change direction to 'down' ;; @@7b6b 257
                  sta sound_direction,y                     ;; @@7b6d 257
                  bne _local_1256_15                       ; go reset for next 'down' ;; @@7b70 257
  ;; @@7b72 257
@@ -16782,7 +16843,7 @@ _local_1256_40                                             ;; @@7b7e 257
 _local_1256_50   dec sound_time_lo,x                       ;; @@7b97 257
  ;; @@7b9a 257
                  lda sound_time_hi,x                      ; underflow? ;; @@7b9a 257
-                 bpl _local_1256_11                       ; nope ;; @@7b9d 257
+                 +lbpl _local_1256_11                     ; nope ;; @@7b9d 257
  ;; @@7ba0 257
 ; Time to turn off this voice ;; @@7ba0 257
  ;; @@7ba0 257
@@ -16791,7 +16852,7 @@ _local_1256_50   dec sound_time_lo,x                       ;; @@7b97 257
                  ldx SID_offset,y                          ;; @@7ba2 257
                  sta sid1+4,x                              ;; @@7ba5 257
 ; jsr go_fast  ;      [910716] 4567R7A ;; @@7ba8 257
-                 bra _local_1256_11                        ;; @@7ba8 257
+                 +lbra _local_1256_11                      ;; @@7ba8 257
  ;; @@7bab 257
  ;; @@7bab 257
 negate_step                                                ;; @@7bab 258
@@ -16828,8 +16889,8 @@ sprsub           pha                                      ; save angle phase ;; 
                  sta sprite_data+8,x                       ;; @@7bd7 258
                  pla                                      ; get angle sign ;; @@7bda 258
                  bcc _local_1257_30                       ; skip if no carry - do not update position ;; @@7bdb 258
-                 lsr a                                     ;; @@7bdd 258
-                 lsr a                                    ; test if positive or negative ;; @@7bde 258
+                 lsr                                       ;; @@7bdd 258
+                 lsr                                      ; test if positive or negative ;; @@7bde 258
                  lda vic,y                                ; ???vic_save ;; @@7bdf 258
                  bcs _local_1257_10                       ; skip if negative ;; @@7be2 258
                  adc #1                                   ; increment position ;; @@7be4 258
@@ -16859,7 +16920,7 @@ mouse            cmp #on_token                            ; new [910122] ;; @@7b
                  beq _local_1258_10                        ;; @@7bf2 259
                  jsr chkesc                                ;; @@7bf4 259
                  cmp #off_token                            ;; @@7bf7 259
-                 bne snerr                                 ;; @@7bf9 259
+                 +lbne snerr                               ;; @@7bf9 259
  ;; @@7bfc 259
 ;    The Kernel MOUSE_CMD is called to install or remove mouse driver. ;; @@7bfc 259
 ; .a= B7,6 set to install mouse in game port 2 ($80), 1 ($40), or both ($C0) ;; @@7bfc 259
@@ -16868,38 +16929,38 @@ mouse            cmp #on_token                            ; new [910122] ;; @@7b
  ;; @@7bfc 259
                  lda #0                                   ; TURN MOUSE OFF ;; @@7bfc 259
                  jsr _mouse                               ; do it ;; @@7bfe 259
-                 bra chkeos                               ; eat token & exit after checking for eos ;; @@7c01 259
+                 +lbra chkeos                             ; eat token & exit after checking for eos ;; @@7c01 259
  ;; @@7c04 259
 ;TURN MOUSE ON ;; @@7c04 259
 _local_1258_10   jsr chrget                               ; eat token ;; @@7c04 259
                  ldx #2                                   ; get (optional) port# in .X ;; @@7c07 259
                  jsr optbyt                               ; if not present default to port 2 ;; @@7c09 259
                  cpx #4                                   ;  ;; @@7c0c 259
-                 bcs fcerr                                ; illegal value ;; @@7c0e 259
+                 +lbcs fcerr                              ; illegal value ;; @@7c0e 259
                  phx                                       ;; @@7c11 259
  ;; @@7c12 259
                  ldx #0                                   ; get (optional) sprite# in .X ;; @@7c12 259
                  jsr optbyt                               ; if not present default to sprite 0 ;; @@7c14 259
                  cpx #8                                    ;; @@7c17 259
-                 bcs fcerr                                ; illegal value ;; @@7c19 259
+                 +lbcs fcerr                              ; illegal value ;; @@7c19 259
                  stx z_p_temp_1                            ;; @@7c1c 259
                  ldy sproff,x                             ; kill moving sprite ;; @@7c1e 259
                  lda #0                                   ; get offset to speed data ;; @@7c21 259
                  sta sprite_data,y                        ; reset sprite's speed value ;; @@7c23 259
  ;; @@7c26 259
                  pla                                      ; setup for Kernel call- get port# into b7,6 ;; @@7c26 259
-                 ror a                                    ; .a= port(s), .x=sprite ;; @@7c27 259
-                 ror a                                     ;; @@7c28 259
-                 ror a                                     ;; @@7c29 259
+                 ror                                      ; .a= port(s), .x=sprite ;; @@7c27 259
+                 ror                                       ;; @@7c28 259
+                 ror                                       ;; @@7c29 259
                  jsr _mouse                               ; do it (???? do after coord error check) ;; @@7c2a 259
  ;; @@7c2d 259
 ; .page ;; @@7c2d 259
                  jsr optbyt                               ; get (optional) hotspot, x  new [910307] ;; @@7c2d 259
                  bcc _local_1258_20                       ; not given ;; @@7c30 259
                  cpx #24                                   ;; @@7c32 259
-                 bcs fcerr                                ; out of range (0-23) ;; @@7c34 259
+                 +lbcs fcerr                              ; out of range (0-23) ;; @@7c34 259
                  txa                                       ;; @@7c37 259
-                 neg a                                     ;; @@7c38 259
+                 neg                                       ;; @@7c38 259
                  tax                                       ;; @@7c39 259
                  adc #24                                   ;; @@7c3a 259
                  sta _mouse_left                           ;; @@7c3c 259
@@ -16911,9 +16972,9 @@ _local_1258_10   jsr chrget                               ; eat token ;; @@7c04 
 _local_1258_20   jsr optbyt                               ; get (optional) hotspot, y ;; @@7c46 259
                  bcc _local_1258_30                       ; not given ;; @@7c49 259
                  cpx #21                                   ;; @@7c4b 259
-                 bcs fcerr                                ; out of range (0-20) ;; @@7c4d 259
+                 +lbcs fcerr                              ; out of range (0-20) ;; @@7c4d 259
                  txa                                       ;; @@7c50 259
-                 neg a                                     ;; @@7c51 259
+                 neg                                       ;; @@7c51 259
                  tax                                       ;; @@7c52 259
                  adc #50                                   ;; @@7c53 259
                  sta _mouse_top                            ;; @@7c55 259
@@ -16926,7 +16987,7 @@ _local_1258_30   jsr chrgot                               ; get (optional) posit
                  beq _local_1258_40                       ; eol, use this sprite's last position ;; @@7c62 259
                  jsr sprcor                               ; else get first coordinate ;; @@7c64 259
                  bit numcnt                               ; test coordinate type ;; @@7c67 259
-                 bvs snerr                                ; syntax error ;; @@7c6a 259
+                 +lbvs snerr                              ; syntax error ;; @@7c6a 259
                  sty xdest                                ; save coordinate value ;; @@7c6d 259
                  sty xdest+2                               ;; @@7c70 259
                  sta xdest+1                               ;; @@7c73 259
@@ -16936,9 +16997,9 @@ _local_1258_30   jsr chrgot                               ; get (optional) posit
                  sta op                                    ;; @@7c7b 259
                  jsr sprcor                               ; get second coordinate ;; @@7c7d 259
                  bit numcnt                               ; test type of coordinate ;; @@7c80 259
-                 bvc movspr_normal                        ; position sprite, normal coordinates ;; @@7c83 259
-                 bmi movspr_angle                         ; angular coordinates ;; @@7c86 259
-                 bra snerr                                ; else error ;; @@7c89 259
+                 +lbvc movspr_normal                      ; position sprite, normal coordinates ;; @@7c83 259
+                 +lbmi movspr_angle                       ; angular coordinates ;; @@7c86 259
+                 +lbra snerr                              ; else error ;; @@7c89 259
  ;; @@7c8c 259
 _local_1258_40   rts                                       ;; @@7c8c 259
  ;; @@7c8d 259
@@ -16963,7 +17024,7 @@ _local_1258_40   rts                                       ;; @@7c8c 259
  ;; @@7c8d 259
 rmouse           lda #0                                   ; Init ;; @@7c8d 260
                  sta count                                ; variable count = 0 ;; @@7c8f 260
-                 dec a                                     ;; @@7c91 260
+                 dec                                       ;; @@7c91 260
                  ldx #6-1                                  ;; @@7c92 260
 _local_1259_10   sta grapnt,x                             ; positions/buttons = -1 ;; @@7c94 260
                  dex                                       ;; @@7c96 260
@@ -16997,7 +17058,7 @@ _local_1259_20   sta grapnt+1                              ;; @@7cb4 260
                  ldy #0                                   ; which port? ;; @@7ccc 260
                  plx                                      ; recall port assignments ;; @@7cce 260
 _local_1259_30   txa                                       ;; @@7ccf 260
-                 asl a                                    ; .c=1 if this one ;; @@7cd0 260
+                 asl                                      ; .c=1 if this one ;; @@7cd0 260
                  tax                                       ;; @@7cd1 260
                  bcc _local_1259_40                       ; not this one ;; @@7cd2 260
                  lda d1pra,y                              ; read it (logical port is opposite physical port) ;; @@7cd4 260
@@ -17027,7 +17088,7 @@ _local_1259_50   jsr chrgot                               ; Get a variable name 
                  sta forpnt                               ; set up so we can share LET code ;; @@7cfc 260
                  sty forpnt+1                              ;; @@7cfe 260
                  lda valtyp                               ; what kind of variable name did ptrget find? ;; @@7d00 260
-                 bne chkerr                               ; string- type mismatch error ;; @@7d02 260
+                 +lbne chkerr                             ; string- type mismatch error ;; @@7d02 260
  ;; @@7d05 260
 _local_1259_60   ldx count                                ; Make assignment ;; @@7d05 260
                  ldy grapnt,x                             ; low byte ;; @@7d07 260
@@ -17068,7 +17129,7 @@ cursor           cmp #on_token                            ; Check for ON | OFF ;
                  jsr chkesc                                ;; @@7d31 261
                  cmp #off_token                           ; turn cursor off (.c=1) ;; @@7d34 261
                  beq _local_1260_20                        ;; @@7d36 261
-                 bra snerr                                 ;; @@7d38 261
+                 +lbra snerr                               ;; @@7d38 261
  ;; @@7d3b 261
 _local_1260_1    pha                                      ; Evaluate cursor position parameters ;; @@7d3b 261
                  sec                                       ;; @@7d3c 261
@@ -17088,7 +17149,7 @@ _local_1260_10   stx column                                ;; @@7d4e 261
                  ldy column                                ;; @@7d55 261
                  clc                                       ;; @@7d57 261
                  jsr _plot                                ; set new cursor position ;; @@7d58 261
-                 bcs fcerr                                ; error if bad position ;; @@7d5b 261
+                 +lbcs fcerr                              ; error if bad position ;; @@7d5b 261
  ;; @@7d5e 261
                  jsr optzer                               ; Get new cursor type   ???? assumes screen output ;; @@7d5e 261
                  bcc _local_1260_30                       ; not given, exit ;; @@7d61 261
@@ -17132,7 +17193,7 @@ _local_1261_50   jsr chrgot                               ; Get a variable name 
                  sta forpnt                               ; set up so we can share LET code ;; @@7d99 262
                  sty forpnt+1                              ;; @@7d9b 262
                  lda valtyp                               ; what kind of variable name did ptrget find? ;; @@7d9d 262
-                 bne chkerr                               ; string- type mismatch error ;; @@7d9f 262
+                 +lbne chkerr                             ; string- type mismatch error ;; @@7d9f 262
  ;; @@7da2 262
 _local_1261_60   ldx count                                ; Make assignment ;; @@7da2 262
                  ldy column,x                             ; low byte ;; @@7da4 262
@@ -17320,7 +17381,7 @@ _local_1264_15   inx                                      ; move down one line ;
                  bra AutoSearch                           ; loop until we find a numeric digit or run out of lines ;; @@7ed4 265
  ;; @@7ed6 265
 _local_1264_20   clc                                      ; found a digit, get entire number into linnum & rts ;; @@7ed6 265
-                 bra linget                                ;; @@7ed7 265
+                 +lbra linget                              ;; @@7ed7 265
  ;; @@7eda 265
 _local_1264_30   lda #$ff                                 ; no line found, fake end of program   [910716] ;; @@7eda 265
                  sta linnum+1                              ;; @@7edc 265
@@ -17345,9 +17406,9 @@ _local_1264_30   lda #$ff                                 ; no line found, fake 
  ;; @@af00 265
 Screen                                                     ;; @@af00 266
                  cmp #open_token                          ; else dispatch per secondary token... ;; @@af00 266
-                 beq ScreenOpen                            ;; @@af02 266
+                 +lbeq ScreenOpen                          ;; @@af02 266
                  cmp #close_token                          ;; @@af05 266
-                 beq ScreenClose                           ;; @@af07 266
+                 +lbeq ScreenClose                         ;; @@af07 266
                  cmp #def_token                            ;; @@af0a 266
                  beq ScreenDef                             ;; @@af0c 266
                  cmp #clr_token                            ;; @@af0e 266
@@ -17359,7 +17420,7 @@ Screen                                                     ;; @@af00 266
 ; jsr chrget  ; get past escape token ;; @@af15 266
                  cmp #set_token                            ;; @@af15 266
                  beq ScreenSet                             ;; @@af17 266
-_local_1265_10   bra snerr                                ; report syntax error ;; @@af19 266
+_local_1265_10   +lbra snerr                              ; report syntax error ;; @@af19 266
  ;; @@af1c 266
 ; .page ;; @@af1c 266
 CheckGraphicMode                                           ;; @@af1c 267
@@ -17370,7 +17431,7 @@ CheckGraphicMode                                           ;; @@af1c 267
  ;; @@af22 267
 NoGraphicArea                                              ;; @@af22 267
                  ldx #errng                               ; bad- no graphic area???? ;; @@af22 267
-                 bra error                                 ;; @@af24 267
+                 +lbra error                               ;; @@af24 267
  ;; @@af27 267
  ;; @@af27 267
 RestoreTextScreen                                          ; [910404] ;; @@af27 267
@@ -17509,7 +17570,7 @@ C65__screendef                                             ;; @@af69 268
                  jsr combyt                               ; get depth (# bitplanes) ;; @@af87 268
                  dex                                      ; convert 1-8 to 0-7 ;; @@af8a 268
                  cpx #8                                   ; range 0-7 ;; @@af8b 268
-_local_1267_10   bcs fcerr                                ; illegal quantity error ;; @@af8d 268
+_local_1267_10   +lbcs fcerr                              ; illegal quantity error ;; @@af8d 268
                  stx GKI__parm4                           ; depth ;; @@af90 268
  ;; @@af93 268
                  jmp ($8006)                              ; bra screendef ;; @@af93 268
@@ -17530,7 +17591,7 @@ ScreenOpen                                                 ;; @@af96 269
 C65__screenopen                                            ;; @@af99 269
                  jsr getbyt                               ; get screen# in .x ;; @@af99 269
                  cpx #4                                   ; range 0-3   [910711] ;; @@af9c 269
-                 bcs fcerr                                ; branch if out of range ;; @@af9e 269
+                 +lbcs fcerr                              ; branch if out of range ;; @@af9e 269
  ;; @@afa1 269
                  stx GKI__parm1                            ;; @@afa1 269
                  jmp ($8008)                              ; screenopen    [910826] ;; @@afa4 269
@@ -17554,7 +17615,7 @@ ScreenClose                                                ;; @@afa7 269
 C65__screenclose                                           ;; @@afaa 269
                  jsr getbyt                               ; get screen# ;; @@afaa 269
                  cpx #4                                   ; range 0-3   [910711] ;; @@afad 269
-                 bcs fcerr                                ; branch if out of range ;; @@afaf 269
+                 +lbcs fcerr                              ; branch if out of range ;; @@afaf 269
                  stx GKI__parm1                            ;; @@afb2 269
  ;; @@afb5 269
                  jmp ($800a)                              ; bra screenclose ;; @@afb5 269
@@ -17572,7 +17633,7 @@ C65__screenclose                                           ;; @@afaa 269
 C65__setpen                                                ;; @@afb8 269
                  jsr getbyt                               ; get pen# ;; @@afb8 269
                  cpx #3                                   ; range 0-2 ;; @@afbb 269
-                 bcs fcerr                                ; branch if out of range ;; @@afbd 269
+                 +lbcs fcerr                              ; branch if out of range ;; @@afbd 269
                  stx GKI__parm1                            ;; @@afc0 269
  ;; @@afc3 269
                  jsr combyt                               ; get color reg# ;; @@afc3 269
@@ -17619,7 +17680,7 @@ C65__setdmode                                              ;; @@afcc 269
                  jsr combyt                               ; thickness mode (not implemented) ;; @@aff4 269
 ; dex   ; adjust to 0-7     [911003] ;; @@aff7 269
                  cpx #8+1                                  ;; @@aff7 269
-_local_1268_10   bcs fcerr                                ; illegal quantity error ;; @@aff9 269
+_local_1268_10   +lbcs fcerr                              ; illegal quantity error ;; @@aff9 269
                  stx GKI__parm5                            ;; @@affc 269
  ;; @@afff 269
                  jmp ($8014)                              ; bra setdmode ;; @@afff 269
@@ -17641,7 +17702,7 @@ _local_1268_10   bcs fcerr                                ; illegal quantity err
 C65__setdpat                                               ;; @@b002 270
                  jsr getbyt                               ; get pattern type ;; @@b002 270
                  cpx #4+1                                 ; 63+1       [911028] ;; @@b005 270
-_local_1269_10   bcs fcerr                                ; if out of range ;; @@b007 270
+_local_1269_10   +lbcs fcerr                              ; if out of range ;; @@b007 270
                  stx GKI__parm1                            ;; @@b00a 270
                  txa                                       ;; @@b00d 270
                  bne _local_1269_20                       ; if parm1 is 0 then get extra stuff ;; @@b00e 270
@@ -17656,7 +17717,7 @@ _local_1269_10   bcs fcerr                                ; if out of range ;; @
                  stx GKI__parm3                            ;; @@b01f 270
                  dec z_p_temp_1                            ;; @@b022 270
                  beq _local_1269_20                        ;; @@b024 270
-                 bmi fcerr                                ; too few bytes ;; @@b026 270
+                 +lbmi fcerr                              ; too few bytes ;; @@b026 270
  ;; @@b029 270
                  jsr combyt                               ; get byte 2 ;; @@b029 270
                  stx GKI__parm4                            ;; @@b02c 270
@@ -17702,7 +17763,7 @@ _local_1270_10   cmp #color_token                         ; set physical color r
  ;; @@b05f 271
 _local_1270_20   jsr getbyt                               ; get screen# ;; @@b05f 271
                  cpx #4                                   ; [910711] ;; @@b062 271
-                 bcs fcerr                                 ;; @@b064 271
+                 +lbcs fcerr                               ;; @@b064 271
                  stx GKI__parm1                            ;; @@b067 271
  ;; @@b06a 271
                  jsr combyt                               ; get color reg # ;; @@b06a 271
@@ -17711,7 +17772,7 @@ _local_1270_30   stx GKI__parm2                           ; (GKI will check for 
 set_palette                                                ;; @@b070 272
                  jsr combyt                               ; get red & fgbg ;; @@b070 272
                  cpx #32                                  ; [910520] ;; @@b073 272
-                 bcs fcerr                                 ;; @@b075 272
+                 +lbcs fcerr                               ;; @@b075 272
                  stx GKI__parm3                            ;; @@b078 272
  ;; @@b07b 272
                  jsr getcomnyb                            ; get green ;; @@b07b 272
@@ -17736,7 +17797,7 @@ set_palette                                                ;; @@b070 272
                  bra _local_1271_50                        ;; @@b0a1 272
  ;; @@b0a3 272
 _local_1271_40   jsr ($8012)                              ; go set screen palette ;; @@b0a3 272
-                 bcs NoGraphicArea                        ; illegal screen# or color#  [910917] ;; @@b0a6 272
+                 +lbcs NoGraphicArea                      ; illegal screen# or color#  [910917] ;; @@b0a6 272
  ;; @@b0a9 272
 _local_1271_50   jsr optbyt                               ; get another color reg # ? ;; @@b0a9 272
                  stx GKI__parm2                            ;; @@b0ac 272
@@ -17757,9 +17818,9 @@ _local_1271_50   jsr optbyt                               ; get another color re
  ;; @@b0b2 272
 C65__line                                                  ;; @@b0b2 273
                  cmp #input_token                         ; special check for 'line input#'  [910103] ;; @@b0b2 273
-                 beq linputn                              ; yes ;; @@b0b4 273
+                 +lbeq linputn                            ; yes ;; @@b0b4 273
                  cmp #input_token+1                       ; special check for 'line input' ;; @@b0b7 273
-                 beq linput                               ; yes ;; @@b0b9 273
+                 +lbeq linput                             ; yes ;; @@b0b9 273
  ;; @@b0bc 273
                  jsr CheckGraphicMode                      ;; @@b0bc 273
                  jsr sadwrd                               ; get x0 ;; @@b0bf 273
@@ -17883,7 +17944,7 @@ C65__circle                                                ;; @@b15b 274
  ;; @@b179 274
                  jsr optzer                               ; get solid flag ;; @@b179 274
                  cpx #2                                    ;; @@b17c 274
-                 bcs fcerr                                 ;; @@b17e 274
+                 +lbcs fcerr                               ;; @@b17e 274
                  stx GKI__parm7                            ;; @@b181 274
  ;; @@b184 274
                  jmp ($801c)                              ; bra circle ;; @@b184 274
@@ -17927,7 +17988,7 @@ C65__ellipse                                               ;; @@b187 274
  ;; @@b1ae 274
                  jsr optzer                               ; get solid flag ;; @@b1ae 274
                  cpx #2                                    ;; @@b1b1 274
-                 bcs fcerr                                 ;; @@b1b3 274
+                 +lbcs fcerr                               ;; @@b1b3 274
                  stx GKI__parm9                            ;; @@b1b6 274
  ;; @@b1b9 274
                  jmp ($8020)                              ; bra ellipse ;; @@b1b9 274
@@ -17978,13 +18039,13 @@ C65__polygon                                              ; changed BASIC syntax
                  cpx #3                                    ;; @@b1e6 274
                  bcc _local_1273_20                       ; too few ;; @@b1e8 274
                  cpx #128                                  ;; @@b1ea 274
-_local_1273_10   bcs fcerr                                ; too many ;; @@b1ec 274
+_local_1273_10   +lbcs fcerr                              ; too many ;; @@b1ec 274
                  stx GKI__parm13                           ;; @@b1ef 274
  ;; @@b1f2 274
 ; ldx GKI__parm13  ;get number of sides to draw (default=#sides) ;; @@b1f2 274
                  jsr optbyt                                ;; @@b1f2 274
                  cpx #1                                   ; must be at least 1 side ;; @@b1f5 274
-_local_1273_20   bcc fcerr                                 ;; @@b1f7 274
+_local_1273_20   +lbcc fcerr                               ;; @@b1f7 274
                  stx GKI__parm12                           ;; @@b1fa 274
                  dex                                       ;; @@b1fd 274
                  cpx GKI__parm13                          ; draw sides must be <= #sides ;; @@b1fe 274
@@ -18014,19 +18075,19 @@ _local_1273_20   bcc fcerr                                 ;; @@b1f7 274
  ;; @@b21b 274
 C65__set                                                   ;; @@b21b 275
                  cmp #verify_token                        ; SET VERIFY <ON | OFF>  new [910429] ;; @@b21b 275
-                 beq verify_mode                           ;; @@b21d 275
+                 +lbeq verify_mode                         ;; @@b21d 275
                  cmp #def_token                           ; SET DEF unit ;; @@b220 275
                  bne _local_1274_10                        ;; @@b222 275
                  jsr getdisknum_1                          ;; @@b224 275
                  stx _default_drive                        ;; @@b227 275
                  stx dosfa                                ; Make last DOS device = current device ;; @@b22a 275
-                 bra Clear_DS                              ;; @@b22d 275
+                 +lbra Clear_DS                            ;; @@b22d 275
  ;; @@b230 275
  ;; @@b230 275
  ;; @@b230 275
 _local_1274_10   jsr chkesc                               ; Must be ESCape token ;; @@b230 275
                  cmp #disk_token                          ; ok so far ;; @@b233 275
-                 bne bad_command                          ; unknown command ;; @@b235 275
+                 +lbne bad_command                        ; unknown command ;; @@b235 275
  ;; @@b238 275
  ;; @@b238 275
  ;; @@b238 275
@@ -18035,11 +18096,11 @@ _local_1274_10   jsr chkesc                               ; Must be ESCape token
                  stx dosfa                                ; got current disk unit # ;; @@b23b 275
  ;; @@b23e 275
                  jsr chrgot                               ; check delimiter (comma, 'TO', or eos) ;; @@b23e 275
-                 beq Clear_DS                             ; eos- just change DOS' current drive [910417] ;; @@b241 275
+                 +lbeq Clear_DS                           ; eos- just change DOS' current drive [910417] ;; @@b241 275
                  cmp #','                                 ; not eos, must be comma or 'TO' ;; @@b244 275
                  beq _local_1274_20                        ;; @@b246 275
                  cmp #to_token                             ;; @@b248 275
-                 bne snerr                                 ;; @@b24a 275
+                 +lbne snerr                               ;; @@b24a 275
  ;; @@b24d 275
 _local_1274_20   jsr getdisknum_1                         ; skip delimiter ;; @@b24d 275
                  stx dosds2                               ; got new disk unit # ;; @@b250 275
@@ -18066,7 +18127,7 @@ _local_1274_30   lda disk_renum_cmd,x                     ; move command to RAM,
                  jsr SendDiskCmd                          ; Send command ;; @@b273 275
                  lda dosds2                                ;; @@b276 275
                  sta dosfa                                ; Make last DOS device = current device ;; @@b279 275
-                 bra close_out_1                          ; common error check & exit path ???? ;; @@b27c 275
+                 +lbra close_out_1                        ; common error check & exit path ???? ;; @@b27c 275
  ;; @@b27f 275
  ;; @@b27f 275
 disk_renum_cmd   !text "M-W",119,0,2                      ; Renumber Drive command ;; @@b27f 276
@@ -18080,9 +18141,9 @@ getdisknum_1                                               ;; @@b285 276
 getdisknum                                                 ;; @@b288 276
                  jsr getbyt                               ; get number in .x ;; @@b288 276
                  cpx #8                                   ; check range (8-30) ;; @@b28b 276
-                 bcc fcerr                                 ;; @@b28d 276
+                 +lbcc fcerr                               ;; @@b28d 276
                  cpx #31                                   ;; @@b290 276
-                 bcs fcerr                                 ;; @@b292 276
+                 +lbcs fcerr                               ;; @@b292 276
                  rts                                      ; returns only if okay ;; @@b295 276
  ;; @@b296 276
  ;; @@b296 276
@@ -18105,7 +18166,7 @@ SendDiskCmd                                                ;; @@b296 276
                  lda #doslfn                              ; close it already ;; @@b2b2 276
                  sec                                      ; not a real close ;; @@b2b4 276
                  jsr _close                                ;; @@b2b5 276
-                 bra Clear_DS                             ; Exit ;; @@b2b8 276
+                 +lbra Clear_DS                           ; Exit ;; @@b2b8 276
  ;; @@b2bb 276
 ; .page ;; @@b2bb 276
 ;  SET VERIFY <ON | OFF> Set DOS verify-after-write mode for 3.5" drives ;; @@b2bb 276
@@ -18117,7 +18178,7 @@ verify_mode                                                ;; @@b2bb 276
                  beq _local_1275_10                       ; turn verify on (.c=1) ;; @@b2c1 276
                  jsr chkesc                                ;; @@b2c3 276
                  cmp #off_token                           ; turn cursor off (.c=0) ;; @@b2c6 276
-                 bne snerr                                 ;; @@b2c8 276
+                 +lbne snerr                               ;; @@b2c8 276
                  clc                                       ;; @@b2cb 276
  ;; @@b2cc 276
 ;  Open disk command channel & pass it 'verify' command ;; @@b2cc 276
@@ -18133,13 +18194,13 @@ _local_1275_20   lda verify_cmd,x                         ; move command to RAM,
  ;; @@b2db 276
                  lda #0                                   ; form on/off flag ;; @@b2db 276
                  plp                                       ;; @@b2dd 276
-                 rol a                                     ;; @@b2de 276
+                 rol                                       ;; @@b2de 276
                  ora #$30                                  ;; @@b2df 276
                  sta savram+4                              ;; @@b2e1 276
  ;; @@b2e4 276
                  lda #5                                   ; command string length ;; @@b2e4 276
                  jsr SendDiskCmd                          ; Send command ;; @@b2e6 276
-                 bra close_out_1                          ; common error check & exit path ???? ;; @@b2e9 276
+                 +lbra close_out_1                        ; common error check & exit path ???? ;; @@b2e9 276
  ;; @@b2ec 276
  ;; @@b2ec 276
 verify_cmd       !text "U0>V"                             ; Verify on/off command ;; @@b2ec 277
@@ -18252,7 +18313,7 @@ C65__paint                                                ; new [910228] FAB ;; 
                  ldx #0                                   ; [910916] ;; @@b370 278
                  jsr optbyt                               ; mode, default = 0 (fill region pointed to) ;; @@b372 278
                  cpx #3                                    ;; @@b375 278
-                 bcs fcerr                                ; (range 0-2) ;; @@b377 278
+                 +lbcs fcerr                              ; (range 0-2) ;; @@b377 278
                  stx GKI__parm5                            ;; @@b37a 278
                  ldx #0                                    ;; @@b37d 278
                  jsr optbyt                               ; boundary color, default = 0 ;; @@b37f 278
@@ -18276,8 +18337,8 @@ _local_1277_10   jsr garba2                               ; create space in var 
                  rts                                       ;; @@b3a6 278
  ;; @@b3a7 278
 _local_1277_20   cpx #errom                                ;; @@b3a7 278
-                 beq error                                ; stack overflow, say 'out of memory' ;; @@b3a9 278
-                 bra break_exit                           ; user hit stop key ;; @@b3ac 278
+                 +lbeq error                              ; stack overflow, say 'out of memory' ;; @@b3a9 278
+                 +lbra break_exit                         ; user hit stop key ;; @@b3ac 278
  ;; @@b3af 278
 ; .page ;; @@b3af 278
 ; .subttl   LOAD/SAVE IFF ;; @@b3af 278
@@ -18304,7 +18365,7 @@ loadiff                                                    ;; @@b3af 279
                  ldx dosla                                 ;; @@b3cb 279
 ; stx GKI__parm1 ;; @@b3ce 279
                  jsr _chkin                               ; get input channel ;; @@b3ce 279
-_local_1278_10   bcs list_err                             ; exit if error ;; @@b3d1 279
+_local_1278_10   +lbcs list_err                           ; exit if error ;; @@b3d1 279
  ;; @@b3d4 279
                  jsr ($802a)                              ; Load it ;; @@b3d4 279
  ;; @@b3d7 279
@@ -18318,7 +18379,7 @@ exit_GKI_disk_op                                           ;; @@b3d7 280
                  jsr is_stop_key_down                     ; weed out BREAK error ;; @@b3e2 280
                  plx                                       ;; @@b3e5 280
                  plp                                       ;; @@b3e6 280
-                 bcs error                                ; must be I/O or file data error ;; @@b3e7 280
+                 +lbcs error                              ; must be I/O or file data error ;; @@b3e7 280
                  rts                                      ; load was successful ;; @@b3ea 280
  ;; @@b3eb 280
 ; .page ;; @@b3eb 280
@@ -18344,7 +18405,7 @@ saveiff                                                    ;; @@b3eb 280
                  ldx dosla                                 ;; @@b407 280
 ; stx GKI__parm1 ;; @@b40a 280
                  jsr _chkout                              ; get output channel ;; @@b40a 280
-_local_1279_10   bcs list_err                             ; exit if error ;; @@b40d 280
+_local_1279_10   +lbcs list_err                           ; exit if error ;; @@b40d 280
  ;; @@b410 280
                  jsr ($803a)                              ; Save it ;; @@b410 280
                  bra exit_GKI_disk_op                      ;; @@b413 280
@@ -18396,7 +18457,7 @@ C65__Viewport                                              ;; @@b415 281
                  cmp #clr_token                            ;; @@b441 281
                  beq _local_1280_10                        ;; @@b443 281
                  cmp #def_token                            ;; @@b445 281
-                 bne snerr                                ; error ;; @@b447 281
+                 +lbne snerr                              ; error ;; @@b447 281
  ;; @@b44a 281
                  jmp ($8030)                              ; define viewport & return ;; @@b44a 281
  ;; @@b44d 281
@@ -18422,7 +18483,7 @@ genlock          sta GKI__parm1                           ; save token as flag f
                  beq _local_1281_20                        ;; @@b458 282
                  jsr chkesc                                ;; @@b45a 282
                  cmp #off_token                            ;; @@b45d 282
-                 bne snerr                                 ;; @@b45f 282
+                 +lbne snerr                               ;; @@b45f 282
 ;TURN GENLOCK OFF ;; @@b462 282
                  lda vic+49                               ; any interlaced bitplanes on? ;; @@b462 282
                  and #%00011001                            ;; @@b465 282
@@ -18443,13 +18504,13 @@ _local_1281_10   lda #%00000010                            ;; @@b470 282
 _local_1281_12   jsr chrget                               ; eat token ;; @@b475 282
                  jsr optbyt                               ; get (optional) color reg# in .X ;; @@b478 282
                  stx GKI__parm2                           ; save it ;; @@b47b 282
-                 bcs set_palette                          ; if present, go do it & exit ;; @@b47e 282
+                 +lbcs set_palette                        ; if present, go do it & exit ;; @@b47e 282
 _local_1281_15   rts                                      ; if not present (eol), exit ;; @@b481 282
  ;; @@b482 282
  ;; @@b482 282
 _local_1281_20   lda #%00000001                           ; TURN GENLOCK ON ;; @@b482 282
                  tsb vic+49                               ; set interlace mode ;; @@b484 282
-                 asl a                                     ;; @@b487 282
+                 asl                                       ;; @@b487 282
                  tsb vic+48                               ; set external sync mode ;; @@b488 282
 ; bne _local_1281_22   ;       [910114] ;; @@b48b 282
 ; lda vic+63  ;       [910111] ;; @@b48b 282
@@ -18482,7 +18543,7 @@ color            cmp #','                                 ; optional first arg ;
                  beq _local_1282_10                        ;; @@b4a0 283
                  jsr chkesc                                ;; @@b4a2 283
                  cmp #off_token                            ;; @@b4a5 283
-_local_1282_5    bne snerr                                 ;; @@b4a7 283
+_local_1282_5    +lbne snerr                               ;; @@b4a7 283
  ;; @@b4aa 283
                  ldy #'['                                 ; OFF (color & attributes) ;; @@b4aa 283
                  !text $2c                                 ;; @@b4ac 283
@@ -18508,7 +18569,7 @@ _local_1282_20   jsr chkcom                               ; else must be comma, 
  ;; @@b4d2 283
 _local_1282_30   lda #%00000010                           ; ON ;; @@b4d2 283
                  trb vic+49                                ;; @@b4d4 283
-_local_1282_35   bra chrget                               ; exit after eating last token ;; @@b4d7 283
+_local_1282_35   +lbra chrget                             ; exit after eating last token ;; @@b4d7 283
  ;; @@b4da 283
 _local_1282_40   rts                                      ; exit after encountering eol ;; @@b4da 283
  ;; @@b4db 283
@@ -18521,7 +18582,7 @@ foreground                                                 ;; @@b4db 284
  ;; @@b4e1 284
  ;; @@b4e1 284
 highlight                                                  ;; @@b4e1 284
-                 beq snerr                                ; missing args??     [911017] ;; @@b4e1 284
+                 +lbeq snerr                              ; missing args??     [911017] ;; @@b4e1 284
                  cmp #','                                  ;; @@b4e4 284
                  beq _local_1283_10                       ; options byte only ;; @@b4e6 284
  ;; @@b4e8 284
@@ -18532,9 +18593,9 @@ _local_1283_10   jsr optzer                               ; set options:     [91
                  bcc _local_1283_20                       ; comma but no value not given?? ;; @@b4f1 284
                  txa                                       ;; @@b4f3 284
                  and #3                                   ; 0= error msgs only ;; @@b4f4 284
-                 asl a                                    ; 1= REMs ;; @@b4f6 284
-                 asl a                                    ; 2= tokens ;; @@b4f7 284
-                 asl a                                     ;; @@b4f8 284
+                 asl                                      ; 1= REMs ;; @@b4f6 284
+                 asl                                      ; 2= tokens ;; @@b4f7 284
+                 asl                                       ;; @@b4f8 284
                  sta helper                                ;; @@b4f9 284
 _local_1283_20   rts                                       ;; @@b4fb 284
  ;; @@b4fc 284
@@ -18559,23 +18620,23 @@ getnyb                                                     ;; @@b50d 285
                  jsr getbyt                               ; Get a nybble, check range (0-15) ;; @@b50d 285
 chknyb                                                     ;; @@b510 285
                  cpx #16                                   ;; @@b510 285
-                 bcs fcerr                                 ;; @@b512 285
+                 +lbcs fcerr                               ;; @@b512 285
                  rts                                       ;; @@b515 285
  ;; @@b516 285
  ;; @@b516 285
  ;; @@b516 285
 chkesc                                                    ; Check for escape token, error if not, else get next token ;; @@b516 285
                  cmp #esc_command_token                    ;; @@b516 285
-                 bne snerr                                 ;; @@b518 285
+                 +lbne snerr                               ;; @@b518 285
                  jsr chrget                                ;; @@b51b 285
-                 beq snerr                                ; eos? report error if so ;; @@b51e 285
+                 +lbeq snerr                              ; eos? report error if so ;; @@b51e 285
                  rts                                       ;; @@b521 285
  ;; @@b522 285
  ;; @@b522 285
  ;; @@b522 285
 chkeos                                                    ; Check for next byte = end of statement, error if not ;; @@b522 285
                  jsr chrget                                ;; @@b522 285
-                 bne snerr                                ; eos? report error if not ;; @@b525 285
+                 +lbne snerr                              ; eos? report error if not ;; @@b525 285
                  rts                                       ;; @@b528 285
  ;; @@b529 285
  ;; @@b529 285
@@ -18598,7 +18659,7 @@ chkeos                                                    ; Check for next byte 
 ;************************************************************************************ ;; @@b529 285
  ;; @@b529 285
 sprite           cmp #clr_token                           ; SPRITE CLR: init environment   [910717] ;; @@b529 285
-                 beq Sprite_CLR                           ; yes ;; @@b52b 285
+                 +lbeq Sprite_CLR                         ; yes ;; @@b52b 285
                  cmp #save_token                          ; SPRITE SAVE: save sprite data   [911001] ;; @@b52e 285
                  beq Sprite_Save                          ; yes ;; @@b530 285
                  cmp #load_token                          ; SPRITE LOAD: load sprite data   [911001] ;; @@b532 285
@@ -18651,7 +18712,7 @@ Sprite_Save                                               ; Just like Key_Save  
                  iny                                      ; end address = start address + 512 + 1 ;; @@b587 286
                  iny                                       ;; @@b588 286
                  inx                                       ;; @@b589 286
-                 bra savenb                               ; [910925] ;; @@b58a 286
+                 +lbra savenb                             ; [910925] ;; @@b58a 286
  ;; @@b58d 286
  ;; @@b58d 286
  ;; @@b58d 286
@@ -18662,7 +18723,7 @@ Sprite_Load                                                ;; @@b58d 286
                  jsr LoadBlock                            ; load first block ;; @@b594 286
                  inc highds+1                              ;; @@b597 286
                  jsr LoadBlockNext                        ; load second block ;; @@b599 286
-                 bra list_err                             ; release channel, close file, return to main ;; @@b59c 286
+                 +lbra list_err                           ; release channel, close file, return to main ;; @@b59c 286
  ;; @@b59f 286
 ; .page ;; @@b59f 286
 ;  Set or clear a bit in a VIC register ;; @@b59f 286
@@ -18671,8 +18732,8 @@ Sprite_Load                                                ;; @@b58d 286
 ; .Y = register in VIC to operate opon ;; @@b59f 286
  ;; @@b59f 286
 sprbit           txa                                       ;; @@b59f 286
-                 lsr a                                    ; put lsb in .C (0 clear, 1 set sprite bit) ;; @@b5a0 286
-                 bne fcerr                                ; only 0 or 1, please. ;; @@b5a1 286
+                 lsr                                      ; put lsb in .C (0 clear, 1 set sprite bit) ;; @@b5a0 286
+                 +lbne fcerr                              ; only 0 or 1, please. ;; @@b5a1 286
 ; jsr put_io_in_map ;; @@b5a4 286
                  ldx z_p_temp_1                           ; get sprite number ;; @@b5a4 286
                  lda sbits,x                               ;; @@b5a6 286
@@ -18687,7 +18748,7 @@ get_sprite_number                                           ;; @@b5b5 287
                  jsr getbyt                                ;; @@b5b5 287
 ; dex        [910221] ;; @@b5b8 287
                  cpx #8                                    ;; @@b5b8 287
-                 bcs fcerr                                 ;; @@b5ba 287
+                 +lbcs fcerr                               ;; @@b5ba 287
                  stx z_p_temp_1                            ;; @@b5bd 287
                  rts                                       ;; @@b5bf 287
  ;; @@b5c0 287
@@ -18713,7 +18774,7 @@ movspr           lda #0                                   ; flag 'movspr' initia
                  jsr sprcor                               ; get first coordinate (y,a) ;; @@b5c7 287
 movspr_1                                                  ; entry to eval destination coordinate  [910808] ;; @@b5ca 287
                  bit numcnt                               ; test coordinate type ;; @@b5ca 287
-                 bvs snerr                                ; syntax error ;; @@b5cd 287
+                 +lbvs snerr                              ; syntax error ;; @@b5cd 287
                  sty xdest                                ; save coordinate value ;; @@b5d0 287
                  sty xdest+2                               ;; @@b5d3 287
                  sta xdest+1                               ;; @@b5d6 287
@@ -18725,7 +18786,7 @@ movspr_1                                                  ; entry to eval destin
                  bmi movspr_angle                         ; angular coordinates ;; @@b5e4 287
  ;; @@b5e6 287
                  bit op                                   ; angle#speed, test if allowed ;; @@b5e6 287
-                 bmi snerr                                ; ng- movspr_to call ;; @@b5e8 287
+                 +lbmi snerr                              ; ng- movspr_to call ;; @@b5e8 287
                  phy                                      ; ok- save speed value ;; @@b5eb 287
                  ldy #xdest-vwork                          ;; @@b5ec 287
                  jsr getang                               ; get angle of movement ;; @@b5ee 287
@@ -18800,7 +18861,7 @@ movspr_position                                            ;; @@b64a 289
                  sei                                      ; [910123] ;; @@b64a 289
                  lda z_p_temp_1                           ; get sprite number ;; @@b64b 289
                  tax                                      ; use as an index ;; @@b64d 289
-                 asl a                                     ;; @@b64e 289
+                 asl                                       ;; @@b64e 289
                  tay                                      ; get sprite-number * 2 as another index ;; @@b64f 289
  ;; @@b650 289
                  bbr7 op,_local_1288_10                    ;; @@b650 289
@@ -18890,7 +18951,7 @@ _local_1289_30   phy                                       ;; @@b6d2 290
                  sta xpos+1                                ;; @@b6ed 290
                  sta ypos+1                                ;; @@b6f0 290
                  tya                                       ;; @@b6f3 290
-                 lsr a                                     ;; @@b6f4 290
+                 lsr                                       ;; @@b6f4 290
                  tay                                       ;; @@b6f5 290
                  lda sbits,y                               ;; @@b6f6 290
                  and vic+16                                ;; @@b6f9 290
@@ -18946,11 +19007,11 @@ _local_1290_20   cmp #0                                    ;; @@b71a 291
                  beq _local_1290_40                       ; zero direction ;; @@b720 291
 _local_1290_30   inc xsgn,x                               ; positive direction ;; @@b722 291
 _local_1290_40   sta xabs,x                                ;; @@b725 291
-                 asl a                                     ;; @@b728 291
+                 asl                                       ;; @@b728 291
                  sta fct,x                                ; fct(x,y) = 2*abs(x,y) ;; @@b729 291
                  tya                                       ;; @@b72c 291
                  sta xabs+1,x                              ;; @@b72d 291
-                 rol a                                     ;; @@b730 291
+                 rol                                       ;; @@b730 291
                  sta fct+1,x                               ;; @@b731 291
                  dex                                       ;; @@b734 291
                  dex                                       ;; @@b735 291
@@ -18962,8 +19023,8 @@ _local_1290_40   sta xabs,x                                ;; @@b725 291
                  ldy #xabs-savram                          ;; @@b73e 291
                  jsr subtwo_savram                         ;; @@b740 291
                  lda #0                                    ;; @@b743 291
-                 rol a                                     ;; @@b745 291
-                 rol a                                    ; a = c * 2 ;; @@b746 291
+                 rol                                       ;; @@b745 291
+                 rol                                      ; a = c * 2 ;; @@b746 291
                  sta lesser                               ; index to smaller delta ;; @@b747 291
                  eor #2                                    ;; @@b74a 291
                  sta greatr                               ; index to greater delta ;; @@b74c 291
@@ -19015,19 +19076,19 @@ _local_1290_40   sta xabs,x                                ;; @@b725 291
                  lda xsgn,y                               ; set dir(max) and max ;; @@b78e 291
                  ora xsgn+1,y                              ;; @@b791 291
                  and #3                                    ;; @@b794 291
-                 lsr a                                     ;; @@b796 291
-                 ror a                                     ;; @@b797 291
+                 lsr                                       ;; @@b796 291
+                 ror                                       ;; @@b797 291
                  ora greatr                                ;; @@b798 291
-                 ror a                                     ;; @@b79b 291
+                 ror                                       ;; @@b79b 291
                  sta sprite_data+4,x                       ;; @@b79c 291
                  ldy lesser                                ;; @@b79f 291
                  lda xsgn,y                               ; set dir(min) and min ;; @@b7a2 291
                  ora xsgn+1,y                              ;; @@b7a5 291
                  and #3                                    ;; @@b7a8 291
-                 lsr a                                     ;; @@b7aa 291
-                 ror a                                     ;; @@b7ab 291
+                 lsr                                       ;; @@b7aa 291
+                 ror                                       ;; @@b7ab 291
                  ora lesser                                ;; @@b7ac 291
-                 ror a                                     ;; @@b7af 291
+                 ror                                       ;; @@b7af 291
                  sta sprite_data+3,x                       ;; @@b7b0 291
                  ldy #0                                   ; set f1, f2, and e ;; @@b7b3 291
 _local_1290_50   lda fct,y                                 ;; @@b7b5 291
@@ -19052,7 +19113,7 @@ sprcor_1                                                   ;; @@b7c6 292
                  beq _local_1291_30                       ; skip if yes - 2 msb's = 1 1 ;; @@b7cd 292
                  cmp #'#'                                 ; test if speed type ;; @@b7cf 292
                  beq _local_1291_20                       ; skip if yes - 2 msb's = 0 1 ;; @@b7d1 292
-                 bra snerr                                ; syntax error if none of above ;; @@b7d3 292
+                 +lbra snerr                              ; syntax error if none of above ;; @@b7d3 292
  ;; @@b7d6 292
 _local_1291_10   jsr chrgot                               ; test for relative coordinate ;; @@b7d6 292
                  cmp #plus_token                          ; test if plus sign ;; @@b7d9 292
@@ -19063,7 +19124,7 @@ _local_1291_20   clc                                      ; reset to show absolu
 _local_1291_30   ror numcnt                               ; shift in second flag bit ;; @@b7e2 292
  ;; @@b7e5 292
 sadwrd           jsr frmnum                               ; get number     label [910307] ;; @@b7e5 293
-                 bra getsad                               ; get signed 2 byte coordinate,do rts ;; @@b7e8 293
+                 +lbra getsad                             ; get signed 2 byte coordinate,do rts ;; @@b7e8 293
  ;; @@b7eb 293
 ; .page ;; @@b7eb 293
 ;************************************************************* ;; @@b7eb 293
@@ -19200,7 +19261,7 @@ savs50           lda sprtmp_1                             ; restore basic text p
                  sta facmo                                ; save descriptor address of source ;; @@b8a0 296
                  lda #>savsiz                              ;; @@b8a2 296
                  sta facmo+1                               ;; @@b8a4 296
-                 bra inpcom                               ; move source to dest, do rts (snerr if not eol) ;; @@b8a6 296
+                 +lbra inpcom                             ; move source to dest, do rts (snerr if not eol) ;; @@b8a6 296
  ;; @@b8a9 296
 ; .page ;; @@b8a9 296
 savinp           jsr frmevl                               ; evaluate expression ;; @@b8a9 296
@@ -19208,11 +19269,11 @@ savinp           jsr frmevl                               ; evaluate expression 
                  jsr conint                               ; get one byte integer in .X ;; @@b8af 296
 ; dex    ;adjust sprite 1..8 to 0..7  [910220] ;; @@b8b2 296
                  cpx #8                                    ;; @@b8b2 296
-                 bcs fcerr                                ; bad value ;; @@b8b4 296
+                 +lbcs fcerr                              ; bad value ;; @@b8b4 296
                  txa                                      ; move sprite number to .A ;; @@b8b7 296
-                 lsr a                                     ;; @@b8b8 296
-                 ror a                                     ;; @@b8b9 296
-                 ror a                                    ; get sprite address ;; @@b8ba 296
+                 lsr                                       ;; @@b8b8 296
+                 ror                                       ;; @@b8b9 296
+                 ror                                      ; get sprite address ;; @@b8ba 296
                  ldy #>sprite_base                         ;; @@b8bb 296
                  bcc _local_1295_5                         ;; @@b8bd 296
                  iny                                       ;; @@b8bf 296
@@ -19258,7 +19319,7 @@ collision                                                  ;; @@b8dc 297
                  jsr getbyt                               ; get type in .X ;; @@b8dc 297
                  dex                                      ; adjust 1..3 to 0..2 ;; @@b8df 297
                  cpx #3                                    ;; @@b8e0 297
-                 bcs fcerr                                ; value error ;; @@b8e2 297
+                 +lbcs fcerr                              ; value error ;; @@b8e2 297
  ;; @@b8e5 297
                  phx                                      ; save collision type ;; @@b8e5 297
                  jsr optwrd                               ; get address (line number) in .Y,.A (optional) ;; @@b8e6 297
@@ -19291,9 +19352,9 @@ rcolor           jsr conint                               ; evaluate integer arg
 ; jsr put_io_in_map ;; @@b902 298
  ;; @@b902 298
                  cpx #4                                    ;; @@b902 298
-                 bcs fcerr                                ; illegal qty ;; @@b904 298
+                 +lbcs fcerr                              ; illegal qty ;; @@b904 298
                  txa                                       ;; @@b907 298
-                 asl a                                    ; make into word pointer ;; @@b908 298
+                 asl                                      ; make into word pointer ;; @@b908 298
                  tax                                       ;; @@b909 298
                  lda color_source,x                       ; get address of source ;; @@b90a 298
                  sta grapnt                                ;; @@b90d 298
@@ -19304,10 +19365,10 @@ rcolor           jsr conint                               ; evaluate integer arg
                  and #$0f                                 ; mask unused bits ;; @@b918 298
                  tay                                       ;; @@b91a 298
 ; iny   ; make color match keytops ;; @@b91b 298
-                 bra sngflt                               ; float 1 byte in .Y ;; @@b91b 298
+                 +lbra sngflt                             ; float 1 byte in .Y ;; @@b91b 298
  ;; @@b91e 298
 color_source                                               ;; @@b91e 298
-                 !word  vic+33,_color,highlight_color,vic+32  ;; @@b91e 298
+                 !word vic+33,_color,highlight_color,vic+32  ;; @@b91e 298
  ;; @@b926 298
 ; .page ;; @@b926 298
 ; .subttl Graphic Functions ;; @@b926 298
@@ -19343,23 +19404,23 @@ rgraphic                                                   ;; @@b926 298
                  jsr chkcls                               ; check for closing parens ;; @@b93b 298
  ;; @@b93e 298
                  jsr ($8038)                              ; read screen params ;; @@b93e 298
-_local_1297_1    bcs fcerr                                ; bad input???? ;; @@b941 298
+_local_1297_1    +lbcs fcerr                              ; bad input???? ;; @@b941 298
  ;; @@b944 298
                  lda GKI__parm2                            ;; @@b944 298
                  plx                                      ; get back desired param # ;; @@b947 298
                  dex                                       ;; @@b948 298
                  bpl _local_1297_10                        ;; @@b949 298
                  eor #$80                                 ; make 0=closed, 1=open, >1=invalid ;; @@b94b 298
-                 lsr a                                     ;; @@b94d 298
-                 lsr a                                     ;; @@b94e 298
+                 lsr                                       ;; @@b94d 298
+                 lsr                                       ;; @@b94e 298
                  bra _local_1297_12                       ; return screen open status ;; @@b94f 298
  ;; @@b951 298
 _local_1297_10   dex                                       ;; @@b951 298
                  bpl _local_1297_20                        ;; @@b952 298
-_local_1297_12   lsr a                                     ;; @@b954 298
-_local_1297_15   lsr a                                     ;; @@b955 298
-                 lsr a                                     ;; @@b956 298
-                 lsr a                                     ;; @@b957 298
+_local_1297_12   lsr                                       ;; @@b954 298
+_local_1297_15   lsr                                       ;; @@b955 298
+                 lsr                                       ;; @@b956 298
+                 lsr                                       ;; @@b957 298
                  and #3                                    ;; @@b958 298
                  bra _local_1297_40                       ; return width, height ;; @@b95a 298
  ;; @@b95c 298
@@ -19370,7 +19431,7 @@ _local_1297_20   dex                                       ;; @@b95c 298
 _local_1297_25   dex                                       ;; @@b963 298
                  bpl _local_1297_30                        ;; @@b964 298
                  and #7                                   ; return depth ;; @@b966 298
-                 inc a                                    ; make depth 1-8 ;; @@b968 298
+                 inc                                      ; make depth 1-8 ;; @@b968 298
                  bra _local_1297_40                        ;; @@b969 298
  ;; @@b96b 298
 _local_1297_30   lda GKI__parm3,x                         ; return bp bask, banks, etc. ;; @@b96b 298
@@ -19414,7 +19475,7 @@ rpen             jsr CheckGraphicMode                     ; verify screen open ;
                  stx GKI__parm1                            ;; @@b9a8 299
  ;; @@b9ab 299
                  jsr ($8036)                              ; convert to logical color# (palette index#) ;; @@b9ab 299
-_local_1298_10   bcs fcerr                                ; drawscreen not set or illegal quantity somewhere ;; @@b9ae 299
+_local_1298_10   +lbcs fcerr                              ; drawscreen not set or illegal quantity somewhere ;; @@b9ae 299
  ;; @@b9b1 299
                  jsr sngflt                               ; go float 1 byte arg in .Y ;; @@b9b1 299
  ;; @@b9b4 299
@@ -19442,7 +19503,7 @@ rpalette                                                   ;; @@b9b8 300
  ;; @@b9d3 300
                  jsr combyt                               ; get r,g,b component# ;; @@b9d3 300
                  cpx #3                                    ;; @@b9d6 300
-_local_1299_10   bcs fcerr                                ; illegal value ;; @@b9d8 300
+_local_1299_10   +lbcs fcerr                              ; illegal value ;; @@b9d8 300
  ;; @@b9db 300
                  ldy GKI__parm3,x                         ; get r,g,b value ;; @@b9db 300
                  jsr sngflt                               ; float 1 byte arg in .y ;; @@b9de 300
@@ -19520,7 +19581,7 @@ rsprite          jsr conint                               ; get first arg, sprit
                  jsr combyt                               ; [910820] ;; @@ba18 303
                  jsr chkcls                               ; look for closing paren ;; @@ba1b 303
                  cpx #6                                    ;; @@ba1e 303
-_local_1302_1    bcs fcerr                                ; value error ;; @@ba20 303
+_local_1302_1    +lbcs fcerr                              ; value error ;; @@ba20 303
  ;; @@ba23 303
                  ply                                      ; sprite number ;; @@ba23 303
 ; jsr put_io_in_map ;; @@ba24 303
@@ -19538,7 +19599,7 @@ _local_1302_1    bcs fcerr                                ; value error ;; @@ba2
                  lda #1                                   ; return all non-zeros as '1' ;; @@ba39 303
  ;; @@ba3b 303
 _local_1302_10   tay                                       ;; @@ba3b 303
-                 bra sngflt                               ; go float 1 byte arg in .Y ;; @@ba3c 303
+                 +lbra sngflt                             ; go float 1 byte arg in .Y ;; @@ba3c 303
  ;; @@ba3f 303
  ;; @@ba3f 303
 rspmod           !text 21,39,27,29,23,28                  ; VIC registers associated with arg# ;; @@ba3f 304
@@ -19562,14 +19623,14 @@ rspcolor                                                   ;; @@ba45 304
                  jsr conint                               ; get arg in .X ;; @@ba48 304
                  dex                                      ; adjust [1..2] to [0..1 ;; @@ba4b 304
                  cpx #2                                    ;; @@ba4c 304
-                 bcs fcerr                                ; value error ;; @@ba4e 304
+                 +lbcs fcerr                              ; value error ;; @@ba4e 304
  ;; @@ba51 304
 ; jsr put_io_in_map ;; @@ba51 304
                  lda vic+37,x                              ;; @@ba51 304
                  and #$0f                                  ;; @@ba54 304
                  tay                                       ;; @@ba56 304
 ; iny  ;range 0-15     [910724] ;; @@ba57 304
-                 bra sngflt                               ; float 1 byte arg in .Y ;; @@ba57 304
+                 +lbra sngflt                             ; float 1 byte arg in .Y ;; @@ba57 304
  ;; @@ba5a 304
 ;.end ;; @@ba5a 304
 ; .page ;; @@ba5a 304
@@ -19598,7 +19659,7 @@ rsppos           jsr conint                               ; get first arg, sprit
                  jsr combyt                               ; [910820] ;; @@ba62 304
                  jsr chkcls                               ; look for closing paren ;; @@ba65 304
                  cpx #3                                    ;; @@ba68 304
-_local_1303_1    bcs fcerr                                ; value error ;; @@ba6a 304
+_local_1303_1    +lbcs fcerr                              ; value error ;; @@ba6a 304
  ;; @@ba6d 304
                  ply                                      ; sprite number ;; @@ba6d 304
                  cpx #2                                    ;; @@ba6e 304
@@ -19606,7 +19667,7 @@ _local_1303_1    bcs fcerr                                ; value error ;; @@ba6
  ;; @@ba72 304
                  ldx sproff,y                             ; get offset into speed data ;; @@ba72 304
                  ldy sprite_data,x                        ; get speed data ;; @@ba75 304
-                 bra sngflt                               ; go float 1 byte arg in .Y ;; @@ba78 304
+                 +lbra sngflt                             ; go float 1 byte arg in .Y ;; @@ba78 304
  ;; @@ba7b 304
 ; Get msb of sprite position (in case this is for x position) ;; @@ba7b 304
  ;; @@ba7b 304
@@ -19618,10 +19679,10 @@ _local_1303_10   sei                                       ;; @@ba7b 304
 _local_1303_20   pha                                      ; save msb ;; @@ba86 304
  ;; @@ba87 304
                  tya                                      ; y = sprite# * 2 ;; @@ba87 304
-                 asl a                                     ;; @@ba88 304
+                 asl                                       ;; @@ba88 304
                  tay                                       ;; @@ba89 304
                  txa                                      ; see if this is y position ;; @@ba8a 304
-                 lsr a                                    ; .C = 0 for x pos'n, 1 for y pos'n ;; @@ba8b 304
+                 lsr                                      ; .C = 0 for x pos'n, 1 for y pos'n ;; @@ba8b 304
                  bcc _local_1303_30                       ; branch if x pos'n ;; @@ba8c 304
  ;; @@ba8e 304
                  iny                                      ; adjust pointer to point to y pos'n in register data ;; @@ba8e 304
@@ -19633,7 +19694,7 @@ _local_1303_30   lda vic,y                                ; get correct location
                  cli                                       ;; @@ba96 304
                  tay                                       ;; @@ba97 304
                  pla                                      ; ..and get msb, ;; @@ba98 304
-                 bra nosflt                               ; ..and go float 2 byte value in y,a ;; @@ba99 304
+                 +lbra nosflt                             ; ..and go float 2 byte value in y,a ;; @@ba99 304
  ;; @@ba9c 304
 ;.end ;; @@ba9c 304
 ; .page ;; @@ba9c 304
@@ -19653,14 +19714,14 @@ bump             jsr chkcls                                ;; @@ba9c 305
                  jsr conint                               ; get arg in .X ;; @@ba9f 305
                  dex                                      ; adjust [1..2] to [0..1] ;; @@baa2 305
                  cpx #2                                    ;; @@baa3 305
-                 bcs fcerr                                ; value error ;; @@baa5 305
+                 +lbcs fcerr                              ; value error ;; @@baa5 305
  ;; @@baa8 305
                  sei                                       ;; @@baa8 305
                  ldy collisions,x                         ; get recorded collisions ;; @@baa9 305
                  lda #0                                   ; reset them ;; @@baac 305
                  sta collisions,x                          ;; @@baae 305
                  cli                                       ;; @@bab1 305
-                 bra sngflt                               ; float 1 byte arg in .Y ;; @@bab2 305
+                 +lbra sngflt                             ; float 1 byte arg in .Y ;; @@bab2 305
  ;; @@bab5 305
 ;.end ;; @@bab5 305
 ; .page ;; @@bab5 305
@@ -19704,7 +19765,7 @@ _local_1304_30   inx                                      ; do division by 10 ;;
                  adc #10                                  ; make positive ;; @@badd 305
                  sta vtemp1                               ; save remainder ;; @@badf 305
                  txa                                       ;; @@bae2 305
-                 asl a                                    ; get quotient*2 as index ;; @@bae3 305
+                 asl                                      ; get quotient*2 as index ;; @@bae3 305
                  tax                                       ;; @@bae4 305
                  lda angval+1,x                           ; get low byte base ;; @@bae5 305
                  ldy angval,x                             ; get high byte value ;; @@bae8 305
@@ -19723,7 +19784,7 @@ _local_1304_40   clc                                       ;; @@baeb 305
 _local_1304_50   pha                                      ; save low byte of result ;; @@bafd 305
                  ldx #0                                   ; point to sinval ;; @@bafe 305
                  lda angsgn                                ;; @@bb00 305
-                 lsr a                                     ;; @@bb03 305
+                 lsr                                       ;; @@bb03 305
                  bcs _local_1304_60                       ; skip if sine value ;; @@bb04 305
                  ldx #2                                   ; point to cosval ;; @@bb06 305
  ;; @@bb08 305
@@ -19749,8 +19810,8 @@ angmlt                                                     ;; @@bb11 306
  ;; @@bb17 306
 _local_1305_10   lda angsgn                                ;; @@bb17 306
                  adc #2                                   ; correct phase for cosine to look as sine ;; @@bb1a 306
-                 lsr a                                     ;; @@bb1c 306
-                 lsr a                                     ;; @@bb1d 306
+                 lsr                                       ;; @@bb1c 306
+                 lsr                                       ;; @@bb1d 306
                  php                                      ; save if carry - means negative angle value ;; @@bb1e 306
                  jsr settwo                               ; get angle fraction in y/a ;; @@bb1f 306
                  cpy #$ff                                 ; test if value should be 1 ;; @@bb22 306
@@ -20124,7 +20185,7 @@ _local_1306_10   lsr vtemp1                                ;; @@bbb2 307
                  pla                                       ;; @@bbc8 307
  ;; @@bbc9 307
 _local_1306_20   lsr vtemp3                               ; divide by 2 ;; @@bbc9 307
-                 ror a                                     ;; @@bbcc 307
+                 ror                                       ;; @@bbcc 307
                  dey                                       ;; @@bbcd 307
                  bne _local_1306_10                       ; loop 16 times - test all bits in 2 bytes ;; @@bbce 307
  ;; @@bbd0 307
@@ -20222,7 +20283,7 @@ incord                                                     ;; @@bbf6 309
                  beq docord                               ; skip ahead if have comma ;; @@bc01 309
  ;; @@bc03 309
                  cmp #';'                                 ; check for semi-colon ;; @@bc03 309
-                 bne snerr                                ; missing angle param- show syntax message ;; @@bc05 309
+                 +lbne snerr                              ; missing angle param- show syntax message ;; @@bc05 309
                  jsr chrget       ;skip over '            ; ' ;; @@bc08 309
                  jsr getwrd                               ; get 2-byte angle in a,y ;; @@bc0b 309
                  sta z_p_temp_1                           ; swap a,y ;; @@bc0e 309
@@ -20367,7 +20428,7 @@ _local_1310_10   jsr chkesc                               ; [910930] ;; @@bcd2 3
 ; bne _local_1310_20 ;; @@bcd5 311
 ; jsr chrget ;; @@bcd5 311
                  cmp #off_token                            ;; @@bcd5 311
-_local_1310_20   bne snerr                                 ;; @@bcd7 311
+_local_1310_20   +lbne snerr                               ;; @@bcd7 311
                  lda #0                                   ; EDIT OFF ;; @@bcda 311
 _local_1310_30   sta runmod                                ;; @@bcdc 311
                  jmp chrget                               ; exit ;; @@bcde 311
@@ -20415,11 +20476,11 @@ edit_load                                                 ; Called by DLOAD/DVER
                  lda #dsdesc+1                             ;; @@bd17 313
                  jsr lda_far_ram1                         ; lda (dsdesc+1),y peek at first character ;; @@bd19 313
                  cmp #'2'                                  ;; @@bd1c 313
-                 bcs _local_1312_30                       ; exit if error ;; @@bd1e 313
+                 +lbcs _local_1312_30                     ; exit if error ;; @@bd1e 313
                  jsr Clear_DS                             ; else zap 'ok' message so user gets fresh one ;; @@bd21 313
                  ldx dosla                                 ;; @@bd24 313
                  jsr _chkin                               ; get input channel ;; @@bd27 313
-                 bcs _local_1312_30                       ; error ;; @@bd2a 313
+                 +lbcs _local_1312_30                     ; error ;; @@bd2a 313
  ;; @@bd2d 313
                  bbs0 verck,_local_1312_1                  ;; @@bd2d 313
                  jsr _primm                                ;; @@bd30 313
@@ -20482,7 +20543,7 @@ _local_1312_21   bbr0 verck,_local_1312_22                 ;; @@bd9d 313
                  beq _local_1312_20                       ; ok ;; @@bda3 313
                  jsr list_exit                             ;; @@bda5 313
                  ldx #ervfy                               ; verify error ;; @@bda8 313
-                 bra error                                 ;; @@bdaa 313
+                 +lbra error                               ;; @@bdaa 313
  ;; @@bdad 313
 _local_1312_22   jsr sta_far_in1                          ; Load into memory ;; @@bdad 313
                  bra _local_1312_20                       ; loop until eol or error (kernel returns CR in case of error) ;; @@bdb0 313
@@ -20502,11 +20563,11 @@ _local_1312_27   lda index+1                               ;; @@bdc5 313
                  bcc _local_1312_10                       ; no, continue until eof ;; @@bdca 313
                  bsr edit_load_done                       ; yes, patch things up best we can ;; @@bdcc 313
                  jsr list_exit                            ; close disk ;; @@bdcf 313
-                 bra omerr                                ; report error & exit ;; @@bdd2 313
+                 +lbra omerr                              ; report error & exit ;; @@bdd2 313
  ;; @@bdd5 313
 _local_1312_28   bbs0 verck,_local_1312_30                 ;; @@bdd5 313
                  jsr edit_load_done                       ; EOF: terminate memory with a pair of nulls ;; @@bdd8 313
-_local_1312_30   bra list_exit                            ; release channel, close file, etc. ;; @@bddb 313
+_local_1312_30   +lbra list_exit                          ; release channel, close file, etc. ;; @@bddb 313
  ;; @@bdde 313
 ; bbr0 verck,40$ ;; @@bdde 313
 ; jsr verify_ok  ;if Verify, report 'ok' ;; @@bdde 313
@@ -20525,7 +20586,7 @@ edit_load_done                                             ;; @@bdde 314
                  ldy index+1                               ;; @@bdee 314
                  stx text_top                              ;; @@bdf0 314
                  sty text_top+1                            ;; @@bdf2 314
-                 bra link_program                         ; relink & RTS ;; @@bdf4 314
+                 +lbra link_program                       ; relink & RTS ;; @@bdf4 314
  ;; @@bdf7 314
 ; .page ;; @@bdf7 314
 edit_save                                                  ;; @@bdf7 314
@@ -20537,7 +20598,7 @@ edit_save                                                  ;; @@bdf7 314
                  ldy #fsavseq                              ;; @@be05 314
                  ldx #8                                    ;; @@be07 314
                  jsr open_file                            ; open the file ;; @@be09 314
-                 bcs list_err                             ; exit if error ;; @@be0c 314
+                 +lbcs list_err                           ; exit if error ;; @@be0c 314
                  ldx dosla                                 ;; @@be0f 314
                  jsr _chkout                              ; get output channel ;; @@be12 314
                  bcs _local_1313_30                       ; error ;; @@be15 314
@@ -20579,7 +20640,7 @@ _local_1313_26   ldy #0                                   ; check for EOF: a pai
                  jsr indin1                                ;; @@be4d 314
                  bne _local_1313_10                       ; loop until end of text ;; @@be50 314
  ;; @@be52 314
-_local_1313_30   bra list_exit                            ; release channel, close file, exit ;; @@be52 314
+_local_1313_30   +lbra list_exit                          ; release channel, close file, exit ;; @@be52 314
  ;; @@be55 314
 ;.end ;; @@be55 314
 ; .page ;; @@be55 314
@@ -20681,7 +20742,7 @@ _local_1315_10   bbr7 _mode,_local_1315_20                 ;; @@bef6 316
                  sta sprite_ptrs_40,y                     ; 40 col screen ;; @@bef9 316
                  bra _local_1315_30                        ;; @@befc 316
 _local_1315_20   sta sprite_ptrs_80,y                     ; 80 col screen ;; @@befe 316
-_local_1315_30   dec a                                     ;; @@bf01 316
+_local_1315_30   dec                                       ;; @@bf01 316
                  dey                                       ;; @@bf02 316
                  bpl _local_1315_10                        ;; @@bf03 316
  ;; @@bf05 316
@@ -20715,85 +20776,85 @@ basic_nmi                                                 ; removed [910826] ;; 
  ;; @@7f00 317
 ; Format Conversions     [6] ;; @@7f00 317
  ;; @@7f00 317
-                 bra ayint                                ; convert floating point to integer ;; @@7f00 317
-                 bra givayf                               ; convert integer to floating point ;; @@7f03 317
-                 bra fout                                 ; convert floating point to PETSCII string ;; @@7f06 317
-                 bra val_1                                ; convert PETSCII string to floating point ;; @@7f09 317
-                 bra getadr                               ; convert floating point to an address ;; @@7f0c 317
-                 bra floatc                               ; convert address to floating point ;; @@7f0f 317
+                 +lbra ayint                              ; convert floating point to integer ;; @@7f00 317
+                 +lbra givayf                             ; convert integer to floating point ;; @@7f03 317
+                 +lbra fout                               ; convert floating point to PETSCII string ;; @@7f06 317
+                 +lbra val_1                              ; convert PETSCII string to floating point ;; @@7f09 317
+                 +lbra getadr                             ; convert floating point to an address ;; @@7f0c 317
+                 +lbra floatc                             ; convert address to floating point ;; @@7f0f 317
  ;; @@7f12 317
 ; Math Functions     [24] ;; @@7f12 317
  ;; @@7f12 317
-                 bra fsub                                 ; MEM - FACC ;; @@7f12 317
-                 bra fsubt                                ; ARG - FACC ;; @@7f15 317
-                 bra fadd                                 ; MEM + FACC ;; @@7f18 317
-                 bra faddt_c65                            ; ARG - FACC      [910402] ;; @@7f1b 317
-                 bra fmult                                ; MEM * FACC ;; @@7f1e 317
-                 bra fmultt_c65                           ; ARG * FACC      [910402] ;; @@7f21 317
-                 bra fdiv                                 ; MEM / FACC ;; @@7f24 317
-                 bra fdivt_c65                            ; ARG / FACC      [910402] ;; @@7f27 317
-                 bra log                                  ; compute natural log of FACC ;; @@7f2a 317
-                 bra int                                  ; perform BASIC INT() on FACC ;; @@7f2d 317
-                 bra sqr                                  ; compute square root of FACC ;; @@7f30 317
-                 bra negop                                ; negate FACC ;; @@7f33 317
-                 bra fpwr                                 ; raise ARG to the MEM power ;; @@7f36 317
-                 bra fpwrt                                ; raise ARG to the FACC power ;; @@7f39 317
-                 bra exp                                  ; compute EXP of FACC ;; @@7f3c 317
-                 bra cos                                  ; compute COS of FACC ;; @@7f3f 317
-                 bra sin                                  ; compute SIN of FACC ;; @@7f42 317
-                 bra tan                                  ; compute TAN of FACC ;; @@7f45 317
-                 bra atn                                  ; compute ATN of FACC ;; @@7f48 317
-                 bra round                                ; round FACC ;; @@7f4b 317
-                 bra abs                                  ; absolute value of FACC ;; @@7f4e 317
-                 bra sign                                 ; test sign of FACC ;; @@7f51 317
-                 bra fcomp                                ; compare FACC with MEM ;; @@7f54 317
-                 bra rnd_0                                ; generate random floating point number ;; @@7f57 317
+                 +lbra fsub                               ; MEM - FACC ;; @@7f12 317
+                 +lbra fsubt                              ; ARG - FACC ;; @@7f15 317
+                 +lbra fadd                               ; MEM + FACC ;; @@7f18 317
+                 +lbra faddt_c65                          ; ARG - FACC      [910402] ;; @@7f1b 317
+                 +lbra fmult                              ; MEM * FACC ;; @@7f1e 317
+                 +lbra fmultt_c65                         ; ARG * FACC      [910402] ;; @@7f21 317
+                 +lbra fdiv                               ; MEM / FACC ;; @@7f24 317
+                 +lbra fdivt_c65                          ; ARG / FACC      [910402] ;; @@7f27 317
+                 +lbra log                                ; compute natural log of FACC ;; @@7f2a 317
+                 +lbra int                                ; perform BASIC INT() on FACC ;; @@7f2d 317
+                 +lbra sqr                                ; compute square root of FACC ;; @@7f30 317
+                 +lbra negop                              ; negate FACC ;; @@7f33 317
+                 +lbra fpwr                               ; raise ARG to the MEM power ;; @@7f36 317
+                 +lbra fpwrt                              ; raise ARG to the FACC power ;; @@7f39 317
+                 +lbra exp                                ; compute EXP of FACC ;; @@7f3c 317
+                 +lbra cos                                ; compute COS of FACC ;; @@7f3f 317
+                 +lbra sin                                ; compute SIN of FACC ;; @@7f42 317
+                 +lbra tan                                ; compute TAN of FACC ;; @@7f45 317
+                 +lbra atn                                ; compute ATN of FACC ;; @@7f48 317
+                 +lbra round                              ; round FACC ;; @@7f4b 317
+                 +lbra abs                                ; absolute value of FACC ;; @@7f4e 317
+                 +lbra sign                               ; test sign of FACC ;; @@7f51 317
+                 +lbra fcomp                              ; compare FACC with MEM ;; @@7f54 317
+                 +lbra rnd_0                              ; generate random floating point number ;; @@7f57 317
  ;; @@7f5a 317
 ; Movement      [22] ;; @@7f5a 317
  ;; @@7f5a 317
-                 bra conupk                               ; move RAM MEM to ARG ;; @@7f5a 317
-                 bra romupk                               ; move ROM MEM to ARG ;; @@7f5d 317
-                 bra movfrm                               ; move RAM MEM to FACC ;; @@7f60 317
-                 bra movfm                                ; move ROM MEM to FACC ;; @@7f63 317
-                 bra movmf                                ; move FACC to MEM ;; @@7f66 317
-                 bra movfa                                ; move ARG to FACC ;; @@7f69 317
-                 bra movaf                                ; move FACC to ARG ;; @@7f6c 317
+                 +lbra conupk                             ; move RAM MEM to ARG ;; @@7f5a 317
+                 +lbra romupk                             ; move ROM MEM to ARG ;; @@7f5d 317
+                 +lbra movfrm                             ; move RAM MEM to FACC ;; @@7f60 317
+                 +lbra movfm                              ; move ROM MEM to FACC ;; @@7f63 317
+                 +lbra movmf                              ; move FACC to MEM ;; @@7f66 317
+                 +lbra movfa                              ; move ARG to FACC ;; @@7f69 317
+                 +lbra movaf                              ; move FACC to ARG ;; @@7f6c 317
  ;; @@7f6f 317
 ; bra optab ;????not executable ;; @@7f6f 317
 ; bra drawln ;; @@7f6f 317
 ; bra gplot ;; @@7f6f 317
 ; bra cirsub ;; @@7f6f 317
-                 bra run                                   ;; @@7f6f 317
-                 bra runc                                  ;; @@7f72 317
-                 bra clearc                               ; [910410] ;; @@7f75 317
-                 bra new                                   ;; @@7f78 317
-                 bra link_program                          ;; @@7f7b 317
-                 bra crunch                                ;; @@7f7e 317
-                 bra FindLine                              ;; @@7f81 317
-                 bra newstt                                ;; @@7f84 317
-                 bra eval                                  ;; @@7f87 317
-                 bra frmevl                                ;; @@7f8a 317
-                 bra run_a_program                         ;; @@7f8d 317
-                 bra setexc                                ;; @@7f90 317
-                 bra linget                                ;; @@7f93 317
-                 bra garba2                                ;; @@7f96 317
-                 bra execute_a_line                        ;; @@7f99 317
+                 +lbra run                                 ;; @@7f6f 317
+                 +lbra runc                                ;; @@7f72 317
+                 +lbra clearc                             ; [910410] ;; @@7f75 317
+                 +lbra new                                 ;; @@7f78 317
+                 +lbra link_program                        ;; @@7f7b 317
+                 +lbra crunch                              ;; @@7f7e 317
+                 +lbra FindLine                            ;; @@7f81 317
+                 +lbra newstt                              ;; @@7f84 317
+                 +lbra eval                                ;; @@7f87 317
+                 +lbra frmevl                              ;; @@7f8a 317
+                 +lbra run_a_program                       ;; @@7f8d 317
+                 +lbra setexc                              ;; @@7f90 317
+                 +lbra linget                              ;; @@7f93 317
+                 +lbra garba2                              ;; @@7f96 317
+                 +lbra execute_a_line                      ;; @@7f99 317
  ;; @@7f9c 317
 ; Temporaries for C65 development (???? used by graphics) [12] ;; @@7f9c 317
  ;; @@7f9c 317
-                 bra chrget                                ;; @@7f9c 317
-                 bra chrgot                                ;; @@7f9f 317
-                 bra chkcom                                ;; @@7fa2 317
-                 bra frmnum                                ;; @@7fa5 317
-                 bra getadr                                ;; @@7fa8 317
-                 bra getnum                                ;; @@7fab 317
-                 bra getbyt                                ;; @@7fae 317
-                 bra plsv                                  ;; @@7fb1 317
+                 +lbra chrget                              ;; @@7f9c 317
+                 +lbra chrgot                              ;; @@7f9f 317
+                 +lbra chkcom                              ;; @@7fa2 317
+                 +lbra frmnum                              ;; @@7fa5 317
+                 +lbra getadr                              ;; @@7fa8 317
+                 +lbra getnum                              ;; @@7fab 317
+                 +lbra getbyt                              ;; @@7fae 317
+                 +lbra plsv                                ;; @@7fb1 317
  ;; @@7fb4 317
-                 bra lda_far_ram0                         ; lda (.x),y from BASIC text bank [910716] ;; @@7fb4 317
-                 bra lda_far_ram1                         ; lda (.x),y from BASIC variable bank [910716] ;; @@7fb7 317
-                 bra sta_far_ram0                         ; sta (.x),y to   BASIC text bank [910716] ;; @@7fba 317
-                 bra sta_far_ram1                         ; sta (.x),y to   BASIC variable bank [910716] ;; @@7fbd 317
+                 +lbra lda_far_ram0                       ; lda (.x),y from BASIC text bank [910716] ;; @@7fb4 317
+                 +lbra lda_far_ram1                       ; lda (.x),y from BASIC variable bank [910716] ;; @@7fb7 317
+                 +lbra sta_far_ram0                       ; sta (.x),y to   BASIC text bank [910716] ;; @@7fba 317
+                 +lbra sta_far_ram1                       ; sta (.x),y to   BASIC variable bank [910716] ;; @@7fbd 317
  ;; @@7fc0 317
 ; .page ;; @@7fc0 317
 ; Graphic Kernel Call. (Temporary for C65 development ????) ;; @@7fc0 317

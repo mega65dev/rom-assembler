@@ -1,5 +1,5 @@
 fast                                                       ;; @@4cc6 117
-                 bne snerr                                ; no args      [910410] ;; @@4cc6 117
+                 +lbne snerr                              ; no args      [910410] ;; @@4cc6 117
 ; jsr put_io_in_map ;; @@4cc9 117
                  lda #%01000000                            ;; @@4cc9 117
                  tsb vic+49                               ; set FAST (4MHz?) mode ;; @@4ccb 117
@@ -14,7 +14,7 @@ fast                                                       ;; @@4cc6 117
 ;*********************************************************************** ;; @@4ccf 117
  ;; @@4ccf 117
 slow                                                       ;; @@4ccf 117
-                 bne snerr                                ; no args      [910410] ;; @@4ccf 117
+                 +lbne snerr                              ; no args      [910410] ;; @@4ccf 117
 ; jsr put_io_in_map ;; @@4cd2 117
                  lda #%01000000                            ;; @@4cd2 117
                  trb vic+49                                ;; @@4cd4 117
@@ -48,7 +48,7 @@ chkerr           ldx #errtm                                ;; @@4ce7 117
                  !text $2c                                 ;; @@4ce9 117
  ;; @@4cea 117
 sterr            ldx #errst                                ;; @@4cea 117
-                 bra error                                 ;; @@4cec 117
+                 +lbra error                               ;; @@4cec 117
  ;; @@4cef 117
 ;.end ;; @@4cef 117
 ; .page ;; @@4cef 117
@@ -89,11 +89,11 @@ loprel           sec                                      ; prepare to subtract 
                  cmp #less_token-greater_token+1           ;; @@4d0a 117
                  bcs endrel                               ; really relational?  no, just big ;; @@4d0c 117
                  cmp #1                                   ; reset carry for zero only ;; @@4d0e 117
-                 rol a                                    ; 0 to 1, 1 to 2, 2 to 4 ;; @@4d10 117
+                 rol                                      ; 0 to 1, 1 to 2, 2 to 4 ;; @@4d10 117
                  eor #1                                    ;; @@4d11 117
                  eor opmask                               ; bring in the old bits ;; @@4d13 117
                  cmp opmask                               ; make sure that the new mask is bigger ;; @@4d15 117
-                 bcc snerr                                ; syntax error, because two of the same ;; @@4d17 117
+                 +lbcc snerr                              ; syntax error, because two of the same ;; @@4d17 117
                  sta opmask                               ; save mask ;; @@4d1a 117
                  jsr chrget                                ;; @@4d1c 117
                  bra loprel                               ; get the next candidate ;; @@4d1f 117
@@ -101,15 +101,15 @@ loprel           sec                                      ; prepare to subtract 
 ; .page ;; @@4d21 117
 endrel           ldx opmask                               ; were there any? ;; @@4d21 117
                  bne finrel                               ; yes, handle as special op ;; @@4d23 117
-                 bcs qop                                  ; not an operator ;; @@4d25 117
+                 +lbcs qop                                ; not an operator ;; @@4d25 117
                  adc #greater_token-plus_token             ;; @@4d28 117
-                 bcc qop                                  ; not an operator ;; @@4d2a 117
+                 +lbcc qop                                ; not an operator ;; @@4d2a 117
                  adc valtyp                               ; (c)=1 ;; @@4d2d 117
-                 beq cat                                  ; only if (a)=0 and VALTYP=$FF (a string) ;; @@4d2f 117
+                 +lbeq cat                                ; only if (a)=0 and VALTYP=$FF (a string) ;; @@4d2f 117
  ;; @@4d32 117
                  adc #$ff                                 ; get back original (a) ;; @@4d32 117
                  sta index1                                ;; @@4d34 117
-                 asl a                                    ; multiply by two ;; @@4d36 117
+                 asl                                      ; multiply by two ;; @@4d36 117
                  adc index1                               ; by three ;; @@4d37 117
                  tay                                      ; set up for later ;; @@4d39 117
  ;; @@4d3a 117
@@ -131,7 +131,7 @@ negprc           jsr dopre1                               ; save a return for op
 ; .page ;; @@4d51 117
 finrel           lsr valtyp                               ; get value type into (c) ;; @@4d51 117
                  txa                                       ;; @@4d53 117
-                 rol a                                    ; put VALTYP into low order bit of mask ;; @@4d54 117
+                 rol                                      ; put VALTYP into low order bit of mask ;; @@4d54 117
                  dew txtptr                               ; decrement text pointer ;; @@4d55 117
                  ldy #ptdorl-optab                        ; make (y) point at operator entry ;; @@4d57 117
                  sta opmask                               ; save the operation mask ;; @@4d59 117
@@ -211,7 +211,7 @@ qchnum           cmp #100                                 ; relational operator?
  ;; @@4dc3 117
 unpstk           sty opptr                                ; save operator's pointer for next time ;; @@4dc3 117
 pulstk           pla                                      ; get mask for rel op if it is one ;; @@4dc5 117
-                 lsr a                                    ; setup .c for dorel's chkval ;; @@4dc6 117
+                 lsr                                      ; setup .c for dorel's chkval ;; @@4dc6 117
                  sta domask                               ; save for "docmp" ;; @@4dc7 117
                  pla                                      ; unpack stack into arg ;; @@4dc9 117
                  sta argexp                                ;; @@4dca 117
@@ -239,7 +239,7 @@ neval            lda #0                                   ; assume numeric ;; @@
 eval0            jsr chrget                               ; get a character ;; @@4de9 117
                  bcs eval2                                 ;; @@4dec 117
 eval1            ldx #0                                   ; flag 'bank 0' (text bank) ;; @@4dee 117
-                 bra fin                                  ; it is a number ;; @@4df0 117
+                 +lbra fin                                ; it is a number ;; @@4df0 117
  ;; @@4df3 117
 eval2            jsr isletc                               ; variable name? ;; @@4df3 117
                  bcs is_variable                          ; yes. ;; @@4df6 117
@@ -288,13 +288,13 @@ notop            jsr ayint                                ; integerize ;; @@4e33
                  eor #$ff                                  ;; @@4e3d 117
  ;; @@4e3f 117
 givayf           jsr stoint                               ; integer to float routine ;; @@4e3f 117
-                 bra floats                                ;; @@4e42 117
+                 +lbra floats                              ;; @@4e42 117
  ;; @@4e45 117
  ;; @@4e45 117
 eval4            cmp #fn_token                            ; user defined function? ;; @@4e45 117
-                 beq fndoer                               ; yes ;; @@4e47 117
+                 +lbeq fndoer                             ; yes ;; @@4e47 117
                  cmp #first_function_token                ; function name? ;; @@4e4a 117
-                 bcs isfun                                ; yes ;; @@4e4c 117
+                 +lbcs isfun                              ; yes ;; @@4e4c 117
 ; (functions are the highest numbered ;; @@4e4f 117
 ; tokens so no need to check further) ;; @@4e4f 117
 ; .page ;; @@4e4f 117
@@ -321,7 +321,7 @@ synchr           ldy #0                                    ;; @@4e5d 117
                  sta syntmp                                ;; @@4e5f 117
                  jsr indtxt                                ;; @@4e61 117
                  cmp syntmp                                ;; @@4e64 117
-                 bne snerr                                 ;; @@4e66 117
+                 +lbne snerr                               ;; @@4e66 117
                  jmp chrget                               ; ok ;; @@4e69 117
  ;; @@4e6c 117
  ;; @@4e6c 117

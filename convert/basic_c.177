@@ -24,12 +24,12 @@ int              lda facexp                                ;; @@6363 177
                  lda facsgn                                ;; @@6371 177
                  sty facsgn                               ; make FAC look positive ;; @@6373 177
                  eor #$80                                 ; get complement of sign in carry ;; @@6375 177
-                 rol a                                     ;; @@6377 177
+                 rol                                       ;; @@6377 177
                  lda #$a0                                 ; @230+8 ;; @@6378 177
                  sta facexp                                ;; @@637a 177
                  lda faclo                                 ;; @@637c 177
                  sta integr                                ;; @@637e 177
-                 bra fadflt                                ;; @@6380 177
+                 +lbra fadflt                              ;; @@6380 177
  ;; @@6383 177
  ;; @@6383 177
 clrfac           sta facho                                ; make it really zero ;; @@6383 177

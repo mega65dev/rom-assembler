@@ -4,7 +4,7 @@ ScreenOpen                                                 ;; @@af96 269
 C65__screenopen                                            ;; @@af99 269
                  jsr getbyt                               ; get screen# in .x ;; @@af99 269
                  cpx #4                                   ; range 0-3   [910711] ;; @@af9c 269
-                 bcs fcerr                                ; branch if out of range ;; @@af9e 269
+                 +lbcs fcerr                              ; branch if out of range ;; @@af9e 269
  ;; @@afa1 269
                  stx GKI__parm1                            ;; @@afa1 269
                  jmp ($8008)                              ; screenopen    [910826] ;; @@afa4 269
@@ -28,7 +28,7 @@ ScreenClose                                                ;; @@afa7 269
 C65__screenclose                                           ;; @@afaa 269
                  jsr getbyt                               ; get screen# ;; @@afaa 269
                  cpx #4                                   ; range 0-3   [910711] ;; @@afad 269
-                 bcs fcerr                                ; branch if out of range ;; @@afaf 269
+                 +lbcs fcerr                              ; branch if out of range ;; @@afaf 269
                  stx GKI__parm1                            ;; @@afb2 269
  ;; @@afb5 269
                  jmp ($800a)                              ; bra screenclose ;; @@afb5 269
@@ -46,7 +46,7 @@ C65__screenclose                                           ;; @@afaa 269
 C65__setpen                                                ;; @@afb8 269
                  jsr getbyt                               ; get pen# ;; @@afb8 269
                  cpx #3                                   ; range 0-2 ;; @@afbb 269
-                 bcs fcerr                                ; branch if out of range ;; @@afbd 269
+                 +lbcs fcerr                              ; branch if out of range ;; @@afbd 269
                  stx GKI__parm1                            ;; @@afc0 269
  ;; @@afc3 269
                  jsr combyt                               ; get color reg# ;; @@afc3 269
@@ -93,7 +93,7 @@ C65__setdmode                                              ;; @@afcc 269
                  jsr combyt                               ; thickness mode (not implemented) ;; @@aff4 269
 ; dex   ; adjust to 0-7     [911003] ;; @@aff7 269
                  cpx #8+1                                  ;; @@aff7 269
-_local_1268_10   bcs fcerr                                ; illegal quantity error ;; @@aff9 269
+_local_1268_10   +lbcs fcerr                              ; illegal quantity error ;; @@aff9 269
                  stx GKI__parm5                            ;; @@affc 269
  ;; @@afff 269
                  jmp ($8014)                              ; bra setdmode ;; @@afff 269

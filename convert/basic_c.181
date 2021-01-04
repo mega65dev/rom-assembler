@@ -10,7 +10,7 @@ linprt           sta facho                                 ;; @@647f 181
                  sec                                      ; number is positive ;; @@6485 181
                  jsr floatc                                ;; @@6486 181
                  jsr foutc                                 ;; @@6489 181
-                 bra strout                               ; print and return ;; @@648c 181
+                 +lbra strout                             ; print and return ;; @@648c 181
  ;; @@648f 181
  ;; @@648f 181
 fout             ldy #1                                    ;; @@648f 181
@@ -23,7 +23,7 @@ _local_1180_10   sta fbuffr-1,y                           ; store the character 
                  iny                                       ;; @@649f 181
                  lda #'0'                                 ; get zero to type if FAC=0 ;; @@64a0 181
                  ldx facexp                                ;; @@64a2 181
-                 beq fout19                                ;; @@64a4 181
+                 +lbeq fout19                              ;; @@64a4 181
  ;; @@64a7 181
                  lda #0                                    ;; @@64a7 181
                  cpx #$80                                 ; is number < 1? ;; @@64a9 181

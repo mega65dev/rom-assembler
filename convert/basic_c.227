@@ -48,5 +48,5 @@ _local_1226_20   jsr outch                                 ;; @@72c3 227
  ;; @@72c9 227
 _local_1226_30   jsr highlight_done                       ; [910624] ;; @@72c9 227
                  jsr crdo                                  ;; @@72cc 227
-                 bra ready                                ; we're in direct mode, error msg has been printed, abort ;; @@72cf 227
+                 +lbra ready                              ; we're in direct mode, error msg has been printed, abort ;; @@72cf 227
  ;; @@72d2 227

@@ -14,21 +14,21 @@ name2            lda #2                                   ; name2 allowed only o
                  lda #2                                   ; set filename2 flag & ;; @@75e5 238
 del2             tsb parsts                               ; set flag in status ;; @@75e7 238
                  jsr chrgot                                ;; @@75e9 238
-                 beq done                                 ; done on <cr>/<> ;; @@75ec 238
+                 +lbeq done                               ; done on <cr>/<> ;; @@75ec 238
                  cmp #','                                  ;; @@75ef 238
                  beq parse2                                ;; @@75f1 238
                  cmp #on_token                            ; "on" token ;; @@75f3 238
                  beq on2                                   ;; @@75f5 238
                  cmp #'U'                                  ;; @@75f7 238
                  beq unit2                                 ;; @@75f9 238
-                 bra snerr                                 ;; @@75fb 238
+                 +lbra snerr                               ;; @@75fb 238
  ;; @@75fe 238
  ;; @@75fe 238
 on               jsr chrget                                ;; @@75fe 238
                  cmp #'B'                                  ;; @@7601 238
                  beq dbank                                 ;; @@7603 238
                  cmp #'U'                                  ;; @@7605 238
-                 bne snerr                                 ;; @@7607 238
+                 +lbne snerr                               ;; @@7607 238
  ;; @@760a 238
  ;; @@760a 238
 unit             jsr gtbytc                               ; getval ;; @@760a 238

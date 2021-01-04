@@ -16,11 +16,11 @@ _local_1290_20   cmp #0                                    ;; @@b71a 291
                  beq _local_1290_40                       ; zero direction ;; @@b720 291
 _local_1290_30   inc xsgn,x                               ; positive direction ;; @@b722 291
 _local_1290_40   sta xabs,x                                ;; @@b725 291
-                 asl a                                     ;; @@b728 291
+                 asl                                       ;; @@b728 291
                  sta fct,x                                ; fct(x,y) = 2*abs(x,y) ;; @@b729 291
                  tya                                       ;; @@b72c 291
                  sta xabs+1,x                              ;; @@b72d 291
-                 rol a                                     ;; @@b730 291
+                 rol                                       ;; @@b730 291
                  sta fct+1,x                               ;; @@b731 291
                  dex                                       ;; @@b734 291
                  dex                                       ;; @@b735 291
@@ -32,8 +32,8 @@ _local_1290_40   sta xabs,x                                ;; @@b725 291
                  ldy #xabs-savram                          ;; @@b73e 291
                  jsr subtwo_savram                         ;; @@b740 291
                  lda #0                                    ;; @@b743 291
-                 rol a                                     ;; @@b745 291
-                 rol a                                    ; a = c * 2 ;; @@b746 291
+                 rol                                       ;; @@b745 291
+                 rol                                      ; a = c * 2 ;; @@b746 291
                  sta lesser                               ; index to smaller delta ;; @@b747 291
                  eor #2                                    ;; @@b74a 291
                  sta greatr                               ; index to greater delta ;; @@b74c 291
@@ -85,19 +85,19 @@ _local_1290_40   sta xabs,x                                ;; @@b725 291
                  lda xsgn,y                               ; set dir(max) and max ;; @@b78e 291
                  ora xsgn+1,y                              ;; @@b791 291
                  and #3                                    ;; @@b794 291
-                 lsr a                                     ;; @@b796 291
-                 ror a                                     ;; @@b797 291
+                 lsr                                       ;; @@b796 291
+                 ror                                       ;; @@b797 291
                  ora greatr                                ;; @@b798 291
-                 ror a                                     ;; @@b79b 291
+                 ror                                       ;; @@b79b 291
                  sta sprite_data+4,x                       ;; @@b79c 291
                  ldy lesser                                ;; @@b79f 291
                  lda xsgn,y                               ; set dir(min) and min ;; @@b7a2 291
                  ora xsgn+1,y                              ;; @@b7a5 291
                  and #3                                    ;; @@b7a8 291
-                 lsr a                                     ;; @@b7aa 291
-                 ror a                                     ;; @@b7ab 291
+                 lsr                                       ;; @@b7aa 291
+                 ror                                       ;; @@b7ab 291
                  ora lesser                                ;; @@b7ac 291
-                 ror a                                     ;; @@b7af 291
+                 ror                                       ;; @@b7af 291
                  sta sprite_data+3,x                       ;; @@b7b0 291
                  ldy #0                                   ; set f1, f2, and e ;; @@b7b3 291
 _local_1290_50   lda fct,y                                 ;; @@b7b5 291

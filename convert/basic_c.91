@@ -2,7 +2,7 @@ puctrl           jsr frmstr                               ; do frmevl,frestr. re
                  tay                                       ;; @@4445 91
                  dey                                       ;; @@4446 91
                  cpy #4                                    ;; @@4447 91
-                 bcs fcerr                                ; len > 4 is illegal value error ;; @@4449 91
+                 +lbcs fcerr                              ; len > 4 is illegal value error ;; @@4449 91
  ;; @@444c 91
 _local_1090_1    jsr indin1_ram1                          ; lda (index),y ;; @@444c 91
                  sta puchrs,y                              ;; @@444f 91

@@ -1,5 +1,5 @@
-rmulc            !text @230,@65,@104,@172,0                ;; @@5890 151
-raddc            !text @150,@50,@261,@106,0                ;; @@5895 151
+rmulc            !text 152,53,68,122,0                     ;; @@5890 151
+raddc            !text 104,40,177,70,0                     ;; @@5895 151
  ;; @@589a 151
 ;.end ;; @@589a 151
 ; .page ;; @@589a 151
@@ -30,8 +30,8 @@ ayint            lda facexp                                ;; @@58b4 151
                  ldy #>n32768                              ;; @@58bc 151
                  jsr fcomp                                ; see if FAC=((x)) ;; @@58be 151
  ;; @@58c1 151
-nonono           bne fcerr                                ; no, FAC is too big ;; @@58c1 151
-qintgo           bra qint                                 ; go shove it ;; @@58c4 151
+nonono           +lbne fcerr                              ; no, FAC is too big ;; @@58c1 151
+qintgo           +lbra qint                               ; go shove it ;; @@58c4 151
 ; .page ;; @@58c7 151
  ;; @@58c7 151
 ; Float an unsigned double byte integer ;; @@58c7 151
@@ -39,7 +39,7 @@ qintgo           bra qint                                 ; go shove it ;; @@58c
  ;; @@58c7 151
 nosflt           jsr stoint                                ;; @@58c7 151
                  sec                                      ; sign is positive ;; @@58ca 151
-                 bra floatc                                ;; @@58cb 151
+                 +lbra floatc                              ;; @@58cb 151
  ;; @@58ce 151
  ;; @@58ce 151
  ;; @@58ce 151
@@ -47,7 +47,7 @@ pos              sec                                       ;; @@58ce 151
                  jsr _plot                                ; get tab pos in .y ;; @@58cf 151
  ;; @@58d2 151
 sngflt           lda #0                                    ;; @@58d2 151
-                 bra givayf                               ; float it ;; @@58d4 151
+                 +lbra givayf                             ; float it ;; @@58d4 151
  ;; @@58d7 151
  ;; @@58d7 151
  ;; @@58d7 151
@@ -68,12 +68,12 @@ errdir           bbs7 runmod,storts                       ; goto error if not in
                  !text $2c                                 ;; @@58e7 151
  ;; @@58e8 151
 errguf           ldx #erruf                                ;; @@58e8 151
-                 bra error                                 ;; @@58ea 151
+                 +lbra error                               ;; @@58ea 151
  ;; @@58ed 151
  ;; @@58ed 151
 errind           bbr7 runmod,storts                       ; goto error if not in direct mode ;; @@58ed 151
                  ldx #erroid                               ;; @@58f0 151
-                 bra error                                 ;; @@58f2 151
+                 +lbra error                               ;; @@58f2 151
  ;; @@58f5 151
 ;.end ;; @@58f5 151
 ; .page ;; @@58f5 151
@@ -126,7 +126,7 @@ getfnm           lda #fn_token                            ; must start with fn ;
                  jsr ptrgt2                               ; get pointer to function or create anew ;; @@592b 151
                  sta defpnt                                ;; @@592e 151
                  sty defpnt+1                              ;; @@5930 151
-                 bra chknum                               ; make sure it's not a string, and return ;; @@5932 151
+                 +lbra chknum                             ; make sure it's not a string, and return ;; @@5932 151
  ;; @@5935 151
  ;; @@5935 151
 fndoer           jsr getfnm                               ; get the function's name ;; @@5935 151
@@ -178,7 +178,7 @@ defstf           lda #varpnt                               ;; @@595b 151
                  pla                                       ;; @@5986 151
                  sta defpnt+1                              ;; @@5987 151
                  jsr chrgot                                ;; @@5989 151
-                 bne snerr                                ; it didn't terminate, syntax error ;; @@598c 151
+                 +lbne snerr                              ; it didn't terminate, syntax error ;; @@598c 151
  ;; @@598f 151
                  pla                                      ; restore text pointer ;; @@598f 151
                  sta txtptr                                ;; @@5990 151

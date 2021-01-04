@@ -11,7 +11,7 @@ C65__paint                                                ; new [910228] FAB ;; 
                  ldx #0                                   ; [910916] ;; @@b370 278
                  jsr optbyt                               ; mode, default = 0 (fill region pointed to) ;; @@b372 278
                  cpx #3                                    ;; @@b375 278
-                 bcs fcerr                                ; (range 0-2) ;; @@b377 278
+                 +lbcs fcerr                              ; (range 0-2) ;; @@b377 278
                  stx GKI__parm5                            ;; @@b37a 278
                  ldx #0                                    ;; @@b37d 278
                  jsr optbyt                               ; boundary color, default = 0 ;; @@b37f 278
@@ -35,8 +35,8 @@ _local_1277_10   jsr garba2                               ; create space in var 
                  rts                                       ;; @@b3a6 278
  ;; @@b3a7 278
 _local_1277_20   cpx #errom                                ;; @@b3a7 278
-                 beq error                                ; stack overflow, say 'out of memory' ;; @@b3a9 278
-                 bra break_exit                           ; user hit stop key ;; @@b3ac 278
+                 +lbeq error                              ; stack overflow, say 'out of memory' ;; @@b3a9 278
+                 +lbra break_exit                         ; user hit stop key ;; @@b3ac 278
  ;; @@b3af 278
 ; .page ;; @@b3af 278
 ; .subttl   LOAD/SAVE IFF ;; @@b3af 278

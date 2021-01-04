@@ -8,7 +8,7 @@ clear_play_flags                                           ;; @@497b 112
  ;; @@4985 112
 tempo            jsr getbyt                               ; duration of whole note 4/4 time = 24/rate ;; @@4985 112
                  txa                                       ;; @@4988 112
-                 beq fcerr                                ; can't be zero- illegal quantity error ;; @@4989 112
+                 +lbeq fcerr                              ; can't be zero- illegal quantity error ;; @@4989 112
                  stx tempo_rate                            ;; @@498c 112
                  rts                                       ;; @@498f 112
  ;; @@4990 112
@@ -85,7 +85,7 @@ voltab           !text 0,1,3,5,7,8,10,12,14,15             ;; @@4a0c 112
 filter           jsr getbyt                               ; get left/right SID    [910612] ;; @@4a16 112
                  dex                                       ;; @@4a19 112
                  cpx #2                                    ;; @@4a1a 112
-                 bcs fcerr                                 ;; @@4a1c 112
+                 +lbcs fcerr                               ;; @@4a1c 112
                  lda filter_offset+2,x                    ; get filter offset for specified SID ;; @@4a1f 112
                  sta z_p_temp_1                            ;; @@4a22 112
                  tax                                       ;; @@4a24 112
@@ -101,17 +101,17 @@ _local_1111_10   lda filters1,x                           ; save current voice's
                  jsr optwrd                               ; get filter frequency ;; @@4a33 112
                  bcc _local_1111_20                       ; skip if no value given ;; @@4a36 112
                  cmp #8                                   ; test m.s. byte ;; @@4a38 112
-                 bcs fcerr                                ; error if > 2047 ;; @@4a3a 112
+                 +lbcs fcerr                              ; error if > 2047 ;; @@4a3a 112
                  sty fltsav                               ; save lower byte ;; @@4a3d 112
  ;; @@4a40 112
 ; Idea: shift lower 3 bits of upper byte into lower byte, forming bits 10-3 ;; @@4a40 112
  ;; @@4a40 112
                  sty fltsav+1                              ;; @@4a40 112
-                 lsr a                                     ;; @@4a43 112
+                 lsr                                       ;; @@4a43 112
                  ror fltsav+1                              ;; @@4a44 112
-                 lsr a                                     ;; @@4a47 112
+                 lsr                                       ;; @@4a47 112
                  ror fltsav+1                             ; save upper 7 bits (10-3) ;; @@4a48 112
-                 lsr a                                     ;; @@4a4b 112
+                 lsr                                       ;; @@4a4b 112
                  ror fltsav+1                              ;; @@4a4c 112
  ;; @@4a4f 112
 _local_1111_20   lda #$10                                 ; start at type=LP ;; @@4a4f 112
@@ -123,7 +123,7 @@ _local_1111_30   jsr optbyt                               ; get filter types (LP
                  cpx #1                                   ; (set .c: 0=0, 1=1) ;; @@4a5c 112
                  bcc _local_1111_35                        ;; @@4a5e 112
                  beq _local_1111_35                        ;; @@4a60 112
-                 bra fcerr                                ; error if >1 ;; @@4a62 112
+                 +lbra fcerr                              ; error if >1 ;; @@4a62 112
  ;; @@4a65 112
 _local_1111_35   lda fltsav+3                             ; get filter flags byte ;; @@4a65 112
                  ora fltflg                               ; set filter on ;; @@4a68 112
@@ -140,10 +140,10 @@ _local_1111_50   asl fltflg                               ; shift for next filte
 ; bcs fcerr  ;error if >15 ;; @@4a7d 112
                  jsr chknyb                               ; [910930] ;; @@4a7d 112
                  txa                                       ;; @@4a80 112
-                 asl a                                    ; shift to upper nibble ;; @@4a81 112
-                 asl a                                     ;; @@4a82 112
-                 asl a                                     ;; @@4a83 112
-                 asl a                                     ;; @@4a84 112
+                 asl                                      ; shift to upper nibble ;; @@4a81 112
+                 asl                                       ;; @@4a82 112
+                 asl                                       ;; @@4a83 112
+                 asl                                       ;; @@4a84 112
                  sta nibble                                ;; @@4a85 112
                  lda fltsav+2                             ; get current value ;; @@4a88 112
                  and #$0f                                 ; mask it out ;; @@4a8b 112

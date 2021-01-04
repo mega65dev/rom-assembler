@@ -6,7 +6,7 @@ resume           jsr errdir                               ; no direct mode ;; @@
                  beq resswp                               ; no arg's...restart err'd line ;; @@4474 93
                  bcc _local_1092_3                        ; numeric argument ;; @@4476 93
                  cmp #next_token                          ; only other choice is 'next' ;; @@4478 93
-                 bne snerr                                ; if not, syntax error ;; @@447a 93
+                 +lbne snerr                              ; if not, syntax error ;; @@447a 93
  ;; @@447d 93
                  jsr resswp                               ; resume execution with next stm't ;; @@447d 93
                  ldy #0                                    ;; @@4480 93
@@ -17,7 +17,7 @@ resume           jsr errdir                               ; no direct mode ;; @@
                  bne _local_1092_1                         ;; @@448b 93
                  iny                                       ;; @@448d 93
                  jsr indtxt                                ;; @@448e 93
-                 beq ready                                ; 2 nulls, eot. bye! ;; @@4491 93
+                 +lbeq ready                              ; 2 nulls, eot. bye! ;; @@4491 93
  ;; @@4494 93
 _local_1092_1    ldy #3                                   ; new line, update pointers ;; @@4494 93
                  jsr indtxt                                ;; @@4496 93
@@ -32,12 +32,12 @@ _local_1092_1    ldy #3                                   ; new line, update poi
                  bcc _local_1092_2                         ;; @@44a7 93
                  inc txtptr+1                              ;; @@44a9 93
 _local_1092_2    jsr chrget                               ; skip over this character, into body of statement ;; @@44ab 93
-                 bra data                                 ; advance until null or ':', then rts ;; @@44ae 93
+                 +lbra data                               ; advance until null or ':', then rts ;; @@44ae 93
  ;; @@44b1 93
  ;; @@44b1 93
 _local_1092_3    jsr getwrd                               ; resnum. numeric argument ;; @@44b1 93
                  sta linnum+1                              ;; @@44b4 93
                  jsr resend                                ;; @@44b6 93
-                 bra luk4it                                ;; @@44b9 93
+                 +lbra luk4it                              ;; @@44b9 93
  ;; @@44bc 93
  ;; @@44bc 93

@@ -58,7 +58,7 @@ _local_1058_100  ldx #errtm                               ; tmerr. 'get from kbd
 _local_1058_110  lda channl                                ;; @@39d0 59
                  beq _local_1058_200                      ; do again if keybd input ;; @@39d2 59
 _local_1058_120  ldx #errbd                               ; input saw bad file data ;; @@39d4 59
-_local_1058_130  bra error                                 ;; @@39d6 59
+_local_1058_130  +lbra error                               ;; @@39d6 59
  ;; @@39d9 59
  ;; @@39d9 59
 _local_1058_200  jsr highlight_text                       ; [911119] ;; @@39d9 59

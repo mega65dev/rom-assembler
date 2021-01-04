@@ -4,7 +4,7 @@ cont             bne cont_rts                             ; make sure there is a
  ;; @@3d82 72
                  ldx #errcn                               ; continue error. ;; @@3d82 72
                  ldy oldtxt+1                             ; a stored txtptr of zero set up by INIT_STACK ;; @@3d84 72
-                 beq error                                ; indicates there is nothing to continue ;; @@3d87 72
+                 +lbeq error                              ; indicates there is nothing to continue ;; @@3d87 72
  ;; @@3d8a 72
                  lda oldtxt                               ; STOP, END, typing crlf to INPUT, and STOP key ;; @@3d8a 72
                  sta txtptr                                ;; @@3d8d 72

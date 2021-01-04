@@ -25,20 +25,20 @@ run              bbs4 runmod,edit_err                     ; [910620] ;; @@3db4 7
  ;; @@3dbb 73
                  smb6 runmod                              ; set flag for load not to go to ready ;; @@3dbb 73
                  jsr dload                                ; use DLOAD's parser, and load the program ;; @@3dbd 73
-                 bcs erexit                               ; if problem loading   [900801] ;; @@3dc0 73
+                 +lbcs erexit                             ; if problem loading   [900801] ;; @@3dc0 73
  ;; @@3dc3 73
 run_a_program                                              ;; @@3dc3 73
                  jsr crdo                                 ; [911010] ;; @@3dc3 73
                  jsr fix_links                            ; re-link the program ;; @@3dc6 73
                  jsr setexc                               ; set various run modes ;; @@3dc9 73
                  jsr runc                                  ;; @@3dcc 73
-                 bra newstt                               ; start executing ;; @@3dcf 73
+                 +lbra newstt                             ; start executing ;; @@3dcf 73
  ;; @@3dd2 73
  ;; @@3dd2 73
 ; Here if of the form "RUN" ;; @@3dd2 73
  ;; @@3dd2 73
 run__10          jsr setexc                               ; set various run codes ;; @@3dd2 73
-                 bra runc                                 ; ..and start executing ;; @@3dd5 73
+                 +lbra runc                               ; ..and start executing ;; @@3dd5 73
  ;; @@3dd8 73
  ;; @@3dd8 73
 ; Here if of the form "RUN line_number" ;; @@3dd8 73
@@ -47,7 +47,7 @@ run__20          jsr clearc                               ; first trash all vari
                  jsr chrgot                                ;; @@3ddb 73
                  jsr goto                                 ; set up to execute from new line number ;; @@3dde 73
                  jsr setexc                               ; ..and do a little housekeeping, ;; @@3de1 73
-                 bra newstt                               ; ..otherwise it's business as usual ;; @@3de4 73
+                 +lbra newstt                             ; ..otherwise it's business as usual ;; @@3de4 73
  ;; @@3de7 73
 ;.end ;; @@3de7 73
 ; .page ;; @@3de7 73
@@ -68,7 +68,7 @@ restor                                                     ;; @@3de7 73
                  sty linnum                                ;; @@3dec 73
                  sta linnum+1                              ;; @@3dee 73
                  jsr FindLine                             ; get pointer to specified line ;; @@3df0 73
-                 bcc userr                                ; error if not found ;; @@3df3 73
+                 +lbcc userr                              ; error if not found ;; @@3df3 73
  ;; @@3df6 73
                  lda lowtr                                ; decrement 2 byte pointer, and save it ;; @@3df6 73
                  ldy lowtr+1                               ;; @@3df8 73

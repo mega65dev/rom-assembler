@@ -23,7 +23,7 @@ _local_1133_10   jsr TimeMultiply                          ;; @@544f 134
                  sta facho                                ; zero msb, facov, facsgn ;; @@5468 134
                  ldx #160                                 ; set facov for time ;; @@546a 134
                  sec                                      ; normal fac ;; @@546c 134
-                 bra floatb                               ; do it ;; @@546d 134
+                 +lbra floatb                             ; do it ;; @@546d 134
  ;; @@5470 134
  ;; @@5470 134
  ;; @@5470 134

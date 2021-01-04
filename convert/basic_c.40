@@ -18,7 +18,7 @@ print_esc_cmd                                              ;; @@340b 40
                  tax                                      ; save type (cmd) in case it is a foreign esc token ;; @@340b 40
                  iny                                       ;; @@340c 40
                  jsr indlow                               ; look at second token ;; @@340d 40
-                 beq p1l015                               ; none?  print funny character ;; @@3410 40
+                 +lbeq p1l015                             ; none?  print funny character ;; @@3410 40
                  sty lstpnt                                ;; @@3413 40
                  cmp #first_esc_command_token             ; is this one of ours? ;; @@3415 40
                  bcc print_foreign_esc                    ; nope ;; @@3417 40
@@ -38,7 +38,7 @@ print_esc_fn                                               ;; @@3426 40
                  tax                                      ; save type (function) in case it's a foreign esc token ;; @@3426 40
                  iny                                       ;; @@3427 40
                  jsr indlow                               ; look at second token ;; @@3428 40
-                 beq p1l015                               ; none?  print funny character ;; @@342b 40
+                 +lbeq p1l015                             ; none?  print funny character ;; @@342b 40
                  sty lstpnt                                ;; @@342e 40
                  cmp #first_esc_function_token            ; is this one of ours? ;; @@3430 40
                  bcc print_foreign_esc                    ; nope ;; @@3432 40

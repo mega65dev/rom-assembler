@@ -1,10 +1,10 @@
 sound            cmp #clr_token                           ; SOUND CLR: init sound/music environment [910717] ;; @@4b7d 115
-                 beq Sound_CLR                            ; yes ;; @@4b7f 115
+                 +lbeq Sound_CLR                          ; yes ;; @@4b7f 115
  ;; @@4b82 115
                  jsr getbyt                               ; get voice number in .X ;; @@4b82 115
                  dex                                      ; adjust 1..3 to 0..2 ;; @@4b85 115
                  cpx #6                                   ; [910612] ;; @@4b86 115
-_local_1114_98   bcs fcerr                                ; illegal value ;; @@4b88 115
+_local_1114_98   +lbcs fcerr                              ; illegal value ;; @@4b88 115
  ;; @@4b8b 115
 _local_1114_10   stx sound_voice                           ;; @@4b8b 115
  ;; @@4b8e 115
@@ -89,7 +89,7 @@ _local_1114_80   cmp #16                                   ;; @@4bf5 115
  ;; @@4c07 115
                  ldx sound_voice                          ; first test 'PLAY' ;; @@4c07 115
                  txa                                      ; make an index into PLAY's tables ;; @@4c0a 115
-                 asl a                                     ;; @@4c0b 115
+                 asl                                       ;; @@4c0b 115
                  tay                                       ;; @@4c0c 115
 _local_1114_60   lda voices+1,y                            ;; @@4c0d 115
                  bpl _local_1114_60                        ;; @@4c10 115

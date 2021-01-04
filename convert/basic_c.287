@@ -2,7 +2,7 @@ get_sprite_number                                           ;; @@b5b5 287
                  jsr getbyt                                ;; @@b5b5 287
 ; dex        [910221] ;; @@b5b8 287
                  cpx #8                                    ;; @@b5b8 287
-                 bcs fcerr                                 ;; @@b5ba 287
+                 +lbcs fcerr                               ;; @@b5ba 287
                  stx z_p_temp_1                            ;; @@b5bd 287
                  rts                                       ;; @@b5bf 287
  ;; @@b5c0 287
@@ -28,7 +28,7 @@ movspr           lda #0                                   ; flag 'movspr' initia
                  jsr sprcor                               ; get first coordinate (y,a) ;; @@b5c7 287
 movspr_1                                                  ; entry to eval destination coordinate  [910808] ;; @@b5ca 287
                  bit numcnt                               ; test coordinate type ;; @@b5ca 287
-                 bvs snerr                                ; syntax error ;; @@b5cd 287
+                 +lbvs snerr                              ; syntax error ;; @@b5cd 287
                  sty xdest                                ; save coordinate value ;; @@b5d0 287
                  sty xdest+2                               ;; @@b5d3 287
                  sta xdest+1                               ;; @@b5d6 287
@@ -40,7 +40,7 @@ movspr_1                                                  ; entry to eval destin
                  bmi movspr_angle                         ; angular coordinates ;; @@b5e4 287
  ;; @@b5e6 287
                  bit op                                   ; angle#speed, test if allowed ;; @@b5e6 287
-                 bmi snerr                                ; ng- movspr_to call ;; @@b5e8 287
+                 +lbmi snerr                              ; ng- movspr_to call ;; @@b5e8 287
                  phy                                      ; ok- save speed value ;; @@b5eb 287
                  ldy #xdest-vwork                          ;; @@b5ec 287
                  jsr getang                               ; get angle of movement ;; @@b5ee 287

@@ -54,15 +54,15 @@ _local_1224_5    sta dossa                                 ;; @@7202 225
                  sta errnum                               ; yes- save error # for 'er' ;; @@7234 225
                  ora #$80                                 ; but no errdis ;; @@7237 225
 _local_1224_10   sec                                       ;; @@7239 225
-_local_1224_20   bcs erexit                               ; exit if kernel problem (rts) ;; @@723a 225
+_local_1224_20   +lbcs erexit                             ; exit if kernel problem (rts) ;; @@723a 225
  ;; @@723d 225
 _local_1224_30   lda verck                                ; load or verify operation? ;; @@723d 225
-                 bne verify_check                         ; verify ;; @@723f 225
+                 +lbne verify_check                       ; verify ;; @@723f 225
  ;; @@7242 225
 ; jsr _readst  ;  read status ;; @@7242 225
                  lda parsts                               ; load ;; @@7242 225
                  and #%10111111                           ; EOI is okay, so mask it ;; @@7244 225
-                 bne load_error                           ; load error ;; @@7246 225
+                 +lbne load_error                         ; load error ;; @@7246 225
                  clc                                       ;; @@7249 225
                  rts                                       ;; @@724a 225
  ;; @@724b 225

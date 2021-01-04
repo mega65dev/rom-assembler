@@ -1,8 +1,8 @@
 C65__line                                                  ;; @@b0b2 273
                  cmp #input_token                         ; special check for 'line input#'  [910103] ;; @@b0b2 273
-                 beq linputn                              ; yes ;; @@b0b4 273
+                 +lbeq linputn                            ; yes ;; @@b0b4 273
                  cmp #input_token+1                       ; special check for 'line input' ;; @@b0b7 273
-                 beq linput                               ; yes ;; @@b0b9 273
+                 +lbeq linput                             ; yes ;; @@b0b9 273
  ;; @@b0bc 273
                  jsr CheckGraphicMode                      ;; @@b0bc 273
                  jsr sadwrd                               ; get x0 ;; @@b0bf 273

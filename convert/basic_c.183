@@ -34,7 +34,7 @@ fpwr             jsr movfm                                ; put memory into FAC 
  ;; @@65c6 183
 fpwrt            beq exp                                  ; if FAC=0, just exponentiate that  ARG^FAC ;; @@65c6 183
                  lda argexp                               ; is x=0? ;; @@65c8 183
-                 beq zerof1                               ; zero FAC ;; @@65ca 183
+                 +lbeq zerof1                             ; zero FAC ;; @@65ca 183
  ;; @@65cd 183
                  ldx #<tempf3                             ; save it for later in a temp ;; @@65cd 183
                  ldy #>tempf3                              ;; @@65cf 183
@@ -59,7 +59,7 @@ _local_1182_10   jsr movfa1                               ; alternate entry poin
                  jsr fmult                                 ;; @@65f2 183
                  jsr exp                                  ; exponentiate the FAC ;; @@65f5 183
                  pla                                       ;; @@65f8 183
-                 lsr a                                    ; is it even? ;; @@65f9 183
+                 lsr                                      ; is it even? ;; @@65f9 183
                  bcc negrts                               ; yes. or x>0 ;; @@65fa 183
 ;negate the number in FAC ;; @@65fc 183
  ;; @@65fc 183

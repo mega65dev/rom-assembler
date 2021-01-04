@@ -1,6 +1,7 @@
-rm parts/* tmp/* convert/*
+set -e
+rm -f parts/* tmp/* convert/*
 python scripts/split.py
 python scripts/headerprocessor.py 
 python scripts/codeprocessor.py
 python scripts/rejoin.py
-acme --cpu m65 -r tmp/basic.lst tmp/basic.asm
+acme -v2 --cpu m65 -o tmp/basic.bin -r tmp/basic.lst tmp/basic.asm

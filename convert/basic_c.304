@@ -19,14 +19,14 @@ rspcolor                                                   ;; @@ba45 304
                  jsr conint                               ; get arg in .X ;; @@ba48 304
                  dex                                      ; adjust [1..2] to [0..1 ;; @@ba4b 304
                  cpx #2                                    ;; @@ba4c 304
-                 bcs fcerr                                ; value error ;; @@ba4e 304
+                 +lbcs fcerr                              ; value error ;; @@ba4e 304
  ;; @@ba51 304
 ; jsr put_io_in_map ;; @@ba51 304
                  lda vic+37,x                              ;; @@ba51 304
                  and #$0f                                  ;; @@ba54 304
                  tay                                       ;; @@ba56 304
 ; iny  ;range 0-15     [910724] ;; @@ba57 304
-                 bra sngflt                               ; float 1 byte arg in .Y ;; @@ba57 304
+                 +lbra sngflt                             ; float 1 byte arg in .Y ;; @@ba57 304
  ;; @@ba5a 304
 ;.end ;; @@ba5a 304
 ; .page ;; @@ba5a 304
@@ -55,7 +55,7 @@ rsppos           jsr conint                               ; get first arg, sprit
                  jsr combyt                               ; [910820] ;; @@ba62 304
                  jsr chkcls                               ; look for closing paren ;; @@ba65 304
                  cpx #3                                    ;; @@ba68 304
-_local_1303_1    bcs fcerr                                ; value error ;; @@ba6a 304
+_local_1303_1    +lbcs fcerr                              ; value error ;; @@ba6a 304
  ;; @@ba6d 304
                  ply                                      ; sprite number ;; @@ba6d 304
                  cpx #2                                    ;; @@ba6e 304
@@ -63,7 +63,7 @@ _local_1303_1    bcs fcerr                                ; value error ;; @@ba6
  ;; @@ba72 304
                  ldx sproff,y                             ; get offset into speed data ;; @@ba72 304
                  ldy sprite_data,x                        ; get speed data ;; @@ba75 304
-                 bra sngflt                               ; go float 1 byte arg in .Y ;; @@ba78 304
+                 +lbra sngflt                             ; go float 1 byte arg in .Y ;; @@ba78 304
  ;; @@ba7b 304
 ; Get msb of sprite position (in case this is for x position) ;; @@ba7b 304
  ;; @@ba7b 304
@@ -75,10 +75,10 @@ _local_1303_10   sei                                       ;; @@ba7b 304
 _local_1303_20   pha                                      ; save msb ;; @@ba86 304
  ;; @@ba87 304
                  tya                                      ; y = sprite# * 2 ;; @@ba87 304
-                 asl a                                     ;; @@ba88 304
+                 asl                                       ;; @@ba88 304
                  tay                                       ;; @@ba89 304
                  txa                                      ; see if this is y position ;; @@ba8a 304
-                 lsr a                                    ; .C = 0 for x pos'n, 1 for y pos'n ;; @@ba8b 304
+                 lsr                                      ; .C = 0 for x pos'n, 1 for y pos'n ;; @@ba8b 304
                  bcc _local_1303_30                       ; branch if x pos'n ;; @@ba8c 304
  ;; @@ba8e 304
                  iny                                      ; adjust pointer to point to y pos'n in register data ;; @@ba8e 304
@@ -90,7 +90,7 @@ _local_1303_30   lda vic,y                                ; get correct location
                  cli                                       ;; @@ba96 304
                  tay                                       ;; @@ba97 304
                  pla                                      ; ..and get msb, ;; @@ba98 304
-                 bra nosflt                               ; ..and go float 2 byte value in y,a ;; @@ba99 304
+                 +lbra nosflt                             ; ..and go float 2 byte value in y,a ;; @@ba99 304
  ;; @@ba9c 304
 ;.end ;; @@ba9c 304
 ; .page ;; @@ba9c 304

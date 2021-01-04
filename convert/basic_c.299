@@ -28,7 +28,7 @@ rpen             jsr CheckGraphicMode                     ; verify screen open ;
                  stx GKI__parm1                            ;; @@b9a8 299
  ;; @@b9ab 299
                  jsr ($8036)                              ; convert to logical color# (palette index#) ;; @@b9ab 299
-_local_1298_10   bcs fcerr                                ; drawscreen not set or illegal quantity somewhere ;; @@b9ae 299
+_local_1298_10   +lbcs fcerr                              ; drawscreen not set or illegal quantity somewhere ;; @@b9ae 299
  ;; @@b9b1 299
                  jsr sngflt                               ; go float 1 byte arg in .Y ;; @@b9b1 299
  ;; @@b9b4 299

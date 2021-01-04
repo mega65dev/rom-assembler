@@ -17,7 +17,7 @@ genlock          sta GKI__parm1                           ; save token as flag f
                  beq _local_1281_20                        ;; @@b458 282
                  jsr chkesc                                ;; @@b45a 282
                  cmp #off_token                            ;; @@b45d 282
-                 bne snerr                                 ;; @@b45f 282
+                 +lbne snerr                               ;; @@b45f 282
 ;TURN GENLOCK OFF ;; @@b462 282
                  lda vic+49                               ; any interlaced bitplanes on? ;; @@b462 282
                  and #%00011001                            ;; @@b465 282
@@ -38,13 +38,13 @@ _local_1281_10   lda #%00000010                            ;; @@b470 282
 _local_1281_12   jsr chrget                               ; eat token ;; @@b475 282
                  jsr optbyt                               ; get (optional) color reg# in .X ;; @@b478 282
                  stx GKI__parm2                           ; save it ;; @@b47b 282
-                 bcs set_palette                          ; if present, go do it & exit ;; @@b47e 282
+                 +lbcs set_palette                        ; if present, go do it & exit ;; @@b47e 282
 _local_1281_15   rts                                      ; if not present (eol), exit ;; @@b481 282
  ;; @@b482 282
  ;; @@b482 282
 _local_1281_20   lda #%00000001                           ; TURN GENLOCK ON ;; @@b482 282
                  tsb vic+49                               ; set interlace mode ;; @@b484 282
-                 asl a                                     ;; @@b487 282
+                 asl                                       ;; @@b487 282
                  tsb vic+48                               ; set external sync mode ;; @@b488 282
 ; bne _local_1281_22   ;       [910114] ;; @@b48b 282
 ; lda vic+63  ;       [910111] ;; @@b48b 282

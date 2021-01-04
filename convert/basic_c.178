@@ -53,7 +53,7 @@ finmul           jsr mul10                                 ;; @@63f5 178
                  dec tenexp                               ; done? ;; @@63f8 178
                  bne finmul                               ; no ;; @@63fa 178
 finqng           lda sgnflg                                ;; @@63fc 178
-                 bmi negop                                ; if negative, negate and return ;; @@63fe 178
+                 +lbmi negop                              ; if negative, negate and return ;; @@63fe 178
                  rts                                      ; if positive, return ;; @@6401 178
  ;; @@6402 178
  ;; @@6402 178

@@ -32,8 +32,8 @@ sprsub           pha                                      ; save angle phase ;; 
                  sta sprite_data+8,x                       ;; @@7bd7 258
                  pla                                      ; get angle sign ;; @@7bda 258
                  bcc _local_1257_30                       ; skip if no carry - do not update position ;; @@7bdb 258
-                 lsr a                                     ;; @@7bdd 258
-                 lsr a                                    ; test if positive or negative ;; @@7bde 258
+                 lsr                                       ;; @@7bdd 258
+                 lsr                                      ; test if positive or negative ;; @@7bde 258
                  lda vic,y                                ; ???vic_save ;; @@7bdf 258
                  bcs _local_1257_10                       ; skip if negative ;; @@7be2 258
                  adc #1                                   ; increment position ;; @@7be4 258

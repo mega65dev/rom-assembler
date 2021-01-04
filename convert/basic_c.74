@@ -39,7 +39,7 @@ renum_10                                                   ;; @@3e40 74
                  sty renum_tmp_2                           ;; @@3e45 74
                  sta renum_tmp_2+1                         ;; @@3e48 74
                  ora renum_tmp_2                          ; increment must be >0 ;; @@3e4b 74
-                 beq fcerr                                ; illegal quantity error ;; @@3e4e 74
+                 +lbeq fcerr                              ; illegal quantity error ;; @@3e4e 74
  ;; @@3e51 74
 ; Check for starting line number ;; @@3e51 74
  ;; @@3e51 74
@@ -66,7 +66,7 @@ renum_30                                                   ;; @@3e51 74
                  sbc highds                                ;; @@3e79 74
                  lda lowtr+1                               ;; @@3e7b 74
                  sbc highds+1                              ;; @@3e7d 74
-                 bcc fcerr                                ; bad... ;; @@3e7f 74
+                 +lbcc fcerr                              ; bad... ;; @@3e7f 74
  ;; @@3e82 74
 ; .page ;; @@3e82 74
 ;*********************************************************************** ;; @@3e82 74
@@ -107,7 +107,7 @@ r_pass1_20                                                 ;; @@3ea7 74
  ;; @@3eb5 74
 r_pass1_30                                                ; renumbering will generate an illegal line # ;; @@3eb5 74
                  ldx #err_too_large                       ; 'line number too large' error ;; @@3eb5 74
-                 bra error                                 ;; @@3eb7 74
+                 +lbra error                               ;; @@3eb7 74
  ;; @@3eba 74
 set_next                                                   ;; @@3eba 74
                  ldy #0                                   ; set for next BASIC line ;; @@3eba 74

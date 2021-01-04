@@ -27,7 +27,7 @@ load_file                                                  ;; @@689d 194
                  sta errnum                               ; yes- save error # for 'er' ;; @@68ba 194
                  ora #$80                                 ; but no errdis ;; @@68bd 194
 _local_1193_10   sec                                       ;; @@68bf 194
-_local_1193_20   bcs erexit                               ; exit if kernel problem ;; @@68c0 194
+_local_1193_20   +lbcs erexit                             ; exit if kernel problem ;; @@68c0 194
 _local_1193_30   ply                                      ; restore end address ;; @@68c3 194
                  plx                                       ;; @@68c4 194
                  lda verck                                 ;; @@68c5 194

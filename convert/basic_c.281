@@ -23,7 +23,7 @@ C65__Viewport                                              ;; @@b415 281
                  cmp #clr_token                            ;; @@b441 281
                  beq _local_1280_10                        ;; @@b443 281
                  cmp #def_token                            ;; @@b445 281
-                 bne snerr                                ; error ;; @@b447 281
+                 +lbne snerr                              ; error ;; @@b447 281
  ;; @@b44a 281
                  jmp ($8030)                              ; define viewport & return ;; @@b44a 281
  ;; @@b44d 281

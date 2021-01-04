@@ -28,7 +28,7 @@ _local_1197_20   dey                                       ;; @@6a07 198
                  beq _local_1197_30                       ; yes... ;; @@6a0d 198
                  tya                                      ; no...end of format ;; @@6a0f 198
                  bne _local_1197_20                       ; no... ;; @@6a10 198
-_local_1197_99   bra snerr                                ; yes...syntax error ;; @@6a12 198
+_local_1197_99   +lbra snerr                              ; yes...syntax error ;; @@6a12 198
  ;; @@6a15 198
  ;; @@6a15 198
-_local_1197_30   lda #'                                   ; ' ;; @@6a15 198
+_local_1197_30   lda #';'                                 ; ' ;; @@6a15 198

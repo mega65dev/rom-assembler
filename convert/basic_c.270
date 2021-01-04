@@ -1,7 +1,7 @@
 C65__setdpat                                               ;; @@b002 270
                  jsr getbyt                               ; get pattern type ;; @@b002 270
                  cpx #4+1                                 ; 63+1       [911028] ;; @@b005 270
-_local_1269_10   bcs fcerr                                ; if out of range ;; @@b007 270
+_local_1269_10   +lbcs fcerr                              ; if out of range ;; @@b007 270
                  stx GKI__parm1                            ;; @@b00a 270
                  txa                                       ;; @@b00d 270
                  bne _local_1269_20                       ; if parm1 is 0 then get extra stuff ;; @@b00e 270
@@ -16,7 +16,7 @@ _local_1269_10   bcs fcerr                                ; if out of range ;; @
                  stx GKI__parm3                            ;; @@b01f 270
                  dec z_p_temp_1                            ;; @@b022 270
                  beq _local_1269_20                        ;; @@b024 270
-                 bmi fcerr                                ; too few bytes ;; @@b026 270
+                 +lbmi fcerr                              ; too few bytes ;; @@b026 270
  ;; @@b029 270
                  jsr combyt                               ; get byte 2 ;; @@b029 270
                  stx GKI__parm4                            ;; @@b02c 270

@@ -7,10 +7,10 @@ getstk           eor #$ff                                 ; make value 2's comp.
                  dey                                       ;; @@319f 30
 _local_1029_10   sty tos+1                                 ;; @@31a0 30
                  cpy #>stktop                              ;; @@31a2 30
-                 bcc omerr                                 ;; @@31a4 30
+                 +lbcc omerr                               ;; @@31a4 30
                  bne _local_1029_20                        ;; @@31a7 30
                  cmp tos                                   ;; @@31a9 30
-                 bcc omerr                                 ;; @@31ab 30
+                 +lbcc omerr                               ;; @@31ab 30
 _local_1029_20   rts                                       ;; @@31ae 30
  ;; @@31af 30
 ; .page ;; @@31af 30

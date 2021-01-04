@@ -3,7 +3,7 @@ optw99           clc                                       ;; @@7906 249
  ;; @@7908 249
 ; .page ;; @@7908 249
 comsad           jsr chkcom                               ; get a comma & signed 2-byte arg in y,a   [910307] ;; @@7908 249
-                 bra sadwrd                                ;; @@790b 249
+                 +lbra sadwrd                              ;; @@790b 249
  ;; @@790e 249
  ;; @@790e 249
  ;; @@790e 249

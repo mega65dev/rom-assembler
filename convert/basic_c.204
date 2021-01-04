@@ -39,13 +39,13 @@ pntl             eor #$ff                                  ;; @@6bc6 204
                  sta hulp                                 ; =vn-vf ;; @@6bca 204
  ;; @@6bcc 204
 decy             cpy bnr                                  ; begin of no? ;; @@6bcc 204
-                 beq inz                                  ; yes... ;; @@6bcf 204
+                 beq inz1                                 ; yes... ;; @@6bcf 204
                  dey                                       ;; @@6bd1 204
                  dec vn                                    ;; @@6bd2 204
                  bra inz2                                  ;; @@6bd5 204
  ;; @@6bd7 204
  ;; @@6bd7 204
-inz              inc z_p_temp_1                           ; add leading zeros ;; @@6bd7 204
+inz1             inc z_p_temp_1                           ; add leading zeros ;; @@6bd7 204
 inz2             lda #$80                                  ;; @@6bd9 204
 nos3             jsr eadj                                 ; adjust exponent ;; @@6bdb 204
                  dec hulp                                 ; ready? ;; @@6bde 204
@@ -76,7 +76,7 @@ eadj             ldx uexp                                  ;; @@6bf3 204
 _local_1203_10   jsr tag3                                 ; inc exp, overflow? ;; @@6c01 204
                  jsr sexp                                 ; digit 0 if yes ;; @@6c04 204
                  bcs _local_1203_10                       ; try second digit ;; @@6c07 204
-                 bra overr                                ; exp>99 ;; @@6c09 204
+                 +lbra overr                              ; exp>99 ;; @@6c09 204
  ;; @@6c0c 204
 _local_1203_20   lda fbuffr,x                              ;; @@6c0c 204
                  dec fbuffr,x                             ; decrement exp ;; @@6c0f 204

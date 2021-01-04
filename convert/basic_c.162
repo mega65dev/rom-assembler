@@ -20,7 +20,7 @@ getrts           rts                                       ;; @@5c24 162
  ;; @@5c25 162
  ;; @@5c25 162
 garbag           lda garbfl                                ;; @@5c25 162
-                 bmi omerr                                ; if out of memory ;; @@5c27 162
+                 +lbmi omerr                              ; if out of memory ;; @@5c27 162
                  jsr garba2                                ;; @@5c2a 162
                  sec                                       ;; @@5c2d 162
                  ror garbfl                                ;; @@5c2e 162

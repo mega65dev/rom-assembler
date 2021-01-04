@@ -6,7 +6,7 @@ CheckGraphicMode                                           ;; @@af1c 267
  ;; @@af22 267
 NoGraphicArea                                              ;; @@af22 267
                  ldx #errng                               ; bad- no graphic area???? ;; @@af22 267
-                 bra error                                 ;; @@af24 267
+                 +lbra error                               ;; @@af24 267
  ;; @@af27 267
  ;; @@af27 267
 RestoreTextScreen                                          ; [910404] ;; @@af27 267

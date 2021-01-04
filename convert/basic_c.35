@@ -2,10 +2,10 @@ list             rmb7 helper                              ; clear 'help' flag fo
  ;; @@328c 35
 ; Determine which form of LIST we have... ;; @@328c 35
  ;; @@328c 35
-                 beq list_memory                          ; branch if terminator (no parameter) ;; @@328c 35
-                 bcc list_memory                          ; branch if a number (assume range parameter) ;; @@328f 35
+                 +lbeq list_memory                        ; branch if terminator (no parameter) ;; @@328c 35
+                 +lbcc list_memory                        ; branch if a number (assume range parameter) ;; @@328f 35
                  cmp #minus_token                          ;; @@3292 35
-                 beq list_memory                          ; branch if a dash (assume range parameter) ;; @@3294 35
+                 +lbeq list_memory                        ; branch if a dash (assume range parameter) ;; @@3294 35
  ;; @@3297 35
  ;; @@3297 35
 ; LIST command is of the form  LIST filename [,U#] [,D#] ;; @@3297 35
@@ -50,7 +50,7 @@ _local_1034_10   jsr _basin                               ; get link bytes ;; @@
                  sta dosstr,x                              ;; @@32e8 35
                  inx                                       ;; @@32eb 35
 _local_1034_20   cpx #255                                 ; check buffer (buflen????) ;; @@32ec 35
-                 bcs errlen                               ; 'too long' error ;; @@32ee 35
+                 +lbcs errlen                             ; 'too long' error ;; @@32ee 35
                  jsr _basin                                ;; @@32f1 35
                  sta dosstr,x                              ;; @@32f4 35
                  inx                                       ;; @@32f7 35

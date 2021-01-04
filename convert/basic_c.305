@@ -2,14 +2,14 @@ bump             jsr chkcls                                ;; @@ba9c 305
                  jsr conint                               ; get arg in .X ;; @@ba9f 305
                  dex                                      ; adjust [1..2] to [0..1] ;; @@baa2 305
                  cpx #2                                    ;; @@baa3 305
-                 bcs fcerr                                ; value error ;; @@baa5 305
+                 +lbcs fcerr                              ; value error ;; @@baa5 305
  ;; @@baa8 305
                  sei                                       ;; @@baa8 305
                  ldy collisions,x                         ; get recorded collisions ;; @@baa9 305
                  lda #0                                   ; reset them ;; @@baac 305
                  sta collisions,x                          ;; @@baae 305
                  cli                                       ;; @@bab1 305
-                 bra sngflt                               ; float 1 byte arg in .Y ;; @@bab2 305
+                 +lbra sngflt                             ; float 1 byte arg in .Y ;; @@bab2 305
  ;; @@bab5 305
 ;.end ;; @@bab5 305
 ; .page ;; @@bab5 305
@@ -53,7 +53,7 @@ _local_1304_30   inx                                      ; do division by 10 ;;
                  adc #10                                  ; make positive ;; @@badd 305
                  sta vtemp1                               ; save remainder ;; @@badf 305
                  txa                                       ;; @@bae2 305
-                 asl a                                    ; get quotient*2 as index ;; @@bae3 305
+                 asl                                      ; get quotient*2 as index ;; @@bae3 305
                  tax                                       ;; @@bae4 305
                  lda angval+1,x                           ; get low byte base ;; @@bae5 305
                  ldy angval,x                             ; get high byte value ;; @@bae8 305
@@ -72,7 +72,7 @@ _local_1304_40   clc                                       ;; @@baeb 305
 _local_1304_50   pha                                      ; save low byte of result ;; @@bafd 305
                  ldx #0                                   ; point to sinval ;; @@bafe 305
                  lda angsgn                                ;; @@bb00 305
-                 lsr a                                     ;; @@bb03 305
+                 lsr                                       ;; @@bb03 305
                  bcs _local_1304_60                       ; skip if sine value ;; @@bb04 305
                  ldx #2                                   ; point to cosval ;; @@bb06 305
  ;; @@bb08 305

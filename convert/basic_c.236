@@ -20,7 +20,7 @@ doffh            lda #$04                                  ;; @@7544 236
  ;; @@7556 236
 recover          lda #$40                                  ;; @@7556 236
                  tsb dosflags                             ; set 'recover' bit ;; @@7558 236
-                 bne snerr                                ; if repeated parameter ;; @@755b 236
+                 +lbne snerr                              ; if repeated parameter ;; @@755b 236
                  jsr chrget                               ; continue ;; @@755e 236
                  bra delim2                                ;; @@7561 236
  ;; @@7563 236

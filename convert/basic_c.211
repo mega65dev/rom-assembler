@@ -2,7 +2,7 @@ pndd             lda swe                                  ; # of blanks ;; @@6d7
                  beq zerot                                 ;; @@6d7d 211
                  dec swe                                  ; count ! ;; @@6d7f 211
  ;; @@6d82 211
-_local_1210_5    bne bout                                 ; out blank or * ;; @@6d82 211
+_local_1210_5    +lbne bout                               ; out blank or * ;; @@6d82 211
                  lda posp                                 ; + or - in field? ;; @@6d85 211
                  bmi _local_1210_5                        ; yes...out blank or * ;; @@6d88 211
  ;; @@6d8a 211

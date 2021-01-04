@@ -15,7 +15,7 @@ err_ild          ldx #err_illegal_device                   ;; @@766d 240
                  !text $2c                                 ;; @@766f 240
  ;; @@7670 240
 errlen           ldx #errls                               ; string or filename too long ;; @@7670 240
-                 bra error                                 ;; @@7672 240
+                 +lbra error                               ;; @@7672 240
  ;; @@7675 240
  ;; @@7675 240
  ;; @@7675 240
@@ -35,8 +35,8 @@ errlen           ldx #errls                               ; string or filename t
 ; Get next 2-byte expression.  Exit: .a,.y (high,low) value ;; @@7675 240
  ;; @@7675 240
 getoff           jsr chrget                               ; get nxt chr ;; @@7675 240
-                 beq snerr                                ; if end of statement ;; @@7678 240
-                 bcc getwrd                               ; can be num. const, go evaluate it ;; @@767b 240
+                 +lbeq snerr                              ; if end of statement ;; @@7678 240
+                 +lbcc getwrd                             ; can be num. const, go evaluate it ;; @@767b 240
                  jsr chkopn                               ; or a "(" ;; @@767e 240
                  jsr getwrd                               ; expr ;; @@7681 240
                  jsr chkcls                               ; need closing ")" ;; @@7684 240
@@ -52,7 +52,7 @@ getoff           jsr chrget                               ; get nxt chr ;; @@767
  ;; @@768c 240
  ;; @@768c 240
 prmrpt           and parsts                               ; compare mask with status ;; @@768c 240
-                 bne snerr                                ; error if bit previously set ;; @@768e 240
+                 +lbne snerr                              ; error if bit previously set ;; @@768e 240
                  rts                                       ;; @@7691 240
  ;; @@7692 240
  ;; @@7692 240
@@ -63,7 +63,7 @@ prmrpt           and parsts                               ; compare mask with st
  ;; @@7692 240
  ;; @@7692 240
 prxrpt           and parstx                               ; and with parstx ;; @@7692 240
-                 bne snerr                                ; if bit previously set ;; @@7694 240
+                 +lbne snerr                              ; if bit previously set ;; @@7694 240
                  rts                                       ;; @@7697 240
  ;; @@7698 240
 ;.end ;; @@7698 240
@@ -164,21 +164,21 @@ sdp1             pla                                       ;; @@76fb 240
                  cmp #xid                                  ;; @@770d 240
                  beq rid                                  ; if disk id ;; @@770f 240
                  cmp #xrcl                                 ;; @@7711 240
-                 beq rdcn                                 ; if record number ;; @@7713 240
+                 +lbeq rdcn                               ; if record number ;; @@7713 240
                  cmp #xwrt                                 ;; @@7716 240
                  beq rwrt                                 ; if W or L ;; @@7718 240
                  cmp #xfat                                 ;; @@771a 240
                  beq rfat                                 ; if "@" symbol request ;; @@771c 240
                  cmp #xfn1                                 ;; @@771e 240
-                 beq rsfn                                 ; if filename 1 ;; @@7720 240
+                 +lbeq rsfn                               ; if filename 1 ;; @@7720 240
                  cmp #xfn2                                 ;; @@7723 240
-                 beq rdfn                                 ; if filename 2 ;; @@7725 240
+                 +lbeq rdfn                               ; if filename 2 ;; @@7725 240
                  cmp #xrec                                 ;; @@7728 240
                  bne sdp2                                 ; if not record type ;; @@772a 240
                  lda dosrcl                               ; get rec # ;; @@772c 240
                  cmp #1                                   ; kludge to allow DOPEN#lf,"relfile",L  [911024] ;; @@772f 240
                  bne sdp5                                 ; (note RECORD byte 0 = byte 1 anyhow) ;; @@7731 240
-                 dec a                                     ;; @@7733 240
+                 dec                                       ;; @@7733 240
                  bra sdp5                                 ; always branch ;; @@7734 240
  ;; @@7736 240
 sdp2             cmp #xd1                                  ;; @@7736 240
@@ -222,7 +222,7 @@ rfat             bbr7 parsts,_local_1239_10               ; if "@" not encounter
                  bra sdp5                                 ; always ;; @@776f 240
  ;; @@7771 240
 _local_1239_10   lda dosflags                              ;; @@7771 240
-                 lsr a                                     ;; @@7774 240
+                 lsr                                       ;; @@7774 240
                  bcc sdp1                                 ; if "/" not encountered ;; @@7775 240
                  lda #'/'                                  ;; @@7777 240
                  bra sdp5                                  ;; @@7779 240

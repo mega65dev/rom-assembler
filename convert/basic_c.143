@@ -12,13 +12,13 @@ hexd             jsr chknum                                ;; @@566f 143
                  sta poker+1                               ;; @@568a 143
                  pla                                       ;; @@568c 143
                  sta poker                                 ;; @@568d 143
-                 bra chrd1                                ; pla,pla,jmp putnew ;; @@568f 143
+                 +lbra chrd1                              ; pla,pla,jmp putnew ;; @@568f 143
  ;; @@5692 143
 hexit            pha                                       ;; @@5692 143
-                 lsr a                                     ;; @@5693 143
-                 lsr a                                     ;; @@5694 143
-                 lsr a                                     ;; @@5695 143
-                 lsr a                                     ;; @@5696 143
+                 lsr                                       ;; @@5693 143
+                 lsr                                       ;; @@5694 143
+                 lsr                                       ;; @@5695 143
+                 lsr                                       ;; @@5696 143
                  jsr dohex                                 ;; @@5697 143
                  pla                                       ;; @@569a 143
  ;; @@569b 143

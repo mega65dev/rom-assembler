@@ -1,7 +1,7 @@
 envelope                                                   ;; @@4aa4 113
                  jsr getbyt                               ; get envelope number ;; @@4aa4 113
                  cpx #10                                   ;; @@4aa7 113
-                 bcs fcerr                                ; exit - invalid tone number ;; @@4aa9 113
+                 +lbcs fcerr                              ; exit - invalid tone number ;; @@4aa9 113
                  stx tonnum                               ; save number ;; @@4aac 113
                  lda atktab,x                             ; get attack/decay rates ;; @@4aaf 113
                  sta tonval                                ;; @@4ab2 113
@@ -15,10 +15,10 @@ _local_1112_20   stx parcnt                                ;; @@4ac3 113
                  jsr optbyt                               ; get parameter - attack or sustain ;; @@4ac6 113
                  bcc _local_1112_30                       ; skip if no input ;; @@4ac9 113
                  txa                                       ;; @@4acb 113
-                 asl a                                     ;; @@4acc 113
-                 asl a                                    ; shift to upper nibble ;; @@4acd 113
-                 asl a                                     ;; @@4ace 113
-                 asl a                                     ;; @@4acf 113
+                 asl                                       ;; @@4acc 113
+                 asl                                      ; shift to upper nibble ;; @@4acd 113
+                 asl                                       ;; @@4ace 113
+                 asl                                       ;; @@4acf 113
                  sta nibble                               ; save it ;; @@4ad0 113
                  ldx parcnt                                ;; @@4ad3 113
                  lda tonval,x                             ; get current value ;; @@4ad6 113
@@ -46,7 +46,7 @@ _local_1112_40   ldx parcnt                                ;; @@4afa 113
                  lda #$15                                 ; assume ring modulation ;; @@4b07 113
                  cpx #4                                    ;; @@4b09 113
                  beq _local_1112_80                       ; skip if correct ;; @@4b0b 113
-                 bcs fcerr                                ; error if >4 ;; @@4b0d 113
+                 +lbcs fcerr                              ; error if >4 ;; @@4b0d 113
                  lda sbits+4,x                            ; get waveform bit ;; @@4b10 113
                  ora #1                                   ; set gate bit ;; @@4b13 113
  ;; @@4b15 113

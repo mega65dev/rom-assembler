@@ -24,7 +24,7 @@ _local_1130_10   jsr GetTimeDigit                         ; get first digit, con
  ;; @@53a6 131
 _local_1130_20   lda time,x                                ;; @@53a6 131
                  cmp MaxTimeValues,x                      ; check for parameter too big ;; @@53a8 131
-                 bcs fcerr                                ; hr>23, min>59, sec>59, tenths>9 ;; @@53ab 131
+                 +lbcs fcerr                              ; hr>23, min>59, sec>59, tenths>9 ;; @@53ab 131
  ;; @@53ae 131
                  dex                                      ; check if done ;; @@53ae 131
                  bmi _local_1130_30                       ; yes- all parameters accounted for ;; @@53af 131
@@ -42,7 +42,7 @@ _local_1130_25   iny                                      ; it's there- skip ove
  ;; @@53c3 131
  ;; @@53c3 131
 _local_1130_30   cpy count                                ; done ;; @@53c3 131
-                 bcc errlen                               ; error if string too long ;; @@53c5 131
+                 +lbcc errlen                             ; error if string too long ;; @@53c5 131
  ;; @@53c8 131
 _local_1130_40   ldz time                                 ; tenths  0-9 ;; @@53c8 131
                  lda time+1                               ; seconds 0-59 ;; @@53cb 131

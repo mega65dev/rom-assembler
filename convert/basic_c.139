@@ -1,5 +1,5 @@
 val              jsr len1                                 ; get length ;; @@5546 139
-                 beq zerofc                               ; return 0 if len=0 ;; @@5549 139
+                 +lbeq zerofc                             ; return 0 if len=0 ;; @@5549 139
  ;; @@554c 139
 ; Use text to fp number code by faking a new text poiner ;; @@554c 139
  ;; @@554c 139
@@ -63,13 +63,13 @@ _local_1138_10   cpy index2                               ; evaluated all charac
  ;; @@55a9 139
                  sbc #7                                   ; adjust if A-F  (.c is clr) ;; @@55a9 139
 _local_1138_30   sbc #$2f                                 ; adjust to $00..$0f (.c is set) ;; @@55ab 139
-                 asl a                                    ; shift low nibble to high ;; @@55ad 139
-                 asl a                                     ;; @@55ae 139
-                 asl a                                     ;; @@55af 139
-                 asl a                                     ;; @@55b0 139
+                 asl                                      ; shift low nibble to high ;; @@55ad 139
+                 asl                                       ;; @@55ae 139
+                 asl                                       ;; @@55af 139
+                 asl                                       ;; @@55b0 139
  ;; @@55b1 139
                  ldx #4                                   ; mult. old val. by 16, add new ;; @@55b1 139
-_local_1138_40   asl a                                     ;; @@55b3 139
+_local_1138_40   asl                                       ;; @@55b3 139
                  rol strng2                                ;; @@55b4 139
                  rol strng2+1                              ;; @@55b6 139
                  dex                                       ;; @@55b8 139
@@ -78,6 +78,6 @@ _local_1138_40   asl a                                     ;; @@55b3 139
  ;; @@55bd 139
 _local_1138_50   ldy strng2                               ; get lsb of value, ;; @@55bd 139
                  lda strng2+1                             ; & msb, ;; @@55bf 139
-                 bra nosflt                               ; go float 2 byte unsigned integer ;; @@55c1 139
+                 +lbra nosflt                             ; go float 2 byte unsigned integer ;; @@55c1 139
  ;; @@55c4 139
  ;; @@55c4 139

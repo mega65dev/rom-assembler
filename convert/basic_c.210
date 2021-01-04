@@ -18,7 +18,7 @@ zout             lda #'0'                                 ; output zero ;; @@6d4
 outs             lsr flag                                 ; clear comma flag ;; @@6d51 210
  ;; @@6d54 210
 out              jsr cdout                                ; output character ;; @@6d54 210
-                 beq rrts                                  ;; @@6d57 210
+                 +lbeq rrts                                ;; @@6d57 210
                  bra afrm                                 ; not ready... ;; @@6d5a 210
  ;; @@6d5c 210
  ;; @@6d5c 210
