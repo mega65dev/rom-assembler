@@ -8,6 +8,7 @@
 !source "data/memory.asm"
 !source "data/kernal.asm"
 !source "initialise/initialise.asm"
+!source "system/macros.asm"
 !source "system/indirection.asm"
 !source "system/tokeniser.asm"
 !source "tokeniser/keywords.asm"
